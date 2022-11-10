@@ -1,0 +1,3271 @@
+2103.04244v2 [cs.AI] 8 Jun 2021
+
+arXiv
+
+Counterfactuals and Causability in Explainable Artificial Intelligence:
+Theory, Algorithms, and Applications
+
+Yu-Liang Chou!, Catarina Moreira!”, Peter Bruzat, Chun Ouyang!, Joaquim Jorge”
+! School of Information Systems, Queensland University of Technology, Brisbane, Australia
+
+2 INESC-ID Lisboa, Instituto Superior Técnico, ULisboa, Portugal
+
+ 
+
+Abstract
+
+Deep learning models have achieved high performances across different domains, such as medical
+decision-making, autonomous vehicles, decision support systems, etc. Despite this success, the internal
+mechanisms of these models are opaque because their internal representations are too complex for a human
+to understand. This makes it hard to understand the how or the why of the predictions of deep learning
+models.
+
+There has been a growing interest in model-agnostic methods that can make deep learning models more
+transparent and explainable to a user. Some researchers recently argued that for a machine to achieve a
+certain degree of human-level explainability, this machine needs to provide human causally understandable
+explanations, also known as causability. A specific class of algorithms that have the potential to provide
+causability are counterfactuals.
+
+This paper presents an in-depth systematic review of the diverse existing body of literature on counter-
+factuals and causability for explainable artificial intelligence. We performed an LDA topic modeling analysis
+under a PRISMA framework to find the most relevant literature articles. This analysis resulted in a novel
+taxonomy that considers the grounding theories of the surveyed algorithms, together with their underlying
+properties and applications in real-world data. This research suggests that current model-agnostic counter-
+factual algorithms for explainable AI are not grounded on a causal theoretical formalism and, consequently,
+cannot promote causability to a human decision-maker. Our findings suggest that the explanations derived
+from major algorithms in the literature provide spurious correlations rather than cause/effects relationships,
+leading to sub-optimal, erroneous, or even biased explanations. This paper also advances the literature
+with new directions and challenges on promoting causability in model-agnostic approaches for explainable
+
+artificial intelligence.
+
+Keywords: Deep Learning, Explainable AI, Causability, Counterfactuals, Causality
+
+ 
+
+Preprint submitted to Preprint June 9, 2021
+1. Introduction
+
+Artificial intelligence,in particular, deep learning, have made great strides in equaling, and even surpass-
+ing human performance in many tasks such as categorization, recommendation, game playing or even in
+medical decision-making [1]. Despite this success, the internal mechanisms of these technologies are an
+enigma because humans cannot scrutinize how these intelligent systems do what they do. This is known
+as the black-box problem [2]. Consequently, humans are reliant to blindly accept the answers produced by
+machine intelligence without understanding how that outcome came to be. There is growing disquiet about
+this state of affairs as intelligent technologies increasingly support human decision-makers in high-stakes
+
+contexts such as the battlefield, law courts, operating theatres, etc.
+
+1.1. The need for Explainability
+
+Several factors motivated the rise of approaches that attempt to turn predictive black-boxes transparent
+to the decision-maker [3, 4]. One of these factors is the recent European General Data Protection Regulation
+(GDPR) [5], which made the audit and verifiability of decisions from intelligent autonomous systems
+mandatory, increasing the demand for the ability to question and understand Machine Learning (ML)
+systems. These regulations directly impact worldwide businesses because GDPR applies not only to data
+being used by European organisations, but also to European data being used by other organisations. Another
+important factor is concerned with discrimination (such as gender and racial bias) [6]. Studies suggest
+that predictive algorithms widely used in healthcare, for instance, exhibited racial biases that prevented
+minority societal groups from receiving extra care [7] or display cognitive biases associated with medical
+decisions [8, 9]. In medical X-ray images, it was found that deep learning models have learned to detect a
+metal token that technicians use to visualise the X-ray images, making this feature impacting the predictions
+of the algorithm [10]. Other studies revealed gender and racial biases in automated facial analysis algorithms
+made available by commercial companies [11], gender biases in textual predictive models [14, 15, 16] or
+even more discriminatory topics such as facial features according to sexual orientation [17].
+
+The black-box problem and the need for interpretability motivated an extensive novel body of liter-
+ature in machine learning that focuses on developing new algorithms and approaches that not only can
+interpret the complex internal mechanisms of machine learning predictions but also explain and provide
+understanding to the decision-maker of the why these predictions [18, 19]. In this sense, interpretability
+and explainability have become the main driving pillars of explainable AI (XAI) [20]. More specifically, we
+
+define interpretability and explainability in the following way.
+
+* Interpretability is defined as the extraction of relevant sub-symbolic information from a machine-
+
+learning model concerning relationships either contained in data or learned by the model [21].
+* Explainability, on the other hand, refers to the ability to translate this sub-symbolic information in a
+
+comprehensible manner through human-understandable language expressions [22].
+
+The overarching goal of XAI is to generate human-understandable explanations of the why and the how
+of specific predictions from machine learning or deep learning (DL) systems. Paez [23] extends this goal
+by adding that explainable algorithms should offer a pragmatic and naturalistic account of understanding
+in AI predictive models and that explanatory strategies should offer well-defined goals when providing
+explanations to its stakeholders.
+
+Currently, there is an extensive body of literature reviewing different aspects of XAI
+
+In Miller [24], the author portraits the missing link between the current research on explanations from
+the fields of philosophy, psychology, and cognitive science. Miller [24] highlighted three main aspects
+that an XAI system must have in order to achieve explainability: (1) people seek explanations of the for
+why some event happened, instead of another?, which suggests a need for counterfactual explanations; (2)
+recommendations can focus on a selective number of causes (not all of them), which suggests the need for
+causality in XAI; and (3) explanations should consist in conversations and interactions with a user promoting
+an explanation process where the user engages in and learns the explanations. In Guidotti et al. [25], the
+authors survey black-box specific methods for explainability and propose a taxonomy for XAI systems based
+on four features: (1) the type of problem faced based on their taxonomy; (2) the type of explainer adopted;
+(3) the type of black-box model that the explainer can process; and (4) the type of data that the black-box
+supports. On the other hand Das and Rad [26] proposed a taxonomy for categorizing XAI techniques based
+on their scope of explanations, methodology behind the algorithms, and explanation level or usage. [27]
+classified explainable methods according to (1) the interpretability of the model to be explained; (2) the
+scope of the interpretability; and (3) if the black-box is dependent or not on any type of machine learning
+model.
+
+Barredo Arrieta et al. [28] propose and discuss a taxonomy related to explainability in different machine
+learning and deep learning models. Additionally, the authors propose new methodologies towards responsi-
+ble artificial intelligence and discuss several aspects regarding fairness, explainability, and accountability in
+real-world organisations.
+
+Some authors have reviewed evaluation methodologies for explainable systems and proposed a novel
+categorisation of XAI design goals and evaluation measures according to stakeholders [29]. In contrast, other
+authors identified objectives that evaluation metrics should achieve and demonstrated the subjectiveness
+of evaluation measures regarding human-centered XAI systems [30]. Carvalho et al. [31] extensively
+surveyed the XAI literature with a focus on both qualitative and quantitative evaluation metrics as well as
+properties/axioms that explanations should have. For other examples of works that survey evaluation in
+
+XAI, the reader can refer to Hoffman et al. [32], Alvarez-Melis and Jaakkola [33].
+In terms of the generation of explanations, Chen et al. [34] surveyed the literature in terms of biases.
+The authors identified seven different types of biases that were found in recommendations and proposed a
+
+taxonomy in terms of current work on recommendations and potential ways to dibiase them.
+
+1.2. From Explainability to the need of Causability
+
+For a model to be interpretable, it must suggest explanations that make sense to the decision-maker
+and ensure that those explanations accurately represent the true reasons for the model’s decisions [35].
+Current XAI models that attempt to decipher a black-box that is already trained (also known as post-
+hoc, model-agnostic models) build models around local interpretations, providing approximations to the
+predictive black-box [36, 37], instead of reflecting the true underlying mechanisms of the black box (as
+pointed out by [38]). In other words, these algorithms compute correlations between individual features
+to approximate the predictions of the black-box. In this paper, we argue that the inability to disentangle
+correlation from causation can deliver sub-optimal or even erroneous explanations to decision-makers [39].
+Causal approaches should be emphasized in XAI to promote a higher degree of interpretability to its users
+and avoid biases and discrimination in predictive black-boxes [40].
+
+The ability to find causal relationships between the features and the predictions in observational data is
+a challenging problem and constitutes a fundamental step towards explaining predictions [22]. Causation
+is a ubiquitous notion in Humans’ conception of their environment [41]. Humans are extremely good at
+constructing mental decision models from very few data samples because people excel at generalising data
+and tend to think in cause/effect manners [42]. There has been a growing emphasis that AI systems should
+be able to build causal models of the world that support explanation and understanding, rather than merely
+solving pattern recognition problems [43]. For decision-support systems, whether in finance, law, or even
+warfare, understanding the causality of learned representations is a crucial missing link [44, 45, 46]. However,
+when considering machines, how can we make computer-generated explanations causally understandable
+
+by humans? This notion was recently put forward by Holzinger et al. [22] in a term coined causability.
+
+* Causability: the extent to which an explanation of a statement to a human expert achieves a specified
+level of causal understanding with effectiveness, efficiency, and satisfaction in a specified context of
+use [22]. In this sense, causability can be seen as a property of human intelligence, whereas explainability
+as a property of artificial intelligence [47]. Figure 1 illustrates the notion of causability under the context
+
+of XAI.
+
+1.3. Counterfactuals as Means to Achieve Causability
+
+Causality is a fundamental concept to gain intellectual understanding of the universe and its contents. It
+
+is concerned with establishing cause-effect relationships [49]. Causal concepts are central to our practical
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Black box model V(x)
+Xy ———
+x2 Connectionist Evolutionary
+x= Models Models
+x3 » TT = =
+: Ressoning Probabilistic
+XN | Models Models
+XxX, AX i
+input data model prediction caused 9, causal understanding
+
+Figure 1: The notion of causability within this thesis: given a predictive black box model, the goal is to create interpretable and
+explainable methods that will provide the user a causal understanding of why certain features contributed to a specific
+prediction [22, 47, 48]
+
+deliberations, health diagnosis, etc. [50, 22]. Even when one attempts to explain certain phenomena, the
+explanation produced must acknowledge, to a certain degree, the causes of the effects being explained [51].
+However, the nature and definition of causality is a topic that has promoted a lot of disagreement throughout
+the centuries in Philosophical literature. While Bertrand Russel was known for being the most famous denier
+of causality, arguing that it constituted an incoherent topic [52], it was mainly with the philosopher and
+empiricist David Hume that the concept of causation started to be formally analyzed in terms of sufficient
+and necessary conditions: an event c causes an event e if and only if there are event-types C and E such that
+C is necessary and sufficient for E [52]. Hume was also one of the first philosophers to identify causation
+through the notion of counterfactual: a cause to be an object followed by another in which if the first object
+(the cause) had not occurred, then the second (the effect) would never exist [53]. This concept started to gain
+more importance in the literature with the works of Lewis [54].
+
+Counterfactuals are then defined as a conditional assertion whose antecedent is false and whose con-
+sequent describes how the world would have been if the antecedent had occurred (a what-if question). In
+the field of XAI, counterfactuals provide interpretations as a means to point out which changes would be
+necessary to accomplish the desired goal (prediction), rather than supporting the understanding of why
+the current situation had a certain predictive outcome [55]. While most XAI approaches tend to focus on
+answering why a certain outcome was predicted by a black-box, counterfactuals attempt to answer this
+question in another way by helping the user understand what features does the user need to change to achieve
+a certain outcome [56]. For instance, in a scenario where a machine learning algorithm assesses whether a
+person should be granted a loan or not, a counterfactual explanation of why a person did not have a loan
+granted could be in a form of a scenario if your income was greater than $15,000 you would be granted a loan
+
+[50].
+1.4. Contributions
+
+The hypothesis that we put forward in this paper is that the inability to disentangle correlation from
+causation can deliver sub-optimal or even erroneous explanations to decision-makers [39]. Causal approaches
+should be emphasized in XAI to promote a higher degree of interpretability to its users. In other words, to
+achieve a certain degree of human-understandable explanations, causability should be a necessary condition.
+
+Given that there is not a clear understanding of the current state of the art concerning causal and
+causability approaches to XAI, it is the purpose of this paper to make a systematic review and critical
+discussion of the diverse existing body of literature on these topics. This systematic review will introduce
+researchers in the field of XAI that are interested in focusing their knowledge on the current state-of-the-art
+approaches currently present in the literature. Recently two papers surveying counterfactuals in XAI were
+proposed in the literature [57, 58, 59]. Our paper distinguishes from the current body of literature by
+making a deep analysis on current counterfactual model-agnostic approaches, and how they could promote
+causability.
+
+In summary, this paper contributes to a literature review with discussions under three paradigms:
+
+* Theory. Survey and formalize the most important theoretical approaches that ground current explain-
+
+able AI models in the literature that are based on counterfactual theories for causality.
+
+* Algorithms. Understand what are the main algorithms that have been proposed in the XAI literature
+that use counterfactuals, and discuss which ones have are based on probabilistic approaches for
+
+causality and which ones have the potential to achieve a certain degree of causability.
+
+« Applications. A continuous use case analysis to understand the main domains and fields where XAI
+algorithms that promote causability are emerging and the potential advantages and disadvantages of
+
+such approaches in real-world problems, namely in the mitigation of biased predictions.
+
+1.5. Paper Organisation
+
+This paper is organised as follows. In Section 2, we present the taxonomy of the current state-of-the-art
+algorithms in XAI. In Section 3 we present a systematic review on counterfactual and causability approaches
+in XAI. In the following sections, we present the findings of our systematic literature review. Section 4,
+we present properties that are used throughout the literature to assess what is a good counterfactual and
+a discussion on the impacts of different distance functions on XAI algorithms. Section 5, we present our
+first contribution where we analyse the theories that underpin the different algorithms of the literature
+by introducing a novel taxonomy for model-agnostic counterfactuals in XAI. In Section 6, we analyse the
+different algorithms of the literature based on the taxonomy that we proposed. In Section 7, we discuss
+
+the main applications of XAI algorithms together with recent developments in causability. In Section 8,
+we present the main characteristics that should be part of a causability system for XAI. Finally, Section 9
+
+answers the proposed research questions, and Section 10 presents the main conclusions of the work.
+
+2. A General Overview of Current Model-Agnostic Approaches in XAI
+
+Various approaches have been proposed in the literature to address the problem of interpretability in
+machine learning. Generally, this problem can be classified into two major models: interpretable models
+(inherently transparent) and model-agnostic, also referred to as post-hoc models (which aim to extract
+explanations out of opaque models). From our systematic literature review, these approaches can be
+
+categorised within the taxonomy presented in Figure 2.
+
+Taxonomy Models Algorithms Approach
+
+Decision Tree
+
+Bayesian network
+Partial Dependence
+See Dependency plots
+Boosted Trees
+Individual Conditional
+
+Expectations (ICE) Dependency plots
+
+Tree base model
+zi Linear Regression
+Nene a H-Statistic
+a Partial Dependence ea
+Models
+H Regression model
+
+Transparent Models H Generalised Linear
+
+Models (GLM)
+
+Rule-based models
+
+Generalised Additive
+
+Models (GAM)
+
+Non-Gaussian
+Outcomes Interaction Models
+
+Logistic regression
+
+Accumulated Local
+Effects (ALE)
+
+   
+ 
+     
+
+Model-Agnostic
+madel
+
+     
+ 
+ 
+  
+
+LIME Linear approximate
+
+Surrogate (Local)
+Models.
+
+ 
+
+Anchors Fule-Based leaner
+
+ 
+
+Explainable
+Models
+
+Counterfactual
+instances
+
+ 
+
+Counterfactual
+
+ 
+
+ 
+
+ 
+
+Kernel SHAP
+
+  
+
+Game theory based
+
+ 
+    
+
+ 
+ 
+
+ 
+
+ 
+
+Post-Hoc
+
+ 
+
+ 
+
+ 
+
+Support Vector
+eae ee LH] Machines Explainability DesreuAr
+TreeSHAP
+Multi-layer Neural Model-Specitic
+enon a) Feature relevance
+explanation
+Explanation by > inTress|
+
+simplification
+
+Figure 2: Taxonomy of explainable artificial intelligence based on the taxonomy proposed by Belle and Papantonis [60].
+
+Interpretable models are by design already interpretable, providing the decision-maker with a trans-
+parent white box approach for prediction [61]. Decision trees, logistic regression, and linear regression are
+commonly used interpretable models. These models have been used to explain predictions of specific pre-
+diction problems [62]. Model-agnostic approaches, on the other hand, refer to the derivation of explanations
+from a black-box predictor by extracting information about the underlying mechanisms of the system [63].
+
+Model-agnostic models (post-hoc) are divided into two major approaches: partial dependency plots and
+surrogate models. The partial dependency plots can only provide pairwise interpretability by computing
+the marginal effect that one or two features have on the prediction. On the other hand, surrogate models
+
+consist of training a new local model that approximates the predictions of a black-box. Model-agnostic
+post-hoc methods have the flexibility of being applied to any predictive model compared to model-specific
+post-hoc approaches. The two most widely cited post-hoc models in the literature include LIME [36] and
+Kernel SHAP [37]. Counterfactuals can be generated using a post-hoc approach, and they can either be
+model-agnostic or model-specific. The main focus of this literature review is on model-agnostic post-hoc
+counterfactuals due to their flexibility and ability to work in any pre-existing trained model. This is detailed
+
+in Section 5.
+
+2.1. LIME - Local Interpretable Model-Agnostic Explanations
+
+Local Interpretable Model-agnostic Explanations (LIME) [36] explains the predictions of any classifier by
+approximating it with a locally faithful interpretable model. Hence, LIME generates local interpretations by
+perturbing a sample around the input vector within a neighborhood of a local decision boundary [64, 36].
+Each feature is associated with a weight computed using a similarity function that measures the distances
+between the original instance prediction and the predictions of the sampled points in the local decision
+boundary. An interpretable model, such as linear regression or a decision tree, can learn the local importance
+
+of each feature. This translates into a mathematical optimization problem expressed as
+
+explanation(x) = argmingecLlf,g, Mx) + O(g), (1)
+
+where £ is the loss function which measures the similarity of the explainable model in the boundary of a
+
+perturbed data point z, g(z), to the original black-box prediction, f(z):
+
+LF. g.%x)= J) mee(2) (F(z) gle)”. (2)
+
+Z,2'EZ
+In Equations 1 and 2, x is the instance to be explained and f corresponds to the original predictive
+black-box model (such as a neural network). G is a set of interpretable models, where g is an instance of that
+model (for instance, linear regression or a decision tree). The proximity measure 7, defines how large the
+neighborhood around instance x is that we consider for the explanation. Finally, Q(g) corresponds to the
+model complexity, that is, the number of features to be taken into account for the explanation (controlled by
+
+the user) [61].
+
+2.2. Approaches Based on LIME
+
+LIME has been extensively applied in the literature. For instance, Stiffler et al. [65] used LIME to generate
+salience maps of a certain region showing which parts of the image affect how the black-box model reaches a
+classification for a given test image [66, 67]. Tan et al. [68] applied LIME to demonstrate the presence of
+three sources of uncertainty: randomness in the sampling procedure, variation with sampling proximity,
+
+and variation in the explained model across different data points.
+In terms of image data, the explanations are produced by creating a set of perturbed instances by dividing
+the input image into interpretable components (contiguous superpixels) and runs each perturbed instance
+via the model to get a probability Badhrinarayan et al. [69]. After that, a simple linear model learns on this
+data set, which is locally weighted. At the end of the process, LIME presents the superpixels with the highest
+positive weights as an explanation. Preece [70] proposed a CNN-based classifier, a LIME-based saliency
+map generator, and an R-CNN-based object detector to enable rapid prototyping and experimentation to
+integrate multiple classifications for interpretation.
+
+Other researchers propose extensions to LIME. Turner [71] derived a scoring system for searching the
+best explanation based on formal requirements using Monte Carlo algorithms. They considered that the
+explanations are simple logical statements, such as decision rules. [72] utilized a surrogate model to extract
+a decision tree that represents the model behavior. [73] proposed an approach for building TreeView
+visualizations using a surrogate model. LIME has also been used to investigate the quality of predictive
+systems in predictive process analytics [74]. In Sindhgatta et al. [75] the authors found that predictive
+process mining models suffered from different biases, including data leakage. They revealed that LIME
+could be used as a tool to debug black box models.
+
+Lastly, a rule-based approach extension for LIME is Anchor [76]. Anchor attempts to address some of the
+limitations by maximizing the likelihood of how a certain feature might contribute to a prediction. Anchor
+introduces IF-THEN rules as explanations and the notion of coverage, which allows the decision-maker to
+
+understand the boundaries in which the generated explanations are valid.
+
+2.3. SHAP - SHapley Additive exPlanations
+
+The SHAP (SHapley Additive exPlanations) is an explanation method that uses Shapley values [77]
+from coalitional game theory to fairly distribute the gain among players, where contributions of players are
+unequal [37]. Shapley values are a concept in economics and game theory and consist of a method to fairly
+distribute the payout of a game among a set of players. One can map these game-theoretic concepts directly
+to an XAI approach: a game is the prediction task for a single instance; the players are the feature values of
+the instance that collaborate to receive the gain. This gain consists of the difference between the Shapley
+value of the prediction and the average of the Shapley values of the predictions among the feature values of
+the instance to be explained [78].
+
+In SHAP, an explanation model, g(z’) is given by a linear combination of Shapley values #; of a feature j
+
+with a coalitional vector, Zi, of maximum size M,
+
+M
+glz’)= bot) jz}. (3)
+jl
+
+Strumbelj and Kononenko [78] claim that in a coalition game, it is usually assumed that n players form
+a grand coalition that has a certain value. Given that we know how much each smaller (subset) coalition
+would have been worth, the goal is to distribute the value of the grand coalition among players fairly (that is,
+each player should receive a fair share, taking into account all sub-coalitions). Lundberg and Lee [37] on the
+other hand, present an explanation using SHAP values and the differences between them to estimate the
+gains of each feature.
+
+To fairly distribute the payoff amongst players in a collaborative game, SHAP makes use of four fairness
+properties: (1) Additivity, which states that amounts must sum up to the final game result, (2) Symmetry,
+which states that if one player contributes more to the game, (s)he cannot get less reward, (3) Efficiency,
+which states that the prediction must be fairly attributed to the feature values, and (4) Dummy, which says
+
+that a feature that does not contribute to the outcome should have a Shapley value of zero.
+
+2.4, Approaches Based on SHAP
+
+In terms of related literature, Miller Janny Ariza-Garzén and Segovia-Vargas [79] adopted SHAP values
+to assess the logistic regression model and several machine learning algorithms for granting scores in P2P
+(peer-to-peer) lending; the authors point out SHAP values can reflect dispersion, nonlinearity and structural
+breaks in the relationships between each feature and the target variable. They concluded that SHAP could
+provide accurate and transparent results on the credit scoring model. Parsa et al. [80] also highlight that
+SHAP could bring insightful meanings to interpret prediction outcomes. For instance, one of the techniques
+in the model, XGBoost, not only is capable of evaluating the global importance of the impacts of features on
+the output of a model, but it can also extract complex and non-linear joint impacts of local features.
+
+Recently, Wang et al. [81] proposed to generalise the notion of Shapley value axioms for directed acyclic
+graphs. The new algorithm is called Shapley flow and relies on causal graphs in order to be able to compute
+the flow of Shapley values that describe the internal mechanisms of the black-box.
+
+In the following sections, we will expand the analysis of model-agnostic approaches for XAI by conducting
+
+a systematic literature review on counterfactual and causability approaches for XAI.
+
+3. Systematic Literature Review Towards Counterfactuals and Causability in XAI
+
+The purpose of this systematic review paper is to investigate the theories, algorithms, and applications
+that underpin XAI approaches that have the potential to achieve causability. This means that this paper
+will survey the approaches in the extensive body of literature that are primarily based on causality and
+counterfactuals to help researchers identify knowledge gaps in the area of interest by extracting and
+analysing the existing approaches.
+
+Our systematic literature review follows the Preferred Reporting Items for Systematic Reviews and
+
+Meta-Analyses (PRISMA) framework as a standardized way of extracting and synthesizing information from
+
+10
+existing studies concerning a set of research questions. More specifically, we followed the PRISMA checklist!
+with the study search process presented in the PRISMA flow diagram’.
+
+Based on PRISMA, the procedure of systematic review can be separated into several steps: (1) definition
+of the research questions; (2) description of the literature search process and strategy. Inspired in the recent
+work of Teh et al. [82], we conducted a topic modeling analysis to refine the search results using the Latent
+Dirichlet Allocation (LDA) algorithm together with an inclusion and exclusion criteria to assist with the
+selection of relevant literature; (3) extraction of publication data (title, abstract, author keywords and year),
+systemisation, and analysis of the relevant literature on counterfactuals and causality in XAJ; (4) Lastly, we
+
+conducted identification of biases and limitations in our review process.
+
+3.1. Research Questions
+
+To help researchers identify knowledge gaps in the area of causality, causability, and counterfactuals in
+
+XAL, we proposed the following research questions:
+
+* RQI1: What are the main theoretical approaches for counterfactuals in XAI (Theory)?
+
+* RQ2: What are the main algorithms in XAI that use counterfactuals as a means to promote under-
+
+standable causal explanations (Algorithms)?
+
+* RQ3: What are the sufficient and necessary conditions for a system to promote causability (Applica-
+
+tions)?
+
+* RQ4: What are the pressing challenges and research opportunities in XAI systems that promote
+
+Causability?
+
+3.2. Search Process
+
+To address the proposed research questions, in this paper, we used three well-known Computer Science
+academic databases: (1) Scopus, (2) IEEE Xplore, and (3) Web of Science (WoS). We considered these
+databases because they have good coverage of works on artificial intelligence, and they provide APIs to
+retrieve the required data with few restrictions. We used the following search query to retrieve academic
+
+papers in artificial intelligence related to explainability or interpretability and causality or counterfactuals.
+
+artificial AND intelligence ) AND ( xai OR explai* OR interpretab* ) AND ( caus* OR counterf*
+& P P
+
+ 
+
+lnttp: //www. prisma- statement .org/documents /PRISMA%202009%20checklist . pdf
+2http://prisma- statement .org/ documents /PRISMA%202009%20£ low%20diagram. pdf
+
+11
+This query allowed us to extract bibliometric information from different databases, such as publication
+titles, abstracts, keywords, year, etc. The initial search returned the following articles: IEEE Xplore (6878),
+Scopus (116), WoS (126). We removed duplicate entries in these results as well as results that had missing
+entries. In the end, we reduced our search process to IEEE Xplore (4712), Scopus (709), WoS (124). Our
+
+strategy is summarised in the PRISMA flow diagram illustrated in Figure 3.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+=
+5
+g Records identified through 3 databases by a searching query with output Record the numbe ol term in selected
+= 8120 (IEEE= 6878, Scopus =1116, Web of Science=126) pl
+3 Term IEEE Scopus WoS
+Causability oO 2 2
+= Record after duplicates removed Causal 82 83 32
+= 5 5545 (IEEE= 4712, Seopus= 709, Web of Science= 124) ICounterfactual| = 34 10 5
+3 Interpret 40 78 1
+= Explain 561 487 68
+Be : , : Reasoning 50 55 18
+a3 jopic modeling (LDA) =
+e Classify the topic base on the title, abstract and keywords Bayesian 34 33 4
+= }
+
+ 
+
+ 
+
+ 
+
+ 
+
+Record after selected topic
+3187 (IEEE= 2456, Scopus= 632, Web of Science = 99)
+
+ 
+
+Record after filter non-relalive article individually by
+searching the term
+125 (IEEE=50, Scopus= 85, Web of Science = 30)
+
+Sereening phase
+
+ 
+
+ 
+
+ 
+
+Figure 3: PRISMA flow diagram search results.
+
+To guarantee that the initial query retrieved publications that match this review’s scope, we conducted a
+
+topic modelling analysis based on Latent Dirichlet Allocation (LDA) to refine our search results.
+
+3.3. Topic Modelling
+
+Topic modelling is a natural language processing technique that consists of uncovering a document
+collection’s underlying semantic structure based on a hierarchical Bayesian analysis. LDA is an example
+of a topic model used to classify text in a document to a particular topic. It builds a topic per document
+model and words per topic model, modelled as Dirichlet distributions. In our search strategy, LDA enabled
+us to cluster words in publications with a high likelihood of term co-occurrence and allowed us to interpret
+the topics in each cluster. This process guaranteed that the papers classified within a topic contain all the
+relevant keywords to address our research questions.
+
+In this paper, we used the title, abstract, and authors’ keywords retrieved from the proposed query,
+and applied several text mining techniques, such as stop word removal, word tokenisation, stemming, and
+lemmatisation. We then analysed the term co-occurrences with LDA for each database. The best-performing
+model contained a total of 4 topics. The LDA model’s output is illustrated in Figure 4 with the inter-topic
+distance showing the marginal topic distributions (left) and the top 10 most relevant terms for each topic.
+Analysing Figure 4, Topic 1 contained all the words that are of interest to the research questions proposed
+in this survey paper: explainability, causality, and artificial intelligence. Topic 2, on the other hand, has
+
+captured words that are primarily related to data management and technology. Topic 3 has words related to
+
+12
+the human aspect of explainable AI, such as cognition, mental, and human. Finally, Topic 4 contains words
+associated with XAI in healthcare. For this survey paper, we chose all the publications classified as either
+Topic 1 or Topic 3. In the end, we were able to reduce our search results to IEEE Xplore (3187), Scopus (632),
+WoS (99). After manually looking at these publication records and selecting articles about ’causability”,
+
+”causal”, “counterfactual”, we obtained our final set of documents for analysis: IEEE Xplore (125), Scopus
+
+(85), WoS (30).
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+   
+
+ 
+
+ 
+
+ 
+
+ 
+
+Topic: 1 soso Topic:2 0x0
+Intertopic Distance Map (via Multidimensional Scaling) Word Count Te Weigns Word Count Cr
+ans § ans
+3
+Lt dd dda tak
+xs Ze» > > £ 2 ® & > x
+~ EF SEEFESEEE FE EE ES EEE SE
+; “ “ x Oo SYS < oO eo
+‘ SS FN FY PS g oe € SLY SF
+< s&s * eg é 3s A s es SNE
+F & eg
+3500 Topic: 3 0.030 3500 Topic: 4 0.030
+: 3000 | ors 2009 0.025
+ql 8 0.015
+0.010 1000 ome
+500 0.005 | | ]
+SS x x
+° o.000 SSF ESN FSS LG
+ee ~ f SF x Ca
+~ SF EFSF SPELEESP SEF ES EEE SE ®
+* SSE EF FEE ESSE SE g Ss & vs
+SP 7 S S ¥ Ss
+10% BS) < ¢ RS
+3 Ss &
+Cc
+
+Figure 4: Best performing LDA topic model for Scopus database, using 709 titles, abstracts, and authors keywords found from the
+proposed search query. Figure also shows the top 10 most relevant words for each Topic.
+
+3.4. Word Co-Occurrence Analysis
+
+In our survey, we are interested in understanding the necessary and sufficient conditions to achieve
+causability and how current approaches can promote it. We started to analyse the keyword co-occurrence
+in the returned documents from our search query to achieve this understanding. We collected the title,
+abstract, and authors’ keywords from the search results in Scopus, and filtered the results from using three
+different keywords of interest: explainable AI, counterfactuals, and causality. This resulted in three different
+Scopus files with the keywords of interest.
+
+To visualise the results, we used the graphical capabilities of VOS Viewer?, which is a software tool for
+
+constructing and visualising bibliometric networks.
+
+ 
+
+3https://www.vosviewer.com/
+Figure 5 represents the co-occurrence of authors’ keywords regarding the field of XAI. The density
+plot reveals a shift in research paradigms evolving from machine-centric topics to more human-centric
+approaches involving intelligent systems and cognitive systems, to the need of explainability in autonomous
+
+decision-making.
+
+decision theory
+crime
+
+data privacy isi
+clinical decisionssupport systems
+
+econamics
+data integpretation
+tomography
+economic andisocial effects face recognition
+risk assessment
+
+radiology
+
+ethics
+case base@reasonidack- modebhformasion use qualityscontrol
+
+data@ring .
+ee 1 + i> we
+artificial ier syste: S decision support systems SA 4 reproducibility
+th A iL Sona
+
+decisi in |
+/ ecis aKING -atncare
+intelligefitagents bh
+7 é ~
+expl.
+
+I) - \
+sor Seorig@ Shee
+lity" S tem NN >< = x
+y AN SS -
+wransprencaerees rt “A I - 9 Ke. oo pattern: #@gognition agnosye masing
+s 5 natural _
+
+    
+
+    
+    
+ 
+ 
+ 
+
+atural Processing.
+— image int@fpretation
+-— SSR \ ge inter
+po a ‘ _human intelligence i
+Wi philosophigal aspects \ - .
+explanation Harman compider intéraction J y computer-aided. diagnosis
+j y fa
+~/ cognitivesystems
+\ f diseases Lies
+trust knowledge répresentation . meas Mii
+understandability
+virtualseality
+knowledge management
+cognitive science visualization Compute vision
+
+cognition image classification
+object detection 2012 2014 2016 2018 2020
+cognitive psychology
+
+Figure 5: Network visualization of co-occurrence between keywords in articles about XAI.
+
+It is interesting to note that machine-centric research interests (such as pattern recognition or computer-
+aided diagnostic systems) started to change around 2016. The European Union Commission started to
+put forward a long list of regulations for handling consumer data, the GDPR. In that year, publications
+start shifting their focus from fully autonomous systems to a human-centric view of learning systems with
+a need for interpretability in decision-making. Figure 5 also shows another shift of research paradigms
+around 2018 towards explainable AI, which coincides with the year where GDPR was put into effect in the
+European Union, imposing new privacy and security standards regarding data access and usage. One of
+these standards is Article 22, which states that an individual has ’the right not to be subject to a decision
+based solely on automated processing”*. In other words, an individual has the right for explainability
+whenever a decision is computed from an autonomous intelligent system. Given that these systems are
+
+highly opaque with complex internal mechanisms, there has been a recent growing need for transparent and
+
+ 
+
+“https: //www.privacy-regulation.eu/en/article-22-automated- individual -decision-making-including-profiling-GDPR.
+htm
+
+14
+interpretable systems that are able to secure ethics and promote user understandability and trust.
+
+laws and KX“ n
+
+machine le els - - /
+Sess global burden of disease
+- cl terfact explanation ~—
+- ~~ gl ealth
+
+/\\
+
+major clinical study
+NN
+
+  
+ 
+    
+  
+
+ble ai comparative study 4 life expectancy
+
+Vf Ty - socioeconomic factors
+A Tay yt
+a I \ : “as
+geen) I i arning 4 ee A
+| outcome asse: a)
+
+i iofraking y h S - mortality
+
+stat . odel risk ass@ssment
+x \; ==
+
+decision tree: LA ; \} \ tisk @etors
+Mint 8 TiL—Atit if \ fo. Way Zi ZE J
+\e erie \ is Zz Z statistics andypumerical data.
+leep g. — n\ ‘tual Z. <A Ly
+L RSX s ] / ~ AN} J
+t + _
+
+   
+   
+
+. << eo ‘ Z A
+predict sas J ‘ing bayes m
+lackiboxe: f — oe \ Hix
+artificial lligence _ » clinical-trial epidemiolagy
+inference’engines causal inference
+explafiation NN
+causation
+statisti€ab analysis
+——=ELE___
+2012-2014 = 2016. = 2018 2020 treatmentjoutcome
+
+Figure 6: Network visualization of co-occurrence between keywords in articles about counterfactuals in XAI.
+
+Some researchers argued that for a machine to achieve a certain degree of human intelligence, and
+consequently, explainability, then counterfactuals need to be considered [22, 83]. Recently, Miller [24]
+stated that explanations need to be counterfactuals (“contrary-to-fact”) [84], since they enable mental
+representations of an event that happened and also representations of some other event alternative to
+it [58]. Counterfactuals describe events or states of the world that did not occur and implicitly or explicitly
+contradict factual world knowledge. For instance, in cognitive science, counterfactual reasoning is a crucial
+tool for children to learn about the world [85]. The process of imagining a hypothetical scenario of an event
+that is contrary to an event that happened and reasoning about its consequences is defined as counterfactual
+reasoning [86]. We investigated the word co-occurrence in articles involving explainable AI and counterfactuals
+to understand how the literature is progressing in this area. Figure 6 shows the obtained results.
+
+In the density plot in Figure 6, one can see that counterfactual research in XAI is a topic that has gained
+interest in the scientific community very recently, with most of the scientific papers dating from 2019
+on-wards. This reflects the need for supporting explanations with contrastive effects: by asking ourselves
+what would have been the effect of something if we had not taken action, or vice versa. Creating such
+hypothetical worlds may increase the user’s understanding of how a system works. The figure seems to
+be suggesting that the recent body of literature concerned with counterfactuals for XAI is motivated by
+the medical decision-making domain since we can see relevant keywords such as patient treatment, domain
+experts, and diagnosis. There is also a recent body of literature in clinical research supporting the usage of
+
+counterfactuals and causality to provide interpretations and understandings for predictive systems [87].
+
+15
+philosophy
+
+cognitivessystems
+
+exelions
+
+fo knowledgerepresentation
+
+~ y TAS case basedireasoning
+) P} . —
+\ LY
+
+J >< _\
+NS —— fv _K j causal discovery causalifelations
+
+= b. ee eG — interpretability
+~ : Orie J =S<S ee
+probability r ZS = ~ 7 ? i . SY
+informations@rocessing PO a a VF sNS a alfmodel
+; = - My Ah ; causa rence
+F mac arning /
+
+ 
+    
+
+neural metworks
+
+  
+ 
+
+simulation
+
+ra
+uncertainty
+observational data
+
+visualization
+
+2010 2012 2014 2016 2018
+
+Figure 7: Network visualization of co-occurrence between keywords in articles about causality in XAI.
+
+Some researchers also argued that for a machine to achieve a certain degree of human intelligence,
+causality must be incorporated in the system [88]. Others support this idea in the context of XAI, where
+they argue that one can only achieve a certain degree of explainability if there is a causal understanding of
+the explanations, in order words, if the system promotes causability [22]. In this sense, we also analysed
+co-occurrence between keywords in articles about causality in XAI. Figure 7 illustrates the results obtained.
+
+In terms of causality, Figure 7, one can draw similar conclusions. Although the figure shows a clear
+connection between Artificial Intelligence and causality (causal reasoning, causal graphs, causal relations),
+the literature connecting causal relations to explainable Al is scarce. This opens new research opportunities
+in the area, where we can see from Figure 7 a growing need for counterfactual research. Literature regarding
+causability seems to be also very scarce and very recent. New approaches are needed in this direction, and it
+is the purpose of this systematic review to understand which approaches for XAI are underpinned by causal
+
+theories.
+
+3.5. Inclusion and exclusion criteria
+
+To select relevant literature from the obtained search results, we had to consider which papers should be
+included in our analysis and which ones should be excluded in order to be able to address the proposed
+
+research questions. Table 1 summarises the selected criteria.
+
+16
+ 
+
+Inclusion Criteria Exclusion Criteria
+
+ 
+
+ 
+
+ 
+
+Papers about causality in XAI Papers about causal machine learning
+Papers about counterfactuals in XAI | Papers about causality
+Papers about causability Papers not in English
+
+ 
+
+Papers about main algorithms in XAI | Papers without algorithms for XAI
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 1: Inclusion and exclusion criteria to assess the eligibility of research papers to analyse in our systematic literature review.
+
+3.6. Risk of bias
+
+As with any human-driven task, the process of finding relevant research is affected by cognitive biases. In
+this systematic review, we acknowledge that limiting our search to three databases (Scopes, Web of Science,
+and IEEE) might have contributed to missing articles. Databases that could have complemented our search
+could be Google Scholar, SpringerLink, and PubMed. Another consideration is that we did not extract the
+references from the collected papers to enrich our search. The collection of retrieved documents was already
+too big, and we found that doing this would exponentially increase the complexity of the LDA topic analysis
+that we conducted. Finally, the search query was restricted to keywords relevant to collecting the papers
+of interest. These keywords, however, might have limited our search, and we might have missed relevant
+
+articles.
+
+4. Counterfactual Approaches Explainable AI: Properties for Good Counterfactuals
+
+The systematic review that we conducted allowed us to understand the different counterfactual ap-
+proaches for XAI. As mentioned throughout this article, counterfactuals have been widely studied in
+different domains, especially in philosophy, statistics, and cognitive science. Indeed, researchers are arguing
+that counterfactuals are a crucial missing component that has the potential to provide a certain degree of
+human intelligence and human-understandable explanations to the field of XAI [22]. Other researchers state
+that counterfactuals are essential to elaborate predictions at the instance-level [89] and to make decisions
+actionable [90]. Other researchers claim that counterfactuals can satisfy GDPR’s legal requirements for
+explainability [55].
+
+Most XAI algorithms attempt to achieve explainability by (1) perturbing a single data instance, generating
+a set of perturbed data points around the decision boundary, (2) passing these perturbed instances through
+the black box, generating labels to these data points, and by (3) fitting an interpretable model (such as
+linear regression or a decision tree) to the perturbed data points [36]. Counterfactuals are classified as
+example-based approaches for XAI [61]. They are based on approaches that compute which changes should
+be made to the instance datapoint to flip its prediction to the desired outcome [55]. Figure 8 shows an
+illustration of several counterfactual candidates for a data instance x according to different works in the
+
+literature [56].
+
+17
+Change to desired
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+outcome
+ae
+Y 0.75
+a
+Black-Box 9.50 3
+a
+| 0.25
+xX xX’
+—
+Min feature
+change 0.00
+
+ 
+
+Figure 8: Different counterfactual candidates for data instance x. According to many researchers, counterfactual a is the best candidate,
+because it has the smallest Euclidean distance to x [55]. Other researchers argue that counterfactual instance y is the best choice since
+it provides a feasible path from x to y [56]. Counterfactual f is another candidate of poor quality because it rests in a less defined
+region of the decision boundary.
+
+4.1. The Importance of Distance Functions in Counterfactual Approaches for XAI
+
+The definition of counterfactual as the minimum distance (or change) between a data instance and a
+counterfactual instance goes back to the theory proposed by Lewis [91]. Given a data point x, the closest
+counterfactual x’ can be found by solving the problem where d(.,.) is a measurement for calculating the
+
+distance from the initial point to the generated point.
+
+argminy: d(x, x’) (4)
+
+One important question that derives from Equation 4 is what kind of distance function should be used?
+Different works in the literature address this optimization problem by exploring different distance functions
+and L,-norms. This section will review different norms used as distance functions in the literature of XAI
+and their properties.
+
+In general, a norm measures the size of a vector, but it can also give rise to distance functions. The
+
+L,-norm of a vector x is defined as:
+l/p
+
+n
+lll =| )_ bal? (5)
+i=l
+
+Equation 5 shows that different values of p yields a different distance function with specific properties.
+The systematic literature review revealed that most works in XAI used either the Lp-norm (which is not a
+norm by definition), the L;-norm (also known as Manhattan distance), the L>-norm (known as the Euclidean
+distance, and the L,,-norm. Figure 9 shows a graphical representation of the different norms and the
+
+respective contours.
+
+18
+LO - Norm L1-Norm L2- Norm Leo - Norm
+
+a2
+wwe
+
+Figure 9: Graphical visualisation of different Lp-norms: Lo-norms (which is not really a norm by definition), the L)-norm (also known
+as Manhattan distance), the L7-norm (known as the Euclidean distance, and the L,,-norm.
+
+    
+
+ 
+
+* Lo-norm. The Lo-norm has been explored in the context of counterfactuals in XAI primarily by Dandl
+
+et al. [92] and Karimi et al. [93]. Given a vector x, it is defined as
+
+ 
+
+Intuitively, Lp-norm is the number of nonzero elements in a vector, and it is used to count the number
+of features that change between the initial instance x and the counterfactual candidate x’, resulting in
+sparse counterfactual candidates [93]. Figure 9 shows a visualisation of the Ly-norm where one can
+see that the function is completely undifferentiable, making it very hard to find efficient solutions to
+minimize it.
+
+« L,-norm. The L)-norm (also known as the Manhattan distance) has been the most explored distance
+function in the literature of counterfactuals in XAI. Sandra et al. [55] argued that the L; -norm provides
+
+the best results for finding good counterfactuals, since it induces sparse solutions. Given a vector x,
+
+Ikxlly = Debi. (7)
+
+Intuitively, Lj-norm is used to restrict the average change in the distance between the initial instance x
+
+the L,-norm is defined as
+
+and the counterfactual candidate x’. Since the L;-norm gives an equal penalty to all parameters and
+leads to solutions with more large residuals, it enforces sparsity. In Figure 9, one can see that the major
+
+problem with L,-norms is its diamond shape, which makes it hard to differentiate.
+
+« L>-norm. The L,-norm (also known as the Euclidean distance) has been one of the most explored
+
+distance functions in the literature of counterfactuals in XAJ, although it does not provide sparse
+
+19
+solutions when compared with the L; or Lo-norm. Given a vector x, the L;-norm is defined as
+
+ 
+
+Intuitively, the L2-norm measures the shortest distance between two points and can detect a much
+larger error than the L,-norm, making it more sensitive to outliers. Although the L,-norm does not
+lead to sparse vectors, it has the advantage that it is differentiable. Figure 9 shows that smoothness and
+rotational invariance (a circle or a hyper-sphere in higher dimensions) are both desirable properties in
+
+many optimization problems, making it computationally efficient.
+
+* L,>norm. The L,,-norm has been explored in the context of counterfactuals in XAI primarily by
+
+Karimi et al. [93]. Given a vector x, it is defined as
+
+ 
+
+Intuitively, L,,-norm is used to restrict maximum change across features. The maximum change across
+the features between the initial instance x and the counterfactual candidate x’ [93]. Computationally,
+the L,,-norm is differentiable in every point, except when at least two features x; have the same absolute
+values |x;|, which is illustrated in Figure 9. By minimizing the L-infinity norm, we are penalizing the
+
+cost of the largest feature, leading to less sparse solutions compared to Lo-norm or L;-norm.
+
+Distance functions in counterfactuals are associated with the sparsity of the vector, which is a highly
+desirable property to have when looking for counterfactuals. The minimum the changes we can have in the
+features, the better and more human interpretable counterfactuals we will find. The following section will
+
+present the main properties that a theory for counterfactuals in XAI should satisfy.
+
+4.2. Properties to Generate Good Counterfactuals
+
+Literature suggests a set of properties that need to be satisfied in order to generate a good (interpretable)
+
+counterfactual:
+
+* Proximity. Proximity calculates the distance of a counterfactual from the input data point while
+generating a counterfactual explanation, [57]. As mentioned in Section 4.1, many different distance
+functions can be used to measure proximity, resulting in counterfactual candidates with different
+properties. Other works in the literature consider another types of proximity measures such as Nearest
+
+Neighbour Search [94], cosine similarity [95], or even learning to rank techniques [13, 12].
+
+20
+* Plausibility. This property is similar to the terms Actionability and Reasonability referred in [96, 57].
+It emphasizes that the generated counterfactuals should be legitimate, and the search process should
+ensure logically reasonable results. This means that a desirable counterfactual should never change
+immutable features such as gender or race. When explaining a counterfactual, one cannot have
+explanations like ”if you were a man, then you would be granted a loan”, since these would show an
+inherent bias in the explanation. Mutable features, such as income, should be changed instead to find
+
+good counterfactuals.
+
+Sparsity. This property is related to the methods used to efficiently find the minimum features that
+
+need to be changed to obtain a counterfactual [96].
+
+In cognitive science, counterfactuals are used as a process of imagining a hypothetical scenario contrary
+to an event that happened and reasoning about its consequences [86]. It is desired that counterfactuals
+are sparse, i.e., with the fewest possible changes in their features. This property leads to more effective,
+human-understandable, and interpretable counterfactuals. In Mothilal et al. [50], for instance, the
+authors elaborate that sparsity is assessing how many features a user needs to change to transition
+to the counterfactual class. On the other hand, Verma et al. [57] argues that sparsity can be seen
+as a trade-off between the number of features and the total amount of change made to obtain the
+counterfactual. Sandra et al. [55] also stands on this idea and asserts that pursuing the “closest possible
+world”, or the smallest (minimum-sized) change to the world that can be made to obtain a desirable
+
+outcome.
+
+Recently, Pawelczyk et al. [97] proposed a theoretical framework that challenges the notion that
+counterfactual recommendations should be sparse. The authors argue the problem of predictive
+multiplicity can result in situations where there does not exist one superior solution to a prediction
+
+problem with respect to a measure of interest (e.g. error rate).
+
+Diversity. This property was introduced in the work of Russell [98] and also explored in Mothilal et al.
+[50], Karimi et al. [59]. Finding the closest points of an instance x according to a distance function can
+lead to very similar counterfactual candidates with small differences between them. Diversity was
+introduced as the process of generating a set of diverse counterfactual explanations for the same data
+instance x [93]. This leads to explanations that are more interpretable and more understandable to the
+
+user.
+
+Feasibility. This property was introduced by Poyiadzi et al. [56] as an answer to the argument that
+finding the closest counterfactual to a data instance does not necessarily lead to a feasible change in the
+features. In Figure 8, one can see different counterfactual candidates. The closest counterfactual to the
+
+data instance x is a. However, this point falls in the decision boundary. Thus, the black-box is not very
+
+21
+certain about its class, which could lead to biased counterfactual explanations. To address this problem,
+Poyiadzi et al. [56] argues that counterfactual y is a better one because it falls in a well-defined region
+of the decision boundary and also corresponds to the point that has the shortest path to x. This way, it
+
+is possible to generate human-interpretable counterfactuals with the least possible feature changes.
+
+From the definitions of plausibility and feasibility, one can conclude that they are related to each other:
+for a counterfactual to be feasible, it needs first to be plausible. Plausibility refers to a property that ensures
+that generated counterfactuals are legitimate. This means that a legitimate counterfactual should never
+change immutable features such as gender or race. On the other hand, feasibility is related to the search of a
+counterfactual that does not lead to ”paradoxical interpretation”. Using the example from Poyiadzi et al.
+[56], low-skilled unsuccessful mortgage applicants may be told to double their salary. This implies that they
+need to increase their skill level first, which may lead to counterfactual explanations that are impractical
+and, therefore, infeasible. Thus, satisfying feasibility automatically guarantees plausible counterfactuals,
+promoting a higher level of interpretability of counterfactual explanations.
+
+Given the above properties, in the following sections, we will classify the different algorithms found in
+
+the literature by (1) their underlying theory (Section 5), and by (2) the above properties (Section 6).
+
+5. Counterfactual Approaches in Explainable AI: The Theory
+
+The systematic literature review contributed to developing a new taxonomy for the model-agnostic
+counterfactual approaches for XAI. Throughout the review process, we noticed that many algorithms
+derived from similar theoretical backgrounds. In total, we analysed 26 algorithms. We created a set
+of six different categories representing the ”master theoretical algorithm”[99] from which each algorithm
+derived. These categories are (1) instance-centric approaches, (2) constraint-centric approaches, (3) genetic-
+centric approaches, (4) regression-centric approaches, (5) game theory-centric Approaches, (6) Case-Based
+Reasoning Approaches, and (7) Network-Centric approaches. Figure 10 presents the proposed taxonomy as
+
+well as the main algorithms that belong to each category.
+
+* Instance-Centric. Correspond to all approaches that derive from the counterfactual formalism pro-
+posed by Lewis [91] and Sandra et al. [55]. These approaches are based on random feature permutations
+and consist of finding counterfactuals close to the original instance by some distance function. Instance-
+centric algorithms seek novel loss functions and optimization algorithms to find counterfactuals. Thus,
+they are more susceptible to fail the plausibility, the feasibility, and the diversity properties, although
+some instance-centric algorithms incorporate mechanisms in their loss functions to overcome these
+
+issues.
+
+22
+CBR for Good Counterfactuals Approaches
+
+CRUDs Watcher CF
+
+ 
+   
+ 
+   
+    
+
+ 
+  
+   
+    
+
+Prototype Counterfactuals
+Instance-Centric
+Approaches
+
+PRINCE Probabilistic-Centric
+
+Approaches Weighted Counterfactuals
+
+    
+   
+   
+ 
+  
+    
+  
+
+RECOURSE
+
+C-CHVAE FACE
+
+CERTIFAI
+
+     
+   
+
+Genetic-Centric
+Approaches
+
+Constraint-Centric
+Approaches
+
+   
+
+Model-Agnostic
+Counterfactuals in XAl
+
+ 
+ 
+
+Coherent Counterfactuals MOCE
+
+   
+  
+  
+   
+ 
+   
+ 
+
+Regression-Centric
+Approaches
+
+  
+ 
+
+Game Theory Centric
+Approaches
+
+  
+
+Contrastive and
+Counterfactual SHAP
+
+Case Based Reasoning
+
+Figure 10: Proposed Taxonomy for model-agnostic counterfactual approaches for XAI.
+
+* Constraint-Centric. Corresponds to all approaches that are modeled as a constraint satisfaction prob-
+lem. Algorithms that fall in this category use different strategies to model the constraint satisfaction
+problem, such as satisfiability modulo theory solvers. The major advantage of these approaches is
+that they are general and can easily satisfy different counterfactuals properties such as diversity and
+
+plausibility.
+
+* Genetic-Centric. Corresponds to all approaches that use genetic algorithms as an optimization method
+to search for counterfactuals. Since genetic search allows feature vectors to crossover and mutate, these
+
+approaches often satisfy properties such as diversity, plausibility, and feasibility.
+
+* Regression-Centric. Corresponds to all approaches that generate explanations by using the weights of
+a regression model. These approaches are very similar to LIME. The intuition is that an interpretable
+model (in this case, linear regression) fits the newly generated data after permuting the features, and
+the weights of each feature presented explanations. Counterfactuals based on these approaches have
+
+difficulties satisfying several properties such as plausibility and diversity.
+
+* Game Theory Centric. Corresponds to all approaches that generate explanations by using Shapley
+values. These approaches are very similar to SHAP. Algorithms that fall in this approach mainly
+extend the SHAP algorithm to take into consideration counterfactuals. Counterfactuals based on these
+
+approaches have difficulties satisfying several properties such as plausibility and diversity.
+
+23
+* Case-Based Reasoning. Corresponds to all approaches inspired in the case-based reasoning paradigm
+of artificial intelligence and cognitive science that models the reasoning process as primarily memory-
+based. These approaches often solve new problems by retrieving stored cases describing similar prior
+problem-solving episodes and adapting their solutions to fit new needs. In this case, the CBR system
+stores good counterfactual explanations. The counterfactual search process consists of retrieving from
+this database the closest counterfactuals to a given query. CBR approaches can easily satisfy different
+
+counterfactual properties such as plausibility, feasibility, and diversity.
+
+Probabilistic-Centric. Corresponds to approaches that model the counterfactual generation prob-
+lem as a probabilistic problem. These approaches often consider random walks, Markov sampling,
+variational autoencoders to learn efficient data codings in an unsupervised manner, or probabilistic
+graphical models (PGMs). Approaches based on PGMs have the potential to satisfy the causality
+framework proposed by Pearl [44].
+
+6. Counterfactual Approaches to Explainable AI: The Algorithms
+
+In this systematic review, we found 18 model-agnostic XAI counterfactual algorithms. We analyzed
+each algorithm in-depth and classified them according to the different properties presented in Section 4.
+We also classified them in terms of their applications, either for classification/regression problems and the
+supporting data structures. We complemented the analysis with the information of whether the algorithm is
+publicly available. Table 2 presents a classification of collected model-agnostic counterfactual algorithms
+for XAI based on different properties, theoretical backgrounds, and applications.
+
+In the following sections, each algorithm of Table 2 is analysed relatively to its grounding theoretical
+
+master algorithm.
+
+6.1. Instance-Centric Algorithms
+In this section, we summarize the algorithms that we classified as instance-centric using the proposed
+taxonomy. By definition, these algorithms are very similar, diverging primarily on the loss function
+
+description with the corresponding optimization algorithm and the distance function specification.
+
+* WatcherCF by Sandra et al. [55]. WatcherCF correspond to one of the first algorithms in model-
+agnostic counterfactuals for XAI. They extend the notion of a minimum distance between datapoints
+that was proposed initially by Lewis [91]. The goal is to find a counterfactual x’ as close as possible to
+
+the original point x; as possible such that a new target y’ (the counterfactual) is found.
+
+24
+- Loss function. The loss function takes as input the data instance to be explained, x, the counter-
+factual candidate, x’, and a parameter A, that balances the distance in the prediction (first term)
+against the distance in feature values (second term) [61]. The higher the value of A, the closer the
+counterfactual candidate, x’, is to the desired outcome, y’. Equation 10 presents the loss function
+and respective optimization problem proposed by Sandra et al. [55]. The authors argue that the
+type of optimiser is relatively unimportant since most optimisers used to train classifiers work in
+
+this approach.
+
+£(x,',9",A) = MF lx) —y'P + dlxx’) (10)
+arg min maxL(x,x',y’,A)
+x
+
+- Distance function. Although the choice of optimiser does not impact the search for counterfactu-
+als, the choice of the distance function does. Sandra et al. [55] argue that the L,-norm normalized
+by the inverse of the median absolute deviation of feature j over the dataset is one of the best
+performing distance functions because it ensures the sparsity of the counterfactual candidates.
+Equation 11 presents the distance function used in their loss function.
+
+P __y
+Ix; x;
+
+MAD,’ where
+
+d(x,x’) =
+
+f (11)
+
+- Optimization algorithm: The Adam Gradient descent algorithm is used to minimize Equation 10.
+
+* Prototype Counterfactuals by Looveren and Klaise [100]. Prototype Guided Explanations consist of
+adding a prototype loss term in the objective result to generate more interpretable counterfactuals.
+The authors performed experiments with two types of prototypes: an encoder or k-d trees, which
+
+resulted in a significant speed-up in the counterfactual search ad generation process [100].
+
+- Loss function: The loss function consists in two different steps: (1) guide the perturbations 6
+towards an interpretable counterfactual x,¢ which falls in the distribution of counterfactual class
+
+i, and (2) accelerate the counterfactual searching process. This is achieved through Equation 12,
+Loss = C.Lyred + B-Ly +L + Lag + Lyroto- (12)
+
+The Lyreq measures the divergence between the class prediction probabilities, L; and Lz cor-
+respond to the elastic net regularizer, L4; represents an autoencoder loss term that penalizes
+
+out-of-distribution counterfactual candidate instances (which can lead to uninterpretable coun-
+
+25
+terfactuals). Finally, Lyrozo is used to speed up the search process by guiding the counterfactual
+candidate instances towards an interpretable solution.
+
+— Distance function. Looveren and Klaise [100] use the L-norm to find the closest encoding of
+perturbed instances, ENC(x + 6) of a data instance, x, to its prototype class, proto;. This is given
+
+by Equation 13.
+
+Lproto = 9 |IEN C(x + 5) — proto;|l5 (13)
+
+— Optimization function: Looveren and Klaise [100] adopted a fast integrative threshold algorithm
+(FISTA) which helps the perturbation parameter 6 to reach momentum for N optimization steps.
+
+The L1 regularization has been used in the optimization function.
+
+* Weighted Counterfactuals by Grath et al. [101]. Weighted counterfactuals extend WatcherCF ap-
+proach in two dimensions by proposing: (1) the concepts of positive and weighted counterfactuals,
+and (2) two weighting strategies to generate more interpretable counterfactual, one based on global
+
+feature importance, the other based on nearest neighbours.
+Traditional counterfactuals address the question why my load was not granted? through a hypothetical
+
+what-if scenario. On the other hand, when the desired outcome is reached, positive counterfactuals
+
+address the question how much was I accepted a loan by?
+
+- Loss function. The weighted counterfactuals are computed in the same way as the WatcherCF [55]
+as expressed in Equation 10.
+— Distance function. The distance function used to compute weighted counterfactuals is the same
+
+as in WatcherCF [55], with the addition of a weighting parameter 0;,
+
+ 
+
+yy Pol
+dxx)=) TaD, 0}. (14)
+j=
+— Optimization algorithm. While Sandra et al. [55] used gradient descent to minimize the loss
+function, Grath et al. [101] used the Nelder-Mead algorithm, which was initially suggested in the
+book of Molnar [61] and is used to find the minimum of a function in a multidimensional space.
+The Nelder-Mead algorithm is a better algorithm to deal with the L,-norm since it works well
+
+with nonlinear optimization problems for which derivatives may not be known.
+
+Experiments conducted by Grath et al. [101] showed that weights generated from feature impor-
+tance lead to more compact counterfactuals and consequently offered more human-understandable
+
+interpretable features than the ones generated by nearest neighbours.
+
+26
+* Feasible and Actionable Counterfactual Explanations (FACE) by Poyiadzi et al. [56].
+
+FACE aims to build coherent and feasible counterfactuals by using the shortest path distances defined
+via density-weighted metrics. This approach allows the user to impose additional feasibility and
+classifier confidence constraints naturally and intuitively. Moreover, FACE uses Dijkstra’s algorithm to
+
+find the shortest path between existing training datapoints and the data instance to be explained [57].
+
+Under this approach, feasibility refers to the search of a counterfactual that does not lead to paradoxical
+interpretations. For instance, low-skilled unsuccessful mortgage applicants may be told to double their
+salary, which may be hard without first increasing their skill level. This may render to counterfactual
+
+explanations that are impractical and sometimes outright offensive [56].
+
+- Main Function. The primary function of FACE’s algorithm is given by Equation 15, where f
+corresponds to a positive scalar function and y is a function that connects the path between a
+
+data instance x; and a counterfactual candidate instance x;.
+
+ee 218) yi 4) yfwher
+Dy y= [ro fy ‘(t)|dt.
+
+(15)
+
+When the partition Dry converges, Poyiadzi et al. [56] suggest, for a given threshold e, using
+
+weights of the form
+
+Xp Xj
+
+ 
+
+w= f(b
+
+when |x: — x;|| <e,
+
+(16)
+
+The f-distance function is used to quantify the trade-off between the path length and the density
+in the path. This can subsequently be minimized using Dijkstra’s shortest path algorithm by
+
+approximating the f-distance using a finite graph over the data set.
+
+— Distance Function. Poyiadzi et al. [56] used the L2-norm in addition to Dijkstra’s algorithm to
+
+generate the shortest path between a data instance x; and a counterfactual candidate instance xj.
+
+- Optimization Function. Poyiadzi et al. [56] suggested three approaches that can be used to
+
+27
+estimate the weights in Equation 16:
+
+Xp +X;
+
+“Al 5) Ips
+w= ball m= an
+ol No
+
+0 -f(aqh hl
+
+The first equation requires using Kernel Density Estimators to allow convergence, the second
+
+ 
+
+requires a k-NN graph construct, and the third equation requires e-graphs. In their experi-
+ments, Poyiadzi et al. [56] found that the third weight equation together with e-graphs generated
+
+the most feasible counterfactuals.
+
+* Diverse Counterfactual Explanations (DiCE) by Mothilal et al. [50]. DICE is an extension and
+improvement of the WatcherCF [55] throughout different properties: Diversity, proximity, and sparsity.
+DiCE generates a set of diverse counterfactual explanations for the same data instance x, allowing the
+user to choose counterfactuals that are more understandable and interpretable. Diversity is formalized
+as a determinant point process, which is based on the determinant of the matrix containing information
+
+about the distances between a counterfactual candidate instance and the data instance to be explained.
+
+- Loss Function. In DiCE, the loss function is presented in Equation 18, and is given by a linear
+combination of three components: (1) a hinge loss function that is a metric that minimizes the dis-
+tance between the user prediction f(.)’ for c;s and an ideal outcome y, loss(f(c;), y), (2) a proximity
+
+factor, which is given by a distance function, and (3) a diversity factor dpp_diversity(cy, ..., ¢,).
+
+C(x x) =argming LY prosstf fej), ay ALY ai Cj,X (18)
+i=l
+
+—A, ddp_diversity(cy,...,¢x)
+
+— Distance Function. DiCE uses the L;-norm normalized by the inverse of the median absolute
+
+deviation of feature j over the dataset just like in b-counterfactual [55].
+
+- Optimization Function. Gradient descent is used to minimize Equation 18.
+
+* Unjustified Counterfactual Explanations (TRUCE) by [102, 103, 104] TRUCE consists in approach-
+ing the problem of determining the minimal changes to alter a prediction by proposing an inverse
+classification approach [102]. The authors present the Growing Spheres algorithm, which consists of
+identifying a close neighbour classified differently through the specification of sparsity constraints
+
+that define the notion of closeness.
+
+28
+— Loss Function. To simplify the process for reaching the closest desirable feature, [103] presented
+a formalization for binary classification by finding an observation value e, then classified it into
+a different class other than x. For instance, f(e) # f(x), indicates that the observation has been
+classified into the same class as x, and a desirable feature has been found if it is classified to the
+other class. For the next step, a function has been defined c : X x X > R* such that c(x, e) is the
+
+cost of moving from observation x to enemy e.
+
+e =argminic(x,e) | f(e)# f(x)} with
+ecx (19)
+e(x,e) = [|x — elly + 7 [Ix — ello
+
+— Distance Function. Equation 19 consists in the minimisation of a cost function under the
+constraint that the observation e¢ is classified into the same class as x. This cost function is defined
+as a weighted linear equation consisting of L2-norm and the Lo-norm between the observation e
+and the class x. The L;-norm computes the proximity between x and e, while the Lo-norm is used
+
+as a weighted average to guarantee that the explanation is human-interpretable.
+
+— Optimization Function. The authors used the proposed growing sphere algorithm to handle as
+the optimiser. The algorithm applies a greedy method to find the closest feature in all possible
+directions until the decision boundary is reached. This means that the L)-norm was successfully
+minimized. The minimum feature change is also addressed through the minimisation of the
+Lo-norm.
+
+In a later work, the authors proposed to distinguish between justified and unjustified counter-
+factual explanations [103, 104]. In this sense, unjustified explanations refer to counterfactuals
+that result from artifacts learned by an interpretable post-hoc model and do not represent the
+ground truth data. On the other hand, justified explanations refer to counterfactual explanations
+
+according to the ground truth data.
+
+6.2. Constraint-Centric Approaches
+
+In this section, we summarize the algorithms that we classified as constraint centric using the proposed
+
+taxonomy.
+
+* Model-Agnostic Counterfactual Explanations for Consequential Decisions (MACE) by Karimi
+et al. [93] MACE maps the problem of counterfactual explanation search into a satisfiability modulo
+theory (SMT) model. MACE receives as input a sequence of satisfiability problems expressing the pre-
+
+dictive model, f, the distance function, d, and the constraint functions. The algorithm’s goal is to map
+
+29
+these sequences into logical formulae and verify if there is a counterfactual explanation that satisfies a
+distance smaller than some given threshold. The constraints that are taken into consideration in this
+approach are plausibility and diversity. This is achieved in the following way. Given the counterfactual
+logical formula PCF p(x) the distance formula #4,¢, constraints formula @,, and a threshold e, they are
+
+combined into the counterfactual formula, $¢5(x), given by
+
+z(x) = Oce (a(x) A baz A Pg x (20)
+
+and used as input for a SMT solver, SAT (¢,.5(x)), which will find counterfactuals that will satisfy the
+conditions with a distance smaller than e. MACE is a general algorithm that supports any L)-norm as
+
+a distance function, as well as any number of constraints.
+
+MACE was able to not only achieve high plausibility (what the authors define as coverage) but was
+also able to generate counterfactuals at more favorable distances than existing optimization-based
+
+approaches [93].
+
+Coherent Counterfactuals by Russell [98]
+
+This approach focuses on generating diverse counterfactuals based on ”mixed polytope” methods to
+handle complex data with a contiguous range or an additional set of discrete states. Russell [98] created
+a novel set of criteria for generating diverse counterfactuals to integrate them with the mixed polytope
+method and to map them back into the original space. Before achieving the two targets (coherence
+and diversity), Russell [98] firstly offers a solution on generating a counterfactual which is similar to
+Sandra et al. [55]’s counterfactuals by finding the minimum change in the counterfactual candidate
+that would lead to a change in the prediction (using the L; — norm). Then, the author proposes the
+mixed polytope as a novel set of constraints. The program uses an integer programming solver and
+
+receives a set of constraints in order to find coherent and diverse counterfactuals efficiently.
+
+Generalized Inverse Classification by Lash et al. [105]
+
+Inverse classification is similar to the sub-discipline of sensitivity analysis, which examines the impact
+of predictive algorithm input on the output. [105] proposed Inverse Classification framework, which
+mainly focuses on optimizing the generation of counterfactuals through a process of perturbing an
+instance. This task is achieved by operating on features and tracking each change that leads to an
+individual cost. Every change in perturbing an instance is subject to happen within a certain level of
+
+cumulative change.
+
+To assess the capability of GIC, [105] applied five methods, including three heuristic-based methods to
+
+solve the generalized inverse classification problem, a hill-climbing + local search (HC+LS), a genetic
+
+30
+algorithm (GA), and a genetic algorithm + local search (GA+LS). The other two methods are sensitivity
+analysis-based methods such as Local Variable Perturbation—Best Improvement (LVP-BI) and Local
+Variable Perturbation—First Improvement (LVP-FI). These five algorithms were tested to examine the
+average likelihood of test instances conforming to a non-ideal class over varying budget constraints.
+The final result showed that LVP-FI outperforms all other methods, while LVP-BI is comparable to GA
+and GA+LS. HC+LS has the worst performs.
+
+6.3. Genetic-Centric Approaches
+
+In this section, we summarize the algorithms that we classified as genetic-centric using the proposed
+
+taxonomy.
+
+* Local Rule-Based Explanations of Black Box Decision Systems by Guidotti et al. [106]
+
+This approach attempts to provide interpretable and faithful explanations by learning a local inter-
+pretable predictor on a synthetic neighborhood generated by a genetic algorithm. Explanations are
+
+generated by decision rules that derive from the underlying logic of the local interpretable predictor.
+
+LORE works as follows. Given a black-box predictor and a local counterfactual instance, x, with
+outcome y, an interpretable predictor is created by generating a balanced set of neighbor instances of
+the given instance x using an ad-hoc genetic algorithm. The interpretable model used to fit the data
+
+corresponds to a decision-tree from which sets of counterfactual rules can be extracted as explanations.
+
+The distance function used in this algorithm is given by Equation 21. The fitness function used
+corresponds to the distance of x to a generated counterfactual candidate z, d(x,z). This algorithm
+also considers the mixed types of features by a weighted sum of the simple matching coefficient for
+categorical features, and by using the L,-norm to normalize the continuous features. Assuming h
+
+corresponds to categorical features and m—h to continuous ones, then the distance function is given by
+
+ 
+
+d(x,z) = » SimpleMatch(x,z) + ” NormEuclid(x,z). (21)
+m
+
+Counterfactual Explanations for Robustness, Transparency, Interpretability, and Fairness of Arti-
+
+ficial Intelligence models (CERTIFAI) by [107]
+
+CERTIFAI is a custom genetic algorithm based explanation with several strengths, including the
+capability of evaluating the robustness of a machine learning model (CERScore) and assessing fairness
+with linear and non-linear models and any input form (from mixed tabular data to image data) without
+
+any approximations to or assumptions for the model.
+
+Establishing a CERTIFAI framework comes with several steps that start by creating an original genetic
+
+framework, selecting a distance function, and improving counterfactuals with constraints. A custom
+
+31
+genetic algorithm was made in the first stage by considering f as a classifier for a black-box model,
+and an instance x as an input. In this formalist, consider c as the counterfactual candidate instance
+of x and d(x,c) the distance between them. The distance function used is the L;-norm normalized by
+the median absolute deviation (MAD), as proposed by Sandra et al. [55]. The goal is to minimize the
+
+distance between x and c by applying a genetic algorithm.
+
+Given a variable W, we define the space from which individuals can be generated, to ensure feasible
+solutions. By taking n dimensions as input, multiple constraints need to be created to match with
+continuous, categorical, and immutable features. For instance, W,, W>..., W, is defined for continuous
+feature constraints as W; € Wimin,Wengx» 2d W; € W,, Wo,..., W; is for categorical variables. Finally, a
+
+feature i for an input x should be mutated by setting W; = X;.
+
+The robustness and fairness of the population of the generated counterfactuals are given by
+E *
+CERScore(model) = —[d(x,c’*)]. (22)
+x
+
+Fairness ensures that the solutions generated contain different counterfactuals with multiple values of
+
+an unchangeable feature (e.g., gender, race).
+
+Multi-Objective Counterfactual Explanations (MOCE) by [92]. This approach consists of a multi-
+objective counterfactual explanation algorithm which translates the counterfactual search into a
+multi-objective optimization problem based on genetic algorithms. This approach brings the benefit of
+providing a diverse set of counterfactuals with a variety of trade-offs between the proposed objectives
+
+and maintains diversity in feature space at the same time.
+
+Dand] et al. [92] proposed a four-objective loss equation to generate an explanation:
+Lae, y' X) = (04 (FM, 9"), 02(0,2"}05(%,2),04(x7,X"*))) (23)
+
+In the proposed equation, the four objectives 0,to04 represent one of the four criteria: Objective 1,
+01, focuses on generating the closest possible result from a prediction of counterfactual x’ to the
+desired prediction y’. It minimizes the distance between f(x’) and y’, and calculates it through the
+L,1-norm. Objective 2 states that the ideal counterfactual should be as similar as possible to instance x.
+It quantifies the distance between x’ and x using Grower’s distance. Objective 3, 03 is used to calculate
+the sparse feature changes through Lp-norm. This norm is necessary because Grower distance can
+handle numerical and categorical features but cannot count how many features were changed. Finally,
+Objective 4 states that the ideal counterfactual should have similar feature value combinations as the
+
+original data point. The solution is to measure how “likely” a data point uses the training data, Xobs.
+
+32
+Dand1] et al. [92] used the Nondominated Sorting Genetic Algorithm or short NSGA-II, which is a
+nature-inspired algorithm and applies Darwin’s law of the survival of the fittest and denote the fitness
+of a counterfactual by its vector of objectives values (01, 02, 03,04), this solution helps to produce a
+
+fitter counterfactual result by showing the lower counterfactuals four objectives.
+
+6.4. Regression-Centric Approaches
+
+In this section, we summarize the algorithms that we classified as regression-centric using the proposed
+
+taxonomy:
+
+* Counterfactual Local Explanations via Regression (CLEAR) by White and d’Avila Garcez [108]:
+This method aims to provide a counterfactual explained by regression coefficients, including interac-
+tion terms, and significantly improve the fidelity of the regression. [108] firstly generates boundary
+counterfactual explanations, which state minimum changes necessary to flip a prediction’s classifica-
+tion, then builds local regression models using the boundary counterfactual to measure and improve
+
+the fidelity of its regressions. .
+
+CLEAR proposes a counterfactual fidelity error, CFE , which is based on the concept of b-perturbation.
+It compares each b-perturbation with an estimation of that value, estimatedb-perturbation, which is
+
+calculated by a local regression. CFE is given by
+
+CFE = |estimated b— perturbation — b—perturbation|. (24)
+
+The generation of counterfactuals in CLEAR has the following steps: (1) Determine x’s boundary
+perturbations; (2) Generate labeled synthetic observations; (3) Create a balanced neighborhood dataset;
+(4) Perform a stepwise regression on the neighborhood dataset, under the constraint that the regression
+curve should go through x; (5) Estimate the b-perturbations; (6) Measure the fidelity of the regression
+
+coefficients; (7) Iterate until the best explanation is found.
+
+[108] compared the performance in terms of fidelity of CLEAR and LIME. The result showed that
+
+regressions have significantly higher fidelity than LIME in five case studies.
+
+Local Interpretable Model-Agnostic Explanations-Counterfactual (LIME)-C by Ramon et al. [109].
+LIME-C is a hybrid solution which connects additive feature attribution explanations (like in LIME)
+with counterfactuals. The motivation for this hybrid solution starts from an assumption which states
+that if the importance-rankings of the features are sufficiently accurate, it may be possible to compute
+
+counterfactuals from them.
+
+Additive feature attribution methods use an explanation model g as an interpretable approximation of
+
+33
+the trained classification model C, which can be represented by a linear model [109]:
+Ht
+glx’)= hot) o)x) (25)
+j=l
+
+In Equation 25, x; € 0,1 is the binary representation of xj (where x; is 1, if x; is non-zero, else it equals
+0), mis the number of features of instance x, and 9, @; € R. To generate a ranked list of counterfactual,
+
+the authors used the linear algorithm for finding counterfactuals (SEDC) proposed by [95].
+
+Ramon et al. [109] points out that this method is stable and effective for all data and models, and even
+for very large data instances that require many features to be removed for a predicted class change,
+
+LIME-C computes counterfactuals relatively fast.
+
+Search for Explanations for Document Classification (SEDC) by Martens and Provost [95]
+
+This approach was proposed in the domain of information retrieval back in 2014. It consists of
+generating explanations for the user’s understanding of the system and also for model inspection.
+SEDC was one of the first works that used Lewis [91] definition of counterfactual in an algorithm that
+provides minimal sets of words as explanations, such as removing all words within this set from the
+
+document that changes the predicted class from the class of interest.
+
+SEDC outputs minimum-size explanations for linear models by ranking all words appearing in the
+document through the product f;x,,, where f; is the linear model coefficient. The explanation with
+the top-ranked words is an explanation of the smallest size, and therefore a counterfactual. Cosine-
+similarity is used to measure the proximity between a document and the counterfactual document
+
+candidate.
+
+6.5. Game Theory Centric Approaches
+
+In this section, we summarize the algorithms that we classified as Game Theory Centric using the
+
+proposed taxonomy.
+
+* SHAP Counterfactual (SHAP-C) by [109]
+SHAP-C is a hybrid algorithm that combines Kernel SHAP [37] with SEDC [95].
+
+SHAP-C works as follows. Given a data point and a black-box predictive model, first, we compute
+the respective Shapley values using kernel SHAP. The algorithm ranks the most important features
+by their respective SHAP values and adds these features to a set called the Evidence Counterfactual.
+The algorithm then proceeds similarly as in SEDC: the most important features are perturbed so
+that a minimum set of perturbations is found to flip the prediction of the datapoint. This evidence
+
+counterfactual is returned as the explanation.
+
+34
+* Contrastive and Counterfactual SHAP (SHAP-CC) by [110].
+
+SHAP-CC attempts to generate partial post-hoc contrastive explanations with a corresponding coun-
+terfactual. Rathi [110] used a P-contrastive methodology for generating contrastive explanations that
+would allow the user to understand why a particular feature is important, and why another specific
+
+feature is not.
+
+The main idea of this explanation is considered a P-contrast question which is equivalent to the format
+"Why [predicted-class]” instead of [desired class ]?. To answer these questions, Rathi [110] explanation
+computed the Shapely values for each of the possible target classes where a negative Shapely value
+indicates the features that have negatively contributed to the specific class classification. Rathi [110]
+generate a “Why P not Q” explanation by breaking it down into two questions: ’why P?” and ”Why not
+Q.” The positive and negative Shapley values are given as an answer to these questions, respectively.
+Furthermore, a contrastive and counterfactual explanation is given in terms of natural language to the
+
+user.
+
+6.6. Case-Based Reasoning Approaches
+In this section, we summarize the algorithms that we classified as Case-Based Reasoning using the
+
+proposed taxonomy.
+
+* Case-based reasoning (CBR) for Good counterfactual by [96]
+
+CBR for good counterfactuals uses a case-based system where examples of good counterfactuals are
+stored. By good counterfactuals, Keane and Smyth [96] understands as counterfactuals that are sparse,
+plausible, diverse, and feasible. The authors also introduce the explanatory coverage and counterfactual
+
+potential as properties of CBR systems that can promote good counterfactuals.
+
+In their algorithm, Keane and Smyth [96] refer to the pairing of a case and its corresponding good
+counterfactual as an explanation case or XC. The goal is to generate good counterfactuals by retrieving,
+reusing, and revising a nearby explanation case by taking the following steps: (1) identify the XC
+that is most similar to the query datapoint p. In other words, XC corresponds to the explanatory
+coverage between two data points, xc(x,x’); (2) for each of the features matched in xc(x, x’); we map
+these features from p to the new generated counterfactual p’. In the same way, we add to p’ the
+most different features in xc(x,x’). This procedure guarantees the diversity of the counterfactuals; (3)
+through the definition of a counterfactual, p’ needs to provide a prediction contrary to the one by
+p. This implies that p’ needs to go through the predictive black-box and returned to the user if the
+prediction flips; (4) otherwise, an adaptation step to revise the values of the different features in p’ are
+
+applied until there is a change of class.
+
+35
+6.7. Probabilistic-Centric Approaches
+
+In this section, we summarize the algorithms that we classified as Probabilistic-Centric using the proposed
+taxonomy:
+* Provider-side Interpretability with Counterfactual Explanations in Recommender Systems (PRINCE)
+
+proposed by Ghazimatin et al. [111]
+
+This approach aims to detect the actual cause of a recommendation by a heterogeneous information
+network (HIN) with users, items, reviews, and categories. It identifies a small set of a user’s actions by
+
+removing actions that would lead to replacing the recommended item with a different item.
+
+This approach provides user explanations by display what they can do to receive more relevant
+recommendations to the users. Personalized PageRank(PPR) scores were chosen as the recommender
+model to create a heterogeneous knowledge network. PRINCE is based on a polynomial-time algorithm
+for searching the search space for subsets of user behaviors that could lead to a recommendation. By
+adopting the reverse local push algorithm to a dynamic graph environment, the algorithm efficiently
+
+computes PPR contributions for groups of actions about an object.
+
+Experiments performed by Ghazimatin et al. [111] using data from Amazon and Goodreads showed
+that simpler heuristics fail to find the best explanations. PRINCE, on the other hand, can guarantee
+
+optimality, since it outperformed baselines in terms of interpretability in user studies.
+
+Counterfactual Conditional Heterogeneous Autoencoder (C-CHVAE) by Pawelczyk et al. [112,
+113]
+
+C-CHVAE uses Variational Autoencoders (VAE) to search for faithful counterfactual, which consists
+in counterfactuals that are not local outliers, and that are connected to regions with significant data
+density (similar to the notion of feasibility introduced by Poyiadzi et al. [56]). Given the original
+dataset, the data is converted into an encoding vector where the data is represented in a lower dimension,
+and each dimension represents some learned probability distribution. It is this encoder that specifies
+which low dimensional neighbourhood one should look for potential counterfactuals. The next steps
+consist in perturbing the low dimensional data and pass it through a decoder, which will reconstruct
+the lower dimensional potential counterfactuals into their original space. Finally, the new generated
+counterfactuals are given to a pre-trained black-box in order to assess whether the prediction has been
+
+altered.
+
+Monte Carlo Bounds for Reasonable Predictions (MC-BRP) by Lucic et al. [114]. MC-BRP is an
+algorithm that focuses on predictions with significant errors where Monte Carlo sampling methods
+generate a set of permutations of an original data point instance that result in reasonable predictions.
+
+Given a local instance, x;, a set of important features (i), a black-box model f,and an error threshold
+
+36
+e, MC-BRP uses Tuckey’s fence to determine outliers (predictions with high errors) for each feature of
+the set of important features,
+
+€ > Q3(E) + 1.5(Q3(E) — Q1(E)),
+
+where Q;(E), Q3(E) are the first and third quartiles of the set of errors, E, of each feature, respectively.
+Tukey’s fence will return a set of boundaries for which reasonable predictions would be expected for
+each of the most important features. Using these boundaries, MC-BRP generates a set of permutations
+using Monte Carlo sampling methods, which will be passed into the black-box f to obtain a new
+prediction. Finally, a trend is computed based on Pearson correlation over the reasonable new
+predictions. The reasonable bounds for each feature are recomputed and presented to the user ina
+
+table.
+
+Adversarial Black box Explainer generating Latent Exemplars (ABELE) by Guidotti et al. [115]
+
+ABELE is a local model-agnostic explainer for image data that uses Aversarial AutoEncoderes (AAEs)
+
+that aim at generating new counterfactuals that are highly similar to the training data.
+
+ABELE generates counterfactuals in four steps: (1) by generating a neighborhood in the latent feature
+space using the AAEs, (2) by learning a decision tree on the generated latent neighborhood by providing
+local decision and counterfactuals rules, (3) by selecting and decoding exemplars and counter-examples
+
+satisfying these rules, and (4) by extracting the saliency maps out of them.
+
+Guidotti et al. [115] found that ABELE outperforms current state-of-the-art algorithms, such as LIME,
+
+in terms of coherence, stability, and fidelity.
+
+CRUDS: Counterfactual Recourse Using Disentangled Subspaces by Downs et al. [116]
+
+CRUDs is a probabilistic model that uses conditional subspace variational auto encoders (CSVAEs)
+that extracts latent features that are relevant for a prediction. CSVAE partitions the latent space into
+two parts: one to learn representations that are predictive of the labels, and one to learn the remaining
+
+latent representations that are required to generate data.
+
+In CRUDs, counterfactuals that target desirable outcomes are generated using CSVAEs in five major
+steps: (1) disentangling latent features relevant for classification from those that are not, (2) generating
+counterfactuals by changing only relevant latent features, filtering cuonterfactuals given constraints,
+
+and (4) summarise counterfactuals for interpretability.
+
+Downs et al. [116] evaluated CRUDS on seven synthetically generated and three real datasets. The
+
+result indicates that CRUDS counterfactuals preserve the true dependencies between the covariates in
+
+37
+the data in all datasets except one.
+
+Recourse: Algorithmic Recourse Under Imperfect Causal Knowledge by Karimi et al. [117]
+
+Traditional works on counterfactuals for XAI focus on finding the nearest counterfactual that promotes
+a change in the prediction to a favourable outcome. On the other hand, algorithm recourse approaches
+focus on generating a set of actions that an individual can perform to obtain a favourable outcome. This
+
+implies a shift from minimising a distance function to optimising a personalised cost function [117].
+
+To the best of our knowledge, recourse is the only model-agnostic algorithm in the literature that
+attempts to use a causal probabilistic framework as proposed in Pearl [44] grounded on structural
+causal models to generate counterfactuals, and where recourse actions are defined as interventions of
+
+the form of do —calculus operations.
+
+Karimi et al. [117] highlight that it is very challenging to extract a structured causal model (SCM) from
+the observed data [118], and in their work, they assume an imperfect and partial SCM to generate
+the recourse, which can lead to incorrect counterfactuals. To overcome this challenge, Karimi et al.
+[117] proposed two probabilistic approaches that relax the strong assumptions of an SCM: the first one
+consists of using additive Gaussian noise and Bayesian model averaging to estimate the counterfactual
+distribution; the second removes any assumptions on the structural causal equations by computing
+the average effect of recourse actions on individuals. Experiment results on synthetic data showed
+that Recourse was able to make more reliable recommendations under a partial SCM than other
+
+non-probabilistic approaches.
+
+6.8. Summary
+
+We conducted a thorough systematic literature review guided by the argument to measure the causability
+of an XAI system. Then the system needs to be underpinned by a probabilistic causal framework such
+as the one proposed in Pearl [44]. We believe that counterfactual reasoning could provide human causal
+understandings of explanations, although some authors challenge this notion. Zheng et al. [119] conducted
+studies to investigate whether presenting causal explanations to a user would lead to better decision-making.
+Their results were mixed. They found that if the user has prior and existing domain knowledge, then
+presenting causal information did not improve the decision-making quality of the user. On the other hand,
+if the user did not have any prior knowledge or beliefs about a specific task, then causal information enabled
+the user to make better decisions.
+
+We also found that the majority of the counterfactual generation approaches are not grounded on a
+formal and structured theory of causality as proposed by Pearl [44]. Current counterfactual explanation
+
+generation approaches for XAI are based on spurious correlations rather than cause-effect relationships.
+
+38
+This inability to disentangle correlation from causation can deliver sub-optimal, erroneous, or even biased
+explanations to decision-makers, as Richens et al. [39] highlighted in his work about medical decision
+making.
+
+Table 2 summarizes all the algorithms that we analysed in this section in therms of underlying theories,
+
+algorithms, applications and properties.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Properties
+Theory / Approach Algorithms Ref, Applications Code? Proximity Plausibility Sparsity, Diversity Feasibility Optimization | Causal?
+. c Yes [120]
+WatcherCF [55] [rab / 1g] [Alo: C¥] ttnrorm] x vw x x Gradient Descent x
+Prototype c Yes [120] Ww Ww ~
+Counterfactuals (rat (Tab /Img] | [Algor CFProte] | [1.,/Ly-norm] v [ka-trees] ~ x FISTA x
+FACE [56] (rep * img) Yes [122] x ww x w ww ¢ -graphs x
+Weighted Counterfactual [101] [rab] No tu ~ : x vw x x Gradient Descent x
+4-norm
+Instance-Centric | ce [102, 103, 104] [rab / Tae / Tg] Yes [123] a ~ : x vw x x Growing Spheres x
+o-norm
+DICE [50] c Yes [124] wv x w wv vw Gradient Descent x
+[Tab] [L-norm] [hinge loss]
+CRUDS [116] c No ~ ww x ~ vw x
+[Tab] [Lp-norm] [Variation Autoencoders]
+ARES C/R Ww x Maximum a Posterior
+Global [125] Tab/ Txt No x Probabilistic x x Estimate x
+U
+: CIR
+PRINCE [i] prab/txt] Yes [126] wv x [ Randam Wark [ x x PageRank x
+Probabilistic-Centrie | C-CHVAE (112, 113] c Yes [127] wv x w x x Integer Programming | )&
+[Tab] [Variation Autoencoders] Optimization
+ABELE [15] c Yes [128] vw x w~ x x x
+[Img] [Variation Autoencoders]
+RECOURSE [17] c Yes [129] wv wv w ww ww Gradient Descent wv
+[Tab] [Variation Autoencoders]
+MC-BRP [ia] rr] Yes [130] 7 x Y ww x Monte Carlo x
+: c Hill Climbing 7
+gic {195] [Tab] No v x vw x x Genetic Algorithms x
+MACE [93] c Yes [131] ~ v w~ v wv SMT x
+[Tab] [Lo/Ly/Linf-norm] [constraint satisfaction]
+Coherent Counterfactuals [98] CIR Yes [132] ~ wv w~ ww vv Gurobi x
+ab / Txt Ly-norm mixed polytopes! timization
+[Tab / Txt] {Ly 1 b polytopes] Op’
+MOCE [92] c Yes [133] ~ x x x NSCAI x
+[Tab] [Ly-norm] [min feature changes]
+CERTIFAL [107] c Yes [134] wv x x ~ x Fitness. x
+. [Tab / Img J [L1-norm / SSIM] [mutations]
+Genetic Centric LORE [106] c Yes [135] x x w x DecisionTree x
+[Tab] [Ly-norm / Match] [mutations] Model
+: CTR ‘Additive Feature
+LIME-C 1136, 199] | crab tat y Img} | Yee [1371 x x x x x Mtuibution x
+SED-C [95] * Yes [138] x x x x x x
+R P [Txt] [cosine similarity]
+legression-Centric S wy w
+CLEAR 108, ‘Yes[139] x x x Ri x
+{re8] [Tab] [139] [L-norm] [min feature changes] Seression
+SHAP-C 136,109] | coat me img] |__Yl401 x x x x x Shapley Values x
+Game Theory :
+Centric SHAP-CC. [19] fr ol No x x x x x Shapley Values x
+CBR for Good c Ww a Nearest Unlikely
+Case Based Reasoning | Counterfactuals [a] [Tab / Txt] Ne [Li-norm| ~ [counterfactual potential] “ ~ Neighbour x
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 2: Classification of collected model-agnostic counterfactual algorithms for XAI based on different properties, theoretical
+backgrounds and applications.
+
+7. Counterfactual Approaches to Explainable AI: Applications
+
+This work is motivated by Holzinger et al. [22] hypothesis, which states that for a system to provide
+understandable human explanations, the user needs to achieve a specified level of causal understanding
+with effectiveness, efficiency, and satisfaction in a specified context of use [48, 47, 141, 142, 83, 143]. One
+way to achieve this causal understanding is through counterfactuals.
+
+One of the main areas that showed a need for counterfactual explanations is in medical decision support
+
+systems. As pointed by Holzinger et al. [144], medical decision-making faces several challenges ranging
+
+39
+from small labelled datasets to the integration, fusion, and mapping of heterogeneous data to appropriate
+visualisations [145]. Structured causal models that provide explanatory factors of the data could be used to
+support medical experts. However, learning causal relationships from observational data is a very difficult
+problem [146, 147].
+
+XAI is very relevant for industries [148]. Another area of application of counterfactuals in XAI that is
+highly mentioned in the literature is loan credit evaluation. Grath et al. [101] developed a model-agnostic
+counterfactual explainer with an interface that uses weights generated from feature importance to generate
+more compact and intelligible counterfactual explanations for end users. Lucic et al. [114] also developed a
+model-agnostic counterfactual explanation in the context of a challenge from the finance industry’s interest
+in exploring algorithmic explanations [149].
+
+Recently, interfaces that generate counterfactuals as explanations have been proposed in the literature.
+The ”What-IF tool” [150] is an open-source application that allows practitioners to probe, visualize, and
+analyze machine learning systems with minimal coding. It also enables the user to investigate decision
+boundaries and explore how general changes to data points affect the prediction.
+
+ViCE (Visual Counterfactual Explanations for Machine Learning Models) [151] is an interactive visual
+analytics tool that generates instance-centric counterfactual explanations to contextualize and evaluate
+model decisions in a home equity line of credit scenario. ViCE highlights counterfactual explanations and
+equips users with interactive methods to explore both the data and the model.
+
+DECE (Decision Explorer with Counterfactual Explanations for Machine Learning Models) [152] is
+another example of an interactive visual analytics tool that generates counterfactuals at an instance and
+subgroup levels. The main difference to ViCE is that DECE allows users to interact with the counterfactuals
+in order to find more actionable counterfactuals that suit their needs. DECE showed effectiveness in
+
+supporting decision exploration tasks and instance explanations.
+
+8. Towards Causability: Opportunities for Research
+
+Although the demand for providing XAI systems that promote the causability, the literature is very
+scarce in this aspect. We only found one recent article that proposed an explanation framework (FATE)
+based on causability [153]. This framework focuses on human interaction, and the authors used the system
+causability scale proposed by [22] to validate the effectiveness of their system’s explanations.
+
+Shin [153] highlight that causability represents the quality of explanations and emphasize that it is an
+antecedent role to explainability. Furthermore, they found that properties such as transparency, fairness,
+and accuracy, play a critical role in improving user trust in the explanations. In general, this framework
+is a guideline for developing user-centred interface design from the perspective of user interaction and
+
+examines the effects of explainability in terms of user trust. This framework does not refer to XAI algorithms
+
+40
+underpinned by a theory of causality, neither on how to achieve causability from such mathematical
+constructs. In the next section, we provide a set of conditions that we find are crucial elements for an XAI
+system to promote causability. However, FATE causability system is not underpinned by any formal theory
+of causality, and the causability metrics applied in this work focused on the interaction of the human with
+the system.
+
+Holzinger et al. [22] proposed a theoretical framework with a set of guidelines to promote causability
+in XAI systems in the medical domain. One of the policies put forward is in creating new visualization
+techniques that can be trainable by medical experts, as the specialists can survey the underlying explanatory
+factors of the data. Another point is to formalize a structural causal model of human decision-making
+and delineating features in the model. Holzinger [47] argue that a human-Al interface with counterfactual
+explanations will help achieve causability. An open research opportunity is to extend human-Al explainable
+interfaces with causability by allowing a domain expert to interact and ask “what-if” questions (counterfac-
+tuals). This will enable the user to gain insights into the underlying explanatory factors of the predictions.
+Holzinger et al. [83] propose a system causability scale framework as an evaluation tool for causability in
+XAI systems.
+
+We conclude our systematic literature review by highlighting what properties should an XAI system have
+to promote causability. We find that the process of generating explanations that are human-understandable
+needs to go beyond the minimisation of some loss function as proposed by the majority of the algorithms
+in the literature. Explainability is a property that implies the generation of human mental representations
+that can provide some degree of human-understandability of the system and, consequently, allow users to
+trust it. As Guidotti et al. [106] stated, explainability is the ability to present interpretations in a meaningful
+and effective way to a human user. We argue that for a system do be both explainable and promote
+causability, then it cannot be resumed to a minimisation optimisation problem. Doing so would imply a
+simplistic and objective explanation process that needs to be necessarily human-centric to achieve human
+understandability [154]. We argue that, for a system to promote causability, the following properties should
+
+be satisfied:
+
+8.1. The Main Characteristics of a Causability System
+
+* Causality. The analysis we conducted revealed that current model-agnostic explainable AI algorithms
+lack a foundation on a formal theory of causality. Causal explanations are a crucial missing ingredient
+for opening the black box to render it understandable to human decision-makers since knowing about
+the cause/effect relationships of variables can promote human understandability. We argue that causal
+approaches should be emphasised in XAI to promote a higher degree of interpretability to its users
+and causability, although some authors challenge this notion. Zheng et al. [119] found that providing
+
+causal information to human users in some tasks, resulted in poor decision-making. Zheng et al. [119]
+
+41
+conducted studies to investigate whether presenting causal explanations to a user would lead to better
+decision-making. Their results were mixed. They found that if the user has prior and existing domain
+knowledge, then presenting causal information did not improve the decision-making quality of the
+user. On the other hand, if the user did not have any prior knowledge or beliefs about a specific task,
+then causal information enabled the user to make better decisions. More work is needed on whether
+causal information leads to better decisions. Many unstudied factors may contribute to this diverse
+literature on the topic ranging from human cognitive bias to the way the explanations are presented in
+
+the interface (supporting interactivity or not).
+
+Counterfactual. Explanations generated by a causability system needs to be counterfactual. Cognitive
+scientists agree that counterfactual reasoning is a crucial ingredient in learning and a key for explaining
+adaptive behaviour in a changing environment [155]. Counterfactual reasoning induces mental
+representations of an event that happened and representations of some other event alternative to
+it [58]. It has been recognised in the literature that counterfactuals tend to help humans make
+causal judgments [156]. Additionally, humans tend to think in a cause/effect way, but not in a strict
+probabilistic sense [157]. It follows that for a machine to achieve a certain degree of human intelligence,
+explainability systems need to provide counterfactual explanations. Additionally, for a system to
+achieve causability, the counterfactual explanations need to be underpinned by a formal theory of
+causality [22, 83]. Properties to generate good counterfactuals, such as diversity, feasibility, and
+
+plausibility, should also be considered to increase the level of human understanding.
+
+Human-Centric. Explanations need to be adapted to the information needs of different users. For
+instance, in medical decision-making, a doctor is interested in certain aspects of an explanation, while
+a general user is interested in other types of information. Adapting the information for the type
+of user is a crucial and challenging point currently missing in XAI literature. There is the need to
+bring the human user back to the optimisation process with human-in-the-loop strategies [158, 144]
+containing contextual knowledge and domain-specific information. This interactive process can
+promote causability since it will allow the user to create mental representations of the counterfactual
+
+explanations in a symbiotic process between the human and the counterfactual generation process.
+
+Inference. To promote the system’s user understandability, we argue that a causability framework
+should be equipped with causal inference mechanisms to interact with the system and ask queries to the
+generated explanations. Queries such as "given that I know my patient has a fever, what changes this
+information induces in the explanation?”. This type of interaction can be highly engaging for the user
+and promote more transparency in the system. It can enable more human-centric understandability of
+
+the system since the user asks questions (performs inference) over variables of interest.
+
+42
+* Semantic annotations. One of the major challenges in XAI and a current open research problem is
+to convert the sub-symbolic information extracted from the black-box into human-understandable
+explanations. Incorporating semantic contextual knowledge and domain-specific information are
+crucial ingredients that are currently missing in XAI. We argue that story models and narratives
+are two important properties that need to be considered to generate human-understandable and
+human-centric explanations. Story models and narratives can promote higher degrees of believability
+
+in the system [159] and consequently achieve causability.
+
+9. Answers to Research Questions
+
+This section summarises the key points presented throughout this work by providing answers to the
+
+research questions that guided our research.
+
+9.1. RQI & RQ2: What are the main theoretical approaches and algorithms for counterfactuals in XAI?
+
+Our systematic literature review revealed many different counterfactual algorithms proposed in the
+literature. We were able to identify key elements shared by these algorithms based on how the optimisation
+problem was framed and by considering the counterfactual generation process. We classified the existing
+
+model-agnostic-XAI by their ’master theoretical algorithm” from which each algorithm derived:
+
+* Instance-Centric. These approaches are based on random feature permutations and on finding
+counterfactuals closed to the original instance by some distance function. These approaches are
+relatively straightforward to implement. However, the generated counterfactuals are susceptible to
+fail the plausibility and the diversity properties, although some algorithms incorporate mechanisms to
+overcome this issue. Examples of algorithms that fall in this category are WatcherCF [55], prototype
+counterfactuals [100], weighted counterfactuals [101],FACE [56], DiCE [50], and TRUCE [103].
+
+* Constraint-Centric. These approaches are modelled as a constraint satisfaction problem. Coun-
+terfactuals based on these approaches can easily satisfy different properties such as diversity and
+plausibility. Examples of algorithms that fall in this category are MACE [93], GIC [105], and Coherent
+
+Counterfactuals [98].
+
+* Genetic-Centric. These approaches generate counterfactuals using the principles of genetic algorithms.
+Due to genetic principles such as mutation or crossover, these approaches can satisfy counterfactual
+properties such as diversity and plausibility. Examples of algorithms that fall in this category are
+
+CERTIEFAI [107], MOCE [92], and LORE [106].
+
+* Regression-Centric. These approaches have LIME as their underlying framework, and they use
+
+linear regression to fit a set of permutated features. Counterfactuals based on these approaches have
+
+43
+difficulties satisfying several properties such as plausibility and diversity. Examples of algorithms that
+
+fall in this category are LIME-C [109], SED-C [95], and CLEAR [108].
+
+Game Theory Centric. These approaches have SHAP as their underlying framework, and they use
+Shapley values to determine the local feature relevance. Counterfactuals based on these approaches
+also have difficulties satisfying several properties such as plausibility and diversity. Examples of
+
+algorithms that fall in this category are SHAP-C [109], and SHAP-CC [110].
+
+Case-Based Reasoning. These approaches are inspired in the case-based reasoning paradigm of artifi-
+cial intelligence and cognitive science. Since they store in-memory examples of good counterfactuals,
+these approaches tend to satisfy different counterfactual properties, such as plausibility and diversity.
+
+An examples of an algorithms that fall in this category is CBR Explanations by Keane and Smyth [96].
+
+Probabilistic-Centric. These approaches mainly use probabilistic models to find the nearest coun-
+terfactuals. Approaches such as recourse [117] have the potential to generate causal counterfactuals
+based on the causality framework proposed by Pearl [44]. However, as the authors acknowledge, it is
+challenging to learn causal relationships from observational data without introducing assumptions in
+
+the causal model.
+
+This research suggests that current model-agnostic counterfactual algorithms for explainable AI are
+not grounded on a causal theoretical formalism and, consequently, might not promote causability to a
+human decision-maker. Our findings show that the explanations derived from most of the model-agnostic
+algorithms in the literature provide spurious correlations rather than cause/effects relationships, leading
+to sub-optimal, erroneous, or even biased explanations. This opens the door to new research directions on
+incorporating formal causal theories of causation in XAI. The closest work that we found that meets this goal
+is the Recouse algorithm [117], however, research is still needed to investigate the extraction of structured
+causal models from observational data.
+
+There are also novel model-agnostic approaches proposed in the literature of XAI based on probabilistic
+graphical models. For instance, Moreira et al. [160] proposed to learn a local Bayesian network that enables
+the user to see which features are correlated (or conditional independent from) the class variable. They
+found four different rules that can measure the degree of confidence of the interpretable model over the
+explanations and provide specific recommendations for the user. However, this model is not causal, and
+
+further research is needed to understand if such structures can be mapped into structured causal models.
+
+44
+9.2
+
+for
+
+9.3.
+
+. RQ3: What are the sufficient and necessary conditions for a system to promote causability (Applications)?
+
+The main purpose of this research work is to highlight some properties that find relevant and necessary
+
+causability systems. We proposed the following properties.
+
+Explanations need to be grounded on a structured and formal theory of Causality. This will enable the
+usage of a full framework of algorithms of causal discovery that have been proposed throughout the
+
+years [46].
+
+Explanation algorithms need to be computed in the form of Counterfactuals. Due to the evidence
+from cognitive science and social sciences, counterfactuals are among the best approaches to promote
+
+human understandability and interpretability [24], although some authors challenge this [119].
+
+Explanations need to be Human-Centric. Explanations need to be specific to the user’s needs: a medical
+
+doctor will be interested in different explanations from a standard user.
+
+The user should be able to interact with the generated explanations. The interaction with explanations
+can help the user increase the levels of understandability and interpretability of the internal workings
+of the XAI algorithm. Probabilistic inference is a promising tool to provide answers to users’ questions
+
+regarding explanations.
+
+Explainable AI systems need to be complemented with semantic annotations of features and domain
+knowledge. To achieve explainability, contextual knowledge and domain-specific information need to
+
+be included in the system.
+
+RQ4: What are the pressing challenges and research opportunities in XAI systems that promote Causability?
+
+This literature review enabled us to understand the current pressing challenges and opportunities
+
+involved in creating XAI models that promote causability. We identified the following research opportunities
+
+that can be used for future research in the area.
+
+* Causal Theories for XAI. Pearl [88] argues that causal reasoning is indispensable for machine learning
+to reach the human-level artificial intelligence since it is the primary mechanism of humans to be aware
+of the world. As a result, the causal methodology gradually becomes a vitally important component in
+explainable and interpretable machine learning. However, most current interpretability techniques
+pay attention to solving the correlation statistic rather than the causation. Therefore, causal approaches
+should be emphasized to achieve a higher degree of interpretability. The reason why causal approaches
+for XAIJ are scarce is that finding causal relationships from observational data is very hard and still an
+
+open research question [146].
+
+45
+* Standardized Evaluation Metrics for XAI. The field of metrics for XAI is also a topic that needs
+development. Measures such as stability or fidelity [161] are not very clear for counterfactuals [31].
+Ultimately, XAI metrics should be able to answer the following question: how does one know whether the
+explanation works and the user has achieved a pragmatic understanding of the AI? [32] We highlight that
+one research concern in XAI should be to develop generalised and standardised evaluation protocols
+for XAI in different levels: Objective Level (user-free), Functional Level (functionality-oriented), and
+User Level (human-centric). The main challenges consist in deriving standardised protocols that could
+fit so many algorithms underpinned by different master theoretical approaches and at so many different
+
+levels, although some interesting works have already been proposed in terms of causability [47, 83, 48].
+
+Intelligent Interfaces for Causability in XAI. XAI’s basilar applications lie at the core of Intelligent
+User Interfaces (IUIs). Rather than generating explanations as linear symbolic sequences, graphical
+interfaces enable people to visually explore ML systems to understand how they perform over different
+stimuli. The What-If tool [150] provides an excellent example, enabling people to visualize model
+behavior across multiple models and subsets of input data and for different ML fairness metrics.
+Such visual techniques leverage the human visual channel’s high bandwidth to explore probabilistic
+inference, allowing humans to interact with explanations while recommending different descriptions.
+Taking advantage of the innate human ability to spot patterns, these methods can provide better
+
+quality answers than purely automatic approaches.
+
+In a related direction van der Waa et al. [162] propose a framework that considers users’ experience
+and reactions to explanations and evaluates these effects in terms of understanding, persuasive power,
+and task performance. This user-centric approach is crucial to assess assumptions and intuitions to
+
+yield more effective explanations effectively.
+
+Recent Intelligent Exploration Interfaces focus on making explanations accessible to non-expert
+users to interpret the underlying models better. Hoque and Mueller [163] argue that predictive and
+interactive models based on causality are inherently interpretable and self-contained. They developed
+Outcome Explorer, a causality-guided interactive interface that allows experts and non-experts alike
+
+to acquire a comprehensive understanding of the models.
+
+10. Conclusion
+
+We conducted a systematic literature review to determine the modern theories underpinning model-
+
+agnostic counterfactual algorithms for XAI and analyse if any existing algorithms can promote causability.
+
+We extended the current literature by proposing a new taxonomy for model-agnostic counterfactuals based
+
+on six approaches: instance-centric, constraint-centric, genetic- centric, regression-centric, game theory
+
+46
+centric, case-based reasoning centric, and probabilistic-centric. Our research also showed that model-
+agnostic counterfactuals are not based on a formal and structured theory of causality as proposed by [44].
+For that reason, we argue that these systems cannot promote a causal understanding to the user without
+the risk of the explanations being biased, sub-optimal, or even erroneous. Current systems determine
+relationships between features through correlation rather than causation.
+
+We conclude this survey by highlighting new key points to promote causability in XAI systems, which
+derive from formal theories of causality such as inference, counterfactuals, and probabilistic graphical
+models. Causal models are a new research area, bursting with exciting new research challenges and
+opportunities for XAI approaches grounded on probabilistic theories of causality and graphical models.
+Indeed this field is highly relevant to Intelligent User Interfaces (IUIs) [164] by its very nature, both in
+terms of content generation engines and user interface architecture. Therefore, more than a contraption
+powered by robust and effective causal models, XAI can be seen as a cornerstone for next-generation IUIs.
+This can only be achieved by marrying sound explanations delivered by fluid storytelling to persuasive
+and articulate argumentation and a harmonious combination of different interaction modalities. These will
+
+usher in powerful engines of persuasion, ultimately leading to the rhetoric of causability.
+
+11. Acknowledgement
+
+This work was partially supported by Portuguese government national funds through FCT, Fundacgdo
+para a Ciéncia e a Tecnologia, under project UIDB/50021/2020.
+This work was also partially supported by Queensland University of Technology (QUT) Centre for Data
+
+Science First Byte Funding Program and by QUT’s Women in Research Grant Scheme.
+
+References
+
+[1] W. Tan, P. Tiwari, H. M. Pandey, C. Moreira, A. K. Jaiswal, Multi-modal medical image fusion algorithm
+in the era of big data, Neural Computing and Applications (2020).
+
+[2] Z. C. Lipton, The mythos of model interpretability, Communications ACM 61 (2018) 36-43.
+
+[3] D. Doran, S. Schulz, T. R. Besold, What does explainable ai really mean? a new conceptualization of
+perspectives, in: Proceedings of the First International Workshop on Comprehensibility and Explana-
+tion in AI and ML 2017 co-located with 16th International Conference of the Italian Association for
+
+Artificial Intelligence, 2017. arXiv: 1710.00794.
+
+[4] C. T. Ramaravind K. Mothilal, Amit Sharma, Examples are not enough, learn to criticize! criti-
+cism for interpretability, in: Proceedings of the 2020 Conference on Fairness, Accountability, and
+
+TransparencyJanuary, 2020.
+
+47
+[5] B. Goodman, S. Flaxman, European union regulations on algorithmic decision-making and a “right to
+
+explanation”, AI Magazine 38 (2017) 50-57.
+
+[6] C. O’Neil, Weapons of math destruction: How big data increases inequality and threatens democracy,
+
+Broadway Books, 2017.
+
+[7] Z. Obermeyer, B. Powers, C. Vogeli, S. Mullainathan, Dissecting racial bias in an algorithm used to
+
+manage the health of populations, Science 366 (2019) 447-453.
+
+[8] A. Lau, E. Coiera, Do people experience cognitive biases while searching for information?, Journal of
+
+the American Medical Informatics Association 14 (2007) 599 - 608.
+
+[9] G. Saposnik, D. Redelmeier, C. C. Ruff, P. N. Tobler, Cognitive biases associated with medical decisions:
+a systematic review, BMC Medical Informatics and Decision Making 16 (2016) 138.
+
+[10] J. R. Zech, M. A. Badgeley, M. Liu, A. B. Costa, J. J. Titano, E. K. Oermann, Variable generalization
+performance of a deep learning model to detect pneumonia in chest radiographs: A cross-sectional
+
+study, PLOS Medicine 15 (2018) 1-17.
+
+[11] J. Buolamwini, T. Gebru, Gender shades: Intersectional accuracy disparities in commercial gender
+classification, in: Proceedings of the 1st Conference on Fairness, Accountability and Transparency,
+
+2018, pp. 77-91.
+
+[12] C. Moreira, B. Martins, P. Calado Using rank aggregation for expert search in academic digital libraries,
+
+in: Simpdsio de Informatica, INForum, 2011, pp. 1-10.
+[13] C. Moreira, Learning to rank academic experts, Master Thesis, Technical University of Lisbon, 2011.
+
+[14] T. Bolukbasi, K.-W. Chang, J. Zou, V. Saligrama, A. Kalai, Man is to computer programmer as woman
+is to homemaker? debiasing word embeddings, in: Proceedings of the 30th Conference on Neural
+
+Information Processing Systems, 2016.
+
+[15] N. Garg, L. Schiebinger, D. Jurafsky, J. Zou, Word embeddings quantify 100 years of gender and
+ethnic stereotypes, Proceedings of the National Academies of Science of the United States of America
+
+115 (2018) 3635-3644.
+
+[16] A. Caliskan, J. J. Bryson, A. Narayanan, Semantics derived automatically from language corpora
+
+contain human-like biases, Science 356 (2017) 183-186.
+
+[17] M. Kosinski, Y. Wang, Deep neural networks are more accurate than humans at detecting sexual
+
+orientation from facial images, Journal of Personality and Social Psychology 114 (2018) 246-257.
+
+48
+[18] H. Lakkaraju, E. Kamar, R. Caruana, J. Leskovec, Faithful and customizable explanations of black box
+models, in: Proceedings of the 2019 AAAI/ACM Conference on AI, Ethics, and Society, ATES, 2019,
+pp. 131-138.
+
+[19] F. Doshi-Velez, B. Kim, Towards a rigorous science of interpretable machine learning, arxiv:
+
+1702.08608 (2017).
+
+[20] L. H. Gilpin, D. Bau, B. Z. Yuan, A. Bajwa, M. Specter, L. Kagal, Explaining explanations: An overview
+of interpretability of machine learning, CoRR abs/1806.00069 (2018).
+
+[21] J. W. Murdoch, C. Singh, K. Kumbier, R. Abbasi-Asl, B. Yu, Definitions, methods, and applications in
+interpretable machine learning, Proceedings of the National Academy of Sciences 116 (2019) 22071 -
+22080.
+
+[22] A. Holzinger, G. Langs, H. Denk, K. Zatloukal, H. Miller, Causability and explainability of artificial
+intelligence in medicine, Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery 9
+
+(2019) e1312.
+
+[23] A. Pdez, The pragmatic turn in explainable artificial intelligence (xai), Minds and machines (Dor-
+
+drecht) 29 (2019) 441-459.
+
+[24] T. Miller, Explanation in artificial intelligence: Insights from the social sciences, Artificial Intelligence
+
+267 (2019) 1-38.
+
+[25] R. Guidotti, A. Monreale, S. Ruggieri, F. Turini, F. Giannotti, D. Pedreschi, A survey of methods for
+explaining black box models, ACM Computing Surveys 51 (2018) 93:1-93:42.
+
+[26] A. Das, P. Rad, Opportunities and challenges in explainable artificial intelligence (xai): A survey, 2020.
+arXiv:2006. 11371.
+
+[27] A. Adadi, M. Berrada, Peeking inside the black-box: A survey on explainable artificial intelligence
+(XAI), IEEE Access 6 (2018) 52138-52160.
+
+[28] A. Barredo Arrieta, N. Diaz-Rodriguez, J. Del Ser, A. Bennetot, S$. Tabik, A. Barbado, S. Garcia,
+S. Gil-Lopez, D. Molina, R. Benjamins, R. Chatila, KF Herrera, Explainable artificial intelligence (xai):
+Concepts, taxonomies, opportunities and challenges toward responsible ai, Information Fusion 58
+
+(2020) 82-115.
+
+[29] S. Mohseni, N. Zarei, A multidisciplinary survey and framework for design and evaluation of
+
+explainable ai systems, CoRR cs. HC/1811.11839 (2020) 1-45.
+
+49
+[30] J. Zhou, A. H. Gandomi, F. Chen, A. Holzinger, Evaluating the quality of machine learning explana-
+
+tions: A survey on methods and metrics, Electronics 10 (2021) 593.
+
+[31] D. V. Carvalho, E. M. Pereira, J. S. Cardoso, Machine learning interpretability: A survey on methods
+
+and metrics, Electronics 8 (2019) 832.
+
+[32] R. R. Hoffman, S. T. Mueller, G. Klein, J. Litman, Metrics for explainable ai: Challenges and prospects,
+2019. arXiv: 1812.04608.
+
+[33] D. Alvarez-Melis, T. S. Jaakkola, On the robustness of interpretability methods, 2018.
+arXiv: 1806 .08049.
+
+[34] J. Chen, H. Dong, X. Wang, F. Feng, M. Wang, X. He, Bias and debias in recommender system: A
+survey and future directions, 2020. arXiv: 2010 .03240.
+
+[35] S. Serrano, N. A. Smith, Is attention interpretable?, in: Proc. of the 57th Conference of the Association
+
+for Computational Linguistics, ACL, Association for Computational Linguistics, 2019, pp. 2931-2951.
+
+[36] M. T. Ribeiro, S. Singh, C. Guestrin, ”"Why Should I Trust You?”: Explaining the predictions of
+any classifier, in: Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge
+Discovery and Data Mining, 2016, pp. 1135-1144.
+
+[37] S. Lundberg, S.-I. Lee, A unified approach to interpreting model predictions, in: Proceedings of the
+31st Annual Conference on Neural Information Processing Systems (NIPS), 2017, pp. 4765-4774.
+
+[38] C. Rudin, Stop explaining black box machine learning models for high stakes decisions and use
+
+interpretable models instead, Nature Machine Intelligence 1 (2019) 206-215.
+
+[39] J. G. Richens, C. M. Lee, S. Johri, Improving the accuracy of medical diagnosis with causal machine
+
+learning, Nature Communications 11 (2020) 3923-3932.
+
+[40] N. Kilbertus, M. Rojas-Carulla, G. Parascandolo, M. Hardt, D. Janzing, B. Schélkopf, Avoiding dis-
+crimination through causal reasoning, in: Proceedings of the 31st Conference on Neural Information
+
+Processing Systems, 2017.
+
+[41] J. Pearl, Probabilistic Reasoning in Intelligent Systems: Networks of Plausible Inference, Morgan
+
+Kaufmann Publishers, 1988.
+
+[42] R. M. J. Byrne, Counterfactuals in explainable artificial intelligence (xai): Evidence from human
+reasoning, in: Proceedings of the Twenty-Eighth International Joint Conference on Artificial Intel-
+ligence, IJCAI-19, International Joint Conferences on Artificial Intelligence Organization, 2019, pp.
+
+6276-6282.
+
+50
+[43] B. Lake, T. Ullman, J. Tanenbaum, S. Gershman, Building machines that learn and think like humans,
+Brain and Behavioural Sciences 40 (2017) e253.
+
+[44] J. Pearl, Causality: Models, Reasoning and Inference, Cambridge University Press, 2009.
+
+[45] S. Gershman, E. Horvitz, J. Tenenbaum, Computational rationality: A converging paradigm for
+
+intelligence in brains, minds, and machines, Science 349 (2015) 273-278.
+
+[46] J. Peters, D. Janzing, B. Schélkopf, Elements of Causal Inference Foundations and Learning Algorithms,
+
+MIT Press, 2017.
+[47] A. Holzinger, Explainable ai and multi-modal causability in medicine, i-com 19 (2020) 171 - 179.
+
+[48] A. Holzinger, B. Malle, A. Saranti, B. Pfeifer, Towards multi-modal causability with graph neural
+
+networks enabling information fusion for explainable ai, Information Fusion 71 (2021) 28-37.
+
+[49] M. N. Hoque, K. Mueller, Outcome-explorer: A causality guided interactive visual interface for
+
+interpretable algorithmic decision making, arxiv: 2101.00633 (2021).
+
+[50] R. Mothilal, A. Sharma, C. Tan, Explaining machine learning classifiers through diverse counterfactual
+explanations, in: Proceedings of the 2020 Conference on fairness, accountability, and transparency,
+
+2020, pp. 607-617.
+
+[51] J. Halpern, J. Pearl, Causes and explanations: A structural-model approach. part i: Causes, The British
+
+Journal for the Philosophy of Science 56 (2005) 889-911.
+[52] S. Psillos, Causation and Explanation, MPG Books Group, 2002.
+[53] D. Hume, A Treatise of Human Nature, London: John Noon, 1739.
+[54] D. Lewis, Causation, Journal of Philosophy 70 (1973) 113-126.
+
+[55] W. Sandra, M. Brent, R. Chris, Counterfactual explanations without opening the black-box: Automated
+
+decisions and the gdpr, Harvard journal of law & technology 31 (2018).
+
+[56] R. Poyiadzi, K. Sokol, R. Santos-Rodriguez, T. De Bie, P. Flach, Face: Feasible and actionable counter-
+factual explanations, in: Proceedings of the AAAI/ACM Conference on ai, ethics, and society, 2020,
+pp. 344-350.
+
+[57] S. Verma, J. Dickerson, K. Hines, Counterfactual explanations for machine learning: A review, arxiv:
+
+2010.10596 (2020).
+
+51
+[58] I. Stepin, J. M. Alonso, A. Catala, M. Pereira-Farifia, A survey of contrastive and counterfactual
+explanation generation methods for explainable artificial intelligence, IEEE Access 9 (2021) 11974—
+12001.
+
+[59] A. Karimi, G. Barthe, B. Schélkopf, I. Valera, A survey of algorithmic recourse: definitions, formula-
+
+tions, solutions, and prospects, arXiv: 2010.04050 (2021).
+
+60] V. Belle, I. Papantonis, Principles and practice of explainable machine learning, arXiv:2009.11698
+Pp Pp Pp p g
+(2020).
+
+[61] C. Molnar, Interpretable Machine Learning: A Guide for Making Black Box Models Explainable,
+Leanpub, 2018.
+
+62] M. Siering, A. V. Deokar, C. Janze, Disentangling consumer recommendations: Explaining and
+g ging Pp g
+predicting airline recommendations based on online reviews, Decision Support Systems 107 (2018)
+
+52 - 63.
+
+[63] B. Kim, J. Park, J. Suh, Transparency and accountability in ai decision support: Explaining and
+visualizing convolutional neural networks for text information, Decision Support Systems 134 (2020)
+
+113302.
+
+[64] M. A.-M. Radwa Elshawi, Youssef Sherif, S$. Sakr, Interpretability in healthcare a comparative study of
+local machine learning interpretability techniques, in: Proceedings of IEEE Symposium on Computer-
+
+Based Medical Systems (CBMS), 2019.
+
+[65] M. Stiffler, A. Hudler, E. Lee, D. Braines, D. Mott, D. Harborne, An analysis of the reliability of lime
+with deep learning models, in: Proceedings of the Dstributed Analytics and Information Science
+
+International Technology Alliance, 2018.
+
+[66] M. D. Zeiler, R. Fergus, Visualizing and understanding convolutional networks, in: Computer Vision
+
+~ECCV 2014, 2014, pp. 818-833.
+
+[67] S. Lapuschkin, $. Waldchen, A. Binder, G. Montavon, W. Samek, K.-R. Miiller, The pragmatic turn in
+
+explainable artificial intelligence (xai), Nature communications 10 (2019) 1096-1096.
+
+[68] H. F. Tan, K. Song, M. Udell, Y. Sun, Y. Zhang, Why should you trust my interpretation? understanding
+
+uncertainty in lime predictions, 2019.
+
+[69] M. Badhrinarayan, P. Ankit, K. Faruk, Explainable deep-fake detection using visual interpretability
+methods, in: 2020 3rd International Conference on Information and Computer Technologies (ICICT),
+
+2020, pp. 289-293.
+
+52
+[70] A. Preece, Asking ‘why’ in ai: Explainability of intelligent systems - perspectives and challenges,
+
+International journal of intelligent systems in accounting, finance & management 25 (2018) 63-72.
+
+[71] R. Turner, A model explanation system, in: IEEE 26th International Workshop on Machine Learning
+
+for Signal Processing, 2016.
+[72] B. Osbert, K. Carolyn, B. Hamsa, Interpretability via model extraction, arxiv: 1705.08504 (2017).
+
+[73] T. J. J, K. Bhavya, S. Prasanna, R. K. Natesan, Treeview: Peeking into deep neural networks via
+
+feature-space partitioning, Nature communications (2019).
+
+[74] R. Sindhgatta, C. Moreira, C. Ouyang, A. Barros, Interpretable predictive models for business
+processes, in: Proceedings of the 18th Internation Conference on Business Process Management
+
+(BPM), 2020.
+
+[75] R. Sindhgatta, C. Ouyang, C. Moreira, Exploring interpretability for predictive process analytics, in:
+Proceedings of the 18th International Conference on Service Oriented Computing (ICSOC), 2020.
+
+[76] M. T. Ribeiro, S. Singh, C. Guestrin, Anchors: High-precision model-agnostic explanations, in:
+
+Proceedings of the 32nd AAAI International Conference on Artificial Intelligence, 2018.
+[77] L.S. Shapley, A value for n-person games, Rand coporation (1952) 15.
+
+[78] E. Strumbelj, I. Kononenko, Explaining prediction models and individual predictions with feature
+
+contributions, Knowledge and Information Systems 41 (2013) 647-665.
+
+[79] A. C. Miller Janny Ariza-Garzon, Javier Arroyo, M.-J. Segovia-Vargas, Explainability of a machine
+
+learning granting scoring model in peer-to-peer lending, in: Proceedings of IEEE Access, 2020.
+
+[80] A. B. Parsa, A. Movahedi, H. Taghipour, S. Derrible, A. (Kouros)Mohammadian, Toward safer
+highways, application of xgboost and shap for real-time accident detection and feature analysis,
+
+Accident Analysis & Prevention 136 (2020) 105405.
+
+[81] J. Wang, J. Wiens, S. Lundberg, Shapley flow: A graph-based approach to interpreting model
+predictions, in: Proceedings of the 24th International Conference on Artificial Intelligence and
+
+Statistics, 2021. arXiv: 2010. 14592.
+
+[82] H. Y. Teh, A. W. Kempa-Liehr, K. L-K. Wang, Sensor data quality: a systematic review, Journal of Big
+Data 7 (2020) 11.
+
+[83] A. Holzinger, A. Carrington, H. Miiller, Measuring the quality of explanations: The system causability
+scale (scs), KI - Ktinstliche Intelligenz 34 (2020) 193-198.
+
+53
+[84] R. Byrne, Cognitive processes in counterfactual thinking about what might have been, The psychology
+
+of learning and motivation: Advances in research and theory 37 (1997) 105-154.
+
+[85] D. Wesberg, A. Gopnik, Pretense, counterfactuals, and bayesian causal models: Why what is not real
+
+really matters, Cognitive Science 37 (2013) 1368-1381.
+
+[86] L. M. Pereira, A. B. Lopes, Cognitive prerequisites: The special case of counterfactual reasoning,
+
+Machine Ethics. Studies in Applied Philosophy, Epistemology and Rational Ethics 53 (2020).
+
+[87] M. Prosperi, Y. Guo, M. Sperrin, J. S. Koopman, J. S. Min, X. He, S. Rich, M. Wang, I. E. Buchan, J. Bian,
+Causal inference and counterfactual prediction in machine learning for actionable healthcare, Nature
+
+Machine Intelligence 2 (2020) 369-375.
+
+[88] J. Pearl, The seven tools of causal inference, with reflections on machine learning, Communications of
+
+ACM 62 (2019) 7.
+
+[89] K. Sokol, P. Flach, Explainability fact sheets: a framework for systematic assessment of explainable
+approaches, in: Proceedings of the 2020 Conference on Fairness, Accountability, and Transparency,
+
+2020.
+
+[90] A. Fernandez, F. Herrera, O. Cordon, M. Jose del Jesus, F. Marcelloni, Evolutionary fuzzy systems
+for explainable artificial intelligence: Why, when, what for, and where to?, IEEE computational
+
+intelligence magazine 14(1) (2019).
+[91] D. Lewis, Counterfactuals, Oxford: Blackwell, 1973.
+
+[92] S. Dandl, C. Molnar, M. Binder, B. Bischl, Multi-objective counterfactual explanations, Lecture Notes
+in Computer Science (2020) 448-469.
+
+[93] A.-H. Karimi, G. Barthe, B. Balle, I. Valera, Model-agnostic counterfactual explanations for conse-
+quential decisions, in: Proceedings of the 23rd International Conference on Artificial Intelligence and
+
+Statistics (AISTATS), 2020, pp. 895-905.
+
+[94] M. T. Keane, B. Smyth, Good counterfactuals and where to find them: A case-based technique for
+
+generating counterfactuals for explainable ai (xai), arxiv: 2005.13997 (2020).
+[95] D. Martens, F. Provost, Explaining data-driven document classifications, MIS quarterly 38(1) (2014).
+
+[96] M. T. Keane, B. Smyth, Good counterfactuals and where to find them: A case-based technique
+for generating counterfactuals for explainable ai (xai), in: Case-Based Reasoning Research and
+
+Development, Springer International Publishing, 2020.
+
+54
+[97]
+
+[98]
+
+[99]
+
+[100]
+
+[101]
+
+[102]
+
+[103
+
+[104]
+
+[105]
+
+[106]
+
+[107]
+
+M. Pawelczyk, K. Broelemann, G. Kasneci, On counterfactual explanations under predictive mul-
+tiplicity, in: Proceedings of the Thirty-Sixth Conference on Uncertainty in Artificial Intelligence,
+
+2020.
+
+C. Russell, Efficient search for diverse coherent explanations, in: Proceedings of the Conference on
+
+Fairness, Accountability, and Transparency, 2019, pp. 20-28.
+
+P. Domingos, The Master Algorithm: How the Quest for the Ultimate Learning Machine Will Remake
+Our World, Penguin, 2017.
+
+A. V. Looveren, J. Klaise, Interpretable counterfactual explanations guided by prototypes, 2019.
+arXiv: 1907 .02584.
+
+R. M. Grath, L. Costabello, C. L. Van, P. Sweeney, F. Kamiab, Z. Shen, F. Lecue, Interpretable credit
+application predictions with counterfactual explanations, in: Proceedings of the 32nd Annual
+
+Conference on Neural Information Processing Systems (NIPS), 2018.
+
+T. Laugel, M.-J. Lesot, C. Marsala, X. Renard, M. Detyniecki, Comparison-based inverse classifica-
+tion for interpretability in machine learning, in: Proceedings of the International Conference on
+Information Processing and Management of Uncertainty in Knowledge-Based Systems. Theory and
+
+Foundations, 2018, pp. 100-111.
+
+T. Laugel, M.-J. Lesot, C. Marsala, X. Renard, M. Detyniecki, The dangers of post-hoc interpretability:
+Unjustified counterfactual explanations, in: Proceedings of the Twenty-Eighth International Joint
+
+Conference on Artificial Intelligence, 2019.
+
+T. Laugel, M.-J. Lesot, C. Marsala, X. Renard, M. Detyniecki, Unjustified classification regions and
+counterfactual explanations in machine learning, in: Proceedings of the European Conference on
+
+Machine Learning and Knowledge Discovery in Databases, 2019.
+
+M. T. Lash, Q. Lin, N. Street, J. G. Robinson, J. Ohlmann, Generalized inverse classification, Proceed-
+ings of the 2017 Society for Industrial and Applied Mathematics International Conference on Data
+Mining (2017) 162-170.
+
+R. Guidotti, A. Monreale, 5. Ruggieri, D. Pedreschi, F. Turini, E Giannotti, Local rule-based explana-
+tions of black box decision systems, arxiv: 1805.10820 (2018).
+
+S. Sharma, J. Henderson, J. Ghosh, Certifai: Counterfactual explanations for robustness, transparency,
+
+interpretability, and fairness of artificial intelligence models, arxiv: 1905.07857 (2019).
+
+55
+[108] A. White, A. d’Avila Garcez, Measurable counterfactual local explanations for any classifier, arxiv:
+
+1908.03020 (2019).
+
+[109] Y. Ramon, D. Martens, F. Provost, T. Evgeniou, A comparison of instance-level counterfactual
+explanation algorithms for behavioral and textual data: Sedc, lime-c and shap-c, Advances in Data
+
+Analysis and Classification 1(1) (2020).
+
+[110] S. Rathi, Generating counterfactual and contrastive explanations using shap, 2019.
+
+arXiv: 1906 .09293.
+
+[111] A. Ghazimatin, O. Balalau, R. Saha Roy, G. Weikum, Prince: provider-side interpretability with
+counterfactual explanations in recommender systems, in: Proceedings of the 13th International
+
+Conference on Web Search and Data Mining, 2020, pp. 196-204.
+
+[112
+
+M. Pawelczyk, K. Broelemann, G. Kasneci, Learning model-agnostic counterfactual explanations for
+
+tabular data, in: Proceedings of the World Wide Web Conference 2020, 2020.
+
+[113
+
+M. Pawelczyk, J. Haug, K. Broelemann, G. Kasneci, Towards user empowerment, in: Proceedings
+of the Thirty-third Annual Conference on Neural Information Processing Systems, Workshop on
+
+Human-Centric Machine Learning, 2019.
+
+[114
+
+A. Lucic, H. Haned, M. de Rijke, Why does my model fail?: contrastive local explanations for retail
+
+forecasting, in: FAT* ’20: Conference on Fairness, Accountability, and Transparency, 2020.
+
+[115] R. Guidotti, A. Monreale, S. Matwin, D. Pedreschi, Black box explanation by learning image exemplars
+in the latent feature space, in: Proccedings of the Joint European Conference on machine Learning
+
+and Knowledge Discovery in Databases, 2020.
+
+[116] M. Downs, J. L. Chu, Y. Yacoby, F. Doshi-Velez, W. Pan, Cruds: Counterfactual recourse using
+disentangled subspaces, ICML WHI 2020 (2020) 1-23.
+
+[117
+
+A. Karimi, B. J. von Kiigelgen, B. Schélkopf, I. Valera, Algorithmic recourse under imperfect causal
+knowledge: a probabilistic approach, in: Advances in Neural Information Processing Systems 33:
+
+Annual Conference on Neural Information Processing Systems, 2020.
+
+[118] S. Barocas, A. D. Selbst, M. Raghavan, The hidden assumptions behind counterfactual explanations
+and principal reasons, in: Proceedings of the 2020 Conference on Fairness, Accountability, and
+
+Transparency, 2020.
+
+[119
+
+M. Zheng, J. K. Marsh, J. V. Nickerson, S. Kleinberg, How causal information affects decisions,
+
+Cognitive Research: Principles and Implications 5 (2020).
+
+56
+[120] Alibi, 2019. URL: https: //github.com/SeldonI0/alibi.
+
+[121] A. V. Looveren, J. Klaise, Interpretable counterfactual explanations guided by prototypes, arxiv:
+
+1907.02584 (2019).
+[122] Face, 2020. URL: https: //github.com/sharmapulkit.
+[123] Truce, 2019. URL: https: //github.com/thibaultlaugel/ truce.
+[124] Dice, 2020. URL: https: //github.com/interpretml /DiCE.
+
+[125] K. Rawal, Himabindu, Beyond individualized recourse: Interpretable and interactive summaries of
+actionable recourse, in: Proceedings of the 34th International Conference on Neural Information
+
+Processing Systems, 2020.
+[126] Prince, 2019. URL: https: //github.com/azinmatin/prince/.
+[127] C-chvae, 2020. URL: https: //github.com/MartinPawel /c-chvae.
+[128] Abele, 2020. URL: https: //github.com/riccotti/ABELE.
+[129] Recourse, 2020. URL: https: //github.com/amirhk/ recourse.
+[130] Mc-brp, 2019. URL: https: //github.com/a-lucic/mc-brp.
+[131] Mace, 2019. URL: https: //github.com/amirhk /mace.
+
+[132] Coherent counterfactuals, 2019. URL: https: //bitbucket.org/ChrisRussell1/
+
+diverse-coherent-explanations/src/master/.
+[133] Moce, 2020. URL: https: //github.com/susanne-207/moc.
+[134] Certifai, 2020. URL: https: //github.com/Ighina/CERTIFAI.
+[135] Lore, 2018. URL: https://github.com/riccotti/LORE.
+
+[136] Y. Ramon, D. Martens, F. Provost, T. Evgeniou, Counterfactual explanation algorithms for behavioral
+
+and textual data, 2019. arXiv: 1912.01819.
+[137] Lime counterfactual, 2020. URL: https: //github.com/yramon/LimeCounterfactual.
+[138] Sed counterfactual, 2020. URL: https: //github.com/yramon/edc.
+[139] Clear, 2020. URL: https: //github.com/ClearExplanationsAI /CLEAR.
+
+[140] Shap counterfactual, 2020. URL: https: //github.com/yramon/ShapCounterfac tual.
+
+57
+[141] A. Holzinger, C. Biemann, C. Pattichis, D. Kell, What do we need to build explainable ai systems for
+the medical domain?, 2017. arXiv: 1712.09923.
+
+[142] A. Holzinger, From machine learning to explainable ai, in: Proceedings of the 2018 World Symposium
+
+on Digital Intelligence for Systems and Machines, 2018.
+
+[143] G. Xu, T. D. Duong, Q. Li, S. Liu, X. Wang, Causality learning: A new perspective for interpretable
+machine learning, 2020. arXiv: 2006. 16789.
+
+[144] A. Holzinger, M. Plass, M. Kickmeier-Rust, K. Holzinger, G. C. Crisan, C.-M. Pintea, V. Palade,
+Interactive machine learning: experimental evidence for the human in the algorithmic loop, Applied
+
+Intelligence 49 (2019) 2401-2414.
+
+[145] A. Holzinger, Trends in interactive knowledge discovery for personalized medicine: Cognitive science
+
+meets machine learning, IEEE Intelligent Informatics Bulletin 15 (2014) 6-14.
+
+[146] Q. Zhao, T. Hastie, Causal interpretations of black-box models, Journal of Business & Economic
+
+Statistics (2019) 1-10.
+[147] O. Peters, The ergodicity problem in economics, Nature Physics 15 (2019) 1216-1221.
+
+[148] J. Rehse, N. Mehdiyev, P. Fettke, Towards explainable process predictions for industry 4.0 in the
+dfki-smart-lego-factory, Kiinstliche Intelligenz 33 (2019) 181-187.
+
+[149] Fico, 2017. URL: https: //community.fico.com/s/explainable-machine-learning-challenge.
+
+[150] J. Wexler, M. Pushkarna, T. Bolukbasi, M. Wattenberg, F. Viegas, J. Wilson, The what-if tool: Interactive
+probing of machine learning models, IEEE Transactions on Visualization and Computer Graphics
+
+(2019) 1-1.
+
+[151] O. Gomez, S. Holter, J. Yuan, E. Bertini, Vice: Visual counterfactual explanations for machine learning
+models, in: Proceedings of the 25th International Conference on Intelligent User Interfaces, 2020, p.
+
+531-535.
+
+[152] F. Cheng, Y. Ming, H. Qu, Dece: Decision explorer with counterfactual explanations for machine
+
+learning models, in: Proceedings of the IEEE VIS 2020, 2020.
+
+[153] D. Shin, The effects of explainability and causability on perception, trust, and acceptance: Implications
+
+for explainable ai, International Journal of Human-Computer Studies 146 (2021) 102551.
+
+[154] R. Confalonieri, L. Coba, B. Wagner, T. R. Besold, A historical perspective of explainable artificial
+intelligence, WIREs Data Mining and Knowledge Discovery 11 (2021) e1391.
+
+58
+[155] J. Paik, Y. Zhang, P. Pirolli, Counterfactual reasoning as a key for explaining adaptive behavior in a
+
+changing environment, Biologically Inspired Cognitive Architectures 10 (2014) 24-29.
+
+[156] T. Gerstenberg, M. F. Peterson, N. D. Goodman, D. A. Lagnado, J. B. Tenenbaum, Eye-tracking
+causality, Psychological science 28 (2017) 1731-1744.
+
+[157] E. Goldvarg, P. Johnson-Laird, Naive causality: a mental model theory of causal meaning and
+
+reasoning, Cognitive Science 25 (2001) 565-610.
+
+[158] A. Holzinger, Interactive machine learning for health informatics: When do we need the human-in-
+
+the-loop?, Brain Informatics 3 (2016) 119-131.
+
+[159] R.N. Yale, Measuring narrative believability: Development and validation of the narrative believability
+
+scale (nbs-12), Journal of Communication 63 (2013) 578-599.
+
+[160] C. Moreira, Y.-L. Chou, M. Velmurugan, C. Ouyang, R. Sindhgatta, P. Bruza, Linda-bn: An inter-
+pretable probabilistic approach for demystifying black-box predictive models, Decision Support
+Systems (in press) (2021) 113561.
+
+[161] M. Velmurugan, C. Ouyang, C. Moreira, R. Sindhgatta, Evaluating explainable methods for predictive
+process analytics: A functionally-grounded approach, in: Proceedings of the 33rd International
+
+Conference on Advanced Information Systems Engineering Forum, 2020.
+
+[162] J. van der Waa, E. Nieuwburg, A. Cremers, M. Neerincx, Evaluating xai: A comparison of rule-based
+
+and example-based explanations, Artificial Intelligence 291 (2021) 103404.
+
+[163] M. N. Hoque, K. Mueller, Outcome-explorer: A causality guided interactive visual interface for
+
+interpretable algorithmic decision making, 2021. arXiv:2101.00633.
+
+[164] S. T. Vélkel, C. Schneegass, M. Eiband, D. Buschek, What is “intelligent” in intelligent user interfaces?
+a meta-analysis of 25 years of iui, in: Proceedings of the 25th International Conference on Intelligent
+
+User Interfaces, 2020, p. 477-487.
+
+59
+

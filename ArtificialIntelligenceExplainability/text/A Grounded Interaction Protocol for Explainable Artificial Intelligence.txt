@@ -1,0 +1,1450 @@
+1903.02409v1 [cs.AI] 5 Mar 2019
+
+arXiv
+
+A Grounded Interaction Protocol for Explainable Artificial
+Intelligence
+
+Prashan Madumal
+University of Melbourne
+Victoria, Australia
+pmathugama@student.unimelb.edu.au
+
+Liz Sonenberg
+University of Melbourne
+Victoria, Australia
+Lsonenberg@unimelb.edu.au
+
+ABSTRACT
+
+Explainable Artificial Intelligence (<AI) systems need to include
+an explanation model to communicate the internal decisions, be-
+haviours and actions to the interacting humans. Successful expla-
+nation involves both cognitive and social processes. In this paper
+we focus on the challenge of meaningful interaction between an
+explainer and an explainee and investigate the structural aspects
+of an interactive explanation to propose an interaction protocol.
+We follow a bottom-up approach to derive the model by analysing
+transcripts of different explanation dialogue types with 398 expla-
+nation dialogues. We use grounded theory to code and identify key
+components of an explanation dialogue. We formalize the model
+using the agent dialogue framework (ADF) as a new dialogue type
+and then evaluate it in a human-agent interaction study with 101
+dialogues from 14 participants. Our results show that the proposed
+model can closely follow the explanation dialogues of human-agent
+conversations.
+
+KEYWORDS
+
+Explainable AI; Interpretable Machine Learning; Dialogue Model;
+Human-Agent Interaction
+
+ACM Reference Format:
+
+Prashan Madumal, Tim Miller, Liz Sonenberg, and Frank Vetere. 2019. A
+Grounded Interaction Protocol for Explainable Artificial Intelligence. In Proc.
+of the 18th International Conference on Autonomous Agents and Multiagent
+Systems (AAMAS 2019), Montreal, Canada, May 13-17, 2019, FAAMAS,
+9 pages.
+
+1 INTRODUCTION
+
+In scenarios where people are required to make critical choices
+based on decisions from an artificial intelligence (AI) system, it is
+important for the system to able to generate understandable expla-
+nations that clearly justify its decisions. An appropriate explanation
+can promote trust in the system, allowing better human-AI cooper-
+ation [30]. Explanations also help people to reason about the extent
+to which, if at all, they should trust the provider of the explanation.
+
+ 
+
+Proc. of the 18th International Conference on Autonomous Agents and Multiagent Systems
+(AAMAS 2019), N. Agmon, M. E. Taylor, E. Elkind, M. Veloso (eds.), May 13-17, 2019,
+Montreal, Canada. © 2019 International Foundation for Autonomous Agents and
+Multiagent Systems (www.ifaamas.org). All rights reserved.
+
+Tim Miller
+University of Melbourne
+Victoria, Australia
+tmiller@unimelb.edu.au
+
+Frank Vetere
+University of Melbourne
+Victoria, Australia
+f.vetere@unimelb.edu.au
+
+As Miller [21, pg 10] notes, the process of Explanation involves
+two processes: (a) a Cognitive process, namely the process of deter-
+mining an explanation for a given event, called the explanandum,
+in which the causes for the event are identified and a subset of
+these causes is selected as the explanation (or explanans); and (b)
+the Social process of transferring knowledge between explainer and
+explainee, generally an interaction between a group of people, in
+which the goal is that the explainee has enough information to
+understand the causes of the event.
+
+However, much research and practice in explainable AI uses
+the researchers’ intuitions of what constitutes a ‘good’ explanation
+rather basing the approach on a strong understanding of how people
+define, generate, select, evaluate, and present explanations [21, 22].
+Most modern work on Explainable AI, such as in autonomous
+agents [5, 7, 15, 36] and interpretable machine learning [13], does
+not discuss the interaction and the social aspect of the explanations.
+The lack of a general interaction model of explanation that takes
+into account the end user can be attributed as one of the shortcom-
+ings of existing explainable AI systems. Although there are existing
+conceptual explanation dialogue models that try to emulate the
+structure and sequence of a natural explanation [2, 32], we propose
+that improvements will come from further empirically-driven study
+of explanation.
+
+Explanation naturally occurs as a continuous interaction, which
+gives the interacting party the ability to question and interrogate
+explanations. This allows the explainee to clear doubts about the
+given explanation by further interrogations and user-driven ques-
+tions. Further, the explainee can express contrasting views about
+the explanation that can set the premise for an argumentation based
+interaction. This type of iterative explanation can provide richer
+and satisfactory explanations as opposed to one-shot explanations.
+Note that we are not claiming that AI explanations are necessarily
+textual conversations. These interactions, questions, and answers
+can occur as part of other modalities, such as visualisations, but we
+believe that such interactions will follow the same model.
+
+Understanding how humans engage in conversational explana-
+tion is a prerequisite to building an explanation model, as noted by
+Hilton [17]. De Graaf [11] note that humans attribute human traits,
+such as beliefs, desires, and intentions, to intelligent agents, and it
+is thus a small step to assume that people will seek to explain agent
+behaviour using human frameworks of explanation. We hypothe-
+sise that AI explanation models with designs that are influenced
+by human explanation models have the potential to provide more
+intuitive explanations to humans and therefore be more likely to be
+understood and accepted. We suggest it is easier for the AI to emu-
+late human explanations rather than expecting humans to adapt to
+a novel and unfamiliar explanation model. While there are mature
+existing models for explanation dialogs [32, 33], these are idealised
+conceptual models that are not grounded on or validated by data,
+and seem to lack iterative features like cyclic dialogues.
+
+In this paper our goal is to introduce a dialogue model and an
+interaction protocol that is based on data obtained from different
+types of explanations in actual conversations. We derive our model
+by analysing 398 explanation dialogues using grounded theory [16]
+across six different dialogue types. Frequency, sequence and rela-
+tionships between the basic components of an explanation dialogue
+were obtained and analyzed in the study to identify locutions, termi-
+nation rules and combination rules. We formalize the explanation
+dialogue model using the agent dialogue framework (ADF) [20], then
+validate the model in a human-agent study with 101 explanation
+dialogues. We propose that by following a data-driven approach
+to formulate and validate, our model more accurately defines the
+structure and the sequence of an explanation dialogue and will
+support more natural interaction with human audiences than ex-
+planations from existing models. The main contribution of this
+paper is a grounded interaction protocol derived from explanation
+dialogues, formalized as a new atomic dialogue type [35] in the
+ADF.
+
+We first discuss related work regarding explanation in AI and
+explanation dialogue models, then we outline the methodology
+of the study and collection of data and its properties. We then
+present the analysis of the data, identifying key components of
+an explanation dialogue and gaining insight to the relationships
+of these components, formalising it using ADF and comparing
+with a similar conceptual model [34]. We then describe the human-
+agent study and present the validation of the model. We conclude
+by discussing the model with its contribution and significance in
+explainable AL.
+
+2 RELATED WORK
+
+Explaining decisions of intelligent systems has been a topic of inter-
+est since the era of expert systems, e.g. [8, 18]. Early work focused
+particularly on the explanation’s content, responsiveness and the
+human-computer interface through which the explanation was de-
+livered. Kass and Finin [18] and Moore and Paris [23] discussed the
+requirements a good explanation facility should have, including
+characteristics like “Naturalness”, and pointed to the critical role
+of user models in explanation generation. Cawsey’s [6] EDGE sys-
+tem also focused on user interaction and user knowledge. These
+were used to update the system through interaction. So, in early
+explainable AI, both the cognitive and social attributes associated
+with an agent’s awareness of other actors, and capability to inter-
+action with them, has been recognized as an essential feature of
+explanation research. However, limited progress has been made.
+Indeed recently, de Graaf and Malle [11] still find the need to em-
+phasize the importance of understanding how humans respond
+to Autonomous Intelligent Systems (AIS). They further note how
+
+humans will expect a familiar way of communication from AIS
+systems when providing explanations.
+
+To accommodate the communication aspects of explanations,
+several dialogue models have been proposed. Walton [32, 33] intro-
+duces a shift model that has two distinct dialogues: an explanation
+dialogue and an examination dialogue, where the latter is used
+to evaluate the success of an explanation. Walton draws from the
+work of Memory Organizing Packages (MOP) [28] and case-based
+reasoning to build the routines of the explanation dialogue models.
+Walton’s dialogue model has three stages: opening, argumentation,
+and closing [32]. Walton suggests an examination dialogue with
+two rules as the closing stage. These rules are governed by the
+explainee, which corresponds to the understanding of an explana-
+tion [31]. This sets the premise for the examination dialogue of an
+explanation and the shift between explanation and examination to
+determine the success of an explanation [33].
+
+A formal dialogical system of explanation is also proposed by
+Walton [31]. This has three types of conditions: dialogue condi-
+tions, understanding conditions, and success conditions. Arioua [2]
+formalize and extend Walton’s dialectical system by incorporating
+Prakken’s [26] framework of dialogue formalisation.
+
+Argumentation also comes into to play in explanation dialogues.
+Walton and Bex [34] introduce a dialogue system for argumentation
+and explanation that consists of a communication language that
+defines the speech acts and protocols that allow transitions in the
+dialogue. This allows the explainee to challenge and interrogate
+the given explanations to gain further understanding. Villata et al.
+[30] focus on modelling information sources to be suited in an
+argumentation framework, and introduce a socio-cognitive model
+of trust to support judgements about trustworthiness.
+
+This previous work on explanation dialogues is largely con-
+ceptual and involves idealized models, and mostly lacks empirical
+validation. In contrast, we take a grounded, data-driven approach
+to determine what an explanation dialogue should look like.
+
+3 METHODOLOGY
+
+To address the lack of a grounded explanation interaction protocol,
+we studied real conversational data of explanations. This study
+consists of data selection and gathering, data analysis, and model
+development, and then a validation in a lab based simulated human-
+agent experiment.
+
+We designed a bottom-up study to develop an explanation di-
+alogue model. We aimed to gain insights into three areas: 1. key
+components that makeup an explanation interaction protocol (lo-
+cutions); 2. relationships within those components (termination
+rules); and 3. component sequences and cycles (combination rules)
+that occur in explanations.
+
+3.1 Design
+
+We formulate our design based on an inductive approach. We use
+grounded theory [16] as the methodology to conceptualize and
+derive models of explanation. The key goal of using grounded
+theory, as opposed to using a hypothetico-deductive approach, is
+to formalize a model that is grounded on actual conversation data
+of various types, rather than a purely conceptual model.
+The study is divided into three distinct stages, based on grounded
+theory. The first stage consists of coding [16] and theorizing, where
+small chunks of data are taken, named and marked manuaily ac-
+cording to the concepts they might hold. For example, a segment
+of a paragraph in an interview transcript can be identified as an
+‘Explanation’ and another segment can be identified as a “Why
+question’. This process is repeated until the whole data set is coded.
+The second stage is categorizing, where similar codes and concepts
+are grouped together by identifying their relationship with each
+other. The third stage derives a theoretical model from the codes,
+categories and their relationship.
+
+3.2 Data
+
+We collected data from six different data sources encompassing
+six different types of explanation dialogues. Table 1 shows the
+explanation dialogue types, explanation dialogues that are in each
+type and number of transcripts. Here, ‘static’ is defined as when an
+explainee or an explainer is the same person change from transcript
+to transcript (e.g. same journalist interviewing different people). We
+gathered and coded a total of 398 explanation dialogues from all of
+the data sources. All the data sources! are text based, where some
+of them are transcribed from voice and video-based interviews.
+Data sources consist of Human-Human conversations and Human-
+Agent conversations. We collected Human-Agent conversations to
+analyze if there are significant differences in the way humans carry
+out the explanation dialogue when they knew the interacting party
+was an agent with respect to the frequency of different locutions.
+
+Table 1: Coded data description.
+
+ 
+
+ 
+
+Explanation Dialogue Type #Dialogue — #Scripts
+1. Human-Human static explainee 88 2
+2. Human-Human static explainer 30 3
+3. Human-Explainer agent 68 4
+4, Human-Explainee agent 17 1
+5. Human-Human QnA 50 5
+6. Human-Human multiple explainee 145 5
+
+ 
+
+Data source selection was done to encompass different combi-
+nations of participant types and numbers. These combinations are
+given in Table 2. We diversify the dataset by including data sources
+of different mediums such as verbal based and text based.
+
+Table 3 presents the codes and their definitions. We identify
+‘why’, ‘how’ and ‘what’ questions as questions that ask counterfac-
+tual explanations, questions that ask explanations of causal chains,
+and questions that ask causality explanations respectively. The
+whole number of the code column refers to the categories the codes
+belong to, where 1) Dialogue boundary; 2) Question type; 3) Expla-
+nation; 4) Argumentation; 5) Return question type.
+
+4 GROUNDED EXPLANATION INTERACTION
+PROTOCOL
+
+In this section, we present the interaction model resulting from
+our grounded study, and formalize the model using agent dialogue
+
+‘Links to all data sources (including transcripts) can be found at https://
+explanationdialogs.azurewebsites.net
+
+Table 2: Explanation dialogue type description.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Participants Number Medium Data source
+
+1. Human-Human 1-1 Verbal Journalist Inter-
+view transcripts
+
+2. Human-Human 1-1 Verbal Journalist Inter-
+view transcripts
+
+3. Human-Agent 1-1 Text Chatbot conversa-
+tion transcripts
+
+4, Human-Agent 1-1 Text Chatbot conversa-
+tion transcripts
+
+5. Human-Human n-m Text Reddit AMA
+records
+
+6. Human-Human 1-n Verbal Supreme court
+transcripts
+
+Table 3: Code description.
+
+Code Description
+
+1.1 QE start Explanation dialogue start
+
+1.2 QE end Explanation dialogue end
+
+2.1 How How questions
+
+2.2 Why Why questions
+
+2.3 What What questions
+
+3.1 Explanation
+3.2 Explainee Affirmation
+3.3 Explainer Affirmation
+
+Explanation given for questions
+Explainee acknowledges explanation
+Explainer acknowledges explainee’s ac-
+knowledgment
+
+Background to the question provided by
+the explainee
+
+Counterfactual case of the how/why
+question
+
+Argument presented by explainee or ex-
+plainer
+
+An argument that starts the dialogue
+Argument Affirmation by explainee or
+explainer
+
+4.4 Argument-c Counter argument
+
+45 Argument-contrast Argumentation contrast case
+
+case
+
+5.1 Explainer Return ques- Clarification question by explainer
+
+tion
+
+3.4 Question context
+3.5 Counterfactual case
+4.1 Argument
+
+4.2 Argument-s
+4.3 Argument-a
+
+5.2 Explainee Return ques- Follow up question asked by explainee
+tion
+
+ 
+
+framework (ADF) [20] as an atomic dialogue type [35]. Note that a
+dialogue can range from a purely visual user interface interaction
+to verbal interactions. We analyse some observed patterns of inter-
+action and compare the grounded model to an existing conceptual
+model.
+
+When formalizing the model, we consider the interaction be-
+tween explainer and explainee as a dialogue game. Dialogue games
+are depicted as interactions between two or more players. The play-
+ers can make ‘moves’ with utterances, according to a set of rules.
+Dialogue game models have been used to model human-computer
+interaction [4], to model human reasoning [27] and to develop
+protocols for interactions between agents [12].
+ 
+
+Q: Begin_Question
+
+ 
+
+. E: explain/ Explanation
+Question Stated furiher_explain Presented
+| Q: affirm
+Q: return_question
+
+ 
+
+ 
+
+ 
+
+ 
+
+E: return_question
+
+E: affirm
+
+E: Begin_Explanation
+
+Q: Begin_Argument
+
+ 
+
+Argument
+
+ 
+
+ 
+
+ 
+
+Explainee Affirmed
+
+H
+
+Presented
+
+ 
+
+E: affirm_argument
+
+ 
+ 
+ 
+   
+ 
+
+E; further_explain E: further_explain
+
+Argument Affirmed
+
+E: counter_argument
+
+ 
+
+ 
+
+ 
+
+Counter Argument
+
+ 
+
+ 
+
+     
+ 
+
+Presented
+
+ 
+
+End_Argument
+
+ 
+
+ 
+
+End_ Explanation
+
+ 
+
+ 
+
+ 
+
+Figure 1: Explanation Dialogue Model
+
+Formal dialogue models have been proposed for different di-
+alogue types [35], such as negotiation dialogues [1], persuasion
+dialogues [35] and a combination of negotiation and persuasion
+dialogues [12]. To the best of our knowledge there is no formal
+explanation dialogue game model grounded on data.
+
+4.1 Agent Dialogue Framework
+
+We use McBurney and Parson’s agent dialogue framework [20]
+to formalize the explanation dialogue model as a dialogue game.
+The Agent Dialogue Framework (ADF) provides a modular and
+unifying framework that can represent and combine different types
+of atomic dialogues in the typology of Walton and Krabbe [35], with
+the freedom of introducing new dialogue type combinations. The
+ADF has three layers: 1. topic layer; 2. dialogue layer; and 3. control
+layer. In the topic layer, the topics of discussion in a dialogue game
+are presented in a logical language. Then, the dialogue layer [20]
+consists of a set of rules:
+
+Commencement rules: rules under which the dialogue com-
+menses.
+
+Locutions: Rules that determine which utterances are permitted
+in the dialogue-game. Typical locutions include assertions, ques-
+tions, arguments, etc.
+
+Combination rules: Rules that define the dialogical context
+of the applicability of locutions. E.g. it might not be applicable to
+assert preposition p and =p in the same dialogue.
+
+Commitments: Rules that determine the circumstances where
+players express commitments to a preposition.
+
+Termination rules: Rules that determine the ending of a dia-
+logue.
+
+More formally, given a set of participating agents A, we define
+the dialogue G at the dialogue layer as a 4-tuple (0,8, 7,CF),
+where © denotes set of legal locutions, R the set of combinations,
+7 the set of termination rules and C¥ the set of commitment
+functions respectively [20].
+
+Selection and transitions between dialogue types are handled in
+the control layer. Dialogue types can be combined using iteration,
+sequencing and embedding [20, pg 10]. When combined, an ADF is
+given by 5-tuple (A, £, 11g, II¢, 1) where the set of agents is given
+by A, logical language representation given by £, set of atomic
+dialogue types given by Ig, set of control dialogues given by Ie¢,
+and I] is the closure of IIg UII¢, which represents the set of formal
+dialogues denoted by the 4-tuple given above. Closure is defined
+under the combination rules presented by McBurney and Parsons
+[20].
+
+4.2 Formal Explanation Dialogue Game Model
+
+In this section we present the formal explanation dialogue model
+as a new atomic dialogue type [35] using the modular ADF, and
+discuss how it is derived from the grounded data of explanation
+dialogues according to the layers of ADF. Our analysis of the data
+shows that people switch from explanation to argumentation and
+back again during an explanation dialogue, in which the explainee
+questions a claim made by an explainer. For this reason, our model
+has two dialogue types: Explanation and Argumentation. Dialogue
+games of atomic dialogue types [35] have an initial situation and
+an aim (e.g persuasion dialogue having the initial situation of con-
+flicting opinions of the interacting party and the aim of resolving
+the conflict). For our explanation dialogue, the initial condition is
+the knowledge discrepancy between explainer and explainee of the
+topic p and the aim is to provide knowledge about the topic p to
+the explainee.
+
+Formally, the explanation dialogue model (ADF) is the tuple:
+
+ADFp = (A, £, 1a, Uc, HW) (1)
+
+where the set of agents A = {Q, E}, where labels Q and E refer
+to the Questioner (the explainee) and the Explainer respectively;
+£ is the set of logical representations about topics (denoted by
+p. qt...) Ua = {Gg Ga}, where Gz is the explanation dialogue
+and Gy is the argumentation dialogue, IIe = (Begin_Question, Be-
+gin_Explanation, Begin_Argument, End_Explanation, End_Argument),
+and I] is the closure of Ilg UI¢ under the combination rule set. I]
+gives us the set of formal explanation dialogue G.
+
+The Topic Layer is dependent on the particular application
+domain in which the explanation dialogue is embedded, so we do
+not define this further.
+
+Dialogue Layer. The dialogue layer consists of the two dialogue
+types: explanation (Gg) and argumentation (G4):
+
+Gr = (Oz, Re, Tz.CF gz)
+
+2
+Ga = @a.RaTaCFa) @)
+
+The set of legal locutions are defined by:
+Og = (explain, affirm, further_explain, return_question)
+
+©, = (affirm_argument, counter _argument, further_explain).
+(3)
+
+For clarity, we define the commencement rules, combination rules,
+and termination rules via the state transition diagram in Figure 1.
+While most codes are directly transferred to the model as states and
+state transitions, codes that belonged to information category are
+embedded in different states. The combination rules Rg and Ry are
+defined by the individual transitions on the diagram. For example,
+after a dialogue begins with a question, the next locution is either
+the explainer asking for clarification using a return_question or
+giving an explanation. Similarly, the set of termination rules can
+be extracted from the state model as the state transitions that lead
+to the termination state, giving 7g = (affirm(p), explain(p)) and
+Ta = (affirm_argument(p), counter_argument(p)). We do not define
+commitments CF as these were not observable in our data.
+
+Control layer. This can be identified as state transitions that lead
+to and out of the two dialogue types in Figure 1 (e.g. argue, expla-
+nation_end). Argumentation occurs naturally within explanation
+dialogues, meaning that this is an embedded dialogue, as defined by
+McBurney and Parsons [20]. An argument can occur after an expla-
+nation was given, which will then continue on to an argumentation
+dialogue. The dialogue then returns to the explanation dialogue, as
+shown in Figure 1. A single explanation dialogue can contain many
+embedded argumentation dialogues.
+
+Explanation dialogues can occur in sequence, which is modelled
+by the external loop. Note that a loop within the explanation dia-
+logue implies that the ongoing explanation is related to the same
+original question and topic, while a loop outside of the dialogue
+means a new topic is introduced. We coded explanation dialogues to
+end when a new topic was raised in a question. Questions that ask
+for follow-up explanations (return_question) were coded when the
+
+questions were clearly identifiable as requesting more information
+about the given explanation.
+
+Example: We now go through the formal model with an exam-
+ple dialogue which is taken from the human-agent experiments
+discussed in Section 5.1. Example is given in Table 4 with the dia-
+logue text, locutions/rules and a commentary about the dialogue.
+Two agents who are explainee (player) and the explainer (agent)
+participate in the dialogue given by Q and E respectively and the
+topic ‘cities’ by p:
+
+Table 4: Example: from human-agent experiments of Ticket
+to Ride domain.
+
+ 
+
+Dialogue Text Locutions/Rules Commentary
+
+ 
+
+E:Opponentis gazing at Begin Explanation(p) - Commence ex-
+
+Duluth to Omaha route
+and will try to extend it
+to Kansas City.
+
+Q: Is he going to Pitts-
+burgh?
+
+E: Opponent will try to
+Extend the path from
+Pittsburgh to Houston
+through Atlanta, has
+been repeatedly gazing
+at that path
+
+Q: No. He is going to El
+Paso.
+
+E: Yes, now opponents
+gaze is focused at El
+Paso and will try to
+build from Little rock to
+Dallas to El Paso.
+
+return_question(p)
+
+further_explain(p)
+
+Begin_Argument(p)
+
+affirm_argument(p)
+
+End_Argument(p)
+
+planation dialogue
+with an explana-
+tion about cities
+which the oppo-
+nent is gazing at
+
+- Using locution re-
+turn_question avail-
+able in Explanation
+dialogue type, in-
+quiring more infor-
+mation
+
+- providing further
+explanation using
+further_explain lo-
+cution about topic
+
+p.
+
+- Argumentation
+sub-dilaog begins
+about topic p after.
+- Argument is
+acknowledged
+
+by the Agent (E)
+using
+affirm_argument
+
+- End the embedded
+argument dia-
+logue by using the
+control dialogue
+End_Argument
+which also ends the
+initial dialogue.
+
+locution
+
+ 
+
+This example shows an interaction between an agent and a
+human using the explanation dialogue with an embedded argumen-
+tation dialogue. The human-agent study is discussed in depth in Sec-
+tion 5.1. The example demonstrates the ability of our model to han-
+dle embedded dialogues and cyclic dialogues (explanation dialogues
+that occurs twice with Begin_explanation and further_explain)
+which similar model of explanation dialogue by Walton [34] lack.
+A detailed model comparison between our model and Walton’s can
+be found in Section 4.4.
+4.3 Analysis
+
+We focus our analysis on three areas to further reinforce the de-
+rived interaction protocol: 1. Key components of an Explanation
+Dialogue; 2. Relationships between these components and their
+variations between different dialogue types; and 3. The sequence
+of components that can successfully carry out an explanation dia-
+logue.
+
+ 
+
+ 
+
+= Human-Human static explainee
+
+= = +Human-Human static explainer
+Human-Explainer agent
+Human-Explainee agent
+
+—F— Human-Human QnA
+
+—@— Human-Human multiple explainee
+
+ 
+ 
+    
+
+nN
+T
+
+    
+ 
+
+ 
+
+ 
+
+   
+
+ 
+
+a
+T
+
+Average Occurrence in a Dialog
+T
+
+2
+a
+T
+
+ 
+
+ 
+
+ 
+
+6 yap Lammas ae
+OB gad good go ao a aot as go go go pat ane? p20 ao aot
+Le NE ve 3 go goo CO og oe got gt tO gue ce
+ee re rs ae oO yt cy eae oe
+os os we eo OF ee gee ce
+pe Sacaee ss
+Codes
+
+Figure 2: Average code occurrence per dialogue in different
+explanation dialogue types
+
+4.3.1 Code Frequency Analysis. The average code occurrence
+per dialogue in different dialogue types is depicted in Figure 2. In
+all dialogue types, a dialogue is most likely to have multiple what
+questions, multiple explanations and multiple affirmations.
+
+Argumentation is a key component of an explanation dialogue.
+The explainee can have different or contrasting views to the ex-
+plainer regarding the explanation, at which point an argument can
+be put forth by the explainee. An argument in the form of an expla-
+nation that is not in response to a question can also occur at the
+very beginning of an explanation dialogue, where the argument set
+the premise for the rest of the dialogue. An argument is typically
+followed by an affirmation and may include a counter argument
+by the opposing party. From Figure 2, Human-Human dialogues
+with the exception of QnA have argumentation but Human-Agent
+dialogues lack any substantial occurrences of argumentation.
+
+4.3.2 Explanation Dialogue Termination Rule Analysis. Partici-
+pants should be able to identify when a dialogue ends. We analyse
+the different types of explanation dialogues to identify the codes
+that are most likely to signify termination.
+
+From Figure 3, all explanation dialogue types except Human-
+Human QnA type are most likely to end in an explanation. The
+second most likely code to end an explanation is explainer affir-
+mation. Ending with other codes such as explainee and explainer
+return questions is presented by ‘Dialogue ending In Other’ bar in
+Figure 3. It is important to note that although a dialogue is likely to
+end in an explanation, that dialogue can have previous explainee
+affirmations and explainer affirmations.
+
+ 
+ 
+ 
+
+ 
+ 
+
+[Dialog ending in explanation
+[-_] Dialog ending in Explainee Affirmation
+[EG Dialog ending in Explainer Affirmation
+[EE Dialog ending in Preconception
+
+[EE Dialog ending in Argument Affirmation
+Dialog ending in Argument Counter
+HE Dialog ending in Other
+
+ 
+   
+ 
+ 
+
+  
+
+     
+ 
+
+ 
+ 
+
+ 
+
+3 k gg
+S 6 8
+
+Ending Type % per Dialog
+8
+
+Explanation Dialog Type
+
+Figure 3: Average code occurrence in per dialogue in differ-
+ent explanation dialogue types
+
+4.4 Model Comparison
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Explainee Explainer Explainee Explainer Explainee
+asks why- |» presents |} finds anomaly explains |» accepts STOP
+question: story. in story anomaly. explanation.
+e
+SOALOGLE 5 a) Teo
+— sequence oF xplainee
+The story Examination ence
+holds up or }¢—] dialogue examination }4_{probes.
+is refuted successful y per
+bath parties satisfied
+evaluated. STOP
+
+ 
+
+ 
+
+Figure 4: Argumentation and explanation in dialogue [34]
+
+We compare the explanation dialogue model, which also contains
+an argumentation sub-dialogue, by Walton [34]. Walton proposed
+the model shown in Figure 4, which consists of 10 components.
+This model focus on combining explanation and examination di-
+alogues with argumentation. A similar shift between explanation
+and argumentation/examination can be seen between our model
+and Walton’s. According to the data sources, argumentation is a
+frequently present component of an explanation dialogue, which is
+depicted by the Explainee probing component in Walton’s Model.
+The basic flow of explanation is the same between the two models,
+but the models differ in two key ways. First, is the lack of exami-
+nation dialogue shift in our model. Although we did not derive an
+examination dialogue, a similar shift of dialogue can be seen with
+respect to affirmation states. That is, our ‘examination’ is simply
+the explainee affirming that they have understood the explanation.
+Second is Walton’s focus on the evaluation of the successfulness
+of an explanation in the form of examination dialogue, whereas
+our model focus on delivering an explanation in a natural sequence
+without an explicit form of explanation evaluation.
+
+Thus, we can see similarities between Walton’s conceptual model
+and our data-driven model. The differences between the two are at
+a more detailed level than at the high-level, and we attribute these
+i
+
+a) =
+we l
+
+Las Veons
+
+Figure 5: Ticket to Ride Computer Game
+
+differences to the grounded nature of our study. While Walton
+proposes an idealised model of explanation, we assert that our
+model captures the subtleties that would be required to build a
+natural dialogue for human-agent explanation.
+
+5 EMPIRICAL VALIDATION
+
+In this section we discuss the validation of the derived explanation
+interaction protocol. We conducted a human-agent study in which
+an agent provides explanations using our model. The purpose of the
+study is to test whether the proposed model holds in a human-agent
+setting, and in particular, that the human participants follow the
+dialogue model when interacting with an artificial agent.
+
+5.1 Study
+
+We conducted our study using the Ticket to Ride online computer
+game in a co-located competitive setting, previously used by Newn
+et al. [24] and Singh et al. [29], in a university usability lab. The basic
+layout of the game is shown in Figure 5. In this game, players must
+compete to build train routes between two cities, with each player
+building at least two such routes. For the purpose of the study, a
+game is played between two players who we term as the player
+and the opponent. The player is assisted by an intelligent software
+agent that predicts the intentions and plans of the opponent. It
+is important to note that for a two player game, each route can
+be claimed only by one player. This allows players to block each
+other deliberately or otherwise, therefore inferring the intent of
+the opponent is beneficial for winning the game. We use the intent
+recognition algorithm of Singh et al. [29] to predict the opponent’s
+future moves. The algorithm uses gaze data from an eye tracker
+and the actions of the opponent to formulate the possible plans (e.g.
+most probable routes the opponent can take). The opponent’s gaze
+will also appear as a heat map on top of the player’s Ticket to Ride
+
+2https://www.daysofwonder.com/tickettoride/en/
+
+ 
+
+game screen. The agent communicates the predictions and their
+explanations to the player through a chat window.
+
+To evaluate our model, we adopted a Wizard of OZ approach de-
+scribed by Dahlbiick et al. [10], meaning that the natural language
+generation of the explanation agent is played by a human ‘wizard’,
+but this is unknown to the human participant. It is important to
+note that only the natural language generation is delegated to the
+wizard, while the agent generates and visualize plans {a set of con-
+nected train routes) in a separate interface in order to assist the
+wizard. Wizard has access to the visualized plans, most gazed at
+routes and most gazed at cities. The argument for using Wizard
+of Oz (WoZ) technique as opposed to a natural language imple-
+mentation is twofold. First, to gather high quality empirical data
+related to the model bypassing the limitation that exist in natural
+language interfaces [10]. Second, having an interaction that closely
+resembles human discourse [10] allows the human to have more
+natural responses. Wizard of Oz techniques have been demonstra-
+tively shown to successfully evaluate conversational agents [9, 14],
+human-robot interactions [3] and automated vehicle-human inter-
+actions [19, 25] .
+
+The Wizard uses the prediction information of the agent and
+translates it to a more natural dialogue, enabling us to get empirical
+data on natural explanation dialogues between player and the agent.
+The player is informed that he/she can communicate with the agent
+in a natural discourse. A prediction of the game includes a route
+that opponent might build (e.g from Pittsburgh to Houston) and a
+city area opponent might be interested in (e.g Interested around
+Houston). Predictions are generated from the implemented intent
+recognition algorithm of Singh et al. [29]. The wizard follows a
+simple natural language template: prediction followed by the ex-
+planation. The explanation template can include one or more of
+the following in any order: gaze explanation (e.g the opponent has
+been repeatedly gazing at that path) and causal history explanation
+(e.g the opponent has already built some paths along that route).
+
+The protocol of the Wizard is outlined as follows. The Wizard
+follows the locutions, termination rules and combination rules of
+the dialogue model. Predictions and explanations of the agent is
+translated to natural language using the template described above
+by the wizard according to the nature of the locution used. Players
+(experiment participants) can ask questions and present argument
+in natural language. Players can initiate dialogues as well as reply
+to the Wizard at any time in the game, and are in-control of the
+frequency of the interaction. The wizard follows a static failure
+response to any interactions that failed or unable to provide predic-
+tions and explanations (e.g I’m unable to answer that). Note that
+in the case of a participant using an invalid locution or a control
+dialogue, the dialogue will fail and wizard will end the dialogue
+with a termination rule.
+
+Parameters of the experiments are as follows. In total, we ob-
+tained 101 explanation dialogues across 14 experiments. Players
+were from the same university, aged between 23 and 31 years
+(M = 27.2). Players were observed through an observation room,
+in which the wizard was located. The duration of each experiment
+had an upper bound of 30 minutes (M = 20.15), limited by the
+
+3Video capture of an experiment is provided in supplementary material at https:
+//explanationdialogs.azurewebsites.net/supp.zip
+duration of the game-play, with the ability to end early if the game
+is won by either side before 30 minutes (game ends when all trains
+have been used by either side). During game-play the player has
+the freedom to engage in conversation with the agent or play the
+game disregarding the agent, thus each experiment yields a differ-
+ent number of dialogues (M = 7.21). Conversations between player
+and the wizard were carried out using a chat client, through which
+we recorded the dialogue data. Extracted data was then analysed
+according to locutions, control dialogues and their sequences.
+
+5.2 Results and Findings
+
+ 
+
+25 -
+[Iai iatog games
+IERIE aa ciatog games
+
+Control Dialogs
+
+20 [BQ] - Begin_Question
+[BE] - Begin_Explanation
+
+- Begin_/
+[EA] -- End_Argumentation
+
+Locutions:
+
+1- eplain
+
+[AF] - affirm
+
+IRQ] - retur_question
+410F IFE] - further_explain
+TAA] - affirm argument
+ICA] - counter_argument
+
+(Leal dele arable |
+
+Dialog game occurrence %
+
+ 
+
+ 
+
+’ x 3 BP DP a
+PPP EP CPP PP PP org oP
+FP set 8 of eG CLE rer
+PF Pg * eo oF 9 Fee &
+ere ¥ Oe v fs ew ge
+eee ee & ee
+
+© Dialon games
+
+Figure 6: Empirical results of human-agent dialogue games.
+
+Figure 6 illustrates the explanation dialogue games in the human-
+agent study. Control dialogues and locutions are depicted by short-
+ened tags, which forms a sequence when combined. An example of
+a dialogue game using the tags would be [BQ][E] [AF], which cor-
+responds to [Begin_question => explain = affirm] in locutions and
+control dialogues. Figure 6 shows percentages a specific dialogue
+game type occurred, and invalid dialogue games.
+
+The proposed explanation dialogue model held true for 96 out
+of 101 dialogue game instances we observed. Figure 6 indicates
+the 5 invalid dialogue game types that occurred. These dialogues
+became invalid dialogue games according to our model because of
+the parallelization of dialogue combination moves. For example,
+consider the dialogue game [BE][AF][RQ][BA][EA]. Here, after
+affirm and return_question locution, Begin_Argumentaion control
+dialogue occurs. This sequence is illegal according to the model. If
+parallelization is allowed, Begin_Argumentaion control dialogue can
+occur without waiting for a termination rule (e.g. affirm, explain).
+We attribute this limitation to the nature of the grounded data where
+parallelization cannot be accurately captured. This limitation can
+potentially be rectified by introducing parallelization [20] to the
+combination rules.
+
+6 CONCLUSION
+
+Explainable Artificial Intelligent systems can benefit from having
+a proper interaction protocol that can explain their actions and
+
+behaviours to the interacting users. Explanation naturally occurs
+as a continuous and iterative socio-cognitive process that involves
+two (sub)processes: a cognitive process and a social process. Most
+prior work is focused on providing explanations without sufficient
+attention to the needs of the explainee, which reduces the usefulness
+of the explanation to the end-user.
+
+In this paper, we propose a interaction protocol for the socio-
+cognitive process of explanation that is derived from different types
+of natural conversations between humans as well as humans and
+agents. We formalise the model using the Agent Dialogue Frame-
+work [20] as a new atomic dialogue type [35] of explanation with an
+embedded argumentation dialogue, and we analyse the frequency
+of occurrences of patterns. To empirically validate our model, we
+undertook a human behavioural experiment involving 14 partici-
+pants and a total of 101 explanation dialogues. Results indicate that
+our explanation dialogue model can closely follow Human-Agent
+explanation dialogues. Main contribution of this paper lies in the
+formalized interaction protocol for explanation dialogues that is
+grounded on data, a secondary contribution is the coded (tagged)
+explanation dialogue data-set of 398 dialogues*. By following a
+data-driven approach, proposed model captures the structure and
+the sequence of an explanation dialogue more accurately and allow
+natural interactions than explanations from existing models. The
+main contribution of this paper is a grounded interaction protocol
+derived from explanation dialogues, formalized as a new atomic
+dialogue type [35] in the ADF. XAI systems that deal in explanation
+and trust will benefit from such a model in providing better, more
+intuitive and interactive explanations.
+
+In future work, we aim introduce parallelism to the model with
+respect to locutions and combination rules as founded to be present
+in human-agent dialogues from the study. Further evaluation can be
+done by introducing other forms of interaction modes such as visual
+interactions which may introduce different forms of combination
+and termination rules.
+
+ACKNOWLEDGMENTS
+
+The research described in this paper was supported by the Univer-
+sity of Melbourne research scholarship (MRS); SocialNUI: Microsoft
+Research Centre for Social Natural User Interfaces at the Univer-
+sity of Melbourne; and a Sponsored Research Collaboration grant
+from the Commonwealth of Australia Defence Science and Tech-
+nology Group and the Defence Science Institute, an initiative of the
+State Government of Victoria. We also acknowledge the support of
+Joshua Newn and Ronal Singh, given in conducting the study.
+
+REFERENCES
+
+{1] L. Amgoud, N. Maudet, and S. Parsons. 2000. Modelling dialogues using argu-
+mentation. In Proceedings Fourth International Conference on MultiAgent Systems.
+31-38. https://doi.org/10.1109/ICMAS.2000.858428
+
+[2] Abdallah Arioua and Madalina Croitoru. 2015. Formalizing explanatory dialogues.
+
+In International Conference on Scalable Uncertainty Management. Springer, 282-
+
+297.
+
+Adrian Keith Ball, David C. Rye, David Silvera-Tawil, and Mari Velonaki. 2017.
+
+How Should a Robot Approach Two People? 3. Hum.-Robot Interact. 6, 3 (Dec.
+
+2017), 71-91. https://doi.org/10.5898/JHRI.6.3.Ball
+
+[3
+
+‘coded (tagged) dialogue data-set is provided in supplementary material at https:
+//explanationdialogs.azurewebsites.net/supp.zip
+[4]
+
+[5
+
+[6
+
+(7
+
+[3]
+
+[9
+
+10]
+
+f4]
+
+(12]
+
+(13]
+
+(14)
+
+(15]
+
+[16]
+
+[17]
+
+[18]
+
+{19]
+
+Trevor JM Bench-Capon, PAUL E Dunne, and Paul H Leng. 1991. Interacting
+with knowledge-based systems through dialogue games. In Proceedings of the
+Eleventh International Conference on Expert Systems and Applications. 123-140.
+Joost Broekens, Maaike Harbers, Koen Hindriks, Karel Van Den Bosch, Catholijn
+Jonker, and John-Jules Meyer. 2010. Do you get it? User-evaluated explainable
+BDI agents. In German Conference on Multiagent System Technologies. Springer,
+28-39,
+
+Alison Cawsey. 1993. Planning interactive explanations. International Journal of
+Man-Machine Studies 38, 2 (1993), 169 — 199. https://doi.org/10.1006/imms.1993.
+1009
+
+Tathagata Chakraborti, Sarath Sreedharan, Yu Zhang, and Subbarao Kambham-
+pati. 2017. Plan explanations as model reconciliation: Moving beyond explanation
+as soliloquy. IJCAI International Joint Conference on Artificial Intelligence (2017),
+156-163. https://doi.org/10.24963/ijcai.2017/23 arXiv:1802.01013
+
+B. Chandrasekaran, Michael C. Tanner, and John R. Josephson. 1989. Explaining
+Control Strategies in Problem Solving. (1989), 9-15 pages. https://doi.org/10.
+1109/64.21896
+
+Ana Paula Chaves and Marco Aurelio Gerosa. 2018. Single or Multiple Conversa-
+tional Agents?: An Interactional Coherence Comparison. In Proceedings of the
+2018 CHI Conference on Human Factors in Computing Systems. ACM, 191.
+
+Nils Dahlback, Arne Jonsson, and Lars Ahrenberg. 1993. Wizard of Oz Studies:
+Why and How. In Proceedings of the 1st International Conference on Intelligent
+User Interfaces (IUI 93). ACM, New York, NY, USA, 193-200. https://doi.org/10.
+1145/169891.169968
+
+Maartje M A De Graaf and Bertram F Malle. 2017. How People Explain Action
+(and Autonomous Intelligent Systems Should Too). AAAI 2017 Fall Symposium
+on GATJAI-HRIGAI (2017), 19-26.
+
+Frank Dignum, Barbara Dunin-Keplicz, and Rineke Verbrugge. 2001. Agent
+Theory for Team Formation by Dialogue. In Intelligent Agents VII Agent Theories
+Architectures and Languages, Cristiano Castelfranchi and Yves Lespérance (Eds.).
+Springer Berlin Heidelberg, Berlin, Heidelberg, 150-166.
+
+Finale Doshi-Velez and Been Kim. 2017. Towards A Rigorous Science of Inter-
+pretable Machine Learning. Ml (2017), 1-13. arXiv:1702.08608 http://arxiv.org/
+abs/1702.08608
+
+Mateusz Dubiel. 2018. Towards Human-Like Conversational Search Systems. In
+Proceedings of the 2018 Conference on Human Information Interaction&Retrieval.
+ACM, 348-350.
+
+Maria Fox, Derek Long, and Daniele Magazzeni. 2017. Explainable Planning.
+IJCAI - Workshop on Explainable AI (2017).
+
+Barney G Glaser and Anselm L Strauss. 1967. The Discovery of Grounded Theory:
+Strategies for Qualitative Research. Vol. 1. 271 pages. https://doi.org/10.2307/
+2575405 arXiv-arXiv-gr-qc/9809069v1
+
+Denis J. Hilton. 1991. A Conversational Model of Causal Explanation. Eu-
+ropean Review of Social Psychology 2 (1991), 51-81. https://doi.org/10.1080/
+14792779143000024
+
+Robert Kass and Tim Finin. 1988. The Need for User Models in Generating Expert
+System Explanations. Technical Report. University of Pennsylvania. 1-32 pages.
+http://repository.upenn.edu/cis_reports/585
+
+Karthik Mahadevan, Sowmya Somanath, and Ehud Sharlin. 2018. Communi-
+cating Awareness and Intent in Autonomous Vehicle-Pedestrian Interaction. In
+Proceedings of the 2018 CHI Conference on Human Factors in Computing Systems.
+ACM, 429.
+
+[20]
+
+(21]
+
+[22]
+
+[23]
+
+[24]
+
+[25]
+
+[30]
+
+[31]
+[32]
+
+[33]
+
+[34]
+
+[35]
+
+[36]
+
+Peter McBurney and Simon Parsons. 2002. Games That Agents Play: A Formal
+Framework for Dialogues between Autonomous Agents. Journal of Logic, Lan-
+guage and Information 11, 3 (01 Jun 2002), 315-334. https://doi.org/10.1023/A:
+1015586128739
+
+Tim Miller. 2019. Explanation in Artificial Intelligence: Insights from the Social
+Sciences. Artificial Intelligence 267 (2019), 1-38.
+
+Tim Miller, Piers Howe, and Liz Sonenberg. 2017. Explainable AI: Beware of
+Inmates Running the Asylum; Or: How I Learnt to Stop Worrying and Love the
+Social and Behavioural Sciences. In [JCAL 17 Workshop on Explainable AI (XAD.
+36.
+
+Johanna D. Moore and Cecile L. Paris. 1991. Requirements for an expert system
+explanation facility. Computational Intelligence 7, 4 (1991), 367-370. https:
+//doiorg/10.1111/j.1467-8640.1991.tb00409.x
+
+Joshua Newn, Fraser Allison, Eduardo Velloso, and Frank Vetere. 2018. Looks
+Can Be Deceiving: Using Gaze Visualisation to Predict and Mislead Opponents in
+Strategic Gameplay. In Proceedings of the 2018 CHI Conference on Human Factors
+in Computing Systems (CHI 18). ACM, New York, NY, USA, Article 261, 12 pages.
+https://doi.org/10.1145/3173574.3173835
+
+Ana Rodriguez Palmeiro, Sander van der Kint, Luuk Vissers, Haneen Farah,
+Joost CF de Winter, and Marjan Hagenzieker. 2018. Interaction between pedestri-
+ans and automated vehicles: A Wizard of Oz experiment. Transportation Research
+Part F: Traffic Psychology and Behaviour 58 (2018), 1005-1020.
+
+Henry Prakken. 2006. Formal Systems for Persuasion Dialogue. Knowl. Eng. Rev.
+
+21, 2 June 2006), 163-188. https://doi.org/10.1017/S0269888906000865
+Henry Prakken and Giovanni Sartor. 1998. Modelling Reasoning with Precedents
+
+in a Formal Dialogue Game. Springer Netherlands, Dordrecht, 127-183. https:
+//doi.org/10.1007/978-94-015-9010-5_5
+
+RC Schank 1986. Explanation patterns: Understanding mechanically and cre-
+atively. Erlbaum, Hillsdale, NJ.
+
+Ronal Singh, Tim Miller, Joshua Newn, Liz Sonenberg, Eduardo Velloso, and
+Frank Vetere. 2018. Combining Planning with Gaze for Online Human In-
+tention Recognition. In Proceedings of the 17th International Conference on Au-
+tonomous Agents and MultiAgent Systems (AAMAS '18). International Founda-
+tion for Autonomous Agents and Multiagent Systems, Richland, SC, 488-496.
+http://dLacm.org/citation.cfm?id=3237383.3237457
+
+Serena Villata, Guido Boella, Dov M. Gabbay, and Leendert Van Der Torre. 2013. A
+socio-cognitive model of trust using argumentation theory. International Journal
+of Approximate Reasoning 54, 4 (2013), 541-559. https://doi-org/10.1016/j.ijar.
+2012.09.001
+
+Douglas Walton. 2007. Dialogical Models of Explanation. Explanation-aware
+computing: Papers from the 2007 AAAI Workshop 1965 (2007), 1-9.
+
+Douglas Walton. 2011. A dialogue system specification for explanation. Synthese
+182, 3 (2011), 349-374. https://doi.org/10.1007/s11229-010-9745-z
+
+Douglas Walton. 2016. A Dialogue System for Evaluating Explanations.
+Springer International Publishing, Cham, 69-116. https://doi.org/10.1007/
+978-3-319-19626-8_3
+
+Douglas Walton and Floris Bex. 2016. Combining explanation and argumentation
+in dialogue. Argument and Computation 7, 1 (2016), 55-68. https://doi.org/10.
+3233/AAC- 160001
+
+Douglas Walton and Erik C. W. Krabbe. 1995. Commitment in Dialogue: Basic
+Concepts of Interpersonal Reasoning. State University of New York Press.
+Michael Winikoff. 2017. Debugging Agent Programs with Why?: Questions. In
+Proceedings of the 16th Conference on Autonomous Agents and MultiAgent Systems
+(AAMAS 17), IFAAMAS, 251-259.
+
