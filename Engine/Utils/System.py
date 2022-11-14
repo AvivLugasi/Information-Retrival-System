@@ -20,14 +20,14 @@ class System:
             self.log(message="{} is not true {}".format(msg, expr))
             sys.exit(1)
 
-    def readFile(self, file_path: str):
+    def readFile(self, file_path: str, mode: str):
         """Read file according to the file path and return a file object,\n
         if the file does not exist it will write a log error message and exit the program.
         """
         try:
-            file = open(file_path, 'r')
+            file = open(file_path, mode, errors="ignore")
         except FileNotFoundError:
-            self.assertFalse(file is None, "separators_file is not None")
+            self.assertFalse(file is None, "File is not None")
             sys.exit(1)
             
         return file
