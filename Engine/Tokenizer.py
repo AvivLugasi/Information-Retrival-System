@@ -9,7 +9,7 @@ class Tokenizer(System, Processor):
 
         self._separators_list = []
         self.log("Open separators file")
-        separators = self.readFile(separators_file)
+        separators = self.readFile(separators_file, 'r')
 
         while True:
             # Get next line from file
@@ -32,7 +32,7 @@ class Tokenizer(System, Processor):
     def buildInvertedIndexFromFile(self, doc: str, is_positional: bool):
         """Create an inverted index from a given file(positional or not positional)"""
         self.log("reading file")
-        doc_file = self.readFile(doc)
+        doc_file = self.readFile(doc, 'r')
         # terms dict for positional indexing
         terms_dict = dict()
         # terms set for not positional

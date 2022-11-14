@@ -2,10 +2,23 @@
 ## import nltk
 ## nltk.download()
 
-from nltk.corpus import stopwords
+from Utils.System import System
 
+class Processor(System):
 
-class Processor:
+    def __init__(self):
+        """Init the stop words set"""
+        self.stop_words_set = set()
+        stop_words_file = self.readFile("Utils/stop_words_english.txt", 'r')
+
+        while True:
+            line = stop_words_file.readline()
+            line = line.strip()
+            if not line:
+                break
+            self.stop_words_set.add(line)
+
+        stop_words_file.close()
 
     def caseFolding(self, token: str):
         """Convert a token to lower case and return it"""
@@ -22,14 +35,12 @@ class Processor:
         """Remove stop words from token if all the words in the token were stop words it return None else
         the new token"""
 
-        # stop words list
-        stop_words = set(stopwords.words('english'))
         new_token = ""
 
         # loop the words in the token
         for word in token.split():
             # add word to the new token if it does not a stop word
-            if word not in stop_words:
+            if word not in self.stop_words_set:
                 new_token = new_token + word
 
         # return None if all the token's words were stop words

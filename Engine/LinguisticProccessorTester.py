@@ -41,8 +41,9 @@ def performTest(input_file, output_file, ling_proccessor: prc, func):
             output_file.write(str(Exception) + '\n')
             return
         # write output
-        line_num += 1
-        output_file.write(output)
+        if output is not None:
+            line_num += 1
+            output_file.write(output+"\n")
 
 def check(output_file, correct_output_file, output_path: str, correct_output_path: str):
     """Print to the console the differences if exist in the output and the correct output"""
@@ -59,21 +60,9 @@ def check(output_file, correct_output_file, output_path: str, correct_output_pat
 def tester(input_path: str, output_path: str, correct_output_path: str, func_num: int):
     """perform tests on the required function"""
     # open files
-    try:
-        input_file = open(input_path, 'r')
-    except FileNotFoundError:
-        System.assertFalse(input_path is None, "input test file is not None")
-        sys.exit(1)
-    try:
-        output_file = open(output_path, 'a+')
-    except FileNotFoundError:
-        System.assertFalse(output_path is None, "output test file is not None")
-        sys.exit(1)
-    try:
-        correct_output_file = open(correct_output_path, 'r')
-    except FileNotFoundError:
-        System.assertFalse(correct_output_path is None, "input test file is not None")
-        sys.exit(1)
+    input_file = System.readFile(input_path, 'r')
+    output_file = System.readFile(output_path, 'a+')
+    correct_output_file = System.readFile(correct_output_path, 'r')
 
     # instance of the module we want to test
     ling_proccessor = prc()
@@ -116,4 +105,4 @@ def tester(input_path: str, output_path: str, correct_output_path: str, func_num
     correct_output_file.close()
 
 # driver code
-#tester("Testing/TestsInputs/LinguisticProccessorCaseFolding1.txt", "Testing/TestOutputs/LinguisticProccessorCaseFolding1Out.txt", "Testing/CorrectOutput/LinguisticProccessorCaseFolding1Correct.txt", 1)
+tester("Testing/TestsInputs/LinguisticProccessorPerformStemming1.txt", "Testing/TestOutputs/LinguisticProccessorPerformStemming1Out.txt", "Testing/CorrectOutput/LinguisticProccessorPerformStemming1Correct.txt", 4)
