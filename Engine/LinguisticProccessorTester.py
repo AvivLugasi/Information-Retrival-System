@@ -1,5 +1,4 @@
 import difflib
-
 from LinguisticProccessor import Processor as prc
 from Utils.System import System
 import sys
@@ -33,21 +32,25 @@ def performTest(input_file, output_file, ling_proccessor: prc, func):
     line_num = 1
     for line in input_file:
         System.log("perform test for {} line number:{}".format(line, str(line_num)))
+        # perform test on an input line
         try:
             output = func(line, ling_proccessor)
+        # if there is an exception print to the console
         except Exception:
             System.log("Exception was raised")
             output_file.write(str(Exception) + '\n')
             return
-        if output != "":
-            line_num += 1
-            output_file.write(output)
+        # write output
+        line_num += 1
+        output_file.write(output)
 
 def check(output_file, correct_output_file, output_path: str, correct_output_path: str):
     """Print to the console the differences if exist in the output and the correct output"""
     System.log("Print differences")
+    # read lines from the files
     output_file_txt = output_file.readlines()
     correct_output_file_txt = correct_output_file.readlines()
+    # print differences
     for line in difflib.unified_diff(
             output_file_txt, correct_output_file_txt, fromfile=output_path,
             tofile=correct_output_path, lineterm=''):
@@ -55,6 +58,7 @@ def check(output_file, correct_output_file, output_path: str, correct_output_pat
 
 def tester(input_path: str, output_path: str, correct_output_path: str, func_num: int):
     """perform tests on the required function"""
+    # open files
     try:
         input_file = open(input_path, 'r')
     except FileNotFoundError:
@@ -71,8 +75,10 @@ def tester(input_path: str, output_path: str, correct_output_path: str, func_num
         System.assertFalse(correct_output_path is None, "input test file is not None")
         sys.exit(1)
 
+    # instance of the module we want to test
     ling_proccessor = prc()
 
+    # perform test
     if func_num == 1:
         System.log("perform {} tests from{}, writing output to {}".format("CaseFolding", input_path, output_path))
         func = runCaseFoldingTests
@@ -98,14 +104,16 @@ def tester(input_path: str, output_path: str, correct_output_path: str, func_num
         func = runLinguisticProccessingTests
         performTest(input_file, output_file, ling_proccessor, func)
 
+    # check differences
     System.log("Check differences")
     output_file.seek(0)
     check(output_file, correct_output_file, output_path, correct_output_path)
 
+    # close files
     System.log("Closing Files")
     input_file.close()
     output_file.close()
     correct_output_file.close()
 
-
-tester("Testing/TestsInputs/LinguisticProccessorCaseFolding1.txt", "Testing/TestOutputs/LinguisticProccessorCaseFolding1Out.txt", "Testing/CorrectOutput/LinguisticProccessorCaseFolding1Correct.txt", 1)
+# driver code
+#tester("Testing/TestsInputs/LinguisticProccessorCaseFolding1.txt", "Testing/TestOutputs/LinguisticProccessorCaseFolding1Out.txt", "Testing/CorrectOutput/LinguisticProccessorCaseFolding1Correct.txt", 1)
