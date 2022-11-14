@@ -2,11 +2,11 @@ from InformationRetrivalSystem.Engine.LinguisticProccessor import Processor
 from Utils.System import System
 
 
-class Tokenizer(System, Processor):
+class Tokenizer(System):
 
     def __init__(self, separators_file: str):
         """Init the Tokenizer class, it reads a separator file and create a list of separators."""
-
+        self.processor = Processor()
         self._separators_list = []
         self.log("Open separators file")
         separators = self.readFile(separators_file, 'r')
@@ -54,7 +54,7 @@ class Tokenizer(System, Processor):
                 # if buffer not empty
                 if buffer != "":
                     # convert the buffer(a token) to a term
-                    buffer = self.linguisticProccessing(buffer)
+                    buffer = self.processor.linguisticProccessing(buffer)
                     if buffer:
                         if is_positional:
                             # insert to the dict
@@ -78,3 +78,8 @@ class Tokenizer(System, Processor):
         if is_positional:
             return terms_dict
         return terms_set
+
+tokenizer = Tokenizer("Utils/separetors.txt")
+dic = tokenizer.buildInvertedIndexFromFile("D:/pythonProjects/InformationRetrivalSystem/ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt",True)
+print(dic)
+print(len(dic))
