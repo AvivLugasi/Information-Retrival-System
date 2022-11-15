@@ -80,6 +80,6 @@ class Tokenizer(System):
         return terms_set
 
 tokenizer = Tokenizer("Utils/separetors.txt")
-dic = tokenizer.buildInvertedIndexFromFile("D:/pythonProjects/InformationRetrivalSystem/ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt",True)
+dic = tokenizer.buildInvertedIndexFromFile("../ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt",True)
 print(dic)
 print(len(dic))
