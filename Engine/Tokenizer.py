@@ -1,12 +1,14 @@
-from Engine.LinguisticProccessor import LinguisticProccessor
+from LinguisticProccessor import LinguisticProccessor
 from Utils.System import System
 
 
 class Tokenizer(System):
 
-    #subclass for store token-poition in current document
+    #subclass for store token-position in current document
     class TokenPosition:
+
         def __init__(self, token: str, position: int):
+            """Init a TokenPosition instance"""
             self.token = token
             self.position = position # 0 means non-positional index
         def __str__(self):
@@ -16,9 +18,11 @@ class Tokenizer(System):
         """Init the Tokenizer class, it reads a separator file and create a list of separators."""
         self.processor = LinguisticProccessor()
         self._separators_list = []
+        # open separators file
         self.log("Open separators file")
         separators = self.readFile(separators_file, 'r')
 
+        # read separators file
         while True:
             # Get next line from file
             line = separators.readline()
@@ -39,8 +43,10 @@ class Tokenizer(System):
 
     def tokenize(self, doc: str, is_positional: bool):
         """Create an inverted index from a given file(positional or not positional)"""
-        self.log("reading file")
+        # open text file
+        self.log("reading text file")
         doc_file = self.readFile(doc, 'r')
+
         # terms dict for positional indexing
         tokens_list = []
         # hold a token
@@ -62,6 +68,7 @@ class Tokenizer(System):
                     token = buffer
                     position += 1
                     temp_position = position if is_positional else 0
+                    # add a token position pair to the list
                     tokens_list.append(self.TokenPosition(token=token, position=temp_position))
                     # empty the buffer
                     buffer = ""
@@ -69,15 +76,9 @@ class Tokenizer(System):
                 # add char to the buffer
                 buffer = buffer + char
 
-        self.log("closing file")
+        # close file
+        self.log("closing text file")
         doc_file.close()
 
+        # return the token position pairs list
         return tokens_list
-
-
-tokenizer = Tokenizer("Utils/separetors.txt")
-tokens_list = tokenizer.tokenize("../ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt", True)
-# print(dic)
-# [print(couple) for couple in dic]
-lg = LinguisticProccessor()
-lg.linguisticProccessing(tokens_list=tokens_list)

@@ -103,6 +103,3 @@ def tester(input_path: str, output_path: str, correct_output_path: str, func_num
     input_file.close()
     output_file.close()
     correct_output_file.close()
-
-# driver code
-tester("Testing/TestsInputs/LinguisticProccessorPerformStemming1.txt", "Testing/TestOutputs/LinguisticProccessorPerformStemming1Out.txt", "Testing/CorrectOutput/LinguisticProccessorPerformStemming1Correct.txt", 4)
