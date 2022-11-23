@@ -1,10 +1,10 @@
 # Required for downloading the stopwords corpus #
-## import nltk
-## nltk.download()
+# import nltk
+# nltk.download()
 
 from Utils.System import System
 
-class Processor(System):
+class LinguisticProccessor(System):
 
     def __init__(self):
         """Init the stop words set"""
@@ -51,29 +51,30 @@ class Processor(System):
     def performStemming(self, token: str):
         """Perform porter stemming algorithm on a token and return the new term"""
         from nltk.stem import PorterStemmer
-
         # porter stemmer
         ps = PorterStemmer()
         term = ""
-
         # perform stemming on each word in the token
         for word in token.split():
             term = term + ps.stem(word)
-
         return term
 
-    def linguisticProccessing(self, token: str):
+    def linguisticProccessing(self, tokens_list=list):
         """Perform a series of linguistic operations on a token and return the new term that was created from it"""
+        terms_list = []
+        for pair in tokens_list:
+            token = pair.token
+            # perform case folding
+            token = self.caseFolding(token)
+            # remove punctuations
+            token = self.removePunctuation(token)
+            # remove stop words
+            token = self.removeStopWords(token)
+            # if all the words were stop words
+            if token:
+                # perform stemming
+                term = self.performStemming(token)
+                pair.token = term
+                terms_list.append(pair)
+        return terms_list
 
-        # perform case folding
-        token = self.caseFolding(token)
-        # remove punctuations
-        token = self.removePunctuation(token)
-        # remove stop words
-        token = self.removeStopWords(token)
-        # if all the words were stop words
-        if not token:
-            return None
-        # perform stemming
-        term = self.performStemming(token)
-        return term

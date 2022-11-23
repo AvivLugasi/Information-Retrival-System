@@ -1,5 +1,5 @@
 import difflib
-from LinguisticProccessor import Processor as prc
+from LinguisticProccessor import LinguisticProccessor as prc
 from Utils.System import System
 import sys
 

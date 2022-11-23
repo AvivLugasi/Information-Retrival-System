@@ -1,12 +1,20 @@
-from InformationRetrivalSystem.Engine.LinguisticProccessor import Processor
+from Engine.LinguisticProccessor import LinguisticProccessor
 from Utils.System import System
 
 
 class Tokenizer(System):
 
+    #subclass for store token-poition in current document
+    class TokenPosition:
+        def __init__(self, token: str, position: int):
+            self.token = token
+            self.position = position # 0 means non-positional index
+        def __str__(self):
+            return "token: " + self.token + " | " + "position: " + str(self.position)
+
     def __init__(self, separators_file: str):
         """Init the Tokenizer class, it reads a separator file and create a list of separators."""
-        self.processor = Processor()
+        self.processor = LinguisticProccessor()
         self._separators_list = []
         self.log("Open separators file")
         separators = self.readFile(separators_file, 'r')
@@ -29,14 +37,12 @@ class Tokenizer(System):
         """Return the separators list"""
         return self._separators_list
 
-    def buildInvertedIndexFromFile(self, doc: str, is_positional: bool):
+    def tokenize(self, doc: str, is_positional: bool):
         """Create an inverted index from a given file(positional or not positional)"""
         self.log("reading file")
         doc_file = self.readFile(doc, 'r')
         # terms dict for positional indexing
-        terms_dict = dict()
-        # terms set for not positional
-        terms_set = set()
+        tokens_list = []
         # hold a token
         buffer = ""
         # position in the file
@@ -53,19 +59,10 @@ class Tokenizer(System):
             if char in self._separators_list:
                 # if buffer not empty
                 if buffer != "":
-                    # convert the buffer(a token) to a term
-                    buffer = self.processor.linguisticProccessing(buffer)
-                    if buffer:
-                        if is_positional:
-                            # insert to the dict
-                            position += 1
-                            if buffer not in terms_dict:
-                                terms_dict[buffer] = list()
-                            terms_dict[buffer].append(position)
-
-                        else:
-                            # insert to the set
-                            terms_set.add(buffer)
+                    token = buffer
+                    position += 1
+                    temp_position = position if is_positional else 0
+                    tokens_list.append(self.TokenPosition(token=token, position=temp_position))
                     # empty the buffer
                     buffer = ""
             else:
@@ -75,11 +72,12 @@ class Tokenizer(System):
         self.log("closing file")
         doc_file.close()
 
-        if is_positional:
-            return terms_dict
-        return terms_set
+        return tokens_list
+
 
 tokenizer = Tokenizer("Utils/separetors.txt")
-dic = tokenizer.buildInvertedIndexFromFile("../ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt",True)
-print(dic)
-print(len(dic))
+tokens_list = tokenizer.tokenize("../ArtificialIntelligenceExplainability/text/A Bibliometric Analysis of the Explainable Artificial Intelligence Research Fields.txt", True)
+# print(dic)
+# [print(couple) for couple in dic]
+lg = LinguisticProccessor()
+lg.linguisticProccessing(tokens_list=tokens_list)
