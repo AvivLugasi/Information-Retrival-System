@@ -24,9 +24,9 @@ class DictionaryBuilder(System):
     def loadDict(self, is_positional: bool):
         """Load the dictionary from the pickle file"""
         if is_positional:
-            self.dictionary = joblib.load('PositionalIndex.pkl')
+            self.dictionary = joblib.load('InvertedIndexes/PositionalIndex.pkl')
         else:
-            self.dictionary = joblib.load('NonPositionalIndex.pkl')
+            self.dictionary = joblib.load('InvertedIndexes/NonPositionalIndex.pkl')
 
     # subclass for a record in a non-positional index in the dictionary
     class DictRecordNonPos:
@@ -102,7 +102,7 @@ db = DictionaryBuilder()
 db.buildDict(True)
 keys = db.dictionary.keys()
 db.log("Writing Positional Index to PositionalIndex.txt")
-positional_index_file = db.readFile("PositionalIndex.txt", 'a+')
+positional_index_file = db.readFile("InvertedIndexes/PositionalIndex.txt", 'a+')
 for key in keys:
     positional_index_file.write("Term: " + key + " Postings: " +  str(db.dictionary[key]) + "\n")
 
@@ -110,14 +110,14 @@ db.log("Closing PositionalIndex.txt")
 positional_index_file.close()
 db.log("Save Positional Index as a plk file")
 # Save the Positional Index as a pickle in a file
-joblib.dump(db.dictionary, 'PositionalIndex.pkl')
+joblib.dump(db.dictionary, 'InvertedIndexes/PositionalIndex.pkl')
 
 # build non-positional Index
 db.dictionary = dict()
 db.buildDict(False)
 keys = db.dictionary.keys()
 db.log("Writing Non Positional Index to NonPositionalIndex.txt")
-non_positional_index_file = db.readFile("NonPositionalIndex.txt", 'a+')
+non_positional_index_file = db.readFile("InvertedIndexes/NonPositionalIndex.txt", 'a+')
 for key in keys:
     non_positional_index_file.write("Term: " + key + " Postings: " +  str(db.dictionary[key]) + "\n")
 
@@ -125,4 +125,4 @@ db.log("Closing NonPositionalIndex.txt")
 non_positional_index_file.close()
 db.log("Save Non Positional Index as a plk file")
 # Save the None Positional Index as a pickle in a file
-joblib.dump(db.dictionary, 'NonPositionalIndex.pkl')
+joblib.dump(db.dictionary, 'InvertedIndexes/NonPositionalIndex.pkl')
