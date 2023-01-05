@@ -31,3 +31,11 @@ class System:
             sys.exit(1)
             
         return file
+
+    def concat_txt_files(self, list_files_names: list, relative_path: str):
+        filenames = list_files_names
+        with open('Utils/concat_txt_files.txt', 'w') as outfile:
+            for fname in filenames:
+                with open(relative_path + "" + fname) as infile:
+                    for line in infile:
+                        outfile.write(line)
