@@ -21,10 +21,6 @@ class Tokenizer(System):
                 self._separators_list.append(sep)
         separators.close()
 
-    # def get_separators_list(self):
-    #     """Return the separators list"""
-    #     return self._separators_list
-
     def tokenize(self, doc: str):
         """
         Create a dictionary from a given file with pairs (token, token frequency)
