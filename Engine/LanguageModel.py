@@ -49,19 +49,10 @@ class LanguageModel(System):
 
         self.language_model = words_dict
 
-    ######################################################################################################
+    # ================================================================================================== #
     #                                          Helper Functions                                          #
-    ######################################################################################################
+    # ================================================================================================== #
 
-    def _import_docs(self, text_files_path=str):
-        """
-        Create a list with all the academic text files names and returns it
-        :param text_files_path: path of directory with text files
-        """
-        from os import listdir
-        from os.path import isfile, join
-        files_list = [file for file in listdir(text_files_path) if isfile(join(text_files_path, file))]
-        return files_list
 
     def _calc_prob_for_word(self, tf: int, doc_len: int):
         return tf / doc_len
