@@ -1,0 +1,428 @@
+                                                                 Evaluating the Underlying Gender Bias in
+                                                                    Contextualized Word Embeddings
+
+                                                       Christine Basta     Marta R. Costa-jussà        Noe Casas
+                                                                  Universitat Politècnica de Catalunya
+                                               {christine.raouf.saad.basta,marta.ruiz,noe.casas}@upc.edu
+
+
+
+
+                                                              Abstract                          woman as king is to queen). Following this prop-
+                                                                                                erty of finding relations or analogies, one popular
+                                             Gender bias is highly impacting natural lan-
+                                                                                                example of gender bias is the word association be-
+                                             guage processing applications. Word embed-
+arXiv:1904.08783v1 [cs.CL] 18 Apr 2019
+
+
+
+
+                                             dings have clearly been proven both to keep        tween man to computer programmer as woman to
+                                             and amplify gender biases that are present in      homemaker (Bolukbasi et al., 2016). Pre-trained
+                                             current data sources. Recently, contextual-        word embeddings are used in many NLP down-
+                                             ized word embeddings have enhanced previ-          stream tasks, such as natural language inference
+                                             ous word embedding techniques by computing         (NLI), machine translation (MT) or question an-
+                                             word vector representations dependent on the       swering (QA). Recent progress in word embed-
+                                             sentence they appear in.
+                                                                                                ding techniques has been achieved with contex-
+                                             In this paper, we study the impact of this con-    tualized word embeddings (Peters et al., 2018)
+                                             ceptual change in the word embedding compu-        which provide different vector representations for
+                                             tation in relation with gender bias. Our analy-
+                                                                                                the same word in different contexts.
+                                             sis includes different measures previously ap-
+                                             plied in the literature to standard word em-          While gender bias has been studied, detected
+                                             beddings. Our findings suggest that contextu-      and partially addressed for standard word embed-
+                                             alized word embeddings are less biased than        dings techniques (Bolukbasi et al., 2016; Zhao
+                                             standard ones even when the latter are debi-       et al., 2018a; Gonen and Goldberg, 2019), it is not
+                                             ased.                                              the case for the latest techniques of contextualized
+                                                                                                word embeddings. Only just recently, Zhao et al.
+                                         1   Introduction
+                                                                                                (2019) present a first analysis on the topic based on
+                                         Social biases in machine learning, in general and      the proposed methods in Bolukbasi et al. (2016).
+                                         in natural language processing (NLP) applications      In this paper, we further analyse the presence of
+                                         in particular, are raising the alarm of the scien-     gender biases in contextualized word embeddings
+                                         tific community. Examples of these biases are          by means of the proposed methods in Gonen and
+                                         evidences such that face recognition systems or        Goldberg (2019). For this, in section 2 we pro-
+                                         speech recognition systems works better for white      vide an overview of the relevant work on which
+                                         men than for ethnic minorities (Buolamwini and         we build our analysis; in section 3 we state the
+                                         Gebru, 2018). Examples in the area of NLP are          specific request questions addressed in this work,
+                                         the case of machine translation that systems tend      while in section 4 we describe the experimental
+                                         to ignore the coreference information in benefit of    framework proposed to address them and in sec-
+                                         an stereotype (Font and Costa-jussà, 2019) or sen-    tion 5 we present the obtained and discuss the re-
+                                         timent analysis where higher sentiment intensity       sults; finally, in section 6 we draw the conclusions
+                                         prediction is biased for a particular gender (Kir-     of our work and propose some further research.
+                                         itchenko and Mohammad, 2018).
+                                             In this work we focus on the particular NLP area   2 Background
+                                         of word embeddings (Mikolov et al., 2010), which
+                                         represent words in a numerical vector space. Word      In this section we describe the relevant NLP tech-
+                                         embeddings representation spaces are known to          niques used along the paper, including word em-
+                                         present geometrical phenomena mimicking rela-          beddings, their debiased version and contextual-
+                                         tions and analogies between words (e.g. man is to      ized word representations.
+2.1 Words Embeddings                                        Zhao et al. (2018b) proposed an extension
+                                                         to GloVe embeddings (Pennington et al., 2014)
+Word embeddings are distributed representations
+                                                         where the loss function used to train the embed-
+in a vector space. These vectors are normally
+                                                         dings is enriched with terms that confine the gen-
+learned from large corpora and are then used in
+                                                         der information to a specific portion of the embed-
+downstream tasks like NLI, MT, etc. Several ap-
+                                                         ded vector. The authors refer to these pieces of
+proaches have been proposed to compute those
+                                                         information as protected attributes. Once the em-
+vector representations, with word2vec (Mikolov
+                                                         beddings are trained, the gender protected attribute
+et al., 2013) being one of the dominant options.
+                                                         can be simply removed from the vector representa-
+Word2vec proposes two variants: continuous bag
+                                                         tion, therefore eliminating any gender bias present
+of words (CBoW) and skipgram, both consisting
+                                                         in it.
+of a single hidden layer neural network train on
+predicting a target word from its context words for         The transformations proposed by both Boluk-
+CBoW, and the opposite for the skipgram variant.         basi et al. (2016) and Zhao et al. (2018b) are down-
+The outcome of word2vec is an embedding table,           stream task-agnostic. This fact is used in the work
+where a numeric vector is associated to each of the      of Gonen and Goldberg (2019) to showcase that,
+words included in the vocabulary.                        while apparently the embedding information is re-
+    These vector representations, which in the end       moved, there is still gender information remaining
+are computed on co-occurrence statistics, exhibit        in the vector representations.
+geometric properties resembling the semantics of
+the relations between words. This way, subtract-         2.3   Contextualized Word Embeddings
+ing the vector representations of two related words      Pretrained Language Models (LM) like ULMfit
+and adding the result to a third word, results in a      (Howard and Ruder, 2018), ELMo (Peters et al.,
+representation that is close to the application of the   2018), OpenAI GPT (Radford, 2018; Radford
+semantic relationship between the two first words        et al., 2019) and BERT (Devlin et al., 2018), pro-
+to the third one. This application of analogical re-     posed different neural language model architec-
+lationships have been used to showcase the bias          tures and made their pre-trained weights avail-
+present in word embeddings, with the prototypical        able to ease the application of transfer learning
+example that when subtracting the vector repre-          to downstream tasks, where they have pushed the
+sentation of man from that of computer and adding        state-of-the-art for several benchmarks including
+it to woman, we obtain homemaker.                        question answering on SQuAD, NLI, cross-lingual
+                                                         NLI and named identity recognition (NER).
+2.2 Debiased Word Embeddings                                While some of these pre-trained LMs, like
+Human-generated corpora suffer from social bi-           BERT, use subword level tokens, ELMo provides
+ases. Those biases are reflected in the co-              word-level representations. Peters et al. (2019)
+occurrence statistics, and therefore learned into        and Liu et al. (2019) confirmed the viability of
+word embeddings trained in those corpora, ampli-         using ELMo representations directly as features
+fying them (Bolukbasi et al., 2016; Caliskan et al.,     for downstream tasks without re-training the full
+2017).                                                   model on the target task.
+   Bolukbasi et al. (2016) studied from a geomet-           Unlike word2vec vector representations, which
+rical point of view the presence of gender bias in       are constant regardless of their context, ELMo
+word embeddings. For this, they compute the sub-         representations depend on the sentence where the
+space where the gender information concentrates          word appears, and therefore the full model has to
+by computing the principal components of the dif-        be fed with each whole sentence to get the word
+ference of vector representations of male and fe-        representations.
+male gender-defining word pairs. With the gender            The neural architecture proposed in ELMo (Pe-
+subspace, the authors identify direct and indirect       ters et al., 2018) consists of a character-level con-
+biases in profession words. Finally, they mitigate       volutional layer processing the characters of each
+the bias by nullifying the information in the gen-       word and creating a word representation that is
+der subspace for words that should not be associ-        then fed to a 2-layer bidirectional LSTM (Hochre-
+ated to gender, and also equalize their distance to      iter and Schmidhuber, 1997), trained on language
+both elements of gender-defining word pairs.             modeling task on a large corpus.
+3    Research questions                                 List’ is the list used in classification experiment ,
+                                                        which contains 5000 male and female biased to-
+Given the high impact of contextualized word em-
+                                                        kens, 2500 for each gender, generated in the same
+beddings in the area of NLP and the social con-
+                                                        way of the Biased List4 . A note to be considered,
+sequences of having biases in such embeddings,
+                                                        is that the lists we used in our experiments (and
+in this work we analyse the presence of bias in
+                                                        obtained from Bolukbasi et al. (2016) and Gonen
+these contextualized word embeddings. In partic-
+                                                        and Goldberg (2019)) may contain words that are
+ular, we focus on gender biases, and specifically
+                                                        missing in our corpus and so we can not obtain
+on the following questions:
+                                                        contextualized embeddings for them.
+    • Do contextualized word embeddings exhibit            Among different approaches to contextualized
+      gender bias and how does this bias compare        word embeddings (mentioned in section 2), we
+      to standard and debiased word embeddings?         choose ELMo (Peters et al., 2018) as contextual-
+                                                        ized word embedding approach. The motivation
+    • Do different evaluation techniques identify       for using ELMo instead of other approaches like
+      bias similarly and what would be the best         BERT (Devlin et al., 2018) is that ELMo provides
+      measure to use for gender bias detection in       word-level representations, as opposed to BERT’s
+      contextualized embeddings?                        subwords. This makes it possible to study the
+                                                        word-level semantic traits directly, without resort-
+   To address these questions, we adapt and con-
+                                                        ing to extra steps to compose word-level informa-
+trast with the evaluation measures proposed by
+                                                        tion from the subwords that could interfere with
+Bolukbasi et al. (2016) and Gonen and Goldberg
+                                                        our analyses.
+(2019).
+                                                        5 Evaluation measures and results
+4    Experimental Framework
+                                                        There is no standard measure for gender bias, and
+As follows, we define the data and resources that
+                                                        even less for such the recently proposed contextu-
+we are using for performing our experiments. We
+                                                        alized word embeddings. In this section, we adapt
+also motivate the approach that we are using for
+                                                        gender bias measures for word embedding meth-
+contextualized word embeddings.
+                                                        ods from previous work (Bolukbasi et al., 2016)
+   We worked with the English-German news cor-
+                                                        and (Gonen and Goldberg, 2019) to be applicable
+pus from the WMT181 . We used the English side
+                                                        to contextualized word embeddings.
+with 464,947 lines and 1,004,6125 tokens.
+                                                           This way, we first compute the gender subspace
+   To perform our analysis we used a set of lists
+                                                        from the ELMo vector representations of gender-
+from previous work (Bolukbasi et al., 2016; Go-
+                                                        defining words, then identify the presence of direct
+nen and Goldberg, 2019). We refer to the list of
+                                                        bias in the contextualized representations. We then
+definitional pairs 2 as ’Definitonal List’ (e.g. she-
+                                                        proceed to identify gender information by means
+he, girl-boy). We refer to the list of female and
+                                                        of clustering and classifications techniques. We
+male professions 3 as ’Professional List’ (e.g. ac-
+                                                        compare our results to previous results from debi-
+countant, surgeon). The ’Biased List’ is the list
+                                                        ased and non-debiased word embeddings (Boluk-
+used in the clustering experiment and it consists of
+                                                        basi et al., 2016) .
+biased male and female words (500 female biased
+tokens and 500 male biased token). This list is         Detecting the Gender Space Bolukbasi et al.
+generated by taking the most biased words, where        (2016) propose to identify gender bias in word rep-
+the bias of a word is computed by taking its projec-    resentations by computing the direction between
+                               → −→
+                               −
+tion on the gender direction (he-she) (e.g. breast-     representations of male and female word pairs
+                                                                                    → −→ −→ −−−−−→
+                                                                                    −
+feeding, bridal and diet for female and hero, cigar     from the Definitional List (he-she, −
+                                                                                            man-woman)
+and teammates for male). The ’Extended Biased           and computing their principal components.
+  1
+    http://data.statmt.org/
+                                                           In the case of contextualized embeddings, there
+wmt18/translation-task/                                 is not just a single representation for each word,
+training-parallel-nc-v13.tgz                            but its representation depends on the sentence it
+  2
+    https://github.com/tolga-b/debiaswe/
+blob/master/data/definitional_pairs.json                   4
+                                                            Both ’Biased List’ and ’Extended Biased List’ were
+  3
+    https://github.com/tolga-b/debiaswe/                kindly provided by Hila Gonen to reproduce experiments
+blob/master/data/professions.json                       from her study (Gonen and Goldberg, 2019)
+Figure 1: (Left) the percentage of variance explained in the PC of definitional vector differences. (Right) The
+corresponding percentages for random vectors.
+
+
+appears in. This way, in order to compute the            sional List. We excluded the sentences that have
+gender subspace we take the representation of            both a professional token and definitional gender
+words by randomly sampling sentences that con-           word to avoid the influence of the latter over the
+tain words from the Definitional List and, for each      presence of bias in the former. We applied the def-
+of them, we swap the definitional word with its          inition of direct bias from Bolukbasi et al. (2016)
+pair-wise equivalent from the opposite gender. We        on the ELMo representations of the professional
+then obtain the ELMo representation of the defin-        words in these sentences.
+intional word in each sentence pair, computing
+                                                                          1 X
+their difference. On the set of difference vectors,                               |cos(w,
+                                                                                       ~ g)|               (1)
+we compute their principal components to verify                          |N | wN
+the presence of bias. In order to have a reference,
+we computed the principal components of repre-              where N is the amount of gender neutral words,
+sentation of random words.                               g the gender direction, and w~ the word vector of
+                                                         each profession. We got direct bias of 0.03, com-
+   Similarly to Bolukbasi et al. (2016), figure 1
+                                                         pared to 0.08 from standard word2vec embeddings
+shows that the first eigenvalue is significantly
+                                                         described in Bolukbasi et al. (2016). This reduc-
+larger than the rest and that there is also a sin-
+                                                         tion on the direct bias confirms that the substan-
+gle direction describing the majority of variance
+                                                         tial component along the gender direction that is
+in these vectors, still the difference between the
+                                                         present in standard word embeddings is less for the
+percentage of variances is less in case of contextu-
+                                                         contextualized word embeddings. Probably, this
+alized embeddings, which may refer that there is
+                                                         reduction comes from the fact that we are using
+less bias in such embeddings. We can easily note
+                                                         different word embeddings for the same profes-
+the difference in the case of random, where there
+                                                         sion depending on the sentence which is a direct
+is a smooth and gradual decrease in eigenvalues,
+                                                         consequence and advantage of using contextual-
+and hence the variance percentage.
+                                                         ized embeddings.
+   A similar conclusion was stated in the recent
+work (Zhao et al., 2019) where the authors ap-           Male and female-biased words clustering. In
+plied the same approach, but for gender swapped          order to study if biased male and female words
+variants of sentences with professions. They com-        cluster together when applying contextualized em-
+puted the difference between the vectors of occu-        beddings, we used k-means to generate 2 clusters
+pation words in corresponding sentences and got a        of the embeddings of tokens from the Biased list.
+skewed graph where the first component represent         Note that we can not use several representations
+the gender information while the second compo-           for each word, since it would not make any sense
+nent groups the male and female related words.           to cluster one word as male and female at the same
+                                                         time. Therefore, in order to make use of the ad-
+Direct Bias Direct Bias is a measure of how              vantages of the contextualized embeddings, we re-
+close a certain set of words are to the gender vec-      peated 10 independent experiments, each with a
+tor. To compute it, we extracted from the training       different random sentence of each word from the
+data the sentences that contain words in the Profes-     list of biased male and female words.
+                                                                                                                    teenager
+
+                                                              13.0                                                               receptionist
+                                                                         mathematician                             nun
+                                                                                                                         hairdresser
+                                                                                                                                        nanny
+                                                              12.5                             servantmanager                 bartender
+                                                                              philosopher
+                                                                          historian       architect                               maid
+                                                                     physician
+                                                                                                                  librarian
+                                                                                   composer                minister
+                                                              12.0                                    boss
+                                                                          physicist                                               housewife
+
+                                                              11.5                socialite
+                                                                             student
+                                                                     5       4        3        2       1       0          1       2
+
+Figure 2: K-means clustering, the yellow color repre-      Figure 3: Visualization of contextualized embeddings
+sents the female and the violet represents the male        of professions.
+
+   Among these 10 experiments, we got a min-               stereotype the professions as the normal embed-
+imum accuracy of 69.1% and a maximum of                    dings. This can be shown by the nearest neighbors
+71.3%, with average accuracy of 70.1%, much                of the female and male stereotyped professions,
+lower than in the case of biased and debiased word         for example ’receptionist’ and ’librarian’ for fe-
+embeddings which were 99.9 and 92.5, respec-               male and ’architect’ and ’philosopher’ for male.
+tively, as stated in Gonen and Goldberg (2019).            We applied the k nearest neighbors on the Profes-
+Based on this criterion, even if there is still bias in-   sional List, to get the nearest k neighbor to each
+formation to be removed from contextualized em-            profession. We used a random representation for
+beddings, it is much less than in case of standard         each token of the profession list, after applying
+word embeddings, even if debiased.                         the k nearest neighbor algorithm on each profes-
+   The clusters (for one particular experiment out         sion, we computed the percentage of female and
+of the 10 of them) are shown in Figure 2 after             male stereotyped professions among the k nearest
+applying UMAP (McInnes et al., 2018; McInnes               neighbor of each profession token. Afterwards,
+et al., 2018) to the contextualized embeddings.            we computed the Pearson correlation of this per-
+                                                           centage with the original bias of each profession.
+Classification Approach In order to study if               Once again, to assure randomization of tokens,
+contextualized embeddings learn to generalize              we performed 10 experiments, each with differ-
+bias, we trained a Radial Basis Function-kernel            ent random sentences for each profession, there-
+Support Vector Machine classifier on the embed-            fore with different word representations. The min-
+dings of random 1000 biased words from the Ex-             imum Pearson correlation is 0.801 and the maxi-
+tended Biased List. After that, we evaluated the           mum is 0.961, with average of 0.89. All these cor-
+generalization on the other random 4000 biased to-         relations are significant with p-values smaller than
+kens. Again, we performed 10 independent exper-            1 × 10−40 . This experiment showed the highest
+iments, to guarantee randomization of word repre-          influence of bias compared to 0.606 for debiased
+sentations. Among these 10 experiments, we got a           embeddings and 0.774 for non-debiased. Figure
+minimum accuracy of 83.33% and a maximum of                3 demonstrates this influence of bias by showing
+88.43%, with average accuracy of 85.56%. This              that female biased words (e.g. nanny) has higher
+number shows that the bias is learned in these em-         percent of female words than male ones and vice-
+beddings with high rate. However, it learns in less        versa for male biased words (e.g. philosopher).
+rate than the normal embeddings, whose classifi-
+cation reached 88.88% and 98.25% for biased and            6 Conclusions and further work
+debiased versions, respectively.
+                                                           While our study can not draw clear conclusions
+K-Nearest Neighbor Approach To understand                  on whether contextualized word embeddings aug-
+more about the bias in contextualized embeddings,          ment or reduce the gender bias, our results show
+it is important to analyze the bias in the profes-         more insights of which aspects of the final con-
+sions. The question is whether these embeddings            textualized word vectors get affected by such phe-
+nomena, with a tendency more towards reducing        Acknowledgements
+the gender bias rather than the contrary.
+                                                     We want to thank Hila Gonen for her support dur-
+  Contextualized word embeddings mitigate gen-
+                                                     ing our research.
+der bias when measuring in the following aspects:
+                                                        This work is supported in part by the Cata-
+ 1. Gender space, which is capturing the gender      lan Agency for Management of University and
+    direction from word vectors, is reduced for      Research Grants (AGAUR) through the FI PhD
+    gender specific contextualized word vectors      Scholarship and the Industrial PhD Grant. This
+    compared to standard word vectors.               work is also supported in part by the Spanish
+                                                     Ministerio de Economı́a y Competitividad, the
+ 2. Direct bias, which is measuring how close set    European Regional Development Fund and the
+    of words are to the gender vector, is lower      Agencia Estatal de Investigación, through the
+    for contextualized word embeddings than for      postdoctoral senior grant Ramón y Cajal, con-
+    standard ones.                                   tract TEC2015-69266-P (MINECO/FEDER,EU)
+                                                     and contract PCIN-2017-079 (AEI/MINECO).
+ 3. Male/female clustering, which is produced
+    between words with strong gender bias, is
+    less strong than in debiased and non-debiased    References
+    standard word embeddings.                        Tolga Bolukbasi, Kai-Wei Chang, James Y Zou,
+                                                       Venkatesh Saligrama, and Adam T Kalai. 2016.
+   However, contextualized word embeddings pre-        Man is to computer programmer as woman is to
+serve and even amplify gender bias when taking         homemaker? debiasing word embeddings. In D. D.
+                                                       Lee, M. Sugiyama, U. V. Luxburg, I. Guyon, and
+into account other aspects:                            R. Garnett, editors, Advances in Neural Information
+                                                       Processing Systems 29, pages 4349–4357. Curran
+ 1. The implicit gender of words can be pre-           Associates, Inc.
+    dicted with accuracies higher than 80% based
+    on contextualized word vectors which is only     Joy Buolamwini and Timnit Gebru. 2018. Gender
+                                                       shades: Intersectional accuracy disparities in com-
+    a slightly lower accuracy than when using          mercial gender classification. In Conference on
+    vectors from debiased and non-debiased stan-       Fairness, Accountability and Transparency, FAT
+    dard word embeddings.                              2018, 23-24 February 2018, New York, NY, USA,
+                                                       pages 77–91.
+ 2. The stereotyped words group with implicit-
+                                                     Aylin Caliskan, Joanna J. Bryson, and Arvind
+    gender words of the same gender more than          Narayanan. 2017. Semantics derived automatically
+    in the case of debiased and non-debiased           from language corpora necessarily contain human
+    standard word embeddings.                          biases. Science, 356:183–186.
+
+                                                     Jacob Devlin, Ming-Wei Chang, Kenton Lee, and
+   While all measures that we present exhibit cer-      Kristina Toutanova. 2018. Bert: Pre-training of deep
+tain gender bias, when evaluating future debias-        bidirectional transformers for language understand-
+ing methods for contextualized word embeddings          ing. arXiv preprint arXiv:1810.04805.
+it would be worth it putting emphasis on the lat-
+                                                     Joel Escudé Font and Marta R. Costa-jussà. 2019.
+ter two evaluation measures that show higher bias      Equalizing gender biases in neural machine trans-
+than the first three.                                  lation with word embeddings techniques. CoRR,
+   Hopefully, our analysis will provide a grain of     abs/1901.03116.
+sand towards defining standard evaluation meth-      Hila Gonen and Yoav Goldberg. 2019. Lipstick on a
+ods for gender bias, proposing effective debiasing     pig: Debiasing methods cover up systematic gender
+methods or even directly designing equitable algo-     biases in word embeddings but do not remove them.
+rithms which automatically learn to ignore biased      CoRR, abs/1903.03862.
+data.                                                Sepp Hochreiter and Jürgen Schmidhuber. 1997.
+   As further work, we plan to extend our study to     Long short-term memory. Neural Computation,
+multiple domains and multiple languages to ana-        9(8):1735–1780.
+lyze and measure the impact of gender bias present   Jeremy Howard and Sebastian Ruder. 2018. Universal
+in contextualized embeddings in these different         language model fine-tuning for text classification.
+scenarios.                                              In Proceedings of the 56th Annual Meeting of the
+  Association for Computational Linguistics (Volume      Jeffrey Pennington, Richard Socher, and Christopher
+  1: Long Papers), pages 328–339, Melbourne, Aus-           Manning. 2014. Glove: Global vectors for word
+  tralia. Association for Computational Linguistics.        representation. In Proceedings of the 2014 Con-
+                                                            ference on Empirical Methods in Natural Language
+Svetlana Kiritchenko and Saif Mohammad. 2018. Ex-           Processing (EMNLP), pages 1532–1543, Doha,
+  amining gender and race bias in two hundred sen-          Qatar. Association for Computational Linguistics.
+  timent analysis systems. In Proceedings of the
+  Seventh Joint Conference on Lexical and Com-           Matthew Peters, Mark Neumann, Mohit Iyyer, Matt
+  putational Semantics, pages 43–53, New Orleans,         Gardner, Christopher Clark, Kenton Lee, and Luke
+  Louisiana. Association for Computational Linguis-       Zettlemoyer. 2018. Deep contextualized word rep-
+  tics.                                                   resentations. In Proceedings of the 2018 Confer-
+                                                          ence of the North American Chapter of the Associ-
+Nelson F. Liu, Matt Gardner, Yonatan Belinkov,            ation for Computational Linguistics: Human Lan-
+  Matthew E. Peters, and Noah A. Smith. 2019. Lin-        guage Technologies, Volume 1 (Long Papers), pages
+  guistic knowledge and transferability of contextual     2227–2237, New Orleans, Louisiana. Association
+  representations. In Proceedings of the Conference of    for Computational Linguistics.
+  the North American Chapter of the Association for
+  Computational Linguistics: Human Language Tech-        Matthew Peters, Sebastian Ruder, and Noah A Smith.
+  nologies.                                                2019. To tune or not to tune? adapting pretrained
+Leland McInnes, John Healy, and James Melville.            representations to diverse tasks. arXiv preprint
+  2018. UMAP: Uniform Manifold Approximation               arXiv:1903.05987.
+                                                         Alec Radford. 2018. Improving language understand-
+  and Projection for Dimension Reduction. ArXiv e-         ing by generative pre-training.
+  prints.
+Leland McInnes, John Healy, Nathaniel Saul, and          Alec Radford, Jeff Wu, Rewon Child, David Luan,
+  Lukas Grossberger. 2018. Umap: Uniform mani-             Dario Amodei, and Ilya Sutskever. 2019. Language
+  fold approximation and projection. The Journal of        models are unsupervised multitask learners.
+  Open Source Software, 3(29):861.
+                                                         Jieyu Zhao, Tianlu Wang, Mark Yatskar, Ryan Cot-
+Tomas Mikolov, Martin Karafit, Luks Burget, Jan Cer-        terell, Vicente Ordonez, and Kai-Wei Chang. 2019.
+  nock, and Sanjeev Khudanpur. 2010. Recurrent              Gender bias in contextualized word embeddings. In
+  neural network based language model. In INTER-            Forthcoming in NAACL.
+  SPEECH, pages 1045–1048. ISCA.
+                                                         Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg S Cor-        donez, and Kai-Wei Chang. 2018a. Gender bias
+  rado, and Jeff Dean. 2013. Distributed representa-        in coreference resolution: Evaluation and debiasing
+  tions of words and phrases and their composition-         methods. arXiv preprint arXiv:1804.06876.
+  ality. In C. J. C. Burges, L. Bottou, M. Welling,
+  Z. Ghahramani, and K. Q. Weinberger, editors, Ad-      Jieyu Zhao, Yichao Zhou, Zeyu Li, Wei Wang, and Kai-
+  vances in Neural Information Processing Systems           Wei Chang. 2018b. Learning gender-neutral word
+  26, pages 3111–3119. Curran Associates, Inc.           embeddings. arXiv preprint arXiv:1809.01496.
+
