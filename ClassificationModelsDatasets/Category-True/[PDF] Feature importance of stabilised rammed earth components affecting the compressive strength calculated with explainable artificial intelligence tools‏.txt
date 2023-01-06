@@ -1,0 +1,2605 @@
+materials
+Article
+
+Feature Importance of Stabilised Rammed Earth
+Components Affecting the Compressive Strength
+Calculated with Explainable Artificial
+Intelligence Tools
+Hubert Anysz 1, * , Łukasz Brzozowski 2 , Wojciech Kretowicz 2
+1
+2
+
+*
+
+and Piotr Narloch 1
+
+Faculty of Civil Engineering, Warsaw University of Technology, Al. Armii Ludowej 16,
+00-637 Warsaw, Poland; p.narloch@il.pw.edu.pl
+Faculty of Mathematics and Information Science, Warsaw University of Technology, Koszykowa 75,
+00-662 Warsaw, Poland; l.brzozowski@student.mini.pw.edu.pl (Ł.B.); wojtekkretowicz@gmail.com (W.K.)
+Correspondence: h.anysz@il.pw.edu.pl; Tel.: +48-606-668-288
+
+Received: 5 April 2020; Accepted: 12 May 2020; Published: 18 May 2020
+
+
+
+
+Abstract: Cement-stabilized rammed earth (CSRE) is a sustainable construction material. The use
+of it allows for economizing on the cost of a structure. These two properties of CSRE are based
+on the fact that the soil used for the rammed mixture is usually dug close to the construction site,
+so it has random characteristics. That is the reason for the lack of widely accepted prescriptions for
+CSRE mixture, which could ascertain high enough compressive strength. Therefore, assessing which
+components of CSRE have the highest impact on its compressive strength becomes an important
+issue. There are three machine learning regression tools, i.e., artificial neural networks, decision tree,
+and random forest, used for predicting the compressive strength based on the relative content of CSRE
+composites (clay, silt, sand, gravel, cement, and water content). The database consisted of 434 samples
+of CSRE, which were prepared and crushed for testing purposes. Relatively low prediction errors
+of aforementioned models allowed for the use of explainable artificial intelligence tools (drop-out
+loss, mean squared error reduction, accumulated local effect) to rank the influence of the ingredients
+on the dependent variable—the compressive strength. Consistent results from all above-mentioned
+methods are discussed and compared to some statistical analysis of selected features. This innovative
+approach, helpful in designing the construction material is a solid base for reliable conclusions.
+Keywords: rammed earth; cement stabilized rammed earth; multivariate regression; random forest;
+artificial inteligence; features importance ranking
+
+1. Introduction
+Rammed earth is a sustainable building material; its components include inorganic soil, water,
+and a stabilizer. The soil is often obtained directly from the construction site, and the stabilizer is usually
+Portland cement [1,2]. These ingredients are mixed in an air-dry state, and then water is added. The wet,
+loose soil–cement mixture is laid in the formwork and then dynamically compacted in layers. Due to the
+use of local soil, the material is a sustainable alternative to modern ecological construction [3].
+According to Eurocode 0 [4], every structure should be designed in such a way as to have adequate
+load-bearing capacity, usability and durability. Therefore, the critical properties of a construction
+building material are its durability and the compressive strength. In the case of cement stabilized
+rammed earth (CSRE), both properties will depend on the features of the soil–cement mixture,
+construction technique, and exposure conditions (Figure 1) [5,6].
+
+Materials 2020, 13, 2317; doi:10.3390/ma13102317
+
+www.mdpi.com/journal/materials
+
+and rheological properties of the hardened material [10–12]. The time necessary for the CSRE wall to
+obtain minimum properties that allow it to continue construction (including its loading) depends on
+the environmental conditions—temperature and relative humidity. The increase in mechanical
+strength is associated with the drying process, including the course of shrinkage and the cement
+hydration process. It is vital to ensure such curing conditions that the CSRE elements do not stratify,
+Materials 2020, 13, 2317
+2 of 20
+become covered with mold or crack.
+
+Figure
+Figure 1.
+1. Proposed
+Proposed features
+features affecting
+affecting the
+the compressive
+compressive strength
+strength and
+anddurability
+durabilityof
+ofCSRE.
+CSRE.
+
+The technique of ramming samples often differs both on construction site and in laboratory
+The durability of rammed earth is mainly related to the action of water [13]. The increase of
+tests [7–9]. This technique, as well as curing time and conditions have a significant impact on the initial
+water content in rammed earth wall and erosion are correlated [13]. CSRE durability evaluation can
+and rheological properties of the hardened material [10–12]. The time necessary for the CSRE wall to
+be done through assessing changes in its compressive strength or volume under the influence of
+obtain minimum properties that allow it to continue construction (including its loading) depends on
+water [5], shrinkage [14], resistance to weather conditions [15,16], water erosion resistance [5,16],
+the environmental conditions—temperature and relative humidity. The increase in mechanical strength
+water absorption [17], resistance to cyclic wetting and drying [16] and frost resistance [5,18,19]. There
+is associated with the drying process, including the course of shrinkage and the cement hydration
+is a minimal amount of research concerning the corrosion of reinforcement in any kind of rammed
+process. It is vital to ensure such curing conditions that the CSRE elements do not stratify, become
+earth in the literature [20]. This construction material is generally applied without reinforcement,
+covered with mold or crack.
+except the cases where it is necessary to provide additional seismic resistance or support over
+The durability of rammed earth is mainly related to the action of water [13]. The increase of
+openings, and anchorage for roof structures [21]. Then, steel reinforcement has to be galvanized to
+water content in rammed earth wall and erosion are correlated [13]. CSRE durability evaluation can
+prevent rusting, to provide lasting the structure for decades [21,22]. Except corrosion, applying
+be done through assessing changes in its compressive strength or volume under the influence of
+reinforcement in CESRE faces the following problems: carbonation (which can depassivate steel in
+water [5], shrinkage [14], resistance to weather conditions [15,16], water erosion resistance [5,16], water
+long time), weaker internal forces distribution (than in reinforced concrete), and displacements of
+absorption [17], resistance to cyclic wetting and drying [16] and frost resistance [5,18,19]. There is a
+steel rebar during the process of ramming. These are the possible reasons to avoid reinforcing entirely
+minimal amount of research concerning the corrosion of reinforcement in any kind of rammed earth
+earth-rammed structures.
+in the literature [20]. This construction material is generally applied without reinforcement, except
+The mineral composition of the soil is an essential feature that also should be considered in
+the cases where it is necessary to provide additional seismic resistance or support over openings,
+designing structural elements made of CSRE. It will affect both durability and mechanical strength
+and anchorage for roof structures [21]. Then, steel reinforcement has to be galvanized to prevent rusting,
+[23]. Research [12] has shown that a CSRE element with the same soil particle size distribution,
+to provide lasting the structure for decades [21,22]. Except corrosion, applying reinforcement in CESRE
+humidity, and addition of cement, but with different mineral compositions, can have significantly
+faces the following problems: carbonation (which can depassivate steel in long time), weaker internal
+different compressive strength. This is due to swelling minerals (smectites) found in the clay fraction,
+forces distribution (than in reinforced concrete), and displacements of steel rebar during the process of
+whose presence in the soil can be determined using relatively simple laboratory tests. In the smectite
+ramming. These are the possible reasons to avoid reinforcing entirely earth-rammed structures.
+group, the most widespread minerals are beidellite and montmorillonite. Montmorillonite is a highly
+The mineral composition of the soil is an essential feature that also should be considered in
+designing structural elements made of CSRE. It will affect both durability and mechanical strength [23].
+Research [12] has shown that a CSRE element with the same soil particle size distribution, humidity,
+and addition of cement, but with different mineral compositions, can have significantly different
+compressive strength. This is due to swelling minerals (smectites) found in the clay fraction, whose
+presence in the soil can be determined using relatively simple laboratory tests. In the smectite group,
+the most widespread minerals are beidellite and montmorillonite. Montmorillonite is a highly swelling
+mineral with high hydrophilicity. CSRE with soli containing montmorillonite significantly reduces
+compressive strength [12]. Beidellite also reduces it, but to a lesser extent. This is due to the lower
+
+Materials 2020, 13, 2317
+
+3 of 20
+
+swelling potential of this mineral compare to montmorillonite [24]. There are also minerals whose
+presence increases the CSRE compressive strength, i.e., kaolinite. Kaolinite, as pozzolan, can react
+with cement hydration products [23]. Soil suitable for rammed earth mixtures cannot contain organic
+matter, which quickly absorbs water; it is highly compressible and biodegradable [12].
+This study is focused on assessing the influence of each CSRE mixture component on the compressive
+strength. It is a crucial property of construction building material [12]. The CSRE mixture components
+considered in this research are the content of aggregates of different particle size distribution, cement
+addition, and water content. The particle size distribution is a property of soil that is also difficult to
+determine precisely in a construction setting. Many researchers have shown that CARE from soils
+that do not contain swelling minerals but have different grain sizes may have a big difference in
+compressive strength [12,19,23]. The soil-cement mixtures’ moisture content may change unexpectedly
+due to changes in atmospheric conditions prevailing at the construction site. Besides, it is difficult to
+accurately determine the moisture content of soil obtained from a construction site or to dry it to a
+constant mass.
+Precise optimum moisture content determination on the construction site is difficult. Optimum
+moisture content (OMC) is the moisture content at which the ramming soil-cement mixture will
+obtain maximum dry density. This feature will depend on the soil particle size distribution, which
+determination may prove difficult in field conditions. A similar problem will be related to maintaining
+a uniform mixture’s moisture content for a long time, which will be affected by, among others,
+atmospheric conditions, often difficult to predict.
+According to the New Zealand standard, NZS 4298: 1998 [25], in rammed earth, technology
+should be used with a soil with a moisture content with not more than 3% higher and not more than
+5% lower than the optimum moisture content. Such a wide range of moisture content seems to indicate
+its secondary importance in obtaining fundamental CSRE properties, which the authors decided to
+verify. The addition of cement is necessary due to both the material’s durability [5] and its compressive
+strength [5,6,10,12,19,26]. Although walls erected from soil mixtures without stabilizers may achieve
+compressive strength, allowing them to perform a supporting function [27], these walls are susceptible
+to water erosion [5,16]. The use of stabilizers may also be necessary to ensure the smooth running of the
+construction process. CSRE walls should have a sufficiently high early load-bearing capacity, enabling
+loading related to the further stages of construction works. On the other hand, for ecological reasons,
+there is a tendency to limit the addition of cement [28]. To sum up, the CSRE mixes should contain a
+cement addition in an amount that ensures that the hardened material meets the criteria regarding,
+among others, compressive strength. The compressive test of CSRE samples gives precise information
+about the compressive strength. However, they are not available for builders, who use the soil dug
+close to a construction site. The lack of widely accepted receipts for CSRE, as well as random character
+of local soils, were a reason for searching for the rules of creating the mixture. Prioritization of CSRE
+components is one of the pieces of advice that can be given to builders. The influence of cement content
+and the necessity of achieving the optimum wetness are apparent in reaching required compressive
+strength. If a specific soil—evaluated on site—is suitable for CSRE structure, that is the question
+that cannot be answered easily. The advanced tools and techniques applied in the article allowed for
+answering which components of CSRE influence the compressive strength the most. So, they can be the
+subject of the closest attention of the builders erecting structures from CSRE. Based on the high number
+of prepared and tested samples of CSRE, the three machine learning tools (i.e., random forest, artificial
+neural networks, decision trees) are applied for predicting the compressive strength (based on amounts
+of CSRE components). The results achieved—prediction models and predictions themselves—are then
+a subject of applying other explainable tools for ranking the importance of components influencing the
+compressive strength of this construction material.
+
+Materials 2020, 13, x FOR PEER REVIEW
+
+4 of 21
+
+Materials 2020, 13, 2317
+
+4 of 20
+
+2.1. Materials, Sample Preparation, and Compressive Strength Testing Method
+
+Clay
+Minerals
+Weight content
+Weight
+content in43.7
+in silty clay (%)
+silty clay (%)
+
+Including:
+Beidellite
+
+Kaolinite
+
+Illite
+
+8.9
+
+8.6
+
+26.2
+
+43.7
+
+8.6 6.026.2
+
+Goethite Siderite
+
+Siderite
+
+Kaolinite
+
+8.9-
+
+Clay Minerals
+Mineral Composition [%]
+
+Illite
+
+Beidellite
+
+Table 1. Mineral and chemical composition of silty clay used in examined soil mixtures [5].
+
+Carbonates
+
+--
+
+6.0
+
+Organic
+Substance
+0-
+
+Quartz
+and other
+
+Organic
+Substance
+
+Carbonates
+
+Goethite
+
+Inorganic
+soils
+for laboratory tests were prepared by mixing in a different proportion of natural
+2. Materials
+and
+Methods
+40–80% sand (0–2 mm), 0–40% gravel (2–4 mm), and 20–40% of silty clay. The sand was composed of
+pureMaterials,
+quartz. Gravel
+were
+ofStrength
+quartz (75%
+byMethod
+mass) and carbonate crumbs (25%
+2.1.
+Sample fractions
+Preparation,
+andcomposed
+Compressive
+Testing
+by mass). Silty clay mineral composition is shown in Table 1. The silty clay did not contain organic
+Inorganic soils for laboratory tests were prepared by mixing in a different proportion of natural
+substances. Figure 2 shows the grain size range of the soil mixes teste. After all soil ingredients were
+40–80% sand (0–2 mm), 0–40% gravel (2–4 mm), and 20–40% of silty clay. The sand was composed of
+mixed in a dry state to a homogeneous consistency different amounts (3–10%) of cement CEM I 42.5
+pure quartz. Gravel fractions were composed of quartz (75% by mass) and carbonate crumbs (25% by
+R according to the standard EN 197-1 [29] were added and the mix was mixed again. Finally, water
+mass). Silty clay mineral composition is shown in Table 1. The silty clay did not contain organic
+was added in various amounts (6–14%) and mixed again.
+substances. Figure 2 shows the grain size range of the soil mixes teste. After all soil ingredients were
+mixed in aTable
+dry state
+to a homogeneous consistency different amounts (3–10%) of cement CEM I 42.5 R
+1. Mineral and chemical composition of silty clay used in examined soil mixtures [5].
+according to the standard EN 197-1 [29] were added and the mix was mixed again. Finally, water was
+Mineral
+[%]
+added in various amounts (6–14%) and
+mixed Composition
+again.
+Including:
+
+Quartz and
+Other
+
+0
+
+50.3 50.3
+
+Figure 2.
+2. The
+The grain
+grain size
+size range
+range of
+of soils
+soils mixes
+mixes used
+used for
+for samples
+samples preparation.
+preparation.
+Figure
+
+The CSRE
+CSRE samples
+samples were
+were prepared
+prepared in
+in the
+the cubic
+cubic steel
+steel molds
+molds of
+ofdimensions
+dimensions 100
+100×× 100
+100 ×
+× 100 mm.
+The
+The
+samples
+were
+formed
+in
+three
+equal
+layers,
+by
+freely
+lowering
+the
+rammer
+from
+a
+height
+30
+The samples were formed in three equal layers, by freely lowering the rammer from a height of 30ofcm
+cmthe
+to surface
+the surface
+the moist
+soil–cement
+mixture.
+Each was
+layerrammed
+was rammed
+20 times.
+The rammer
+to
+of theofmoist
+soil–cement
+mixture.
+Each layer
+20 times.
+The rammer
+had a
+had a weight
+ofand
+6.5 kg
+and a surface
+of mm.
+98 × 98
+mm.
+The samples
+were demolded
+h and
+then
+weight
+of 6.5 kg
+a surface
+of 98 × 98
+The
+samples
+were demolded
+after 24 hafter
+and 24
+then
+cured
+at
+◦
+◦
+cured
+at
+a
+very
+high
+relative
+humidity
+of
+95%
+(±2%)
+and
+a
+temperature
+of
+20
+°C
+(±1
+°C)
+for
+27
+days.
+a very high relative humidity of 95% (±2%) and a temperature of 20 C (±1 C) for 27 days. Rammed
+Rammed
+keeps structure
+the layered
+structure
+in wall
+the monolithic
+wall
+and
+similarly
+in theTherefore
+molded
+earth
+keepsearth
+the layered
+in the
+monolithic
+and similarly
+in the
+molded
+samples.
+samples.were
+Therefore
+samples
+were loaded
+in the direction
+which they
+rammed.
+results of
+samples
+loaded
+in the direction
+in which
+they wereinrammed.
+Thewere
+results
+of the The
+compressive
+the compressive
+of all 434
+CSRE samples,
+specifying their
+compositions,
+i.e., gravel
+clay, silt,
+sand,
+strength
+of all 434strength
+CSRE samples,
+specifying
+their compositions,
+i.e., clay,
+silt, sand, and
+fraction,
+and
+gravel
+fraction,
+as welland
+as cement
+additionare
+and
+water content,
+as
+well
+as cement
+addition
+water content,
+presented
+in Tableare
+2. presented in Table 2.
+
+Materials 2020, 13, 2317
+
+5 of 20
+
+Table 2. Composition and the compressive strength of 434 tested samples—basic statistics.
+
+Min
+Max
+Mean
+Median
+Standard deviation
+
+Silt
+
+Clay
+
+Sand
+
+Gravel
+
+Cement
+
+Moisture
+Content
+
+Compressive
+Strength (MPa)
+
+7.0%
+14.0%
+10.4%
+10.5%
+1.69%
+
+14.9%
+25.3%
+20.4%
+20.1%
+2.21%
+
+40.3%
+75.4%
+52.6%
+49.4%
+11.33%
+
+0.0%
+30.0%
+16.5%
+20.0%
+11.74%
+
+3.0%
+10.0%
+7.6%
+9.0%
+2.13%
+
+6.0%
+14.0%
+9.9%
+10.0%
+1.72%
+
+1.52
+13.01
+5.99
+5.85
+2.21
+
+2.2. Methods of Compressive Strength Predictions
+2.2.1. Predictive Models
+The main goal is to generate a ranking of feature importance. Therefore, the predictive models are
+chosen based on their fitness to feature importance calculation. It is decided to use Random Forest
+Regressor and Decision Tree Regressor, as they come equipped with natural feature importance measures
+explicitly designed for tree predictive models [30–32]. Neural networks (multi-layer perceptron MLP)
+are also chosen, as their efficient use was proven in previous research [26,33]. Eventually, we compare
+the models’ results with simple linear regression.
+The decision tree (decision tree regressor, DTR) [32], it is a predictive model that is a binary tree.
+Each node corresponds to one decision, and nodes are generated to maximize the difference of samples
+in its’ child nodes. The final predictions are made in so-called leaves, which are nodes without child
+nodes. The most critical parameter is the depth of the tree [34]. The more deep-rooted tree is, the better
+it can fit into data. Thus, predictions are more accurate, but it is under higher risk of overfitting.
+Decision trees of reasonable size are simple to understand by a human. The main disadvantage is
+the lack of capability of predicting the target variable continuously, as the predictions are discrete.
+However, if the interval of values is finite, and there are many leaves, this condition is negligible [32].
+The second disadvantage is the ease of overfitting. Nonetheless, it is easy to overcome it with proper
+hyperparameter tuning and models’ performance analysis on a cross-validated set (described further
+in the article).
+Random forest (random forest regressor, RFR) [32], it is a predictive model composed of many
+decision trees – the final prediction is achieved through voting. Each decision tree is trained only on a
+subset of explanatory variables, thus makes the decision differently. The most critical hyperparameters
+are the number of trees and maximal depth [34].
+Artificial neural networks, it is a machine learning model containing (in our case) fully connected
+layers of neurons. Each neuron in the hidden layers modifies a received signal with a proper activation
+function, while the neurons in the last layer modify the received values to acquire the prediction.
+Further information may be found in [35,36]. There are examples of successful applications of neural
+networks in civil engineering [26,33] and the construction material science [37,38].
+Linear Regression [39], it is the simplest regression model. If a dataset X with an added column of
+ones, usually called the experiment matrix, has dimensions n × (m + 1), that is, it has m explanatory
+variables (features) and n samples (observations), then the linear regression model has m + 1 weights;
+a vector θ with dimensions (m + 1) × 1. Then, the prediction vector is equal:
+(1)
+
+ŷ = Xθ
+
+where: ŷ—vector of predicted values, X—experiment matrix, θ—vector of weights.
+Vector θ can be found by minimizing mean squared error (MSE) [39,40]. The linear regression is
+applied with a regularization, ridge regression [41], which has added a regularization term to MSE.
+In that case, the value of the following expression is minimized:
+n
+
+m
+
+i=1
+
+i=1
+
+1X
+αX 2
+( ŷi − yi )2 +
+θi
+n
+m
+
+(2)
+
+Materials 2020, 13, 2317
+
+6 of 20
+
+where: n—number of samples, m—number of features, α—regularization coefficient, y—vector of
+observed values.
+The regularization term is supposed to prevent overfitting [41]: the bigger α, the stronger the
+regularization. The main advantage of linear regression is its simplicity of interpretation. However,
+it often gives mediocre results and can only find linear correlations between features and the target
+variable [42]. The above models were then are trained on a dataset containing “Cement,” “Gravel,”
+“Silt,” “Moisture Content,” “Sand,” and “Clay” features to predict the samples’ compressive strength.
+The data are standardized before training. Many standardization techniques are known [43,44].
+The calculations are based on the universal and effective technique of scaling the features (columns)
+so that each of them achieves mean equal to zero and variance equal to one. Such scaling yields no
+effect on the quality of predictions of DTR, RFR [32], and linear regression [40], while it has proven
+usefulness for neural networks [45].
+2.2.2. Performance Measures of the Predictive Models
+In this section, the performance measures of the predictive models are presented, used to compare
+the models applied.
+N-fold cross-validation [46], it is a model validation technique based on dividing the training
+set into
+N subsets and then iterative training of the model on N − 1 of the subsets and testing its performance
+on the remaining one. N-fold cross-validation allows us to observe whether the model becomes
+overfitted, and the mean performance measures estimate the overall model performance measures as
+well [47].
+Residuals [48]—they are the differences between predicted and observed values of the target
+column. The vector of residuals is given as
+(3)
+
+r = y − ŷ
+
+The residual analysis allows observing how well the model has been fitted.
+MAE [40]—Mean Absolute Error—it is the mean of absolute values of differences between
+observed and predicted values. Let n be the number of observations, y be the vector of observed target
+values and ŷ be the vector of predicted values. Then MAE is equal:
+n
+
+MAE =
+
+1X
+yi − ŷi
+n
+
+(4)
+
+i=1
+
+MAE is a natural and straightforward measure of mean prediction error.
+MSE [40] Mean Squared Error, it is an average of squared differences between observed values
+and predicted values.
+n
+1X
+( yi − ŷi )2
+MSE =
+(5)
+n
+i=1
+
+MSE, in comparison to MAE, is more vulnerable to more significant errors [49]. However, it is
+still a valuable measure, especially for simple models [50].
+MAX—a supplemental measure of the maximal prediction error performed by the model.
+MAX =
+
+max
+
+i∈{1, ..., n}
+
+yi − ŷi
+
+(6)
+
+R-squared [40,51] is a coefficient of determination, an adjuvant measure of the proportion of the
+explained to the total variation of the dataset. If its value is close to 1, this usually indicates a good fit,
+while the value close to 0 may indicate a bad fit. However, we use R-squared only as a supplementary
+measure, as its high value does not confirm the well-fitting of a model [51]. The coefficient of
+determination is equal:
+
+Materials 2020, 13, 2317
+
+7 of 20
+
+Pn
+R = 1 − Pi=1
+n
+2
+
+( yi − ŷi )2
+
+i = 1 ( yi
+
+− y)2
+
+(7)
+
+where: y—the average value of y.
+2.2.3. Hyperparameter Tuning
+To achieve a good model fit, model hyperparameter tuning is performed. It is a process of
+choosing the model parameters to minimize the error function. The hyperparameters are tuned
+through Bayesian optimization [52] process, which does not require the function to be differentiable
+and searches for the optimal parameters assuming that the error function is a random distribution.
+The algorithm iteratively calculates the error function values on a test sample randomly chosen from
+the previously assumed distribution, and then improves the assumed distribution based on the results
+(the distributions are called respectively a priori and a posteriori). Due to the increasingly better fit of
+the model, one may find the parameters which provide an excellent fit to the dataset relatively fast.
+Bayesian optimization is precisely explained in [52].
+2.3. Feature Importance Measures
+Based on predictions achieved, it can be analyzed how particular features influence the compressive
+strength. The following three measures are applied: drop-out loss, MSE reduction (for RFR and DTR
+only), and accumulated dependency.
+Drop-out loss [53] is a measure of feature importance given as the difference between model
+performance measures before and after variable column permutation. It is a universal measure applicable
+to any predictive model. Let f denote the loss function of the model achieved on cross-validation sets,
+
+and x denote the variable of which the feature importance is measured. Let σ(x) k1 be a sequence of
+random permutations of x. The values of the loss function can be calculated in a dataset where x is
+replaced with σ(x)i . Intuitively, the worse the model performance became in comparison to the initial
+model, the more significant is variable in the model. After repeating the operation for every 1, . . . , k,
+the new loss function values fˆ1 , · · · , fˆk are acquired. It can be measured then the feature importance
+of the variable x as:
+k
+1X
+FI (x) =
+( f − fˆi )
+(8)
+k
+i=1
+
+where: f —the value of the loss function before variable permutation, fˆi —the value of the loss function
+after i-th permutation, k—the number of permutations.
+In the presented calculations, MAE is taken as the loss function and k = 100. High values of
+drop-out loss indicate the high impact of the variable on the model performance, which then estimates
+the actual importance of the variable on the target, providing that the model is well fitted. In particular,
+the drop-out loss values may be negative, which indicates that the presence of the variable in the
+dataset decreases the model accuracy and that the variable needs to be removed. Moreover, when there
+are existing variables with high correlation measure, the values of FI tend to distribute asymmetrically
+between the correlated variables, thus making the measure unreliable.
+Feature Importance Plot (for drop-out loss) [54]—It is a bar plot with the y-axis representing
+permuted variables, and the x-axis showing achieved mean drop-out loss after the variable permutations.
+MSE reduction. This is a way of calculating the DTR and RFR feature importance for all independent
+variables [55]. For each feature, the tree is traversed, and if in the given node, the decision is based on
+the chosen feature, its error reduction multiplied by the number of samples that were routed to that
+node to its feature importance is summed. Error reduction is calculated as the difference in impurity
+measure of samples routed to that node minus impurities in its child nodes. MSE is taken as an
+impurity measure. In RFR, the resulting feature importance is a mean of feature importance of the
+contained trees. In the case of RFR and DTR, the achieved values are then normalized, so they sum to
+
+Materials 2020, 13, 2317
+
+8 of 20
+
+one. Further information may be found in [40]. However, the feature importance achieved with MSE
+reduction may sometimes yield biased results [56]. Therefore, the drop-out loss is considered as the
+primary feature importance measure.
+ALE (accumulated local effect, also called an accumulated dependency) [54] describes how,
+on average, a particular variable changes the prediction of the model. For a given observation, it can
+be simulated what the model would predict if the value of the chosen feature differs (this process is
+called Ceteris Paribus). If an overall average of the samples and their “simulations” is taken, the Partial
+Dependency of the chosen feature is found as a result. However, Partial Dependency is unstable
+and vulnerable to linear correlations, so instead of that, a weighted average of samples and their
+“simulations” are taken, where weights correspond to the distance of the original samples—the bigger
+the distance, the lower is the weight, the less important is the sample. ALE is precisely described in [54].
+The results were achieved with the use of scikit-learn package [57] for computations and model
+generation, and DALEX [54] with modelStudio [58] packages for drop-out loss calculation and feature
+importance visualization.
+3. Results
+3.1. Predicting Model Performance
+Due to the strong positive linear correlation (0.95) between silt and clay, it is decided to compare
+feature importance and models’ audits on four variations of the dataset, as strong linear correlation may
+distort importance and reduce the feature importance measure’s reliability. The considered datasets
+are as follow:
+•
+•
+•
+•
+
+The dataset without any changes,
+The dataset without the clay column,
+The dataset without the silt column,
+The dataset with a column representing a sum of silt and clay values instead of two separate columns.
+
+Sand and clay are also strongly correlated (Pearson’s correlation –0.95), but negatively. The content
+of these two components is balanced: the more the sand is in the sample, the more gravel can be found
+there. It was a reason for remaining sand and gravel as separate factors. The absolute value of all other
+correlations (between components) is below 0.5. The absolute value of the linear correlation between a
+single component and the compressive strength of CSRE is above 0.5 only for cement. It is positive
+and equal to 0.53, so it is a weak one. The aforementioned software allows for Bayesian optimization
+of DTR and RFR. The best depth of the trees is found 9 for DTR, and 20 for RFR. After several tries
+where the lowest MSE error was searched, the MLP regreessor architecture was set to two hidden
+layers (with 100 neurons in each of them) and ReLU activation function [57]. The quality of predictions
+is measured on cross-validated datasets with seven subsets. It is an appropriate number of folds for
+datasets having this number (434) of observations [46].
+As one can observe (Table 3), the linear regression yields much worse results than the remaining
+models. All of them (MLP, DTR, RFR) attain very similar performance measures’ values.
+Besides the fact that the linear regression model gives much worse predictions of the compressive
+strength, the minimal differences between MAE values between different datasets can be observed,
+as well. Therefore, the following results are presented for the dataset with a column representing
+the sum of silt and clay, as the aforementioned differences are negligible. Residuals (presented in
+Figure 3) of linear regression are much higher than of the other models and they are significantly
+unevenly distributed. It can be concluded that the linear regression model is insufficient in predicting
+the compressing strength, and we discard it in the following computations.
+
+Materials 2020, 13, 2317
+
+9 of 20
+
+Table 3. Performance measures’ values of the predictive models.
+Linear Regression
+Error Measure
+
+Silt and Clay
+
+Without Clay
+
+Without Silt
+
+Summed
+
+MAE
+MSE
+MAX
+R2
+
+1.17
+2.41
+5.31
+0.49
+
+1.17
+2.41
+5.31
+0.49
+
+1.17
+2.41
+5.31
+0.49
+
+1.17
+2.41
+5.31
+0.49
+
+Error measure
+
+Silt and Clay
+
+Without Clay
+
+Without Silt
+
+Summed
+
+MAE
+MSE
+MAX
+R2
+
+0.68
+0.86
+2.83
+0.81
+
+0.68
+0.85
+2.83
+0.81
+
+0.68
+0.85
+2.83
+0.81
+
+0.68
+0.85
+2.83
+0.81
+
+Error measure
+
+Silt and Clay
+
+Without Clay
+
+Without Silt
+
+Summed
+
+MAE
+MSE
+MAX
+R2
+
+0.73
+1.04
+3.24
+0.78
+
+0.71
+1.00
+3.22
+0.78
+
+0.70
+1.01
+3.30
+0.78
+
+0.70
+0.96
+3.19
+0.79
+
+Error measure
+
+Silt and Clay
+
+Without Clay
+
+Without Silt
+
+Summed
+
+MAE
+MSE
+MAX
+R2
+
+0.67
+0.85
+2.83
+0.81
+
+0.67
+0.85
+2.83
+0.81
+
+0.67
+0.84
+2.83
+0.81
+
+0.67
+0.85
+2.83
+0.81
+
+Decision tree
+
+Neural networks
+
+Random forest
+
+Materials 2020, 13, x FOR PEER REVIEW
+
+10 of 21
+
+Figure 3. Comparison of residuals of the predictive models.
+
+Figure 3. Comparison of residuals of the predictive models.
+The measures of MAE, MSE, MAX, and R2 are presented in Figure 4 for all seven subsets of the
+cross-validated datasets. Every single column corresponds to one performance measure attained on
+one subset. It can be observed in Figure 4 that MLP, RFR, and DTR models behave pairwise almost
+identically. The following measures, MAE, MSE, R2, have different units (defined in Section 2.2.2),
+which is the reason for omitting to present the unit of the vertical axis in Figure 4.
+Results achieved on the cross-validated set indicate that the models are not overfitted. Moreover,
+the values of MAE and MSE are relatively low, so the models have high enough accuracy for us to
+
+Materials 2020, 13, 2317
+
+10 of 20
+
+The measures of MAE, MSE, MAX, and R2 are presented in Figure 4 for all seven subsets of the
+cross-validated datasets. Every single column corresponds to one performance measure attained on
+one subset. It can be observed in Figure 4 that MLP, RFR, and DTR models behave pairwise almost
+identically. The following measures, MAE, MSE, R2, have different units (defined in Section 2.2.2),
+2020, 13,for
+x FOR
+PEER REVIEW
+11 of 21
+which isMaterials
+the reason
+omitting
+to present the unit of the vertical axis in Figure 4.
+
+Cross validation errors
+MLP Regressor
+
+(a)
+
+5
+4
+
+Value
+
+3
+2
+1
+0
+MAE
+
+(b)
+
+MSE
+
+MAX
+
+R2
+
+Decision Tree Regression
+
+5
+
+Value
+
+4
+3
+2
+1
+0
+MAE
+
+MSE
+
+MAX
+
+R2
+
+Random Forest Regressor
+
+(c)
+
+5
+
+Value
+
+4
+3
+2
+1
+0
+MAE
+
+MSE
+
+MAX
+
+R2
+
+Figure 4.Figure
+Performance
+measures’
+values
+of of
+thethethree
+modelsonon
+dataset. (a) for MLP
+4. Performance
+measures’
+values
+threeremaining
+remaining models
+thethe
+lastlast
+dataset.
+(a)
+for
+MLP
+regressor,
+(b)
+for
+DTR,
+(c)
+for
+RFR.
+regressor, (b) for DTR, (c) for RFR.
+3.2. Feature
+Importance
+Calculations
+Results
+achieved
+on the
+cross-validated set indicate that the models are not overfitted. Moreover,
+previously
+mentioned,
+there is alow,
+strong,
+positive
+correlation
+between
+the content
+of silt
+the values ofAs
+MAE
+and MSE
+are relatively
+so the
+models
+have high
+enough
+accuracy
+forand
+us to use
+in CSRE samples.
+Feature
+importanceranking.
+calculated for all features (with the use of DTR model) has
+them forclay
+generating
+the feature
+importance
+ranked the influence (on the compressive strength) of clay on the third place and the influence of
+gravel
+on the last Calculations
+place (the minimal influence). However, when the silt is removed from the database,
+3.2. Feature
+Importance
+clay becomes more influential (more than gravel). It can be observed in Figure 5 i.e., in feature
+As importance
+previouslyplot.
+mentioned,
+there
+a strong,
+positive
+betweensiltthe
+of silt and
+Considering
+that,isand
+the strong,
+positivecorrelation
+correlation between
+andcontent
+clay, it was
+decided
+to analyze
+the summed
+content of
+silt and clay
+CSRE
+mixture.
+Another
+important
+reason
+clay in CSRE
+samples.
+Feature
+importance
+calculated
+forinall
+features
+(with
+the use
+of DTR
+model) has
+for influence
+making calculations
+for the summed
+content
+of siltonand
+that these
+twoinfluence
+fractions of
+ranked the
+(on the compressive
+strength)
+of clay
+theclay
+thirdis place
+and the
+of gravel
+aggregates often appear jointly [19].
+
+on the last place (the minimal influence). However, when the silt is removed from the database, clay
+becomes more influential (more than gravel). It can be observed in Figure 5 i.e., in feature importance
+plot. Considering that, and the strong, positive correlation between silt and clay, it was decided to
+analyze the summed content of silt and clay in CSRE mixture. Another important reason for making
+calculations for the summed content of silt and clay is that these two fractions of aggregates often
+appear jointly [19].
+
+Materials2020,
+2020,13,
+13,x2317
+Materials
+FOR PEER REVIEW
+
+20
+1211ofof21
+
+Full set
+Cement
+
+1.513
+
+Moisture content
+
+1.36
+
+Silt
+
+0.682
+
+Sand
+
+0.511
+
+Gravel
+
+0.245
+
+Clay
+
+0.015
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+
+Clay without Silt
+Cement
+
+1.519
+
+Moisture content
+
+1.402
+
+Sand
+
+0.641
+
+Clay
+
+0.284
+
+Gravel
+
+0.136
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+
+Silt without Clay
+Moisture content
+
+1.535
+
+Silt
+
+1.44
+
+Sand
+
+0.745
+
+Gravel
+
+0.547
+
+Clay
+
+0.098
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+
+Silt and Clay summed
+Cement
+
+1.525
+
+Moisture content
+
+1.359
+
+Silt + Clay
+
+0.708
+
+Sand
+
+0.538
+
+Gravel
+
+0.257
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+Figure 5. Feature importance plots from drop-out loss based on the DTR model and different datasets.
+Figure 5. Feature importance plots from drop-out loss based on the DTR model and different datasets.
+
+Once the decision about considering the joined impact of silt and clay on the compressive strength
+Onceisthe
+decision
+about
+considering
+the joined
+of silt and
+clay on The
+the calculations
+compressiveof
+of CSRE
+made,
+the cause
+of possible
+distortions
+of theimpact
+result achieved
+is lowered.
+strength
+of
+CSRE
+is
+made,
+the
+cause
+of
+possible
+distortions
+of
+the
+result
+achieved
+is
+lowered.
+The
+drop-out loss could be made for all three models. Based on these calculations, feature importance plots
+calculations
+of in
+drop-out
+loss could be made for all three models. Based on these calculations, feature
+are presented
+Figure 6.
+importance
+plots
+are presented
+in Figure
+6.
+As it was
+described
+in Section
+2.3, applying
+MSE reduction to find the features’ ranking is possible
+in RFR and DTR tools. The results are presented in Figures 7 and 8. The scale of the vertical axis has no
+unit; it is comparative. The joint influence of all CSRE components sums to 1.
+
+Materials 2020, 13, 2317
+
+12 of 20
+
+Materials 2020, 13, x FOR PEER REVIEW
+
+13 of 21
+
+Decision Tree Regressor
+Cement
+
+1.586
+
+Moisture content
+
+1.365
+
+Silt+Cly
+
+0.705
+
+Sand
+
+0.531
+
+Gravel
+
+0.246
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+
+MLP Regressor
+Cement
+
+1.457
+
+Moisture content
+
+1.226
+
+Silt+Cly
+
+0.759
+
+Sand
+
+0.486
+
+Gravel
+
+0.309
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+
+Random Forest Regressor
+Cement
+
+1.423
+
+Moisture content
+
+1.288
+
+Silt+Cly
+
+0.596
+
+Sand
+
+0.241
+
+Gravel
+
+0.038
+0
+
+0.5
+
+1
+
+1.5
+
+2
+
+Increase of MAE (MPa)
+Figure 6. Feature importance plots from drop-out loss based on DTR, MLP regressor, and RFR (silt and
+
+Materials 2020,
+13, x6.FOR
+PEER
+REVIEW plots from drop-out loss based on DTR, MLP regressor, and RFR (silt
+Figure
+Feature
+importance
+clay jointly considered).
+and clay jointly considered).
+
+14 of 21
+
+As it was described in Section 2.3, applying MSE reduction to find the features’ ranking is
+possible in RFR and DTR tools. The results are presented in Figures 7 and 8. The scale of the vertical
+axis has no unit; it is comparative. The joint influence of all CSRE components sums to 1.
+
+Figure 7.
+7. Features’
+Features’ importance
+importance ranking
+ranking from
+from MSE
+MSE reduction
+reduction applied
+Figure
+applied for
+for RFR.
+RFR.
+
+Materials 2020, 13, 2317
+
+Figure 7. Features’ importance ranking from MSE reduction applied for RFR.
+
+13 of 20
+
+Figure
+Figure 8.
+8. Features’
+Features’ importance
+importance ranking
+ranking from
+from MSE
+MSE reduction
+reduction applied
+applied for
+for DTR.
+DTR.
+
+The
+The results
+results achieved
+achieved based
+based on
+on drop-out
+drop-out loss
+loss and
+and MSE
+MSE reduction
+reduction are
+are collected
+collected in
+in the
+the following
+following
+Table
+4.
+Table 4.
+Table 4. Summary of the five rankings (the most important component is at the top of each of the lists).
+Table 4. Summary of the five rankings (the most important component is at the top of each of the
+lists).
+Drop-Out
+Loss
+Drop-Out Loss
+Drop-Out Loss
+MSE Reduction
+MSE Reduction
+for DTR
+for MLP
+for RFR
+for DTR
+for RFR
+
+Drop-Out Loss
+Drop-Out Loss
+Drop-Out Loss
+MSE Reduction
+MSE Reduction
+Cement
+Cement
+Cement
+Moisture
+Moisture
+for
+DTR
+for
+MLP
+for RFR
+for DTR
+for RFR
+Moisture
+Moisture
+Moisture
+Cement
+Cement
+Cement
+Cement
+Cement
+Silt + Clay
+Silt
++ Clay
+Silt
++ Clay
+SiltMoisture
++ Clay
+SiltMoisture
++ Clay
+Sand
+Sand
+Sand
+Sand
+Sand
+Moisture
+Moisture
+Moisture
+Cement
+Cement
+Gravel
+Gravel
+Gravel
+Silt Gravel
++ Clay
+SiltGravel
++ Clay
+Silt
++ Clay
+Silt
++ Clay
+Silt + Clay
+Sand
+Sand
+Sand
+Sand
+Sand
+Gravel
+Gravel
+Gravel
+Graveltool do
+The
+results from the accumulated
+local effect
+(ALE, called also Gravel
+accumulated dependency)
+not create a ranking of features influencing the compressive strength of CSRE themselves. The ranking
+results
+from
+accumulated
+localtoeffect
+(ALE,
+called
+also accumulated
+dependency)
+tool
+can beThe
+created
+based
+onthe
+ALE.
+It was decided
+utilize
+results
+achieved
+from accumulated
+dependency
+doverify
+not create
+a ranking
+of features
+influencing
+strengthtools.
+of CSRE
+themselves.
+to
+and discuss
+the rankings
+from
+drop-outthe
+losscompressive
+and MSE reduction
+It is presented
+in The
+the
+ranking can
+be created based on ALE. It was decided to utilize results achieved from accumulated
+following
+section.
+dependency to verify and discuss the rankings from drop-out loss and MSE reduction tools. It is
+4.
+Discussion
+presented
+in the following section.
+The content of cement, as well as the water to cement ratio, are crucial in achieving required
+4. Discussion
+compressive
+strength for a traditional cement concrete [59,60]. Rankings made through drop-out loss
+(applied for MLP, RFR, and DTR) and MSE reduction (based on RFR and DTR) present a similar importance
+sequence of CSRE mixture components. The scales (i.e., their units) of these two rankings are different,
+so the numbers cannot be compared (i.e., the strength of the impact of the same component taken from
+different rankings). The difference in the most influential CSRE ingredient on the compressive strength
+of this structural construction material is illusionary. MSE reduction ranked the water content at the
+first place and cement content at the second one (the same for DTR and RFR). Drop-out loss for all
+three tools ranked in opposite to these two components. This is a consistent result. The processes of
+designing and preparing CSRE mixture usually end with matching the water addition to the amount
+of cement used, and to the amount of water already included in the aggregates [1].
+Based on these two sets of ranking, it can be said that the amount of cement and the amount
+of water (matched to the content of cement) plays a crucial role in achieving the high compressive
+strength of CSRE. Accumulated dependency plots are calculated for DTR. They are assumed to analyze
+the influence of changes of only one feature (CSRE component) at one time (assuming the other
+features remain unchanged) on the output (compressive strength). Reading the ALE plot concerning
+
+Materials 2020, 13, 2317
+
+14 of 20
+
+the content of cement (see Figure 9) requires assuming the initial content of cement in the theoretical
+sample e.g., 6%. Then, it can be noticed that if the cement content is lowered to 4%, the unknown initial
+compressive strength will be lowered by approximately 1.5 MPa. Oppositely, when the cement content
+is increased up to 7.5%, the unknown initial compressive strength will rise by approximately 0.8 MPa.
+Materials 2020, 13, x FOR PEER REVIEW
+
+16 of 21
+
+Figure
+based on
+onDTR.
+DTR.
+Figure9.9.ALE
+ALEplots
+plotsfor
+forcement
+cement and
+and water
+water content based
+
+The more the cement content changes, the more the compressive strength of CSRE changes.
+This close to linear, steadily increasing dependency cannot be observed for water content. Lowering
+water content from 9.5% to 8.0% increases the output by approximately 1 MPa but lowering it more,
+down to 6.5% decreases the compressive strength by 1.5 MPa. This calculated phenomenon is confirmed
+by practical engineering [61–63]. It is due to the fact that a certain amount of cement requires an
+optimum amount of water, and the changes of the compressive strength observed on the plot (Figure 9)
+are also significant. The result from ALE can be transformed into ranking, based on the maximum range
+of the output changes (caused by changes of a component content). In the case of cement, the maximum
+change is 4 MPa. In the case of moisture content, close to 4 MPa, but less than the influence of cement
+Figure 10. ALE plots for clay+silt, sand and gravel content based on DTR.
+content. So, applying the three explaining tools to the DTR model, the one-time (based on MSE reduction)
+moisture
+content
+is found
+as the
+influential
+on the
+strength, of
+and
+two-times
+cement
+The
+proposed
+methods
+of most
+ranking
+the influence
+ofcompressive
+descriptors (amounts
+CSRE
+components)
+as on
+theamore
+important
+(based on drop-out
+and ALE).
+This kind
+of voting
+can be tools
+crucial
+for
+dependent
+valuefeature
+(the compressive
+strength)loss
+through
+explainable
+artificial
+intelligence
+can
+analyzing
+other
+In thesamples
+case of tested
+ranking
+of CSRE
+components,
+the
+results
+areare
+consistent.
+be applied
+onlyphenomena.
+if there is enough
+(several
+dozen
+are too little;
+434
+samples
+just on
+The
+and
+content
+shouldALE
+be matched
+during
+process the
+(to values
+maximize
+the
+thecement
+border).
+Themoisture
+next limitation
+concerns
+and drop-out
+lossproduction
+tools. Permutating
+of one
+compressive
+feature or strength).
+shifting values of one feature, and remaining values of other features unchanged, the
+above-mentioned
+models
+dealthe
+with
+cases where
+the sum
+components
+does not
+equal silt
+100%.
+Both methods of
+ranking
+features
+(drop-out
+lossof
+and
+MSE reduction)
+placed
+andDespite
+clay on
+limitations
+of just
+the methods,
+and and
+evenwater
+though
+the testsItwere
+only for samples
+made of
+thethe
+third
+position,
+after cement
+content.
+can carried
+be readout
+in accumulated
+dependency
+aggregates
+presented
+Table
+andand
+Figure
+the clear
+(consistent
+with all
+in thestrength
+article
+plot
+(Figure 10)
+that the in
+more
+the2silt
+clay 2,
+content
+increases,
+the more
+theapplied
+compressive
+methods)The
+ranking
+of the features
+influencing
+CSRE(caused
+compressive
+strength
+canofbeclay
+created:
+decreases.
+maximum
+range of
+MPa changes
+by the
+changes
+and silt content)
+is approximately
+MPa,content
+which is much lower than for cement and water. When preparing ALE
+1
+cement and1water
+plots
+for
+sand
+and
+gravel
+2
+silt and clay content(Figure 10) it can be said that changes in its content in the CSRE mixture
+almost
+do not
+affect the compressive strength. The maximum range of compressive strength changes,
+3
+sand
+content
+calculated
+for content
+sand is slightly lower than for silt and clay. The influence of gravel could be practically
+4
+gravel
+neglected. The ranking based on the analysis of results from accumulated dependency can be created.
+Figure 11 confirms the rule that the more silt and clay is in a CSRE mixture, then its compressive
+Starting from the most influential feature it is cement, moisture content, clay and silt, sand, gravel.
+strength decreases. The presented box graphs are based on all 434 samples tested (with different all
+ALE is based on the tested samples. The step character (step-shelf-step) of the curves (presented in
+components of mixtures, as presented in Table 2). The quartiles of the compressive strength are
+Figures 9 and 10) arises from the fact that changes of components’ content in CSRE mixtures were not
+presented for three ranges of clay and silt content (covering its full range in tested samples).
+continuous—also made in steps. In analysis with a much higher number of cases, where features are
+continuous, the reasoning based on the width of horizontal “shelves” of ALE curves can be done. It is
+not possible in the presented case. The reasoning based on ALE plots is inspired [64–66].
+
+Materials 2020, 13, 2317
+
+15 of 20
+
+Figure 9. ALE plots for cement and water content based on DTR.
+
+Figure
+ALEplots
+plotsfor
+forclay+silt,
+clay+silt, sand
+sand and
+Figure
+10.10.ALE
+and gravel
+gravelcontent
+contentbased
+basedon
+onDTR.
+DTR.
+
+The
+proposed
+methodsofofranking
+rankingthe
+theinfluence
+influence of descriptors
+descriptors (amounts
+The
+proposed
+methods
+(amountsofofCSRE
+CSREcomponents)
+components)
+a dependent
+value
+(thecompressive
+compressivestrength)
+strength) through
+through explainable
+tools
+can
+on on
+a dependent
+value
+(the
+explainableartificial
+artificialintelligence
+intelligence
+tools
+can
+applied
+onlyififthere
+thereisisenough
+enough samples
+dozen
+areare
+tootoo
+little;
+434 434
+samples
+are just
+be be
+applied
+only
+samplestested
+tested(several
+(several
+dozen
+little;
+samples
+areon
+just
+next
+limitation
+concerns
+ALEALE
+and drop-out
+loss tools.
+the values
+one
+on the
+theborder).
+border).The
+The
+next
+limitation
+concerns
+and drop-out
+loss Permutating
+tools. Permutating
+theofvalues
+feature
+or
+shifting
+values
+of
+one
+feature,
+and
+remaining
+values
+of
+other
+features
+unchanged,
+the
+of one feature or shifting values of one feature, and remaining values of other features unchanged,
+models
+dealdeal
+withwith
+casescases
+wherewhere
+the sum
+components
+does not does
+equalnot
+100%.
+Despite
+theabove-mentioned
+above-mentioned
+models
+theofsum
+of components
+equal
+100%.
+the
+limitations
+of
+the
+methods,
+and
+even
+though
+the
+tests
+were
+carried
+out
+only
+for
+samples
+made
+of
+Despite the limitations of the methods, and even though the tests were carried out only for samples
+aggregates presented in Table 2 and Figure 2, the clear (consistent with all applied in the article
+made of aggregates presented in Table 2 and Figure 2, the clear (consistent with all applied in the article
+methods) ranking of the features influencing CSRE compressive strength can be created:
+methods) ranking of the features influencing CSRE compressive strength can be created:
+1
+cement and water content
+1.
+cement and water content
+2
+silt and clay content
+2. 3 siltsand
+andcontent
+clay content
+3. 4 sand
+content
+gravel
+content
+4.
+gravel content
+Figure 11 confirms the rule that the more silt and clay is in a CSRE mixture, then its compressive
+strength
+The
+presented
+areand
+based
+samples
+testedthen
+(with
+all
+Figure decreases.
+11 confirms
+the
+rule thatbox
+the graphs
+more silt
+clayonisall
+in 434
+a CSRE
+mixture,
+itsdifferent
+compressive
+components
+of
+mixtures,
+as
+presented
+in
+Table
+2).
+The
+quartiles
+of
+the
+compressive
+strength
+are
+strength decreases. The presented box graphs are based on all 434 samples tested (with different
+for three
+ranges of
+and silt in
+content
+its full range
+in compressive
+tested samples).
+all presented
+components
+of mixtures,
+asclay
+presented
+Table(covering
+2). The quartiles
+of the
+strength are
+Materials 2020,
+13,three
+x FORranges
+PEER REVIEW
+presented
+for
+of clay and silt content (covering its full range in tested samples). 17 of 21
+
+Quartiles of
+of the CSRE compressive strength for three ranges of silt and clay content.
+Figure 11. Quartiles
+
+When
+cement content
+content is
+is also
+also considered
+considered (as
+(as aa differentiating
+differentiating factor),
+factor), the
+the effect
+effect of
+the negative
+negative
+When the
+the cement
+of the
+influence
+of
+clay
+and
+silt
+on
+the
+compressive
+strength
+can
+be
+observed
+too.
+Table
+5
+is
+prepared
+influence of clay and silt on the compressive strength can be observed too. Table 5 is prepared for
+for
+samples
+where the
+are divided
+samples where
+the water
+water to
+to cement
+cement ratio
+ratio is
+is from
+from 0.67
+0.67 to
+to 1.67.
+1.67. These
+These samples
+samples are
+divided into
+into three
+three
+groups
+amount
+of cement
+added.
+Then,Then,
+the median
+value of
+the compressive
+strength
+groups according
+accordingtotothethe
+amount
+of cement
+added.
+the median
+value
+of the compressive
+
+strength is found for each group. For every group, the average content of clay and silt is lower for the
+samples with the compressive strength above the median value, than for samples where the
+compressive strength is below the median value.
+Table 5. The content of clay+silt for different groups of samples.
+
+Materials 2020, 13, 2317
+
+16 of 20
+
+is found for each group. For every group, the average content of clay and silt is lower for the samples
+with the compressive strength above the median value, than for samples where the compressive
+strength is below the median value.
+Table 5. The content of clay+silt for different groups of samples.
+
+The Cement
+Content %
+
+Number of
+Samples
+
+The Median Value
+of Compressive
+Strength Mpa
+
+6
+9
+10
+
+108
+210
+46
+
+5.577
+6.533
+5.900
+
+The Mean Content of Clay + Silt %
+For Samples with the
+Compressive Strength
+above the Median Value
+
+For Samples with the
+Compressive Strength
+Below the Median Value
+
+29.6%
+29.8%
+29.8%
+
+31.5%
+32.4%
+30.9%
+
+These findings have significant practical meaning for assessing the quality of dug, on-site soil:
+the component of cement stabilized rammed earth. Much more important for achieving higher
+compressive strength is the low content of clay and silt, then the proportion of sand and gravel in the
+soil on site. When the low content of clay and silt is checked, even 6% of cement added can lead to the
+compressive strength above 5.5 MPa.
+Based on the prepared calculation, the tools used for them can also be assessed. There is no
+meaningful difference in the prediction accuracy between DTR, RFR, and MLP regression models.
+A numerous number of samples can be analyzed with their use. However, it is important to remember,
+that MSE reduction is not a universal method of preparing features’ ranking based on machine learning.
+It can be applied for tree-based tools as DTR and RFR in the article. Drop-out loss and accumulated
+dependency (ALE) methods can be applied for every machine learning predictor, but result from
+ALE is not the explicit ranking. The ranking is created based on results from ALE. Nevertheless,
+an accumulated dependency is very helpful, in the article, in comparing rankings achieved through
+drop-out loss and MSE reduction, as well as, for explaining not obvious consistency of these rankings.
+The multivariate linear regression model is applied only as a background, legitimating the use of
+machine learning tools for the compressive strength predictions. From the set of machine learning
+tools applied, only one from the pair DTR and RFR could be omitted without lowering the quality of
+results and conclusions.
+5. Conclusions
+The three machine learning tools, i.e., DTR, MLP, and RFR, are applied to predict the compressive
+strength of CSRE. The error of predictions (MAE) around 11% of the observed values allowed the
+use of explainable tools as drop-out loss, MSE reduction, and accumulated dependency. Considering
+the required correlation between cement and water content and considering silt and clay jointly,
+the calculated rankings are consistent. CSRE components are ranked according to their influence on
+the compressive strength. The sequence, starting from the most influential component, is cement
+and water (considered jointly), clay and silt (also considered jointly), sand, and gravel. The positive
+influence of cement and water is evident for builders (the higher content of cement, the higher the
+compressive strength). The unexpected, strong impact of silt and clay (when compared to the influence
+of sand and gravel) is found with the proposed procedures. The negative influence of clay and silt is
+more important than the content of sand or gravel.
+These findings are valid for the samples created (their details can be found in Section 2). Nevertheless,
+as it is presented in Section 4, the limitations of artificial intelligence (AI) tools are not a barrier in
+successfully applying them in CSRE (composite material) examination and design. The rule concerning
+the meaningful negative impact of clay and silt on the CSRE compressive strength can be applied
+within the range of aggregate compositions presented in Figure 2. The usefulness of explainable
+
+Materials 2020, 13, 2317
+
+17 of 20
+
+artificial intelligence tools for such analysis is proved in the article as well, so the method can be applied
+for other, broader sets of data concerning crush tests of composite construction materials.
+It is recommended to use at least two machine learning tools for predicting the dependent variable
+in this kind of analysis, based on varying algorithms (as, e.g., MLP and RFR can vary). The features’
+ranking tools (MSE reduction, drop-out loss) may produce slightly different rankings for different
+prediction models, or may not be applied for all prediction models (as MSE reduction for MLP cannot
+be applied). Accumulated dependency was not designed specifically as a ranking tool, but it can help
+explain and verify any potential differences between the rankings, as described in the article.
+Author Contributions: Conceptualization, H.A., Ł.B., W.K. and P.N.; methodology, Ł.B. and W.K. software, W.K.
+and Ł.B.; validation, Ł.B., W.K. and H.A. formal analysis, H.A. and P.N.; investigation, P.N.; resources, P.N.; data
+curation, P.N.; writing—original draft preparation, W.K., Ł.B., H.A. and P.N., writing—review and editing, P.N.;
+visualization, Ł.B., W.K. and P.N.; supervision, H.A.; project administration, P.N.; funding acquisition, H.A. and
+P.N. All authors have read and agreed to the published version of the manuscript.
+Funding: This research received no external funding.
+Acknowledgments: The authors like to acknowledge the help of Przemysław Biecek (Warsaw University of
+Technology) for the advices given to the authors. This research received financial support from the Warsaw
+University of Technology.
+Conflicts of Interest: The authors declare no conflicts of interest.
+
+References
+1.
+2.
+3.
+
+4.
+5.
+6.
+7.
+
+8.
+9.
+
+10.
+
+11.
+12.
+
+13.
+
+Hall, M.R.; Najim, K.B.; Keikhaei, P. Soil stabilization and earth construction: Materials, properties and
+techniques. In Modern Earth Buildings; Woodhead Publishing Limited: Cambridge, UK, 2012; pp. 222–255.
+Jayasinghe, C.; Kamaladasa, N. Compressive strength characteristics of cement stabilized rammed earth
+walls. Constr. Build. Mater. 2007, 21, 1971–1976. [CrossRef]
+Ciancio, D.; Beckett, C. Rammed earth: An overview of a sustainable construction material. In Proceedings
+of the Third International Conference on Sustainable Construction Materials and Technologies, Kyoto, Japan,
+18–21 August 2013.
+PN-EN 1990:2004 Eurocode - Basis of structural design; Polish Committee for Standardization: Warsaw,
+Poland, 2004.
+Narloch, P.; Woyciechowski, P. Assessing Cement Stabilized Rammed Earth Durability in A Humid
+Continental Climate. Buildings 2020, 10, 26. [CrossRef]
+Ciancio, D.; Gibbings, J. Experimental investigation on the compressive strength of cored and molded
+cement-stabilized rammed earth samples. Constr. Build. Mater. 2012, 28, 294–304. [CrossRef]
+Ciancio, D.; Beckett, C.; Carraro, J. Optimum lime content identification for lime-stabilised rammed earth
+Optimum lime content identification for lime-stabilised rammed earth. Constr. Build. Mater. 2014, 53, 59–65.
+[CrossRef]
+Ciancio, D.; Jaquin, P.; Walker, P. Advances on the assessment of soil suitability for rammed earth. Constr. Build.
+Mater. 2013, 42, 40–47. [CrossRef]
+Silva, R.A.; Oliveira, D.V.; Miranda, T.; Cristelo, N.; Escobar, M.C.; Soares, E. Rammed earth construction
+with granitic residual soils: The case study of northern Portugal. Constr. Build. Mater. 2013, 47, 181–191.
+[CrossRef]
+Consoli, N.C.; Festugato, L.; Gravina da Rocha, C.; Caberlon Cruz, R. Key parameters for strength control
+of rammed sand–cement mixtures: Influence of types of portland cement. Constr. Build. Mater. 2013, 49,
+591–597. [CrossRef]
+Bui, Q.-B.; Morel, J.-C. First Exploratory Study on the Ageing of Rammed Earth Material. Materials 2015,
+8, 1–15. [CrossRef]
+Narloch, P.; Woyciechowski, P.; Kotowski, J.; Gawriuczenkow, I.; Wojcik, E. The Effect of Soil Mineral
+Composition on the Compressive Strength of Cement Stabilized Rammed Earth. Materials 2020, 13, 324.
+[CrossRef]
+Morel, J.-C.; Bui, Q.-B.; Hamard, E. Weathering and durability of earthen materials and structures. In Modern
+Earth Buildings; Woodhead Publishing Limited: Cambridge, UK, 2012; pp. 282–304.
+
+Materials 2020, 13, 2317
+
+14.
+15.
+16.
+17.
+18.
+19.
+20.
+21.
+22.
+23.
+24.
+25.
+26.
+
+27.
+28.
+
+29.
+30.
+
+31.
+32.
+33.
+34.
+35.
+36.
+37.
+38.
+39.
+
+18 of 20
+
+Woyciechowski, P.; Narloch, P.L.; Cichocki, D. Shrinkage characteristics of cement stabilized rammed earth.
+Matec Web Conf. 2017, 117, 00178. [CrossRef]
+Bui, Q.-B.; Morel, J.C.; Venkatarama, B.V.; Reddy, C.; Ghayad, W. Durability of rammed earth walls exposed
+for 20 years to natural weathering. Build. Environ. 2009, 44, 912–919. [CrossRef]
+Narloch, P.L.; Woyciechowski, P.P.; Dmowska, E.; Halemba, K. Durability assessment of monolithic rammed
+earth walls. Arch. Civ. Eng. 2015, 61, 73–88. [CrossRef]
+Narloch, P.; Woyciechowski, P.; Rosicki, Ł; Cichocki, D. Ziemia ubijana stabilizowana cementem jako materiał
+konstrukcyjny—Ocena nasiakliwości.
+˛
+Przeglad
+˛ Budowlany 2015, 86, 22–25.
+Guettala, A.; Abibsi, A.; Houari, H. Durability study of stabilized earth concrete under both laboratory and
+climatic conditions exposure. Constr. Build. Mater. 2006, 20, 119–127. [CrossRef]
+Minke, G. Building with Earth: Design and Technology of a Sustainable Architecture; Birkhäuser–Publishers for
+Architecture: Kassel, Germany, 2006.
+Alexandra, H.M.; Christopher, T.S.B.; Carsana, M.; Ciancio, D. Corrosion protection of steel embedded in
+cement-stabilised rammed earth. Constr. Build. Mater. 2018, 187, 942–953.
+Walker, P.J.; Dobson, V. Pullout test on deformed and plain rebars in cement stabilized rammed earth. J. Mater.
+Civ. Eng. 2001, 13, 291–297. [CrossRef]
+Lindsay, R. Australian Modern Earth Construction. In Modern Earth Buildings; Woodhead Publishing Limited:
+Cambridge, UK, 2012; pp. 600–649.
+Narloch, P.L.; Woyciechowski, P.; J˛eda, P. The influence of loam type and cement content on the compressive
+strength of rammed earth. Arch. Civ. Eng. 2015, 61, 73–88. [CrossRef]
+Seed, H.B.; Woodward, R.J.; Lundgren, R. Prediction of Swelling Potential for Compacted Clays. Trans. Am.
+Soc. Civ. Eng. 1962, 88, 53–88.
+NZS 4298. Materials and Workmanship for Earth Buildings; Standards New Zealand: Wellington, New Zealand, 1998.
+Narloch, P.; Hassanat, A.; Tarawneh, A.S.; Anysz, H.; Kotowski, J.; Almohammadi, K. Predicting Compressive
+Strength of Cement-Stabilized Rammed Earth Based on SEM Images Using Computer Vision and Deep
+Learning. Appl. Sci. 2019, 9, 5131. [CrossRef]
+Narloch, P.L.; Lidner, M.; Kunicka, M.; Bielecki, M. Flexural tensile strength of construction elements made
+out of cement stabilized rammed earth. Procedia Eng. 2015, 111, 589–595. [CrossRef]
+Niroumand, H.; Zain, M.F.M.; Jamil, M. A guideline for assessing of critical parameters on Earth architecture
+and Earth buildings as a sustainable architecture in various countries. Renew. Sustain. Energy Rev. 2013, 28,
+130–165. [CrossRef]
+PN-EN 197-1:2012 Cement Part 1: Composition, Specifications and Conformity Criteria for Common Cements;
+Polish Committee for Standardization: Warsaw, Poland, 2012.
+Grossman, R.; Seni, G.; Elder, J.; Agarwal, N.; Liu, H. Ensemble Methods in Data Mining: Improving Accuracy
+through Combining Predictions, Synthesis Lectures on Data Mining and Knowledge Discovery; Morgan and
+Claypool Publishers: San Rafael, CA, USA, 2010; Volume 2, pp. 1–126.
+Biau, G.; Scornet, E. A random forest guided tour. TEST 2016, 25, 197–227. [CrossRef]
+Breiman, L.; Friedman, J.; Stone, C.J.; Olshen, R.A. Classification and Regression Trees; CRC press: Boca Raton,
+FL, USA, 1984.
+Anysz, H.; Narloch, P. Designing the Composition of Cement Stabilized Rammed Earth Using Artificial
+Neural Networks. Materials 2019, 12, 1396. [CrossRef] [PubMed]
+Probst, P.; Bischl, B.; Boulesteix, A.-L. Tunability: Importance of Hyperparameters of Machine Learning
+Algorithms. arXiv 2018, arXiv:1802.09596v3.
+Hastie, T.; Tibshirani, R.; Friedman, J. The Elements of Statistical Learning: Data Mining, Inference, and Prediction;
+Springer: New York, NY, USA, 2009.
+Hagan, M.T.; Demuth, H.B.; Beale, M.H.; De Jesús, O. Neural Network Design; Martin Hagan: Lexington, KY,
+USA, 2014.
+Rogalska, M. Wieloczynnikowe modele w prognozowaniu czasu procesów budowlanych, 1st ed.; Lublin University
+of Technology: Lublin, Poland, 2016; ISBN 978-83-7947-186-7.
+Juszczyk, M.; Leśniak, A. Modelling construction site cost index based on neural network ensembles.
+Symmetry 2019, 11, 411. [CrossRef]
+Seber, G.A.F.; Alan, J.L. Linear Regression Analysis; John Wiley & Sons: Hoboken, NJ, USA, 2012; Volume 329.
+
+Materials 2020, 13, 2317
+
+40.
+41.
+42.
+43.
+44.
+45.
+46.
+47.
+48.
+49.
+50.
+51.
+52.
+53.
+54.
+55.
+56.
+57.
+58.
+59.
+60.
+61.
+
+62.
+63.
+
+64.
+
+19 of 20
+
+Montgomery, D.C.; Peck, E.A.; Vining, G.G. Introduction to Linear Regression Analysis; John Wiley & Sons:
+Hoboken, NJ, USA, 2012; Volume 821.
+Gruber, M.H.J. Improving Efficiency by Shrinkage: The James—Stein and Ridge Regression Estimators; Routledge:
+Marcel Dekker, NY USA, 1998.
+Blllings, S.A.; Voon, W.S.F. Correlation based model validity tests for non-linear models. Int. J. Control 1986,
+44, 235–244. [CrossRef]
+Anysz, H.; Zbiciak, A.; Ibadov, N. The Influence of Input Data Standardization Method on Prediction
+Accuracy of Artificial Neural Networks. Procedia Eng. 2016, 153. [CrossRef]
+Kaftanowicz, M.; Krzemiński, M. Multiple-criteria Analysis of Plasterboard Systems. Procedia Eng. 2015, 111,
+364–370. [CrossRef]
+Shanker, M.; Hu, M.Y.; Hung, M.S. Effect of data standardization on neural network training. Omega 1996,
+24, 385–397. [CrossRef]
+Arlot, S.; Celisse, A. A survey of cross-validation procedures for model selection. Stat. Surv. 2010, 4, 40–79.
+[CrossRef]
+Vehtari, A.; Gelman, A.; Gabry, J. Practical Bayesian model evaluation using leave-one-out cross-validation
+and WAIC. Stat. Comput. 2017, 27, 1413–1432. [CrossRef]
+Cox, D.R.; Snell, E.J. A general definition of residuals. J. R. Stat. Soc. Ser. B (Methodol.) 1968, 30, 248–265.
+[CrossRef]
+Willmott, C.J.; Matsuura, K. Advantages of the mean absolute error (MAE) over the root mean square error
+(RMSE) in assessing average model performance. Clim. Res. 2005, 30, 79–82. [CrossRef]
+Shaohua, W.; McAuley, K.B.; Harris, T.J. Selection of simplified models: II. Development of a model selection
+criterion based on mean squared error. Can. J. Chem. Eng. 2011, 89, 325–336.
+Miles, J. R Squared, Adjusted R Squared; Wiley StatsRef: Statistics Reference Online: 2014. Available online:
+https://onlinelibrary.wiley.com/doi/book/10.1002/9781118445112 (accessed on 13 May 2020).
+Snoek, J.; Larochelle, H.; Adams, R.P. Practical bayesian optimization of machine learning algorithms.
+In Advances in Neural Information Processing Systems; Curran Associates, Inc.: Red Hook, NY, USA, 2012.
+Fisher, A.; Rudin, C.; Dominici, F. All models are wrong but many are useful: Learning a Variable’s Importance
+by Studying an Entire Class of Prediction Models Simultaneously. J. Mach. Learn. Res. 2019, 20, 1–81.
+Biecek, P. DALEX: Explainers for complex predictive models in R. J. Mach. Learn. Res. 2018, 19, 3245–3249.
+Archer, K.; Kimes, R. Empirical characterization of random forest variable importance measures. Comput. Stat.
+Data Anal. 2008, 52, 2249–2260. [CrossRef]
+Strobl, C.; Boulesteix, A.; Zeileis, A.; Hothorn, T. Bias in random forest variable importance measures:
+Illustrations, sources and a solution. BMC Bioinform. 2007, 8, 25. [CrossRef]
+Pedregosa, F.; Varoquaux, G.; Gramfort, A.; Michel, V.; Thirion, B.; Grisel, O.; Blondel, M.; Prettenhofer, P.;
+Weiss, R.; Dubourg, V.; et al. Scikit-learn: Machine Learning in Python. J. Mach. Learn. Res. 2011, 12, 2825–2830.
+Baniecki, H.; Biecek, P. modelStudio: Interactive Studio with Explanations for ML Predictive Models. J. Open
+Source Softw. 2019, 4, 1798. [CrossRef]
+Amhudo, R.L.; Tavio, T.; Raka, G.P. Comparison of Compressive and Tensile Strengths of Dry-Cast Concrete
+with Ordinary Portland and Portland Pozzolana Cements. Civ. Eng. J. 2018, 4. [CrossRef]
+K˛epniak, M.; Woyciechowski, P. The statistical analysis of relation between compressive and tensile/flexural
+strength of high performance concrete. Arch. Civ. Eng. 2016, 62, 95–108. [CrossRef]
+Yaprak, H.; Karacı, A.; Demir, İ. Prediction of the effect of varying cure conditions and w/c ratio on the
+compressive strength of concrete using artificial neural networks. Neural Comput. Appl. 2013, 22, 133–141.
+[CrossRef]
+Ait-Aider, H.; Hannachi, N.E.; Mouret, M. Importance of W/C ratio on compressive strength of concrete in
+hot climate conditions. Build. Environ. 2007, 42, 2461–2465. [CrossRef]
+Egwuonwu, W.C.; Akobo, I.Z.S.; Ngekpe, B.E. Effect of Metakaolin as a Partial Replacement for Cement on
+the Compressive Strength of High Strength Concrete at Varying Water/Binder Ratios. Int. J. Civ. Eng. 2019,
+6, 1–6.
+Keller, R.K.; Bédard, J.-F.; Saint-Denis, G. Design and Implementation of a UML-Based Repository. In Advanced
+Information Systems Engineering, 13th International Conference, CAiSE 2001, Interlaken, Switzerland, 4–8 June
+2001 Proceedings; Dittrich, K.R., Geppert, A., Norrie, M.C., Eds.; Springer: Berlin/Heidelberg, Germany, 2001;
+pp. 448–461.
+
+Materials 2020, 13, 2317
+
+65.
+66.
+
+20 of 20
+
+Askes, H.; Sluys, L.J. Remeshing strategies for adaptive ALE analysis of strain localisation. Eur. J. Mech.
+A/Solids 2000, 19, 447–467. [CrossRef]
+Apley, D.W.; Zhu, J. Visualizing the Effects of Predictor Variables in Black Box Supervised Learning Models.
+arXiv 2019, arXiv:1612.08468[stat.ME]. Cornell University.NY USA.
+© 2020 by the authors. Licensee MDPI, Basel, Switzerland. This article is an open access
+article distributed under the terms and conditions of the Creative Commons Attribution
+(CC BY) license (http://creativecommons.org/licenses/by/4.0/).
+
+
