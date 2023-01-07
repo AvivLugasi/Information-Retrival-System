@@ -16,7 +16,7 @@ class DatasetBuilder(System):
         
     def build(self, dir_txt_files_path: str, list_file_names: str):
         
-        df = 
+        #df =
         for file_name in list_file_names:
             vector = DocVector(doc_path=dir_txt_files_path + "" + file_name).vector_representation
             
