@@ -4,13 +4,14 @@ from LinguisticProcessor import LinguisticProcessor
 from joblib import Parallel, delayed
 import joblib
 
-
+SEPARATORS_FILES = "Utils/separetors.txt"
+LANGUAGE_MODEL_PATH = 'LanguageModels/languageModelByTerms.pkl'
 
 class DocVector(System):
 
     def __init__(self, doc_path: str):
         # tokenizer instance
-        tokenizer = Tokenizer(separators_file="Utils/separetors.txt")
+        tokenizer = Tokenizer(separators_file=SEPARATORS_FILES)
         # linguistic Processor instance
         lg = LinguisticProcessor()
 
@@ -32,7 +33,7 @@ class DocVector(System):
         :param terms_dict: {term, doc_term_frequency}
         :return: vector representation as python dictionary
         """
-        collection_language_model = joblib.load('LanguageModels/languageModelByTerms.pkl')
+        collection_language_model = joblib.load(LANGUAGE_MODEL_PATH)
         vector = collection_language_model.copy()
         for term, collection_prob in collection_language_model.items():
             doc_tf = terms_dict[term] if term in terms_dict else 0
@@ -48,6 +49,6 @@ class DocVector(System):
 
 
 # Main
-doc_path="../ArtificialIntelligenceExplainability/text/A_Survey_of_Contrastive_and_Counterfactual_Explanation_Generation_Methods_for_Explainable_Artificial_Intelligence.txt"
-vector_doc = DocVector(doc_path=doc_path)
-print(vector_doc.vector_representation)
+# doc_path="../ArtificialIntelligenceExplainability/text/A_Survey_of_Contrastive_and_Counterfactual_Explanation_Generation_Methods_for_Explainable_Artificial_Intelligence.txt"
+# vector_doc = DocVector(doc_path=doc_path)
+# print(vector_doc.vector_representation)
