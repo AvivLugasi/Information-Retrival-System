@@ -32,7 +32,24 @@ class System:
             
         return file
 
+    def import_docs(self, text_files_path=str):
+        """
+        Create a list with all the academic text files names and returns it
+        :param text_files_path: path of directory with text files
+        :return: list with all files name in the directory that represented by text_file_path
+        """
+        from os import listdir
+        from os.path import isfile, join
+        files_list = [file for file in listdir(text_files_path) if isfile(join(text_files_path, file))]
+        return files_list
+
     def concat_txt_files(self, list_files_names: list, relative_path: str):
+        """
+        concate multiple file to one file
+        :param list_files_names: list of file names are stored in directory "relative_path"
+        :param relative_path: path of directory that contains all the documents
+        :return: one big file
+        """
         filenames = list_files_names
         with open('Utils/concat_txt_files.txt', 'w') as outfile:
             for fname in filenames:
