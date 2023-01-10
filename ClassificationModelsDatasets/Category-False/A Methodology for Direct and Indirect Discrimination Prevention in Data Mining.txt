@@ -1,0 +1,2246 @@
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+A Methodology for Direct and Indirect
+Discrimination Prevention in Data Mining
+
+Sara Hajian and Josep Domingo-Ferrer, Fellow, [EEE
+
+Abstract—Data mining is an increasingly important technology for extracting useful knowledge hidden in large collections of data.
+There are, however, negative social perceptions about data mining, among which potential privacy invasion and potential
+discrimination. The latter consists of unfairly treating people on the basis of their belonging to a specific group. Automated data
+collection and data mining techniques such as classification rule mining have paved the way to making automated decisions, like loan
+granting/denial, insurance premium computation, etc. If the training data sets are biased in what regards discriminatory (sensitive)
+attributes like gender, race, religion, etc., discriminatory decisions may ensue. For this reason, antidiscrimination techniques including
+discrimination discovery and prevention have been introduced in data mining. Discrimination can be either direct or indirect. Direct
+discrimination occurs when decisions are made based on sensitive attributes. Indirect discrimination occurs when decisions are made
+based on nonsensitive attributes which are strongly correlated with biased sensitive ones. In this paper, we tackle discrimination
+prevention in data mining and propose new techniques applicable for direct or indirect discrimination prevention individually or both at
+the same time. We discuss how to clean training data sets and outsourced data sets in such a way that direct and/or indirect
+discriminatory decision rules are converted to legitimate (nondiscriminatory) classification rules. We also propose new metrics to
+evaluate the utility of the proposed approaches and we compare these approaches. The experimental evaluations demonstrate that
+the proposed techniques are effective at removing direct and/or indirect discrimination biases in the original data set while preserving
+
+1445
+
+data quality.
+
+Index Terms—Antidiscrimination, data mining, direct and indirect discrimination prevention, rule protection, rule generalization,
+
+privacy
+
+ 
+
+1 INTRODUCTION
+
+Nsociology, discrimination is the prejudicial treatment of
+
+an individual based on their membership in a certain
+group or category. It involves denying to members of one
+group opportunities that are available to other groups.
+There is a list of antidiscrimination acts, which are laws
+designed to prevent discrimination on the basis of a
+number of attributes (e.g., race, religion, gender, nation-
+ality, disability, marital status, and age) in various settings
+(e.g., employment and training, access to public services,
+credit and insurance, etc.). For example, the European
+Union implements the principle of equal treatment between
+men and women in the access to and supply of goods and
+services in [3] or in matters of employment and occupation
+in [4]. Although there are some laws against discrimination,
+all of them are reactive, not proactive. Technology can add
+proactivity to legislation by contributing discrimination
+discovery and prevention techniques.
+
+Services in the information society allow for automatic and
+routine collection of large amounts of data. Those data are
+often used to train association /classification rules in view of
+making automated decisions, like loan granting/denial,
+
+e The authors are with Department of Computer Engineering and Maths,
+UNESCO Chair in Data Privacy, Av. Paisos Catalans 26, E-43007
+Tarragona, Catalonia. E-mail: {sara.hajian, josep.domingo}@urv.cat.
+
+Manuscript received 20 Aug. 2011; revised 20 Jan. 2012; accepted 17 Mar.
+2012; published online 22 Mar. 2012.
+
+Recommended for acceptance by E. Ferrari.
+
+For information on obtaining reprints of this article, please send e-mail to:
+tkde@computer.org, and reference IEEECS Log Number TKDE-2011-08-0503.
+Digital Object Identifier no. 10.1109/TKDE.2012.72.
+
+1041 -4347/1 3/$31.00 © 2013 IEEE
+
+insurance premium computation, personnel selection, etc.
+At first sight, automating decisions may give a sense of
+fairness: classification rules do not guide themselves by
+personal preferences. However, at a closer look, one realizes
+that classification rules are actually learned by the system
+(e.g., loan granting) from the training data. If the training data
+are inherently biased for or against a particular community
+(e.g., foreigners), the learned model may show a discrimina-
+tory prejudiced behavior. In other words, the system may
+infer that just being foreign is a legitimate reason for loan
+denial. Discovering such potential biases and eliminating
+them from the training data without harming their decision-
+making utility is therefore highly desirable. One must
+prevent data mining from becoming itself a source of
+discrimination, due to data mining tasks generating dis-
+criminatory models from biased data sets as part of the
+automated decision making. In [12], it is demonstrated that
+data mining can be both a source of discrimination and a
+means for discovering discrimination.
+
+Discrimination can be either direct or indirect (also called
+systematic). Direct discrimination consists of rules or
+procedures that explicitly mention minority or disadvan-
+taged groups based on sensitive discriminatory attributes
+related to group membership. Indirect discrimination
+consists of rules or procedures that, while not explicitly
+mentioning discriminatory attributes, intentionally or un-
+intentionally could generate discriminatory decisions. Red-
+lining by financial institutions (refusing to grant mortgages
+or insurances in urban areas they consider as deteriorating)
+is an archetypal example of indirect discrimination,
+although certainly not the only one. With a slight abuse of
+
+Published by the IEEE Computer Society
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1446
+
+language for the sake of compactness, in this paper indirect
+discrimination will also be referred to as redlining and rules
+causing indirect discrimination will be called redlining rules
+[12]. Indirect discrimination could happen because of the
+availability of some background knowledge (rules), for
+example, that a certain zip code corresponds to a deterior-
+ating area or an area with mostly black population. The
+background knowledge might be accessible from publicly
+available data (e.g., census data) or might be obtained from
+the original data set itself because of the existence of
+nondiscriminatory attributes that are highly correlated with
+the sensitive ones in the original data set.
+
+1.1. Related Work
+
+Despite the wide deployment of information systems based
+on data mining technology in decision making, the issue of
+antidiscrimination in data mining did not receive much
+attention until 2008 [12]. Some proposals are oriented to the
+discovery and measure of discrimination. Others deal with the
+prevention of discrimination.
+
+The discovery of discriminatory decisions was first
+proposed by Pedreschi et al. [12], [15]. The approach is
+based on mining classification rules (the inductive part) and
+reasoning on them (the deductive part) on the basis of
+quantitative measures of discrimination that formalize legal
+definitions of discrimination. For instance, the US Equal Pay
+Act [18] states that: “a selection rate for any race, sex, or
+ethnic group which is less than four-fifths of the rate for the
+group with the highest rate will generally be regarded as
+evidence of adverse impact.” This approach has been
+extended to encompass statistical significance of the ex-
+tracted patterns of discrimination in [13] and to reason about
+affirmative action and favoritism [14]. Moreover it has been
+implemented as an Oracle-based tool in [16]. Current
+discrimination discovery methods consider each rule in-
+dividually for measuring discrimination without consider-
+ing other rules or the relation between them. However, in
+this paper we also take into account the relation between
+rules for discrimination discovery, based on the existence or
+nonexistence of discriminatory attributes.
+
+Discrimination prevention, the other major antidiscrimi-
+nation aim in data mining, consists of inducing patterns that
+do not lead to discriminatory decisions even if the original
+training data sets are biased. Three approaches are
+conceivable:
+
+e Preprocessing. Transform the source data in such a
+way that the discriminatory biases contained in the
+original data are removed so that no unfair decision
+rule can be mined from the transformed data and
+apply any of the standard data mining algorithms.
+The preprocessing approaches of data transforma-
+tion and hierarchy-based generalization can be
+adapted from the privacy preservation literature.
+Along this line, [7], [8] perform a controlled
+distortion of the training data from which a classifier
+is learned by making minimally intrusive modifica-
+tions leading to an unbiased data set. The preproces-
+sing approach is useful for applications in which a
+data set should be published and/or in which data
+mining needs to be performed also by external parties
+(and not just by the data holder).
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+e In-processing. Change the data mining algorithms in
+such a way that the resulting models do not contain
+unfair decision rules. For example, an alternative
+approach to cleaning the discrimination from the
+original data set is proposed in [2] whereby the
+nondiscriminatory constraint is embedded into a
+decision tree learner by changing its splitting
+criterion and pruning strategy through a novel leaf
+relabeling approach. However, it is obvious that in-
+processing discrimination prevention methods must
+rely on new special-purpose data mining algorithms;
+standard data mining algorithms cannot be used.
+
+e Postprocessing. Modify the resulting data mining
+models, instead of cleaning the original data set or
+changing the data mining algorithms. For example,
+in [13], a confidence-altering approach is proposed
+for classification rules inferred by the CPAR algo-
+rithm. The postprocessing approach does not allow
+the data set to be published: only the modified data
+mining models can be published (knowledge pub-
+lishing), hence data mining can be performed by the
+data holder only.
+
+One might think of a straightforward preprocessing
+approach consisting of just removing the discriminatory
+attributes from the data set. Although this would solve the
+direct discrimination problem, it would cause much
+information loss and in general it would not solve indirect
+discrimination. As stated in [12] there may be other
+attributes (e.g., Zip) that are highly correlated with the
+sensitive ones (e.g., Race) and allow inferring discriminatory
+rules. Hence, there are two important challenges regarding
+discrimination prevention: one challenge is to consider both
+direct and indirect discrimination instead of only direct
+discrimination; the other challenge is to find a good tradeoff
+between discrimination removal and the quality of the
+resulting training data sets and data mining models.
+
+Although some methods have already been proposed
+for each of the above-mentioned approaches (preproces-
+sing, in-processing, postprocessing), discrimination pre-
+vention stays a largely unexplored research avenue. In this
+paper, we concentrate on discrimination prevention based
+on preprocessing, because the preprocessing approach
+seems the most flexible one: it does not require changing
+the standard data mining algorithms, unlike the in-
+processing approach, and it allows data publishing (rather
+than just knowledge publishing), unlike the postproces-
+sing approach.
+
+1.2 Contribution and Plan of This Paper
+Discrimination prevention methods based on preprocessing
+published so far [7], [8] present some limitations, which we
+next highlight:
+
+e They attempt to detect discrimination in the original
+data only for one discriminatory item and based on a
+single measure. This approach cannot guarantee that
+the transformed data set is really discrimination free,
+because it is known that discriminatory behaviors
+can often be hidden behind several discriminatory
+items, and even behind combinations of them.
+
+e They only consider direct discrimination.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+e =©They do not include any measure to evaluate how
+much discrimination has been removed and how
+much information loss has been incurred.
+
+In this paper, we propose preprocessing methods which
+overcome the above limitations. Our new data transforma-
+tion methods (i.e., rule protection and rule generalization
+(RG)) are based on measures for both direct and indirect
+discrimination and can deal with several discriminatory
+items. Also, we provide utility measures. Hence, our
+approach to discrimination prevention is broader than in
+previous work.
+
+In our earlier work [5], we introduced the initial idea of
+using rule protection and rule generalization for direct
+discrimination prevention, but we gave no experimental
+results. In [6], we introduced the use of rule protection in a
+different way for indirect discrimination prevention and we
+gave some preliminary experimental results. In this paper,
+we present a unified approach to direct and indirect discrimina-
+tion prevention, with finalized algorithms and all possible
+data transformation methods based on rule protection and/
+or rule generalization that could be applied for direct or
+indirect discrimination prevention. We specify the different
+features of each method. Since methods in our earlier papers
+[5], [6] could only deal with either direct or indirect
+discrimination, the methods described in this paper are new.
+
+As part of this effort, we have developed metrics that
+specify which records should be changed, how many
+records should be changed, and how those records should
+be changed during data transformation. In addition, we
+propose new utility measures to evaluate the different
+proposed discrimination prevention methods in terms of
+data quality and discrimination removal for both direct and
+indirect discrimination. Based on the proposed measures,
+we present extensive experimental results for two well-
+known data sets and compare the different possible
+methods for direct or indirect discrimination prevention to
+find out which methods could be more successful in terms
+of low information loss and high discrimination removal.
+
+The rest of this paper is organized as follows. Section 2
+introduces some basic definitions and concepts that are
+used throughout the paper. Section 3 describes our
+proposal for direct and indirect discrimination prevention.
+Section 4 shows the tests we have performed to assess the
+validity and quality of our proposal and compare different
+methods. Finally, Section 5 summarizes conclusions and
+identifies future research topics in the field of discrimina-
+tion prevention.
+
+2 BACKGROUND
+
+In this section, we briefly review the background knowledge
+required in the remainder of this paper. First, we recall some
+basic definitions related to data mining [17]. After that, we
+elaborate on measuring and discovering discrimination.
+
+2.1 Basic Definitions
+
+e 6A data set is a collection of data objects (records) and
+their attributes. Let DB be the original data set.
+
+e An item is an attribute along with its value, e.g.,
+Race = black.
+
+1447
+
+e An item set, ie., X, is a collection of one or more
+items, e.g., {Foreign worker = Yes, City = NYC}.
+
+e §6Aclassification rule is an expression X — C’, where C’
+is a class item (a yes/no decision), and X is an item
+set containing no class item, e.g., {Foreign worker =
+Yes, City = NYC} — Hire = no. X is called the pre-
+mise of the rule.
+
+e The support of an item set, supp(X), is the fraction of
+records that contain the item set X. We say that a
+rule X — C is completely supported by a record if both
+X and C appear in the record.
+
+e The confidence of a classification rule, conf(X — C),
+measures how often the class item C appears in
+records that contain X. Hence, if supp(X) > 0 then
+
+supp(X,C)
+
+conf(X > C)= supp(X)
+
+())
+Support and confidence range over [0, 1].
+
+e A frequent classification rule is a classification rule
+with support and confidence greater than respective
+specified lower bounds. Support is a measure of
+statistical significance, whereas confidence is a mea-
+sure of the strength of the rule. Let FR be the database
+of frequent classification rules extracted from DB.
+
+e The negated item set, i.e, —X is an item set with the
+same attributes as X, but the attributes in —X take
+any value except those taken by attributes in X. In
+this paper, we use the — notation for item sets with
+binary or nonbinary categorical attributes. For a
+binary attribute, e.g., {Foreign worker = Yes/No}, if
+X is {Foreign worker = Yes}, then —X is {Foreign
+worker=No}. If X is binary, it can be converted to
+=X and vice versa, that is, the negation works in
+both senses. In the previous example, we can select
+the records in DB such that the value of the Foreign
+worker attribute is “Yes” and change that attribute’s
+value to “No,” and conversely. However, for a
+nonbinary categorical attribute, e.g., [Race = Black/
+White/Indian}, if X is {Race = Black}, then —X is
+{Race = White} or {Race = Indian}. In this case, —X
+can be converted to X without ambiguity, but the
+conversion of X into —X is not uniquely defined,
+which we denote by =X = X. In the previous
+example, we can select the records in DB such that
+the Race attribute is “White” or “Indian” and change
+that attribute’s value to “Black”; but if we want to
+negate {Race = Black}, we do not know whether to
+change it to {Race = White} or {Race = Indian}. In
+this paper, we use only nonambiguous negations.
+
+2.2. Potentially Discriminatory and
+Nondiscriminatory Classification Rules
+
+Let DI, be the set of predetermined discriminatory items
+
+in DB (e.g., DI, = {Foreign worker = Yes, Race = Black,
+
+Gender = Female}). Frequent classification rules in FR fall
+
+into one of the following two classes:
+
+1. A classification rule X — C is potentially discrimina-
+tory (PD) when X = A, B with A C DI, a nonempty
+discriminatory item set and B a nondiscriminatory
+item set. For example, {Foreign worker = Yes,
+City = NYC} — Hire = No.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1448
+
+2. A classification rule X — C is potentially nondiscri-
+minatory (PND) when X = D, B is a nondiscrimina-
+tory item set. For example, {Zip = 10451, City =
+NYC} — Hire = No, or {Experience = Low, City =
+NYC} — Hire = No
+
+The word “potentially” means that a PD rule could
+
+probably lead to discriminatory decisions. Therefore, some
+measures are needed to quantify the direct discrimination
+potential. Also, a PND rule could lead to discriminatory
+decisions in combination with some background knowledge;
+e.g., if the premise of the PND rule contains the zip code as an
+attribute and one knows that zip code 10451 is mostly
+inhabited by foreign people. Hence, measures are needed to
+quantify the indirect discrimination potential as well.
+
+2.3 Direct Discrimination Measure
+
+Pedreschi et al. [12], [13] translated the qualitative state-
+ments in existing laws, regulations, and legal cases into
+quantitative formal counterparts over classification rules
+and they introduced a family of measures of the degree of
+discrimination of a PD rule. One of these measures is the
+extended lift (eli ft).
+
+Definition 1. Let A,B — C be a classification rule such that
+conf(B — C) > 0. The extended lift of the rule is
+
+. conf(A,B— C)
+elift( A,B — C) = coni(B = C) (2)
+
+The idea here is to evaluate the discrimination of a rule
+as the gain of confidence due to the presence of the
+discriminatory items (i.e., A) in the premise of the rule.
+Whether the rule is to be considered discriminatory can be
+assessed by thresholding eli ft as follows.
+
+Definition 2. Let a € R be a fixed threshold’ and let A be a
+discriminatory item set. A PD classification rule c= A,B —-
+C is a-protective w.r.t. elift if elift(c) <a. Otherwise, c is
+a-discriminatory.
+
+The purpose of direct discrimination discovery is to
+identify a-discriminatory rules. In fact, a-discriminatory
+rules indicate biased rules that are directly inferred from
+discriminatory items (e.g., Foreign worker = Yes). We call
+these rules direct a-discriminatory rules.
+
+In addition to eli ft, two other measures sli ft and oli ft
+were proposed by Pedreschi et al. in [13]. The reason is that
+different measures of discriminating power of the mined
+decision rules can be defined, according to the various
+antidiscrimination regulations in different countries. Yet the
+protection methods are similar no matter the measure
+adopted (see discussion in the Appendix, which can be
+found on the Computer Society Digital Library at http://
+doi.ieeecomputersociety.org /10.1109/TKDE.2012.72).
+
+2.4 Indirect Discrimination Measure
+
+The purpose of indirect discrimination discovery is to
+identify redlining rules. In fact, redlining rules indicate
+biased rules that are indirectly inferred from nondiscrimi-
+natory items (e.g., Zip = 10451) because of their correlation
+
+1. Note that a is a fixed threshold stating an acceptable level of
+discrimination according to laws and regulations. For example, the four-
+fifths rule of US Federal Legislation sets a = 1.25.
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+with discriminatory ones. To determine the redlining rules,
+Pedreschi et al. in [12] stated the theorem below which gives
+a lower bound for a-discrimination of PD classification
+rules, given information available in PND rules (vy, 4), and
+information available from background rules (3, 62). They
+assume that background knowledge takes the form of
+classification rules relating a nondiscriminatory item set D
+to a discriminatory item set A within the context B.
+
+Theorem 1. Letr : D, B — C'bea PND classification rule, and let
+y= conf(r: D,B— C)é = conf(B > C) > 0.
+Let A be a discriminatory item set, and let 31, G2 such that
+
+conf(ry, : A,B D) > hy
+
+conf(ry2 :.D,B— A) > f2 > 0.
+Call
+
+Io) = Fite 1)
+
+0 otherwise.
+
+elb(x,y) = { f(x)/y #f(e) >0
+
+It holds that, for a > 0, if elb(y,6) > a, the PD classification
+rule r' : A,B > C is a-discriminatory.
+
+Based on the above theorem, the following formal
+definitions of redlining and nonredlining rules are presented:
+
+Definition 3. A PND classification rule r: D,B—C is a
+redlining rule if it could yield an o-discriminatory rule r' :
+A,B—C in combination with currently available back-
+ground knowledge rules of the form rm :A,B— D and
+rg: D,B— A, where A is a discriminatory item set. For
+example, {Zip = 10451, City = NYC} — Hire = No.
+
+Definition 4. A PND classification rule r:D,B—C is a
+nonredlining or legitimate rule if it cannot yield any o-
+discriminatory rule r': A,B—C in combination with
+currently available background knowledge rules of the form
+1 1 A,B D and ry: D,B— A, where A is a discrimina-
+tory item set. For example, {Experience = Low, City =
+NYC} — Hire = No.
+
+We call a-discriminatory rules that ensue from redlining
+rules indirect a-discriminatory rules.
+
+3 A PROPOSAL FOR DIRECT AND INDIRECT
+DISCRIMINATION PREVENTION
+
+In this section, we present our approach, including the data
+
+transformation methods that can be used for direct and/or
+
+indirect discrimination prevention. For each method, its
+
+algorithm and its computational cost are specified.
+
+3.1. The Approach
+
+Our approach for direct and indirect discrimination
+prevention can be described in terms of two phases:
+
+e Discrimination measurement. Direct and indirect
+discrimination discovery includes identifying
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+a-discriminatory rules and redlining rules. To this
+end, first, based on predetermined discriminatory
+items in DB, frequent classification rules in FR
+are divided in two groups: PD and PND rules.
+Second, direct discrimination is measured by
+identifying a-discriminatory rules among the PD
+rules using a direct discrimination measure (eli ft)
+and a discriminatory threshold (a). Third, indirect
+discrimination is measured by identifying redlining
+rules among the PND rules combined with back-
+ground knowledge, using an indirect discrimina-
+tory measure (eld), and a discriminatory threshold
+(a). Let MR be the database of direct a-discrimi-
+natory rules obtained with the above process. In
+addition, let RR be the database of redlining rules
+and their respective indirect a-discriminatory rules
+obtained with the above process.
+
+e Data transformation. Transform the original data
+DB in such a way to remove direct and/or indirect
+discriminatory biases, with minimum impact on the
+data and on legitimate decision rules, so that no
+unfair decision rule can be mined from the trans-
+formed data. In the following sections, we present
+the data transformation methods that can be used for
+this purpose.
+
+As mentioned before, background knowledge might be
+obtained from the original data set itself because of the
+existence of nondiscriminatory attributes that are highly
+correlated with the sensitive ones in the original data set.
+Let BK be a database of background rules that is defined as
+
+BK = {rw : D,B— A|A discriminatory item set and
+supp (D,B— A) > ms}.
+
+In fact, BK is the set of classification rules D,B — A witha
+given minimum support ms that shows the correlation
+between the discriminatory item set A and the nondiscri-
+minatory item set D with context B. Although rules of the
+form ry, : A,B — D (in Theorem 1) are not included in BK,
+conf (ry, :. A,B — D) could be obtained as supp(ri2 : D, Bo
+A)/supp(B — A).
+
+3.2 Data Transformation for Direct Discrimination
+The proposed solution to prevent direct discrimination is
+based on the fact that the data set of decision rules would be
+free of direct discrimination if it only contained PD rules
+that are a-protective or are instances of at least one
+nonredlining PND rule. Therefore, a suitable data transfor-
+mation with minimum information loss should be applied
+in such a way that each a-discriminatory rule either
+becomes a-protective or an instance of a nonredlining
+PND rule. We call the first procedure direct rule protection
+(DRP) and the second one rule generalization.
+
+3.2.1 Direct Rule Protection
+
+In order to convert each a-discriminatory rule into an
+a-protective rule, based on the direct discriminatory
+measure (i.e., Definition 2), we should enforce the following
+inequality for each o-discriminatory rule r’: A,B— C in
+MR, where A is a discriminatory item set:
+
+1449
+elift(r’) <a. (3)
+
+By using the statement of the eli ft Definition, Inequality (3)
+can be rewritten as
+
+conf(r': A,B— C)
+
+conf(B—> C) <o (4)
+
+Let us rewrite Inequality (4) in the following way:
+conf(r’: A,B C) <a-conf(B—> C). (5)
+
+So, it is clear that Inequality (3) can be satisfied by
+decreasing the confidence of the a-discriminatory rule 1’ :
+A,B—C to a value less than the right-hand side of
+Inequality (5), without affecting the confidence of its base
+rule B — C. A possible solution for decreasing
+
+supp(A, B,C)
+
+a _ =
+conf(r': A,B— C) supp(A,B)
+
+(8)
+is to perturb the discriminatory item set from —<A to A in the
+subset DB, of all records of the original data set which
+completely support the rule —A,B— —=C' and have mini-
+mum impact on other rules; doing so increases the
+denominator of Expression (6) while keeping the numerator
+and conf(B — C) unaltered.
+
+There is also another way to provide direct rule
+protection. Let us rewrite Inequality (4) in the following
+different way:
+
+conf(r’: A,B C)
+
+a
+
+conf(B— C)> (7)
+It is clear that Inequality (3) can be satisfied by increasing
+the confidence of the base rule (B—C) of the a
+discriminatory rule r’: A, B— C to a value higher than
+the right-hand side of Inequality (7), without affecting the
+value of conf(r': A,B—C). A possible solution for
+increasing Expression
+
+supp(B,C)
+
+conf(B—> C)= supp(B)
+
+(8)
+is to perturb the class item from —C to C in the subset DB,
+of all records of the original data set which completely
+support the rule —A, B > —=C and have minimum impact
+on other rules; doing so increases the numerator of
+Expression (8) while keeping the denominator and con f(r’ :
+A,B — C) unaltered.
+
+Therefore, there are two methods that could be applied
+for direct rule protection. One method (Method 1) changes
+the discriminatory item set in some records (e.g., gender
+changed from male to female in the records with granted
+credits) and the other method (Method 2) changes the class
+item in some records (e.g., from grant credit to deny credit
+in the records with male gender). Similar data transforma-
+tion methods could be applied to obtain direct rule
+protection with respect to other measures (ie., slift and
+oli ft); see details in the Appendix, available in the online
+supplemental material.
+
+3.2.2 Rule Generalization
+
+Rule generalization is another data transformation method
+for direct discrimination prevention. It is based on the fact
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1450
+
+that if each a-discriminatory rule r’: A,B—C in the
+database of decision rules was an instance of at least one
+nonredlining (legitimate) PND rule r: D,B — C, the data
+set would be free of direct discrimination.
+
+In rule generalization, we consider the relation between
+rules instead of discrimination measures. The following
+example illustrates this principle. Assume that a complai-
+nant claims discrimination against foreign workers
+among applicants for a job position. A classification
+rule {Foreign worker = Yes, City = NYC} — Hire = No with
+high eli ft supports the complainant’s claim. However, the
+decision maker could argue that this rule is an instance of a
+more general rule {Experience = Low, City = NYC} -
+Hire = No. In other words, foreign workers are rejected
+because of their low experience, not just because they are
+foreign. The general rule rejecting low-experienced appli-
+cants is a legitimate one, because experience can be
+considered a genuine/legitimate requirement for some jobs.
+To formalize this dependency among rules (i.e., r’ is an
+instance of r), Pedreschi et al. in [14] say that a PD
+classification rule 1’ : A, B > Cis an instance of a PND rule
+r:D,B—C if rule r holds with the same or higher
+confidence, namely conf(r:D,B— C) > conf(r’: A,B
+C), and a case (record) satisfying discriminatory item set A
+in context B satisfies legitimate item set D as well, namely
+conf(A,B— D) =1. The two conditions can be relaxed in
+the following definition.
+
+Definition 5. Let p € [0,1]. A classification ruler’ : A, B > Cis
+a p-instance of r: D, B — C if both conditions below are true:
+
+e Condition 1: conf(r} > p-conf(r’)
+e Condition 2: conf(r” : A,B — D) > p.
+
+Then, if r’ is a p-instance of r (where p is 1 or a value near
+1), r’ is free of direct discrimination. Based on this concept,
+we propose a data transformation method (ie, rule
+generalization) to transform each a-discriminatory 1 in
+MR into a p-instance of a legitimate rule. An important
+issue to perform rule generalization is to find a suitable PND
+rule (r : D, B > C) or, equivalently, to find a suitable D (e.g.,
+Experience = Low). Although choosing nonredlining rules,
+as done in this paper, is a way to obtain legitimate PND
+rules, sometimes it is not enough and a semantic hierarchy is
+needed to find the most suitable legitimate item set.
+
+At any rate, rule generalization can be attempted for a-
+discriminatory rules r’ for which there is at least one
+nonredlining PND rule r satisfying at least one of the two
+conditions of Definition 5. If any of the two conditions does
+not hold, the original data should be transformed for it to
+hold. Let us assume that Condition 2 is satisfied but
+Condition 1 is not. Based on the definition of p-instance, to
+satisfy the first condition of Definition 5, we should enforce
+for each a-discriminatory rule r’: A,B—C in MR the
+following inequality, with respect to its PND rule
+r:D,BoC:
+
+conf(r: D,B— C)>p-conf(r': A,B C). (9)
+Let us rewrite Inequality (9) in the following way:
+
+conf(r: D,B—C)
+
+conf(r’: A,B>C)< >
+
+(10)
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+So, it is clear that Inequality (9) can be satisfied by
+decreasing the confidence of the a-discriminatory rule
+(r': A,B — C) to values less than the right-hand side of
+Inequality (10), without affecting the confidence of rule r :
+D,B— C or the satisfaction of Condition 2 of Definition 5.
+The confidence of 1’ was previously specified in Expression
+(6). A possible solution to decrease this confidence is to
+perturb the class item from C to =C in the subset DB, of all
+records in the original data set which completely support
+the rule A, B, =D — C and have minimum impact on other
+rules; doing so decreases the numerator of Expression (6)
+while keeping its denominator, conf(r: D,B— C) and
+also conf(r": A,B— D) (Condition 2 for rule general-
+ization) unaltered.
+
+Let us see what happens if Condition 1 of Definition 5 is
+satisfied but Condition 2 is not. In this case, based on the
+definition of p-instance, to satisfy Condition 2 we should
+enforce the following inequality for each a-discriminatory
+rule 7: A,B—C in MR with respect to its PND rule
+r:D,BoC:
+
+conf(r": A,B— D)> p. (11)
+
+Inequality (11) must be satisfied by increasing the con-
+fidence of rule r”: A,B— D to a value higher than p,
+without affecting the satisfaction of Condition 1. However,
+any effort at increasing the confidence of r” impacts on the
+confidence of the r or r’ rules and might threaten the
+satisfaction of Condition 1 of Definition 5; indeed, in order
+to increase the confidence of 1” we must either decrease
+supp(A, B) (which increases con f(r’}) or change —D to D for
+those records satisfying A and B (which decreases conf(r)).
+Hence, rule generalization can only be applied if Condi-
+tion 2 is satisfied without any data transformation.
+
+To recap, we see that rule generalization can be achieved
+provided that Condition 2 is satisfied, because Condition 1
+can be reached by changing the class item in some records
+(e.g., from “Hire no” to “Hire yes” in the records of foreign
+and high-experienced people in NYC city).
+
+3.2.3 Direct Rule Protection and Rule Generalization
+
+Since rule generalization might not be applicable for all a-
+discriminatory rules in MR, rule generalization cannot be
+used alone for direct discrimination prevention and must
+be combined with direct rule protection. When applying
+both rule generalization and direct rule protection, a-
+discriminatory rules are divided into two groups:
+
+e  a-discriminatory rules r’ for which there is at least
+one nonredlining PND rule r satisfying Condition 2
+of Definition 5. For these rules, rule generalization is
+performed unless direct rule protection requires less
+data transformation (in which case direct rule
+protection is used).
+
+e a-discriminatory rules such that there is no such
+PND rule. For these rules, direct rule protection is
+performed.
+
+We use the following algorithm (step numbers below
+refer to pseudocode Algorithm 5 in the Appendix, available
+in the online supplemental material) to select the most
+appropriate discrimination prevention approach for each
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+a-discriminatory rule. First, for each a-discriminatory rule
+in MR of type r’: A,B — C, a collection D,, of nonredlin-
+ing PND rules of type r : D, B— C is found (Step 2). Then,
+the conditions of Definition 5 are checked for each rule in
+Don, for p > 0.8 (Steps 4-18). Three cases arise depending on
+whether Conditions 1 and 2 hold:
+
+e Case 1: There is at least one rule + € D,,, such that
+both Conditions 1 and 2 of Definition 5 hold. In
+this case, 1’ is a p-instance of r for p > 0.8 and no
+transformation is required (Steps 19-20).
+
+e Case 2: There is no rule in D,, satisfying both
+Conditions 1 and 2 of Definition 5, but there is at
+least one rule satisfying Condition 2. In this case
+(Step 23), the PND rule r; in D,, should be selected
+(Step 24) which requires the minimum data trans-
+formation to fulfill Condition 1. A smaller difference
+between the values of the two sides of Condition 1
+for each r in Dp, indicates a smaller required data
+transformation. In this case, the a-discriminatory
+rule is transformed by rule generalization (Step 25).
+
+e Case 3: No rule in D,, satisfies Condition 2 of
+Definition 5. In this case (Step 21), rule general-
+ization is not possible and direct rule protection
+should be performed (Step 22).
+
+For the a-discriminatory rules to which rule general-
+ization can be applied, it is possible that rule protection can
+be achieved with a smaller data transformation. For these
+rules the algorithm should select the approach with minimum
+transformation (Steps 31-36). The algorithm, pseudocoded in
+the Appendix, available in the online supplemental materi-
+al, yields as output a database TR with all r’ © MR, their
+respective rule r,, and their respective discrimination
+prevention approaches (TR).
+
+3.3 Data Transformation for Indirect Discrimination
+The proposed solution to prevent indirect discrimination is
+based on the fact that the data set of decision rules would be
+free of indirect discrimination if it contained no redlining
+rules. To achieve this, a suitable data transformation with
+minimum information loss should be applied in such a way
+that redlining rules are converted to nonredlining rules. We
+call this procedure indirect rule protection (IRP).
+
+3.3.1 Indirect Rule Protection
+
+In order to turn a redlining rule into an nonredlining rule,
+based on the indirect discriminatory measure (i.e., elb in
+Theorem 1), we should enforce the following inequality for
+
+each redlining rule r: D,B— Cin RR:
+elb(y,6) <a. (12)
+
+By using the definitions stated when introducing elb in
+Theorem 17 Inequality (12) can be rewritten as
+
+an (conf (12) + conf(r : D,B— C)—1)
+conf(B— C)
+
+ 
+
+<a. (13)
+
+2. It is worth noting that 6, and 2 are lower bounds for con f(rp1) and
+con f(ry2), respectively, so it is correct if we replace (, and (2 with conf (rs)
+and con f(rp2} in the elb formulation.
+
+1451
+
+Note that the discriminatory item set (ie., A) is not
+removed from the original database DB and the rules rp; :
+A,B— Dand ri :D,B— Aare obtained from DB, so that
+their confidences might change as a result of data
+transformation for indirect discrimination prevention. Let
+us rewrite Inequality (13) in the following way:
+
+a-conf(B— C)- conf (riz)
+conf(r2) + conf(r: D,B—C)-1°
+(14)
+
+conf(ry : A,B D) <
+
+ 
+
+Clearly, in this case Inequality (12) can be satisfied by
+decreasing the confidence of rule rp, : A, B— D to values
+less than the right-hand side of Inequality (14) without
+affecting either the confidence of the redlining rule or the
+confidence of the B — C and ri rules. Since the values of
+both inequality sides are dependent, a transformation is
+required that decreases the left-hand side of the inequality
+without any impact on the right-hand side. A possible
+solution for decreasing
+
+supp(A, B, D}
+
+conf(A,B— D)= suppl, By”
+
+(15)
+in Inequality (14) to the target value is to perturb the
+discriminatory item set from —A to A in the subset DB, of
+all records of the original data set which completely support
+the rule =A, B,=D— —-C and have minimum impact on
+other rules; this increases the denominator of Expression
+(15) while keeping the numerator and conf(B— C),
+conf (ry: : D,B— A), and conf(r: D, B — C) unaltered.
+There is another way to provide indirect rule protection.
+Let us rewrite Inequality (13) as Inequality (16), where the
+confidences of 7, and rj rules are not constant
+
+conf(B— C)
+
+sentra) (conf (12) + conf(r: D,B— C)-1) (16)
+S conf (Te ;
+
+ 
+
+a
+
+Clearly, in this case Inequality (12) can be satisfied by
+increasing the confidence of the base rule (B — C) of the
+redlining rule r : D, B — C to values greater than the right-
+hand side of Inequality (16) without affecting either the
+confidence of the redlining rule or the confidence of the 151
+and rp; rules. A possible solution for increasing Expression (8)
+in Inequality (16) to the target value is to perturb the class
+item from —C to C in the subset DB, of all records of the
+original data set which completely support the rule
+=A, B,D — —C and have minimum impact on other rules;
+this increases the numerator of Expression (8) while keeping
+the denominator and conf(ry:A,B— D), conf(re2: D,
+B-— A),and conf(r: D,B— C) unaltered.
+
+Hence, like in direct rule protection, there are also two
+methods that could be applied for indirect rule protection.
+One method (Method 1) changes the discriminatory item set
+in some records (e.g., from nonforeign worker to foreign
+worker in the records of hired people in NYC city with Zip
+# 10451) and the other method (Method 2) changes the class
+item in some records (e.g., from “Hire yes” to “Hire no” in
+the records of nonforeign worker of people in NYC city
+with Zip 4 10451).
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1452
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+TABLE 1
+Direct and Indirect Rule Protection Methods
+
+ 
+
+Method 1
+
+Method 2
+
+ 
+
+Direct Rule Protection
+
+nA,B > -C>A,B>-7C
+
+nA,B > AC > 7AA,BoC
+
+ 
+
+ 
+
+ 
+
+Indirect Rule Protection
+
+3A, B, aD > =C => A,B, aD > AC
+
+ 
+
+ 
+
+3A, B,AaD > AC => AA, B, =D > C
+
+ 
+
+3.4 Data Transformation for Both Direct and Indirect
+Discrimination
+
+We deal here with the key problem of transforming data
+with minimum information loss to prevent at the same time
+both direct and indirect discrimination. We will give a
+preprocessing solution to simultaneous direct and indirect
+discrimination prevention. First, we explain when direct and
+indirect discrimination could simultaneously occur. This
+depends on whether the original data set (DB) contains
+discriminatory item sets or not. Two cases arise:
+
+e Discriminatory item sets (i.e., A) did not exist in the
+original database DB or have previously been
+removed from it due to privacy constraints or for
+preventing discrimination. However, if background
+knowledge from publicly available data (e.g., census
+data) is available, indirect discrimination remains
+possible. In fact, in this case, only PND rules are
+extracted from DB so only indirect discrimination
+could happen.
+
+e At least one discriminatory item set (i.e., A) is not
+removed from the original database (DB). So it is
+clear that PD rules could be extracted from DB and
+direct discrimination could happen. However, in
+addition to direct discrimination, indirect discrimi-
+nation might occur because of background knowl-
+edge obtained from DB itself due to the existence of
+nondiscriminatory items that are highly correlated
+with the sensitive (discriminatory) ones. Hence, in
+this case both direct and indirect discrimination
+could happen.
+
+To provide both direct rule protection (DRP) and
+indirect rule protection (IRP) at the same time, an important
+point is the relation between the data transformation
+methods. Any data transformation to eliminate direct a-
+discriminatory rules should not produce new redlining
+rules or prevent the existing ones from being removed. Also
+any data transformation to eliminate redlining rules should
+not produce new direct a-discriminatory rules or prevent
+the existing ones from being removed.
+
+For subsequent use in this section, we summarize in
+Table 1 the methods for DRP and IRP described in
+Sections 3.2.1 and 3.3.1 above. We can see in Table 1 that
+DRP and IRP operate the same kind of data transformation:
+in both cases Method 1 changes the discriminatory item set,
+whereas Method 2 changes the class item. Therefore, in
+principle any data transformation for DRP (resp. IRP) not
+only does not need to have a negative impact on IRP (resp.
+DRP), but both kinds of protection could even be beneficial
+to each other.
+
+However, there is a difference between DRP and IRP: the
+set of records chosen for transformation. As shown in
+Table 1, in IRP the chosen records should not satisfy the D
+item set (chosen records are those with =A, B,7~D — —C),
+whereas DRP does not care about D at all (chosen records are
+
+those with A,B — —=C). The following interactions be-
+tween direct and indirect rule protection become apparent.
+
+Lemma 1. Method 1 for DRP cannot be used if simultaneous
+DRP and IRP are desired.
+
+Proof. Method 1 for DRP might undo the protection
+provided by Method 1 for IRP, as we next justify.
+Method 1 for DRP decreases con f(A,B-— C) until the
+direct rule protection requirement (Inequality (5)) is met
+and Method 1 for IRP needs to decrease conf(A,B— D)
+until the indirect rule protection requirement is met
+(Inequality (14)). Assume that decreasing con f(A, B — C)
+to meet the direct rule protection requirement is achieved
+by changing y (how y is obtained will be discussed in
+Section 3.6) number of records with =A, B, -C to records
+with A,B,-=C (as done by Method 1 for DRP). This
+actually could increase con f(A,B— D) if z among the
+changed records, with z < y, turn out to satisfy D. This
+increase can undo the protection provided by Method 1
+for IRP (i.e., conf(A,B— D) < IRP, ogi, where
+
+a-conf(B— C)-conf(riz)
+
+PRP req = conf(ri2) + conf(r: D,B—C)-1
+
+ 
+
+if the new value
+
+supp(A, B, D) +z
+
+conf(A,B— D)= supp(A.B) ty
+
+is greater than or equal to [RP, eq, which happens if
+2 > IRPreqi - (supp(A, B) + Y) — supp(A, B, D). Oo
+
+Lemma 2. Method 2 for IRP is beneficial for Method 2 for DRP.
+On the other hand, Method 2 for DRP is at worst neutral for
+Method 2 for IRP.
+
+Proof. Method 2 for DRP and Method 2 for IRP are both
+aimed at increasing conf(B-— C). In fact, Method 2 for
+IRP changes a subset of the records changed by Method 2
+for DRP. This proves that Method 2 for IRP is beneficial
+for Method 2 for DRP. On the other hand, let us check
+that, in the worst case, Method 2 for DRP is neutral for
+Method 2 for IRP: such a worst case is the one in which all
+changed records satisfy D, which could result in increas-
+ing both sides of Inequality (16) by an equal amount (due
+to increasing con f(B— C) and conf(D, B— C)); evenin
+this case, there is no change in whatever protection is
+achieved by Method 2 for IRP. Oo
+
+Thus, we conclude that Method 2 for DRP and Method 2
+for IRP are the only methods among those described that
+can be applied to achieve simultaneous direct and indirect
+discrimination prevention. In addition, in the cases where
+either only direct or only indirect discrimination exist, there
+is no interference between the described methods: Method 1
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+for DRP, Method 2 for DRP, and Rule Generalization can be
+used to prevent direct discrimination; Method 1 for IRP and
+Method 2 for IRP can be used to prevent indirect
+discrimination. In what follows, we propose algorithms
+based on the described methods that cover direct and/or
+indirect discrimination prevention.
+
+3.5 The Algorithms
+
+We describe in this section our algorithms based on the
+direct and indirect discrimination prevention methods
+proposed in Sections 3.2, 3.3, and 3.4. There are some
+assumptions common to all algorithms in this section. First,
+we assume the class attribute in the original data set DB to
+be binary (e.g., denying or granting credit). Second, we
+consider classification rules with negative decision (e.g.,
+denying credit) to be in FR. Third, we assume the
+discriminatory item sets (i.e., A) and the nondiscriminatory
+item sets (i.e., D) to be binary or nonbinary categorical.
+
+3.5.1 Direct Discrimination Prevention Algorithms
+
+We start with direct rule protection. Algorithm 1 details
+Method 1 for DRP. For each direct a-discriminatory rule r’
+in MR (Step 3), after finding the subset DB, (Step 5),
+records in DB, should be changed until the direct rule
+protection requirement (Step 10) is met for each respective
+rule (Steps 10-14).
+
+Algorithm 1. DIRECT RULE PROTECTION (METHOD 1)
+1: Inputs: DB, FR, MR, a, DI,
+2: Output: DB’ (transformed data set)
+3: for each’ : A,B > Ce MR do
+45 FR<—FR- {r'}
+3: PB, — All records completely supporting =A,
+
+Bo-C
+6: for each db, € DB, do
+7: Compute impact(db,) = |{ra € FR\db, supports
+the premise of r,}|
+8: end for
+
+9: Sort DB, by ascending impact
+10: while conf(r’} > a- conf(B— C) do
+
+11: Select first record in DB,
+
+12: Modify discriminatory item set of db, from —A to
+Ain DB
+
+13: Recompute con f(r’)
+
+14: end while
+
+15: end for
+
+16: Output: DB’ = DB
+
+Among the records of DB, one should change those with
+lowest impact on the other (a-protective or nonredlining)
+rules. Hence, for each record db, € DB,, the number of rules
+whose premise is supported by db, is taken as the impact of
+db, (Step 7), that is impact(db,}; the rationale is that
+changing db, impacts on the confidence of those rules.
+Then, the records db, with minimum impact(db,) are
+selected for change (Step 9), with the aim of scoring well
+in terms of the utility measures proposed in the next
+section. We call this procedure (Steps 6-9) impact minimiza-
+tion and we reuse it in the pseudocodes of the rest of
+algorithms specified in this paper.
+
+Algorithm 2 details Method 2 for DRP. The parts of
+Algorithm 2 to find subset DB, and perform impact
+
+1453
+
+minimization (Step 4) are the same as in Algorithm 1.
+However, the transformation requirement that should be
+met for each a-discriminatory rule in MR (Step 5) and the
+kind of data transformation are different (Steps 5-9).
+
+Algorithm 2. DIRECT RULE PROTECTION (METHOD 2)
+
+1: Inputs: DB, FR, MR, a, DI,
+
+2: Output: DB’ (transformed data set)
+
+3: for each r’ : A, B—> Ce MR do
+
+4 Steps 4-9 Algorithm 1
+
+5: while conf(B— C) < conf’) do
+
+6: Select first record in DB,
+
+7 Modify the class item of db, from =C to C in DB
+
+8: Recompute conf(B— C}
+
+9: end while
+10: end for
+11: Output: DB’ = DB
+
+As mentioned in Section 3.2.3, rule generalization
+
+cannot be applied alone for solving direct discrimination
+prevention, but it can be used in combination with
+Method 1 or Method 2 for DRP. In this case, after
+specifying the discrimination prevention method (ie.,
+direct rule protection or rule generalization) to be applied
+for each a-discriminatory rule based on the algorithm in
+Section 3.2.3, Algorithm 3 should be run to combine rule
+generalization and one of the two direct rule protection
+methods.
+
+Algorithm 3. DIRECT RULE PROTECTION AND RULE
+
+GENERALIZATION
+
+1: Inputs: DB, FR, TR, p > 0.8, a, Dis
+
+2: Output: DB’ (transformed data set)
+
+3: for each r’: A,B>CeTR do
+
+4 FR — FR -—{r'}
+
+3: if TR, = RG then
+
+6: // Rule Generalization
+
+7 DB, — All records completely supporting
+
+A, B,-D—-C
+
+8: Steps 6-9 Algorithm 1
+
+9: while con f(r’) > con DBO) do
+10: Select first record in DB,
+11: Modify class item of db, from C to =C in DB
+12: Recompute con f(r’)
+13: end while
+14: end if
+15: if TR, = DRP then
+16: // Direct Rule Protection
+17: Steps 5-14 Algorithm 1 or Steps 4-9 Algorithm 2
+18: end if
+19: end for
+
+20: Output: DB’ = DB
+
+Algorithm 3 takes as input TR, which is the output of
+the algorithm in Section 3.2.3, containing all r’ € MR and
+their respective TR, and 7. For each a-discriminatory rule
+rin TR, if TR, shows that rule generalization should be
+performed (Step 5), after determining the records that
+should be changed for impact minimization (Steps 7-8), these
+records should be changed until the rule generalization
+requirement is met (Steps 9-13). Also, if TR, shows that
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1454
+
+direct rule protection should be performed (Step 15), based
+on either Method 1 or Method 2, the relevant sections of
+Algorithms 1 or 2 are called, respectively (Step 17).
+
+3.5.2 Indirect Discrimination Prevention Algorithms
+
+A detailed algorithm implementing Method 2 for IRP is
+provided in [6], from which an algorithm implementing
+Method 1 for IRP can be easily derived. For the sake of
+brevity and due to similarity with the previous algorithms,
+we do not recall those two algorithms for IRP here.
+
+3.5.3 Direct and Indirect Discrimination Prevention
+Algorithms
+
+Algorithm 4 details our proposed data transformation
+method for simultaneous direct and indirect discrimination
+prevention. The algorithm starts with redlining rules. From
+each redlining rule (r : X — C), more than one indirect a-
+discriminatory rule (r': A,B—C) might be generated
+because of two reasons: 1) existence of different ways to
+group the items in X into a context item set B and a
+nondiscriminatory item set D correlated to some discrimi-
+natory item set A; and 2) existence of more than one item in
+DI,. Hence, as shown in Algorithm 4 (Step 5), given a
+redlining rule r, proper data transformation should be
+conducted for all indirect a-discriminatory rules 1’ : (AC
+DI,), (BC X) — C ensuing from r.
+
+Algorithm 4, DIRECT AND INDIRECT DISCRIMINATION
+
+PREVENTION
+
+1: Inputs: DB, FR, RR, MR, a, DI.
+
+2: Output: DB’ (transformed data set)
+
+3: for each r: X >= CE RR, where D,BC X do
+
+4 7 = conf(r)
+
+5: foreach 1’: (AC DI,),(BC X) -Ce RR do
+
+6: Bo = conf (ry: X > A)
+
+7. Ay = supp(ry : X > A)
+
+8 6 = conf(B—C)
+
+9 Ay = supp(B— A)
+
+10: A=B //conf(ry, :A,B— D)
+
+11: Find DB,: all records in DB that completely
+support =A, B, -D — =C
+
+12: Steps 6-9 Algorithm 1
+
+13: if r’ © MR then
+
+14: while (6 < M&*4) and (6 < =“) do
+
+15: Select first record db, in DB,
+
+16: Modify the class item of db, from —C to C in
+
+DB
+
+17: Recompute 6 = conf(B— C)
+
+18: end while
+
+19: else
+
+20: while 5 < “4241-9 do
+
+21: Steps 15-17 Algorithm 4
+
+22: end while
+
+23: end if
+
+24: end for
+
+25: end for
+
+26: for each r’ :(A,B—>C)E MR\ RR do
+
+27: 6 =conf(B—C)
+
+28: Find DB,: all records in DB that completely support
+nA, B= AC
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING,
+
+VOL. 25, NO. 7, JULY 2013
+
+29: Step 12
+
+30: while (5 < “"") do
+
+31: Steps 15-17 Algorithm 4
+32: end while
+
+33: end for
+
+34: Output: DB’ = DB
+
+If some rules can be extracted from DB as both direct and
+indirect a-discriminatory rules, it means that there is
+overlap between MR and RR; in such case, data
+transformation is performed until both the direct and the
+indirect rule protection requirements are satisfied (Steps 13-
+18). This is possible because, as we showed in Section 3.4,
+the same data transformation method (Method 2 consisting
+of changing the class item) can provide both DRP and IRP.
+However, if there is no overlap between MR and RR, the
+data transformation is performed according to Method 2 for
+IRP, until the indirect discrimination prevention require-
+ment is satisfied (Steps 19-23) for each indirect a-discrimi-
+natory rule ensuing from each redlining rule in RR; this can
+be done without any negative impact on direct discrimina-
+tion prevention, as justified in Section 3.4. Then, for each
+direct a-discriminatory rule r'€ MR\ RR (that is only
+directly extracted from DB), data transformation for
+satisfying the direct discrimination prevention requirement
+is performed (Steps 26-33), based on Method 2 for DRP; this
+can be done without any negative impact on indirect
+discrimination prevention, as justified in Section 3.4.
+Performing rule protection or generalization for each rule
+in MR by each of Algorithms 1-4 has no adverse effect on
+protection for other rules (i.e., rule protection at Step i +x
+to make 7’ protective cannot turn into discriminatory a rule
+r made protective at Step i) because of the two following
+reasons: the kind of data transformation for each rule is the
+same (change the discriminatory item set or the class item of
+records) and there are no two a-discriminatory rules r and
+r’ in MR such that r =r’.
+
+3.6 Computational Cost
+
+The computational cost of Algorithm 1 can be broken down
+as follows:
+
+e Let m be the number of records in DB. The cost of
+finding subset DB, (Step 5) is O(m).
+
+e Let k be the number of rules in FR and h the
+number of records in subset DB,. The cost of
+computing impact(db,) for all records in DB, (Steps
+6-8) is O(hk).
+
+e The cost of sorting DB, by ascending impact (Step 9)
+is O(hlog h). Then, the cost of the impact minimization
+procedure (Steps 6-9) in all algorithms is O(hk +
+hlogh).
+
+e During each iteration of the inner loop (Step 10), the
+number of records supporting the premise of rule
+r’ : A,B — C is increased by one. After d iterations,
+the confidence of r’: A,B — C will be conf(r’: A,
+Bo oy? = yee, where Napc is the number of
+records supporting rule r’ and Np is the number of
+records supporting the premise of rule 1’. If we let
+DRPreq = a+ conf(B— C), the inner loop (Step 10)
+is iterated until conf(r’ : A,B oy < DRPreqg OF
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+ 
+
+equivalently a vari
+
+rewritten as
+
+< DRPreqi. This inequality can be
+
+Naee
+d> (|(—————__N, .
+(ore reql w)
+
+From this last inequality we can derive that
+d= ps — Ngoc]. Hence, iterations in the inner
+loop (Step 10) will stop as soon as the first integer
+value greater than (or equal) DHES, ~ Neo is
+reached. Then, the cost spent on the inner loop
+to satisfy the direct rule protection requirement
+
+(Steps 10-14) will be
+
+Nase
+——_ -N .
+° ( aes reql oc| )
+
+Therefore, assuming n is the number of a-discriminatory
+rules in MR (Step 3), the total computational time of
+Algorithm 1 is bounded by O(nx{m+hk+ hlogh + dm}),
+where d= pas — Nzgc\.
+
+The impact minimization procedure substantially increases
+the complexity. Without computing the impact, the time
+complexity of Algorithm 1 decreases to O(n*{m + dm}). In
+addition, it is clear that the execution time of Algorithm 1
+increases linearly with the number m of original data
+records as well as the number & of frequent classification
+rules and the number n of a-discriminatory rules.
+
+The computational cost of the other algorithms can be
+computed similarly, with some small differences. In
+summary, the total computational time of Algorithm 2 is
+also bounded by O(ns{m+hk+hlogh+dm}}, where
+d = [(Ne*DRPreq2) — Nec|, Nac is the number of records
+supporting rule B—C, Ng is the number of records
+supporting item set B and DRPreq. = cont) The compu-
+tational cost of Algorithm 3 is the same as the last ones
+with the difference that d= [Nasco — (RGreq*Nap)|, where
+RG req = cons) or d= [(NexDRP..q2) — Nac], depending
+on whether rule generalization or direct rule protection is
+performed.
+
+Finally, assuming f is the number of indirect a-
+discriminatory rules in RR and n is the number of direct
+a-discriminatory rules in MR that no longer exist in RR,
+the total computational time of Algorithm 4 is bounded by
+
+O((f +n) * {m+ hk+ hlogh+dm}),
+
+ 
+
+ 
+
+where d = [(Ng * M@Zreq) — Nac] and
+
+Ai (G2 +y¥—1) const) ;
+
+MAL req = max(
+
+By - a , a
+
+4 EXPERIMENTS
+
+This section presents the experimental evaluation of the
+proposed direct and/or indirect discrimination prevention
+approaches and algorithms. To obtain FR and BK we used
+the Apriori algorithm [1], which is a common algorithm to
+extract frequent rules. All algorithms and utility measures
+were implemented using the C# programming language.
+The tests were performed on an 2.27 GHz Intel Core i3
+
+1455
+
+machine, equipped with 4 GB of RAM, and running under
+Windows 7 Professional.
+
+First, we describe the data sets used in our experiments.
+Then, we introduce the new utility measures we propose to
+evaluate direct and indirect discrimination prevention
+methods in terms of their success at discrimination removal
+and impact on data quality. Finally, we present the
+evaluation results of the different methods and also the
+comparison between them.
+
+4.1 Data Sets
+
+Adult data set: We used the Adult data set [10], also known
+as Census Income, in our experiments. This data set consists
+of 48,842 records, split into a “train” part with 32,561 records
+and a “test” part with 16,281 records. The data set has
+14 attributes (without class attribute). We used the “train”
+part in our experiments. The prediction task associated with
+the Adult data set is to determine whether a person makes
+more than 50K$ a year based on census and demographic
+information about people. The data set contains both
+categorical and numerical attributes.
+
+For our experiments with the Adult data set, we set
+DI, = {Sex = Female, Age = Young}. Although the Age
+attribute in the Adult data set is numerical, we converted
+it to categorical by partitioning its domain into two fixed
+intervals: Age < 30 was renamed as Young and Age > 30
+was renamed as old.
+
+German credit data set: we also used the German Credit
+data set [11]. This data set consists of 1,000 records and
+20 attributes (without class attribute) of bank account
+holders. This is a well-known real-life data set, containing
+both numerical and categorical attributes. It has been
+frequently used in the antidiscrimination literature [12], [7].
+The class attribute in the German Credit data set takes
+values representing good or bad classification of the bank
+account holders. For our experiments with this data set,
+we set DI, = {Foreign worker = Yes, Personal Status =
+Female and not Single, Age = Old}; (cut-off for Age = Old:
+50 years old).
+
+4.2 Utility Measures
+
+Our proposed techniques should be evaluated based on two
+aspects. On the one hand, we need to measure the success of
+the method in removing all evidence of direct and/or
+indirect discrimination from the original data set; on the
+other hand, we need to measure the impact of the method in
+terms of information loss (ie., data quality loss). To
+measure discrimination removal, four metrics were used:
+
+e ©Direct discrimination prevention degree (DDPD).
+This measure quantifies the percentage of a-dis-
+criminatory rules that are no longer a-discrimina-
+tory in the transformed data set. We define DDPD as
+
+IMR| —|MR’|
+
+DDPD=
+IMR]?
+
+where MR is the database of a-discriminatory rules
+extracted from DB and MR’ is the database of a-
+discriminatory rules extracted from the transformed
+data set DB’. Note that | - | is the cardinality operator.
+e Direct discrimination protection preservation
+(DDPP). This measure quantifies the percentage of
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1456
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+TABLE 2
+Adult Data Set: Utility Measures for Minimum Support 2 Percent and Confidence 10 Percent for All the Methods
+
+a
+
+Redlining
+
+na
+ra
+na.
+
+na.
+Ta.
+
+Ta.
+nha.
++ nha.
+
+ 
+
+Value “n.a.” denotes that the respective measure is not applicable.
+the a-protective rules in the original data set that
+remain a-protective in the transformed data set. It is
+defined as
+
+|PR(\PR’|
+
+DDPP =
+IPR} *
+
+where PR is the database of a-protective rules
+extracted from the original data set DB and PR’ is
+the database of a-protective rules extracted from the
+transformed data set DB’.
+
+e Indirect discrimination prevention degree (IDPD).
+This measure quantifies the percentage of redlining
+rules that are no longer redlining in the transformed
+data set. It is defined like DDPD but substituting
+MR and MR’ with the database of redlining rules
+extracted from DB and DB’, respectively.
+
+e Indirect discrimination protection preservation
+(IDPP). This measure quantifies the percentage of
+nonredlining rules in the original data set that
+remain nonredlining in the transformed data set. It
+is defined like DDPP but substituting PR and PR’
+with the database of nonredlining extracted from DB
+and DB’, respectively.
+
+Since the above measures are used to evaluate the
+success of the proposed method in direct and indirect
+discrimination prevention, ideally their value should be
+100 percent. To measure data quality, we use two metrics
+proposed in the literature as information loss measures in
+the context of rule hiding for privacy-preserving data
+mining (PPDM) [19].
+
+a-Disc.
+Rules
+
+Indirect
+IDPD | IDPP | MC
+na, na,
+na. na.
+na. nha.
+na. na.
+na. na.
+
+a-Disc. Direct
+Rules DDPD | DDPP
+na. na. na.
+
+GC
+
+e Misses cost (MC). This measure quantifies the
+percentage of rules among those extractable from
+the original data set that cannot be extracted from
+the transformed data set (side effect of the transfor-
+mation process).
+
+e Ghost cost (GC). This measure quantifies the
+percentage of the rules among those extractable
+from the transformed data set that were not
+extractable from the original data set (side effect of
+the transformation process).
+
+MC and GC should ideally be 0 percent. However, MC
+
+and GC may not be 0 percent as a side effect of the
+transformation process.
+
+4.3 Evaluation of the Methods
+
+We implemented the algorithms for all proposed methods
+for direct and/or indirect discrimination prevention, and
+we evaluated them in terms of the proposed utility
+measures. We report the performance results in this section.
+
+Tables 2 and 3 show the utility scores obtained by our
+methods on the Adult data set and the German Credit data
+set, respectively. Within each table, the first row relates to
+the simple approach of deleting discriminatory attributes,
+the next four rows relate to direct discrimination prevention
+methods, the next two ones relate to indirect discrimination
+prevention methods and the last one relates to the
+combination of direct and indirect discrimination.
+
+Table 2 shows the results for minimum support 2 percent
+and minimum confidence 10 percent. Table 3 shows the
+results for minimum support 5 percent and minimum
+confidence 10 percent. In Tables 2 and 3, the results of direct
+
+TABLE 3
+German Credit Data Set: Utility Measures for Minimum Support 5 Percent and Confidence 10 Percent for all Methods
+
+a
+Redlining
+Rules
+na,
+Ta.
+na.
+Ta,
+Ta.
+
+na
+na
+
+na.
+fa.
++ fa.
+
+ 
+
+Value “n.a.” denotes that the respective measure is not applicable.
+
+a-Disc.
+Rules
+
+ma.
+Ia.
+Tha.
+
+a-Disc. Direct Indirect
+Rules DDPD | DDPP | IDPD | IDPP
+na. na. na. na. na.
+na. na.
+na. na.
+na. na.
+na. na.
+
+MC
+
+GC
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+ 
+
+ 
+
+Gu K
+= iN
+5 12 Pey
+gi \
+=o
+S 9 AN
+Pe ug NW —*— DRP(Method1) eS
+ek te \ = | Sa)
+= 7 sae ch
+a Ar —— DRP(Method?) 2
+33 “N 3
+3 4 : ~~ DRP(Method1)}+ S
+2 3 mA RG 2
+é [—— SS DRP(Method2)+ 3
+= —— RG 6
+Qo 0
+
+io: is 44 is ie 4 iz 45. 74 15 26 17
+
+Disc. Threshold Disc. Threshold
+
+Fig. 1. Information loss (left) and discrimination removal degree (right)
+for direct discrimination prevention methods for a € [1.2, 1.7].
+
+discrimination prevention methods are reported for dis-
+criminatory threshold a = 1.2 and, in the cases where direct
+rule protection is applied in combination with rule general-
+ization, we used p= 0.9, and DI, = {Sex = Female, Age =
+Young} in the Adult data set, and DI, = {Foreign worker =
+Yes, Personal Status = Female and not Single, Age = Old}
+in the German Credit data set. In addition, in Table 2, the
+results of the indirect discrimination prevention methods
+and both direct and indirect discrimination prevention are
+reported for discriminatory threshold a= 1.1 and DI, =
+{Sex = Female, Age = Young}; in Table 3, these results are
+reported for a = 1 and DI, = {Foreign worker = Yes}).
+
+We selected the discriminatory threshold values and DI,
+for each data set in such a way that the number of redlining
+rules and a-discriminatory rules extracted from DB could
+be suitable to test all our methods. In addition to the scores
+of utility measures, the number of redlining rules, the
+number of indirect o-discriminatory rules, and the number
+of direct a-discriminatory rules are also reported in Tables 2
+and 3. These tables also show the number of frequent
+classification rules found, as well as the number of back-
+ground knowledge rules related to this experiment.
+
+As shown in Tables 2 and 3, we get very good results for
+all methods in terms of discrimination removal: DDPD,
+DDPP, IDPD, IDPP are near 100 percent for both data sets.
+In terms of data quality, the best results for direct
+discrimination prevention are obtained with Method 2 for
+DRP or Method 2 for DRP combined with Rule General-
+ization. The best results for indirect discrimination preven-
+tion are obtained with Method 2 for IRP. This shows that
+lower information loss is obtained with the methods
+changing the class item (i.e., Method 2) than with those
+changing the discriminatory item set (ie., Method 1). As
+mentioned above, in direct discrimination prevention, rule
+generalization cannot be applied alone and must be applied
+in combination with direct rule protection; however, direct
+rule protection can be applied alone. The results in the last
+row of the above tables (i.e., Method 2 for DRP + Method 2
+for IRP) based on Algorithm 4 for the case of simultaneous
+direct and indirect discrimination demonstrate that the
+proposed solution achieves a high degree of simultaneous
+direct and indirect discrimination removal with very little
+information loss.
+
+For all methods, Tables 2 and 3 show that we obtained
+lower information loss in terms of MC and GC in the Adult
+data set than in the German Credit data set. In terms of
+discrimination removal, results on both data sets were
+almost the same. In addition, the highest value of informa-
+tion loss is obtained by the simple approach of removing
+
+1457
+
+» 100 mi = 7 a
+
+\
+k
+g, of DDPD and DDPP)
+
+   
+
+—*— DRP(Method1)+RG
+
+   
+
+—B- DRP(Method2)+RG
+
+Information Loss (Avg. of MC and GC)
+
+Fig. 2. Information loss (left) and discrimination removal (right) degree
+for direct discrimination prevention methods for p € [0.8, 0.95].
+
+discriminatory attributes (first row of each table): as it could
+be expected, entirely suppressing the discriminatory attri-
+butes is much more information damaging than modifying
+the values of these attributes in a few records.
+
+After the above general results and comparison between
+methods, we now present more specific results on each
+method for different parameters a and p. Fig. 1 shows on
+the left the degree of information loss (as average of MC
+and GC) and on the right the degree of discrimination
+removal (as average of DDPD and DDPP) of direct
+discrimination prevention methods for the German Credit
+data set when the value of the discriminatory threshold a
+varies from 1.2 to 1.7, p is 0.9, the minimum support is
+5 percent and the minimum confidence is 10 percent. The
+number of direct a-discriminatory rules extracted from the
+data set is 991 for a = 1.2, 415 for a = 1.3, 207 for a= 1.4,
+120 for a=1.5, 63 for a=1.6, and 30 for a=1.7,
+respectively. As shown in Fig. 1, the degree of discrimina-
+tion removal provided by all methods for different values of
+a is also 100 percent. However, the degree of information
+loss decreases substantially as a increases; the reason is
+that, as a increases, the number of a-discriminatory rules to
+be dealt with decreases. In addition, as shown in Fig. 1, the
+lowest information loss for most values of a is obtained by
+Method 2 for DRP.
+
+In addition, to demonstrate the impact of varying p on
+the utility measures in the methods using Rule General-
+ization, Fig. 2(left) shows the degree of information loss
+and Fig. 2(right) shows the degree of discrimination
+removal for different values of p(0.8,0.85,0.9,0.95) and
+a=1.2 for the German Credit data set. Although the
+values of DDPD and DDPP achieved for different values of
+p remain almost the same, increasing the value of p leads
+to an increase of MC and GC because, to cope with the
+rule generalization requirements, more data records must
+be changed.
+
+Tables 4 and 5 show the utility measures obtained by
+running Algorithm 4 to achieve simultaneous direct and
+indirect discrimination prevention (i.e., Method 2 for DRP +
+Method 2 for IRP) on the Adult and German credit data sets,
+respectively. In Table 4, the results are reported for different
+values of a € [1, 1.5]; in Table 5 different values of a € [1, 1.4]
+are considered. We selected these a intervals in such a way
+that, with respect to the predetermined discriminatory items
+in this experiment for the Adult data set (ie., DI, = {Sex =
+Female, Age = Young}) and the German Credit data set (i.e.,
+DI, = {Foreign worker = Yes}), both direct a-discrimina-
+tory and redlining rules could be extracted. The reason is
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+1458
+
+IEEE TRANSACTIONS ON KNOWLEDGE AND DATA ENGINEERING, VOL. 25, NO. 7, JULY 2013
+
+TABLE 4
+Adult Data Set: Utility Measures for Minimum Support 2 Percent and Confidence 10 Percent for Direct and Indirect Rule Protection;
+Columns Show the Results for Different Values of a
+
+tedlining
+rules
+
+a-Disc.
+rules
+
+a-Disc.
+Rules
+a=
+
+a=
+
+a=
+
+a=
+
+a=
+
+a=
+
+Value “n.a.” denotes that the respective measure is not applicable.
+
+ 
+
+Direct Indirect
+
+GC
+
+DDPD | DDPP | IDPD | IDPP | MC
+
+TABLE 5
+German Credit Data Set: Utility Measures for Minimum Support 5 Percent and Confidence 10 Percent for Direct and Indirect Rule
+Protection; Columns Show the Results for Different Values of a
+
+a-Disc.
+Rules
+
+a-Disc.
+rules
+
+redlining
+
+a=
+a=
+
+a=
+a=
+a=l.
+
+Value “n.a.” denotes that the respective measure is not applicable.
+that we need to detect some cases with both direct and
+indirect discrimination to be able to test our method.
+Moreover, we restricted the lower bound to limit the
+number of direct a-discriminatory and redlining rules. In
+addition to utility measures, the number of redlining rules,
+the number of indirect a-discriminatory rules, and the
+number of direct o-discriminatory rules are also reported
+for different values of a.
+
+The values of both direct discrimination removal
+measures (i.e, DDPD and DDPP) and indirect discrimina-
+tion removal measures (ie., IDPD and IDPP) shown in
+Tables 4 and 5 demonstrate that the proposed solution
+achieves a high degree of both direct and indirect
+discrimination prevention for different values of the
+discriminatory threshold. The important point is that, by
+applying the proposed method, we get good results for both
+direct and indirect discrimination prevention at the same
+time. In addition, the values of MC and GC demonstrate
+that the proposed solution incurs low information loss.
+
+Tables 4 and 5 show that we obtained lower information
+loss in terms of the GC measure in the Adult data set than in
+the German Credit data set. Another remark on these tables is
+that, although no redlining rules are detected in the Adult
+data set for a > 1.3 and in the German Credit data set for
+a > 1.1, the IDPP measure is computed and reported to show
+that in the cases where only direct discrimination exists, the
+elimination of direct discrimination by Algorithm 4 does not
+have a negative impact on indirect discrimination (ie.,
+nonredlining rules do not become redlining rules).
+
+Fig. 3 illustrates the effect of the impact minimization
+procedure, described in Section 3.5.1, on execution times
+and information loss of Method 1 for DRP, respectively. As
+shown in this figure (right) impact minimization has a
+noticeable effect on information loss (decreasing MC and
+GC). However, as discussed in Section 3.6 and shown in
+
+ 
+
+direct
+
+Direct
+DDPD | DDPP | IDPD | IDPP | MC GC
+
+na.
+ra.
+na.
+na,
+
+Fig. 3(left), impact minimization substantially increases the
+execution time of the algorithm. For other methods, the
+same happens. Fig. 3(left) also shows that, by increasing a,
+the number of a-discriminatory rules and hence the
+execution time are decreased. Additional experiments
+are presented in the Appendix, available in the online
+supplemental material, to show the effect of varying
+the minimum support and the minimum confidence on
+the proposed techniques.
+
+5 CONCLUSIONS AND FUTURE WORK
+
+Along with privacy, discrimination is a very important
+issue when considering the legal and ethical aspects of data
+mining. It is more than obvious that most people do not
+want to be discriminated because of their gender, religion,
+nationality, age, and so on, especially when those attributes
+are used for making decisions about them like giving them
+a job, loan, insurance, etc.
+
+The purpose of this paper was to develop a new pre-
+processing discrimination prevention methodology includ-
+ing different data transformation methods that can prevent
+
+500
+
+400 —*—DRP(Methed1)
+
+300 \ —@- DRP(Method 1)
+° \ without impact
+\ minimization
+
+Exceution time (sec)
+Information Loss (Avg. of MC and GC)
+
+ 
+
+ig. 2 14 15 He 17 1a #5
+
+14°15 16 17
+
+Disc. Threshold Disc. Threshold
+
+Fig. 3. Execution times (left) and Information loss degree (right) of
+Method 1 for DRP for a € [1.2, 1.7] with and without impact minimization.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+HAJIAN AND DOMINGO-FERRER: A METHODOLOGY FOR DIRECT AND INDIRECT DISCRIMINATION PREVENTION IN DATA MINING
+
+direct discrimination, indirect discrimination or both of
+them at the same time. To attain this objective, the first step is
+to measure discrimination and identify categories and
+groups of individuals that have been directly and/or
+indirectly discriminated in the decision-making processes;
+the second step is to transform data in the proper way to
+remove all those discriminatory biases. Finally, discrimina-
+tion-free data models can be produced from the transformed
+data set without seriously damaging data quality. The
+experimental results reported demonstrate that the pro-
+posed techniques are quite successful in both goals of
+removing discrimination and preserving data quality.
+
+The perception of discrimination, just like the perception
+of privacy, strongly depends on the legal and cultural
+conventions of a society. Although we argued that dis-
+crimination measures based on eli ft and elb are reasonable,
+as future work we intend to explore measures of discrimi-
+nation different from the ones considered in this paper. This
+will require us to further study the legal literature on
+discrimination in several countries and, if substantially
+different discrimination definitions and/or measures were
+to be found, new data transformation methods would need
+to be designed.
+
+Last but not least, we want to explore the relationship
+between discrimination prevention and privacy preserva-
+tion in data mining. It would be extremely interesting to
+find synergies between rule hiding for privacy-preserving
+data mining and rule hiding for discrimination removal.
+Just as we were able to show that indirect discrimination
+removal can help direct discrimination removal, it remains
+to be seen whether privacy protection can help antidiscri-
+mination or viceversa. The connection with current privacy
+models, like differential privacy, is also an intriguing
+research avenue.
+
+DISCLAIMER AND ACKNOWLEDGMENTS
+
+The authors are with the UNESCO Chair in Data Privacy, but
+this paper does not commit UNESCO. Thanks go to Antoni
+Martinez-Ballesté and three anonymous referees for their
+help. Partial support is acknowledged from Spanish projects
+TSI2007-65406-C03-01, TIN2011-27076-C03-01 and CONSO-
+LIDER CSD2007-00004, Catalan project 2009SGR1135, and
+European FP7 project “DwB.” The second author is an
+ICREA Académia Researcher.
+
+REFERENCES
+
+[1] R. Agrawal and R. Srikant, “Fast Algorithms for Mining
+Association Rules in Large Databases,” Proc. 20th Int'l Conf. Very
+Large Data Bases, pp. 487-499, 1994.
+
+[2] T. Calders and S. Verwer, “Three Naive Bayes Approaches for
+Discrimination-Free Classification,” Data Mining and Knowledge
+Discovery, vol. 21, no. 2, pp. 277-292, 2010.
+
+[3] European Commission, “EU Directive 2004/113/EC on Anti-
+Discrimination,” http://eur-lex.europa.eu/LexUriServ/
+LexUriServ.do?uri=OJ:L:2004:373:0037:0043:EN:PDF, 2004.
+
+[4] European Commission, “EU Directive 2006/54/EC on Anti-
+Discrimination,” http://eur-lex.europa.eu/LexUriServ/
+LexUriServ.do? uri=OJ:L:2006:204:0023:0036:en:PDF, 2006.
+
+[5] S. Hajian, J. Domingo-Ferrer, and A. Martinez-Ballesté, “Discri-
+mination Prevention in Data Mining for Intrusion and Crime
+Detection,” Proc. IEEE Symp. Computational Intelligence in Cyber
+Security (CICS '11), pp. 47-54, 2011.
+
+ 
+
+1459
+
+[6] S. Hajian, J. Domingo-Ferrer, and A. Martinez-Ballesté, “Rule
+Protection for Indirect Discrimination Prevention in Data
+Mining,” Proc. Eighth Int'l Conf. Modeling Decisions for Artificial
+Intelligence (MDAI '11), pp. 211-222, 2011.
+
+[7] F. Kamiran and T. Calders, “Classification without Discrimina-
+tion,” Proc. IEEE Second Int'l Conf. Computer, Control and Comm.
+C4 '09), 2009.
+
+[8] F. Kamiran and T. Calders, “Classification with no Discrimination
+by Preferential Sampling,” Proc. 19th Machine Learning Conf.
+Belgium and The Netherlands, 2010.
+
+[9] F. Kamiran, T. Calders, and M. Pechenizkiy, “Discrimination
+Aware Decision Tree Learning,” Proc. IEEE Int'l Conf. Data Mining
+(UICDM '10), pp. 869-874, 2010.
+
+[10] R. Kohavi and B. Becker, “UCI Repository of Machine Learning
+Databases,” http:/ /archive.ics.uci.edu/ml/datasets/ Adult, 1996.
+
+{11] DJ. Newman, S. Hettich, C.L. Blake, and CJ. Merz, “UCI
+Repository of Machine Learning Databases,” http://archive.
+ics.uci.edu/ml, 1998.
+
+[12] D. Pedreschi, 5. Ruggieri, and F. Turini, “Discrimination-Aware
+Data Mining,” Proc. 14th ACM Int'l Conf. Knowledge Discovery and
+Data Mining (KDD '08), pp. 560-568, 2008.
+
+[13] D. Pedreschi, S. Ruggieri, and F. Turini, “Measuring Discrimina-
+tion in Socially-Sensitive Decision Records,” Proc. Ninth SIAM
+Data Mining Conf. (SDM '09), pp. 581-592, 2009.
+
+[14] D. Pedreschi, S. Ruggieri, and F. Turini, “Integrating Induction
+and Deduction for Finding Evidence of Discrimination,” Proc. 12th
+ACM Int'l Conf. Artificial Intelligence and Law (ICAIL '09), pp. 157-
+166, 2009.
+
+[15] S. Ruggieri, D. Pedreschi, and F. Turini, “Data Mining for
+Discrimination Discovery,” ACM Trans. Knowledge Discovery from
+Data, vol. 4, no. 2, article 9, 2010.
+
+[16] S. Ruggieri, D. Pedreschi, and F. Turini, “DCUBE: Discrimination
+Discovery in Databases,” Proc. ACM Int'l Conf. Management of Data
+(SIGMOD '10), pp. 1127-1130, 2010.
+
+[17] P.N. Tan, M. Steinbach, and V. Kumar, Introduction to Data Mining.
+Addison-Wesley, 2006.
+
+[18] United States Congress, US Equal Pay Act, http://archive.
+eeoc.gov/epa/anniversary /epa-40.html, 1963.
+
+[19] V. Verykios and A. Gkoulalas-Divanis, “A Survey of Association
+Rule Hiding Methods for Privacy,” Privacy-Preserving Data
+Mining: Models and Algorithms, C.C. Aggarwal and P.S. Yu, eds.,
+Springer, 2008.
+
+Sara Hajian is working toward the PhD degree
+in data security and privacy at the Universitat
+Rovira i Virgili, and the MSc degree in computer
+science from Iran University of Science and
+Technology in 2008.
+
+Josep Domingo-Ferrer received the MSc and
+PhD degrees in computer science from the
+Universitat Autnoma de Barcelona in 1988 and
+1991, respectively, and the MSc degree in
+mathematics. He is a distinguished professor
+at the Universitat Rovira i Virgili, where he holds
+the UNESCO chair in Data Privacy. More
+information can be found at http://crises-dei-
+m.urv.cat/jdomingo. He is a fellow of the IEEE.
+
+> For more information on this or any other computing topic,
+please visit our Digital Library at www.computer.org/publications/dlib.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:20:46 UTC from IEEE Xplore. Restrictions apply.
+

@@ -1,0 +1,1062 @@
+Anti-discrimination Analysis
+Using Privacy Attack Strategies
+
+Salvatore Ruggieri!, Sara Hajian?, Faisal Kamiran®, and Xiangliang Zhang*
+
+! Universita di Pisa, Italy
+2 Universitat Rovira i Virgili, Spain
+$ Information Technology University of the Punjab, Pakistan
+* King Abdullah University of Science and Technology, Saudi Arabia
+
+Abstract. Social discrimination discovery from data is an important
+task to identify illegal and unethical discriminatory patterns towards
+protected-by-law groups, e.g., ethnic minorities. We deploy privacy
+attack strategies as tools for discrimination discovery under hard as-
+sumptions which have rarely tackled in the literature: indirect discrim-
+ination discovery, privacy-aware discrimination discovery, and discrimi-
+nation data recovery. The intuition comes from the intriguing parallel
+between the role of the anti-discrimination authority in the three sce-
+narios above and the role of an attacker in private data publishing. We
+design strategies and algorithms inspired/based on Fréchet bounds at-
+tacks, attribute inference attacks, and minimality attacks to the pur-
+pose of unveiling hidden discriminatory practices. Experimental results
+show that they can be effective tools in the hands of anti-discrimination
+authorities.
+
+1 Introduction
+
+Discrimination refers to an unjustified distinction of individuals based on their
+membership, or perceived membership, in a certain group or category. Human
+rights laws prohibit discrimination on several grounds, such as sex, age, mari-
+tal status, sexual orientation, race, religion or belief, membership of a national
+minority, disability or illness. Anti-discrimination authorities (equality enforce-
+ment bodies, regulation boards, consumer advisory councils) monitor, provide
+advice, and report on discrimination compliances based on investigations and in-
+quiries. Data under investigation are studied by them with the main objective of
+discrimination discovery, which consists of unveiling contexts of discriminatory
+practices in a dataset of historical decision records. Discrimination discovery is
+a fundamental task in understanding past and current trends of discrimination,
+in judicial dispute resolution in legal trials, in the validation of micro-data or
+of aggregated data before they are publicly released. As an example of the last
+case, consider an employer noticing from public census data that the race or
+sex of workers act as proxy of the workers’ productivity in his specific indus-
+try segment and geographical region. The employer may then use those visible
+
+T. Calders et al. (Eds.): ECML PKDD 2014, Part II], LNCS 8725, pp. 6944710] 2014.
+© Springer-Verlag Berlin Heidelberg 2014
+Anti-discrimination Analysis 695
+
+traits of individuals, rather than their unobservable productivity, for driving (dis-
+criminatory) decisions in job interviews. Such a behavior, known as statistical
+discrimination [12], should be foreseen before data are publicly released.
+
+Existing approaches for discrimination discovery [[2\{13| are designed with two
+assumptions: (1) the dataset under studying explicitly contains an attribute de-
+noting the protected-by-law social group under investigation, and (2) the dataset
+has not been pre-processed prior to discrimination discovery. A first major source
+of complexity is to tackle the case that (1) does not hold — a problem known
+as indirect discrimination discovery, where indirect discrimination refers to ap-
+parently neutral practices that take into account personal attributes correlated
+with indicators of race, gender, and other protected grounds and that result
+in discriminatory effects on such protected groups. For example, even without
+race records of credit applicants, racial discrimination may occur in the practice
+of redlining: applicants living in a certain neighborhood are frequently denied,
+as most of people living in that neighborhood belong to the same ethnic mi-
+nority. A second source of complexity, ignored in the literature so far, occurs
+when data contain attributes denoting protected groups but such data have been
+pre-processed to control the (privacy) risks of revealing confidential information,
+i.e., assumption (2) does not hold. If the anti-discrimination authority cannot be
+trusted, the original data cannot be accessed, and then discrimination discovery
+must be performed on the processed data. We name such a case privacy-aware
+discrimination discovery. A further case in which (2) may not hold occurs when
+data is pre-processed to hide discriminatory decisions to the anti-discrimination
+authority. Since the authority has to recover the original decisions as part of its
+investigation, we name such a case discrimination data recovery.
+
+We follow the intriguing parallel between the role of the anti-discrimination
+authority in discrimination data analysis and the role of an attacker in privacy-
+preserving data publishing [M15] — an unauthorized (possibly malicious) entity.
+Several attack strategies have been proposed in the literature, which model the
+reasonings of an attacker and its background knowledge. Conceptually, the role
+of an anti-discrimination authority is similar to the one of an attacker. In the
+case of indirect discrimination discovery, the authority has to infer personal data
+of individuals in the dataset under investigation, namely whether she belongs
+to a protected group or not (this step is necessary in order to measure the
+degree of discrimination in decisions). We substantiate this view by showing how
+combinatorial attacks based on Fréchet bounds inference [8] can be deployed to
+this purpose. In the case of privacy-aware discrimination discovery, the parallel is
+even more explicit: the anti-discrimination authority has to reason as an attacker
+to find out as much information as possible on the membership of individuals in
+the protected group. We will investigate a form of attribute inference attacks for
+discrimination discovery from a bucketized dataset [LI]. Finally, in the case of
+discrimination data recovery the anti-discrimination authority has the objective
+of re-constructing original decisions from a perturbed dataset, which, again, is
+a typical task of privacy attackers. By exploiting an analogy with optimality
+attacks [14], we will devise an approach to reconstruct a dataset that has been
+696 S. Ruggieri et al.
+
+ 
+
+ 
+
+decision
+group - + pi =a/ni
+protected |a 6 | ni p2 =c/ne
+unprotected] c d | nz p=m/n
+mimMm2|n RD=pi -— pa
+
+ 
+
+ 
+
+Fig. 1. Discrimination table
+
+sanitized by means of the approach in [9]. The parallels highlighted open a new
+research direction consisting of applying the vast amount of methodologies and
+algorithms of privacy protection for discrimination data analysis.
+
+This paper is organized as follows. Section [2] formalizes the three scenarios
+mentioned above. Section BJ recalls basic notions of discrimination analysis. The
+adaptation of privacy attack approaches and algorithms to each scenario is pre-
+sented in Sections AM Section[Mreports experimental results. Finally, conclusions
+report on related work and summarize our contributions.
+
+2 Problem Scenarios
+
+We assume two actors: a data owner and an anti-discrimination authority. The
+data owner releases to the anti-discrimination authority some data either in the
+form of micro-data, e.g., one or more relational or multidimensional tables, or
+in the form of aggregate data, e.g., one or more contingency tables. The anti-
+discrimination authority has access to additional information, called the back-
+ground knowledge, that is exploited to unveil contexts of possible discrimination
+from the released data. The case when attributes to identify protected groups are
+part of the released data and data are without modification is known as direct
+discrimination. This is well-studied [273], and in this paper our main emphasis
+will be on the alternative case, consisting of one of the following scenarios.
+
+Scenario I: Indirect discrimination discovery. The released data do not include
+attributes that explicitly identify protected-by-law groups. The task of the anti-
+discrimination authority is to unveil contexts of discrimination from the released
+data by exploiting background knowledge (e.g., correlations between attributes)
+to link the unknown attributes to attributes present in the data.
+
+Scenario II: Privacy-aware discrimination discovery. The released data in-
+clude attributes that explicitly identify protected-by-law groups, but the data
+were pre-processed by the data owner by applying a privacy-preserving inference
+control method to perturb such attributes. The anti-discrimination authority
+has the task of unveiling contexts of discrimination by exploiting background
+knowledge (e.g., aggregate counts on members of the protected group) and the
+awareness of the inference control algorithm used to pre-process the data.
+
+Scenario II: Discriminatory data recovery. The released data were pre-
+processed by the data owner by applying a discrimination prevention inference
+control method that perturbed the data to hide discriminatory decisions. The
+task of the anti-discrimination authority is to reconstruct the original data by
+Anti-discrimination Analysis 697
+
+exploiting, again, background knowledge (e.g., amount of hidden discrimination)
+and the awareness of the inference control algorithm. Starting from the recon-
+structed dataset, standard direct discrimination discovery techniques can then
+be adopted to unveil contexts of discrimination.
+
+3 Measures of Group Discrimination
+
+A critical problem in the analysis of discrimination is precisely to quantify the de-
+gree of discrimination suffered by a given group (say, an ethnic group) in a given
+context (say, a geographic area and/or an income range) with respect to a deci-
+sion (say, credit denial). To this purpose, several discrimination measures have
+been defined over a 4-fold contingency table, as shown in Fig. [| where: the pro-
+tected group is a social group which is suspected of being discriminated against;
+the decision is a binary attribute recording whether a benefit was granted (value
+“+” or not (value “”) to an individual; the total population denotes a context
+of possible discrimination, such as individuals from a specific city, job sector,
+income, or combination thereof.
+
+We call the 4-fold contingency table of Fig. [a discrimination table. Different
+outcomes between groups are measured in terms of the proportion of people in
+each group with a specific outcome. Fig. [J considers the proportions of ben-
+efits denied for the protected group (pi), the unprotected group (p2) and the
+overall population (p). Differences and rates of these proportions can model the
+legal principle of group under-representation of the protected group in positive
+outcomes or, equivalently, of over-representation in negative outcomes [[2]. For
+space reasons, we restrict to consider only risk difference (RD = pi; — p2), which
+quantifies the marginal chance of the protected group of being given a negative
+decision. Once provided with a threshold a between “legal” and “illegal” degree
+of discrimination, we can isolate contexts of possible discrimination [13].
+
+Definition 1 (a-protection). A discrimination table is a-protective (w.r.t. the
+RD measure) if RD < a. Otherwise, it is a-discriminatory.
+
+Direct discrimination discovery consists of finding a-discriminatory tables
+from a subset of past decision records. The original approach [13] performs a
+search in the space of discrimination tables of frequent (closed) itemsets. Fix a
+relational table whose attributes include GROUP, with values PROTECTED and
+UNPROTECTED, and DEC, with values + and -. An itemset is a set of items
+of the form A = v, where A is an attribute and v € dom(A), the domain
+of A. As usual in the literature, we write A, = v,,...,A_p = vg instead of
+{A, = v1,...,A~ = vp}. Let B be an itemset without items over GROUP and
+DEC. The discrimination table associated to B regards the tuples in the cover of
+B as the total population. Therefore, n in Fig. is the number of tuples satisfy-
+ing B (ie., its absolute support), and the cell values a, b, c and d are the counts
+of those also satisfying the cell coordinates. For instance, a is the support of the
+itemset “B, GROUP=PROTECTED, DEC=—”.
+698 S. Ruggieri et al.
+
+ 
+
+ 
+
+decision rel. decision rel. group
+
+group ot group - o+ group gl g2_
+protected | a 6b nt gl | a@ 0b Ay protected | e f nt
+unprotected] cd na g2 éod ha unprotected| g A na
+m1 m2 n m1 m2 n Ai he n
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 2. Indirect discrimination. Left: unknown contingency table. Center: known con-
+tingency table. Right: background knowledge contingency table.
+
+4 Scenario I: Indirect Discrimination Discovery
+
+The release of some aggregate data over a statistical database may lead to in-
+ferences on unpublished aggregates. In particular, the inference of bounds on
+entries in a 4-fold contingency table, given their marginals, trace back to the
+1940’s — and they are known as Frechet bounds. They have been generalized to
+multidimensional contingency tables in the early 2000’s |B]. We adopt an item-
+set based notation for contingency table cell entries. Let us denote by nx the
+support of an itemset X in the dataset R under analysis: nx = |{t © R|X C #t}|.
+Consider now an itemset X of the form A, = v1, A2 = v2, and Y of the form
+Az = v2,A3 = v3. The itemset X Y is Ay = v1, Ag = v2, A3 = v3 and the
+itemset X MY is Ap = v2. The Fréchet bounds for the support of X Y are the
+following [8 Theorem 4]:
+
+min{nx, ny} >nxy > mar{nx + ny —nxny,O} (1)
+
+Let us exploit Fréchet bounds to model indirect discrimination discovery by
+means of background knowledge on attributes (cor-)related to membership to
+the protected group. Consider Fig. 2] Our problem is as follows: we want to
+derive bounds on a discrimination measure for an unknown contingency table
+(left) given a known/released contingency table (center) and some additional in-
+formation contained in a background knowledge contingency table (right). The
+known contingency table shows data on an attribute that is related to the mem-
+bership to the protected group through the background knowledge contingency
+table. The higher the correlation the closer the (known) discrimination mea-
+sures for such an attribute are to the (unknown) discrimination measures for
+the protected group. The unknown value a can be decomposed into the num-
+ber a, of individuals of the group gl plus the number ag of individuals the
+group g2. Thus, aj = nxy, where X is REL. GROUP=G1, DEC=- and Y is
+GROUP=PROTECTED, REL. GROUP=G1. The Fréchet bounds for a, yield:
+
+min{a, e} > a, > maxr{a +e — 1,0} = marf{e — 6,0}
+
+and, with similar reasonings, those for az yield: min{é, f} > az > max{é+ f —
+fia, 0} = mar{f — d,0}. Therefore, for a = a, + a2, we have the bounds:
+
+min{a@, e} + min{é, f} > a > marf{e — b,0} + maz{ f — d,0} (2)
+Anti-discrimination Analysis 699
+
+ 
+
+ 
+
+ 
+
+ 
+
+rel. decision rel. group
+group - + group gl g2
+gl |}2 0 2 pro.}1 0 1
+g2 16 18 24 unp.}| 1 24 25
+8 18 26 2 24 26
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 3. Sample known and background contingency tables
+
+These bounds have an intuitive reading. Of the n; individuals in the protected
+group, e belong to group gl and f belong to group g2. Consider the lower
+bounds. At most min{b, e} of those e (resp., min{d, f} of f) have a positive
+decision. Therefore, the number a is at least marfe — 6,0} + mar{f — d, oO}.
+Consider now the upper bounds. At most e (resp, f) individuals of the protected
+group are in the gl group (resp., g2 group), which, in turn, has at most @
+(resp., é) negative decisions. Summarizing, the background knowledge necessary
+to derive the bounds for a consists of the distribution of the protected group
+into individuals of groups gl and g2, namely values e and f in the background
+knowledge of Fig. 2] With similar means, one derives bounds for c:
+
+minfa, g} + minf{é, h} > > mar{g — 6,0} + mar{h — d,0}
+
+Since n; and nz are in the background knowledge and m, is in the known
+contingency table, bounds for the proportions pj = a/n1, pp = c/n2, and p =
+m ,/n can be readily computed. Finally, we derive a lower bound for RD:
+
+max{e — 6,0} + max{ f — d,0} _ min{a,g} + min{é, h}
+ny n2
+
+ 
+
+RD> RDIb=
+
+Example 1. Consider the known and background knowledge tables in Fig. Bl The
+Fréchet bounds on a (number of protected individuals with negative decisions)
+and ¢ (number of unprotected individuals with negative decisions) are:
+
+1 = min{2, 1} + min{6,0} > a > mar{1—0,0} + mar{0— 18,0} =1
+7 = min{2,1} + min{6, 24} > c > max{1 —0,0} + mar{24— 18,0} =7
+
+We have py = 1/1, po = 7/25 = 0.28, and then RD = p; — p2 = 0.72.
+
+Notice that since Fréchet bounds are sharp [3], the bounds on discrimination
+measures are sharp as well. Although we described the case of a single attribute
+related to the protected attribute, the approach can be repeated for two or more
+related attributes, and the best bounds can be retained at each step. The overall
+approach is formalized in Algorithm [| named FréchetDD for Fréchet bounds-
+based Discrimination Discovery. The algorithm takes as input a relational table
+R, background knowledge contingency tables BK and a threshold a for indirect
+discrimination discovery of a-discriminatory contingency tables. For each closed
+itemset B, the algorithm infers bounds ctu for its unknown contingency table.
+At the beginning (line 3), such bounds are the widest possible — from 0 to the
+700 S. Ruggieri et al.
+
+ 
+
+Algorithm 1. FréchetDD(R, BK, a)
+
+1: C & { frequent closed itemsets of R w/o GROUP and DEC items }
+
+2: for Be C do
+
+ctu = ([0, ns], [0, np], [0, rp], [0, nB])
+
+4. L={A=v| no A-item is in B}
+
+5: for A=veéZ do
+
+6: if ctbg = ct(B, (GROUP=PRO., GROUP=UNPRO.), (A = v, A# v)) € BK then
+7:
+
+8
+
+ 
+
+ctk = ct(B, (A =v, A F v), (DEC=-, DEC=+))
+ctu’ < Fréchet bounds from ctk and ctbg
+
+9: ctu + min(ctu, ctu’)
+10: end if
+11: end for
+
+12: RDIb <— RD lower bound from ctu
+13: if RDlb > a then
+
+14: output B
+15: end if
+16: end for
+
+ 
+
+support mp of B. For every item A = v, where A is not already in B and such that
+acontingency table ctbg relating the protected group to A = v in the context B is
+available in the background knowledge {line 6), the Fréchet bounds are calculated
+starting from such background contingency table and from a contingency table
+ctk that is computable from F (line 7), as described earlier in this section. The
+bounds are used to update ctu (line 9). After all items are considered, the final
+bounds ctu can be adopted for computing a lower bound on the discrimination
+measure at hand, RD in our case, to be checked against the threshold a (line 13).
+The computational complexity of Algorithm Dis O{|C| - |BX|), i.e., the product
+of the size of closed itemsets by the size of the background knowledge.
+
+A remarkable instance of indirect discrimination discovery is redlining, a prac-
+tice banned in the U.S. consisting of denying credit on the basis of residence.
+
+Example 2. Consider a released contingency table in Fig. Al (right) regarding ben-
+efits granted and denied in a neighborhood specified by a ZIP code. In highly seg-
+regated cities, it may be very likely that specific neighborhoods, such as zIP=100,
+are mostly populated by a specific race, say, a black minority. In such a case,
+the ZIP code acts as a proxy of the race of the population. Fig. M (left) shows
+the contingency table for the possibly discriminated group of black people living
+in the specific neighborhood zIP=100. Entries of such a table may be unknown,
+due to the fact that the race of individuals is not recorded in the dataset. Fix the
+itemset X to ZIP=100,DEC=—, and Y to BLACK,ZIP=100. From the released
+contingency in Fig. J (right), we know that nx = @ and nxny = ft. Assume
+now to have, as a background knowledge, the number ny of black people living
+in the neighborhood zIP=100. Notice that, ny = 11. Moreover, nx y = a. The
+Fréchet bounds (f]) are:
+
+min{a,n}>nxy =a> mar{a+n, — 4,0} = mar{n, — b, oO}
+Anti-discrimination Analysis 701
+
+ 
+
+ 
+
+ 
+
+ 
+
+decision decision
+
+group “= + group) - +
+black,zip=100] a 6 nt zip=100} @ b Ry
+others c d ng others | ¢ d fie
+m1 M2 n mi m2 n
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 4. Unknown (left) and known (right) contingency tables
+
+Dividing by 71, we get min{a@/n,,1} > pi > mar{l1— b/m1, 0}. Since c = m,—a
+and ng = n—n, bounds for pz = c/n can be derived. The exact value p = n/n
+is also known. Summarizing, ranges can be derived on all proportions in Fig. [I]
+and, a fortiori, on any discrimination measure based on them.
+
+5 Scenario II: Privacy-aware Discrimination Discovery
+
+In this scenario, the released dataset includes an attribute that explicitly iden-
+tifies the protected group. However, since such an attribute is considered sen-
+sitivdd, data were pre-processed by the data owner using a privacy-preserving
+inference control method to diminish the correlation between such an attribute
+and other non-sensitive attributes. There could be different purposes for data
+sanitization: (1) to protect individuals’ sensitive information; (2) to use data
+privacy as an excuse for hiding discriminatory practices. In both cases, the anti-
+discrimination authority has to unveil discrimination from the sanitized data.
+
+There is a vast amount of privacy-preserving inference control methods. We
+investigate the scenario for one of the most popular ones, the bucketization
+method [15]. Bucketization disassociates the sensitive attributes from the non-
+sensitive attributes. The output of bucketization consists of two tables: a non-
+sensitive table (e.g., Fig. BJ left) and a sensitive table (e.g., Fig. HJ center). The
+non-sensitive table contains the entire non-sensitive attributes information, in
+addition to a group id GID (when tuples are partitioned into groups, a unique
+GID is assigned to each group). The sensitive table contains the sensitive values
+that appear in a specific group. Bucketization is a lossy join decomposition us-
+ing the group id. For instance, tuple r; in group GID=1 has probability 25% of
+referring to a Muslim, Christian, Jewish, or Other individual, but it is impos-
+sible to determine which case actually holds. Thus, for the bucketized version
+R’ of a dataset R, the correlation between sensitive attribute and non-sensitive
+attributes is diminished. Note that in each group of our example table, every
+sensitive value is distinct and so the group size is equal to the parameter / in
+the [-diversity privacy model [[]]. We assume that | is the cardinality of the at-
+tribute denoting protected and unprotected groups, e.g., the number of religions
+in our example.
+
+! Protected group membership and private/sensitive information highly overlap [J], as
+e.g., for religion, health status, genetic information and political opinions attributes.
+702 S. Ruggieri et al.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ID|Education}| Job |Dec|GID GID] Religion
+
+v1 | Bachelors |Engineer] - 1 1 | Muslim
+
+r2 | Bachelors |Engineer} + | 1 1 |Christian
+
+r3 |Doctorate|Engineer| + 1 1 Jewish
+
+r4|Bachelors| Writer | + | 1 1 Other decision
+
+r5| Master |Engineer} + | 2 2 | Muslim education=bachelors - = +
+
+re |Doctorate| Writer | + | 2 2 |Christian religion=muslin |a 6 3
+r7 | Bachelors| Dancer | - 2 2 | Jewish religionAmuslim | cd 3
+ra| Master | Dancer } - 2 2 Other 4 2 6
+rg | Master | Dancer } - 3 3 | Muslim
+
+rio| Master | Lawyer | + | 3 3 |Christian
+
+r11| Bachelors |Engineer] - 3 3 Jewish
+
+712| Bachelors| Dancer | - 3 3 Other
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 5. Non-sensitive (left) and sensitive (center) tables. Right: sample unknown c.t.
+
+In this context, privacy-aware discrimination discovery can be formalized as
+the problem of deriving bounds on a discrimination measure for an unknown
+contingency table (see Fig. J left) given the bucketized dataset R’. Consider a
+subset of n tuples from ®’ for which a contingency table has to be derived. The
+value m, is known (and also mz = n — m1) because it consists of the number
+of tuples with negative decision. We assume that, as background knowledge, the
+number 7 of tuples regarding protected group individuals is also known (and,
+a fortiori, ng = n— 4). Starting from those aggregate values, bounds on cell
+values of the contingency table can be obtained by Fréchet bounds. Here, we
+propose to refine such bounds by exploiting the fact that in every bucket there
+is one and only one individual of the protected group. This yields the following
+bounds on a:
+
+Symin{1,ni} Pa>ny— X,min{1,n',} (3)
+where i ranges over group id’s, n*_ (resp., ni.) is the number of individuals with
+negative (resp., positive) decision with GID=i — this is available from the non-
+sensitive table. The bounds for c are easily derivable from those from a by noting
+that c = m,—a, since m, {the number of tuples with negative decision) is known.
+Similarly for b = n1 — a, and for d= ng —c. Starting from them, bounds for pj,
+p2, p and discrimination measures defined over them can be computed.
+
+Example 3. Consider the set of tuples from Fig.l (left) such that EDUCATION=B-
+ACHELORS. There are 6 such tuples: 4 with negative decision (r1, r7, ri1, T12)
+and 2 with positive decision (rz, r4). Moreover, assume to know by background
+knowledge that n1 = 3 out of the 6 tuples regard Muslims. This gives rise to the
+unknown contingency table in Fig. A (right). It turns out that nt =1,n2 =1
+and n3. = 2; and that ni, =2, na =0 and ne = 0. Therefore, we have:
+
+min{1,1}+ minf{1,1}+ min{1,2} =3>a>
+2 = 3— (min{1, 2}+ min{1,0} + min{1,0})
+Fréchet bounds for Fig. (right) would yield the strictly larger interval min {4, 3}
+
+=3>a>1=mar{44+3- 6,0}. Since a+c = 4, we derive 2 >c > 1. Thus,
+py = a/n, € (2/3, 3/3], po = c/n € [1/3,2/3] and then RD = p, — pe € [0, 2/3].
+Anti-discrimination Analysis 703
+
+ 
+
+Algorithm 2. PADD(R’, BK, a)
+
+1: C | { frequent closed itemsets of R’ w/o GROUP and DEC items }
+2: for Be C do
+30 UN OoNB
+m1 © 2B,cRouP=PROTECTED // found in BK
+m1 © Np pEc—- // compute from R’
+a € [aj, au], with au = min{ni, mi, Simin{1, n*}},
+a, = mar{n, +m —7,0,n1 — Xymin{1, n'_}, lb(a)} // lb(a) found in BK
+c € [e1, cu] with e, = m1 — a, c = m1 — au
+9: RDIb © a /ni — cu /(n — 11)
+10: if RDlb > a then
+
+ 
+
+11: output B
+12: endif
+13: end for
+
+ 
+
+Given a bucketized dataset R’ and background knowledge BK, Algorithm 2
+whose name is PADD for Privacy-Aware Discrimination Discovery, formalizes
+the search of itemsets B with a lower bound for RD greater or equal than a. We
+assume that BK may also include a further lower bound /b(a) for a, obtained
+e.g., from answers to a survey or from allegations of discrimination against the
+data owner. The complexity of PADD is linear in the number of closed itemsets.
+
+6 Scenario III: Discriminatory Data Recovery
+
+To hide discrimination practices, data owners may apply discrimination preven-
+tion methods on datasets before publishing. For example, discrimination may
+be suppressed in the released data with minimal distortion of the decision at-
+tribute, i.e., by relabeling of some tuples to make the released dataset unbiased
+w.r.t. a protected group. Such discrimination prevention strategies are analogous
+to mechanisms of anonymization for data publication, where data anonymiza-
+tion is framed as a constrained optimization problem: produce the table with the
+smallest distortion that also satisfies a given set of privacy requirements. Such
+an attempt at minimizing information loss provides a loophole for attackers. The
+minimality attack [T4] is one of the strategies to recover the private data from
+optimally anonymized data, given the non-sensitive information of individuals in
+the released dataset, the privacy policy, and the algorithm used for anonymiza-
+tion. The target of an anti-discrimination authority is precisely to reconstruct
+the original data from the released data, and then apply direct discrimination
+discovery techniques on the reconstructed data to unveil discrimination. In this
+sense, strategies such as minimality attacks can be readily re-proposed as a
+means in support of discrimination discovery.
+
+We assume that the released dataset R’ is changed minimally w.r.t. the orig-
+inal dataset R to suppress historical discriminatory practices. For instance, the
+massaging approach [9] changes a minimal number of tuples by promoting (from
+— to +) or demoting (from + to —) decision values. By “minimal” here it is
+704 S. Ruggieri et al.
+
+ 
+
+Algorithm 3. DataRecovery(R', DiscInt)
+
+: M —0.01 - |protected group|  |unprotected group| /|R’ |
+
+: for 1 To (DiscInt- 100) do
+(pr, dem) + Rank(R’)
+Change the decision of top M tuples of pr with DEC=- to DEC=+
+Change the decision of top M tuples of dem with DEC=+ to DEC=-
+R' + R’ with new decision values of pr, dem
+
+end for
+
+return F’
+
+ 
+
+ 
+
+ 
+
+Algorithm 4. Rank(R’)
+
+1: Learn a ranker L of DEc=-+ using R’ as training data
+2: pr < unprotected group tuples in R’ with DEC=-
+ordered descending w.r.t. the scores by L
+3: dem < protected group tuples in R’ DEC=+
+ordered ascending w.r.t. the scores by D
+4: return (pr, dem)
+
+ 
+
+ 
+
+meant that a number of changes is performed such that the RD measure for the
+released dataset is 0. We assume that the anti-discrimination authority knows,
+as background knowledge, the original value of RD, which we call discrimina-
+tion intensity (DiscInt). More realistically, such a value can be estimated on the
+basis of declarations made by individuals who claim to have been discriminated
+against. We exploit the observation proposed in [10] that discrimination affects
+the tuples close to the decision boundary of a classifier. To determine the decision
+boundary, we rank tuples of the protected and unprotected groups separately
+w.r.t. their positive decision probabilities accordingly to a classifier trained from
+R’. We change the decision values of the tuples in the decision boundaries of
+the protected and unprotected groups to recover the original decision labels of
+R. Algorithms B] and Ml provide the pseudocode of this discriminatory data re-
+covery process. Procedure DataRecovery takes as inputs the released data R’
+and the discrimination intensity DiscInt. The recovery is iteratively performed
+to recover one percent of released data in each step, rather than performing the
+entire data recovery in a single step. The reason is that the released data with
+altered attributes could lead to inaccurate calculation of probability scores. The
+gradual data recovery process improves the quality of data continuously, and
+thus provides more and more accurate probability scores.
+
+Example 4. Let us assume that an employment bureau released its historical
+recruitment data as shown in Fig. 6, We, as an anti-discrimination authority,
+
+2 The number of modifications M at each step is determined as follow. Let ni
+(resp., 2) be the size of the protected (resp., unprotected) group in R’. A total
+of M- DiscInt -100 tuples are demoted (resp., promoted) to move from RD = 0
+to RD = (M- Discint -100)/n1 + (M- Discint -100)/n2 = DiscInt. By solving the
+equation, we get M =0.01+ 1 -n2/(ni +2) where ni + n2 = |[R'|.
+Anti-discrimination Analysis 705
+
+ 
+
+ 
+
+Sex|Ethnicity|Degree|Job Type|/Dec|Prob| |Sex|Ethnicity)Degree]Job Type|Dec|Prob
+m| native | hs. board | + |98% f | native hs. board | + |93%
+m| native | hs. board | + |98% f | native | none | health | + | 76%
+m| native | univ. | board | + |89% f | native hs. edu. + | 51%
+m | non-nat.| hs. health | - |47% f |non-nat.} univ. edu. - | 2%
+m |non-nat.] univ. | health - |30% f |non-nat.| univ. edu. - | 2%
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Fig. 6. Sample job-application relation with positive decision probability scores
+
+suspect of hidden discriminatory patterns in the released data due to complains
+about the biasness of this company w.r.t. sex of applicants. However, the bureau
+has changed minimally the original data to suppress historical discriminatory
+practices of the company. We have then to recover the discriminatory data.
+Assume the background knowledge that DiscInt = 40%. We first calculate the
+positive decision probabilities for all tuples by adopting a probabilistic classifier
+(e.g., Naive Bayes), and then order the tuples of males and females w.r.t. these
+probability scores separately, as shown in Fig.) DiscInt = 40% in these 10 tuples
+implies that two tuples were relabeled for suppressing the sex discrimination,
+ie., one male (resp. female) tuples was relabeled to negative (resp. positive)
+decision. The procedure DataRecovery (steps 4, 5) selects tuples close to the
+decision boundaries as candidates for correction. In our example, those with
+Prob around 50% (shown in red in Fig. 6) will have decision values changed: the
+male (resp., female) tuple is promoted from — to + (resp., demoted from + to —).
+
+7 Experiments
+
+In this section, we report experiments on three classical datasets available from
+the UCI Machine Learning repository (http://archive.ics.uci.edu/ml): German
+credit, which consists of 1000 tuples with attributes on bank account holders
+applying for credit; Adult, which contains 48848 tuples with census attributes
+on individuals; and Communities and Crimes, which contains 1994 tuples and
+describes the criminal behavior of different communities in the U.S.
+
+Scenario I: Indirect Discrimination Discovery. We experimented the
+Fréchet bounds approach of Algorithm[Jon the German credit and Adult datasets.
+For the former dataset, the personal status attribute, denoting the protected
+group of non-single females, was removed before applying the algorithm. For the
+latter dataset, the same approach was taken for the protected group of non-
+Whites. Closed itemsets are computed by setting a minimum support threshold
+of 20, i.e., 2%, for German credit and of 48, i.e., 0.1%, for Adult. We simulate the
+availability of background knowledge contingency tables (ctbg in Algorithm [)
+by computing them from the original dataset. In order to evaluate the impact
+of the size of the available background knowledge, only a random number ni of
+the items in the set Z (see line 4 of Algorithm []) are actually looked up. We
+experiment with ni = 1, i-e., the anti-discrimination authority has knowledge of
+only one related item, with ni = 5, and with an optimistic ni = 30. Fig. [1 (top)
+706 S. Ruggieri et al.
+
+  
+
+German credit dataset, minsupp=20 Adult dataset, minsupp=48
+3 ni=1 total —— 3
+Al ni=1,exact Al
+2 ni=5,total 2
+Fy ni=5,exact Fy exa
+a ni=30 total 2 ni=30 total
+g ni=30, g ni=30,
+S S
+2 2
+a a
+c c
+‘G ‘G
+€ €
+5 5
+a a
+oO 0 oO
+
+0 01 02 03 04 05 06 07 08 09 1 0 01 02 03 04 05 06 0.7 08 09 1
+a a
+German credit dataset, minsupp=20 Adult dataset, minsupp=48
+
+recall
+recall
+
+  
+
+0
+0 01 02 03 04 05 06 07 08 09 1 0 0.1 02 03 04 05 06 0.7 08 O09 1
+RD RD
+German credit dataset Adult dataset
+
+ 
+
+20 10 5 96 48 24
+minsupp minsupp
+
+Fig. 7. Scenario I: precision (top), recall (middle), elapsed time (bottom) of Fréchet DD
+
+shows the top 10K contingency tables w.r.t. the lower bound on the RD measure
+computed by Algorithm [I] for the German credit and the Adult datasets. The
+plots report the distributions of the contingency tables for which the lower bound
+is greater or equal than a given threshold a. It is shown the total number of such
+contingency tables (labels total) and the number of them for which the lower
+bound coincides with the upper bound (labels eract), namely, those for which
+Fréchet bounds are exact. Two facts can be concluded. First, if the inferred lower
+bound is higher than 0.3, then it is exact with high probability (95% or higher).
+Second, the higher is ni the higher are the inferred lower bounds. Fig. [J (middle)
+shows the recall of the approach, namely the proportion of contingency tables
+with a given RD value of v that have been actually inferred a lower bound of v.
+The plots provide an estimate of the effectiveness of the indirect discrimination
+discovery approach for a given amount of background knowledge (ni). Finally,
+Anti-discrimination Analysis 707
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Sample from German credit, minsupp=20 Sample from Adult, minsupp=48
+
+10000 10000
+3 PADD total = 3 PADD total —
+Al PADD —_ Al ADD exact mem
+2 z MN
+3 1000 3 1000 ~N
+3 3
+g g \
+& 100 & 100 \
+a a NA
+c c
+S40 S10 ~
+e e
+5 5
+a a
+° 1 ° 1
+
+0 0.1 02 03 04 05 06 07 08 09 1 0 0.1 02 03 04 05 06 07 08 09 1
+a a
+
+Fig. 8. Scenario IT: precision of PADD
+
+Fig. [7 (bottom) shows the elapsed times for the various experiments, including
+the time (denote by FIM) required for extracting closed itemsets. The time
+required by Algorithm []] mainly depends on the number of closed itemsets, while
+the size of the background knowledge (the nz parameter) has a residual impact.
+
+Scenario II: Privacy-aware discrimination discovery. We experimented
+with a subset of 200 tuples (resp., 14160) from the German credit (resp., Adult)
+dataset, randomly selected with a balanced distribution of the personal status
+(resp., race) attribute. Such a distribution is required to apply I-diversity data
+sanitization, where | = 4 (resp., | = 2) is the number of values of the personal
+status (resp., race) attribute, including the protected group of non-single females
+(resp., non-Whites). Tuples have been partitioned into groups of J elements with
+distinct personal status (resp., race). Fig. §] shows the distributions of the RD
+lower bound for the top 10K contingency tables processed by Algorithm 2] The
+lower bound [b(a) at line 7 is randomly generated in the interval from 0 to the
+actual value of a. Contrasting the plots with Fig. [7 we observe that the number
+and the exactness of the bounds inferred for RD is much lower than in the case
+of scenario I — notice that the plots in Fig. §) are logscale in the y-axis. This is
+expected since the assumptions on the background knowledge exploitable in this
+scenario are much weaker than in scenario J. The anti-discrimination authority is
+assumed to know only the number of protected group individuals in the context
+under analysis as well as a lower bound on those with negative decision. In
+scenario IJ, correlation with groups whose decision value is precisely known is
+instead assumed. Nevertheless, scenario J and I] are not mutually exclusive, and
+a hybrid approach could be applied to improve the inferred bounds.
+
+Scenario III: Discriminatory data recovery. We conducted experiments
+on the Adult dataset, with protected group females, and on the Crimes and
+Communities dataset, with protected group blacks. As background knowledge,
+we assume to know that discrimination intensity is DiseInt=43% in Crimes and
+Communities, and DiscInt=19.45% in Adult. These numbers can be calculated
+from the original datasets. We proceeded with suppressing these differences by
+the method of massaging [J] before releasing the datasets. We then adopted the
+reverse engineering approach of Algorithm 6] to reconstruct the original data.
+708 S. Ruggieri et al.
+
+Communities and Crimes dataset Adult dataset
+
+Precision- Recall
+Precision- Recall
+
+om
+
+5 10 15 #20 25 30 35 40 45 1 3 57 9 11°13 15 17 #19
+DataRecovery step DataRecovery step
+
+  
+
+Fig. 9. Scenario III: performances of DataRecovery
+
+The original dataset R can be used as ground truth for performance com-
+parison. We measure the performances of Algorithm B] by means of Recall and
+Precision. The Recall calculates how much massaged tuples were corrected, while
+the Precision measures how much corrected tuples were among those actually
+massaged. Algorithm B] recovers data by iterations. In order to evaluate the per-
+formance at each iteration step, we compute recall and precision at the ¢-th step
+by Recall = (S75_, Cy) /(DiscInt -|R|) and Precision = (S~i_, C)/(2-t-M),
+respectively, where C; is the number of tuples whose decision values are success-
+fully corrected at the i-th step, and M is as in Algorithm Bl These sequential
+performance measures are shown in Fig. 9] The figure shows that our proposed
+method gives very promising results by reconstructing the Adult and the Crimes
+and Communities datasets (massaged to suppress 19.45% and 43% DisctInt
+resp.) with high precision and recall. We can observe that the method recov-
+ers the Communities and Crimes dataset with 59% precision and can assist the
+authorities to identify the suppressed discriminatory patterns. The recovery pro-
+cess is relatively less accurate over the Adult dataset due to a higher imbalance
+between protected and unprotected groups. Fig. §] also shows the advantage of
+stepwise data recovery and refined probability score calculation. Our recovery
+algorithm continues to be more precise in the identification of perturbed tuples
+on the later recovery steps. This gradual and significant improvement in the
+performance can be attributed to the calculation of probability scores over the
+intermediary recovered and relatively corrected data.
+
+8 Conclusions
+
+Related Work. Discrimination analysis is a multi-disciplinary problem, in-
+volving sociological causes, legal argumentations, economic models, statistical
+techniques [12]. More recently, the issue of anti-discrimination has been con-
+sidered from a data mining perspective. Some proposals are oriented to using
+data mining to measure and discover discrimination [13]; other proposals [6,19]
+deal with preventing data mining from becoming itself a source of discrimina-
+tion. Summaries of contributions in discrimination-aware data mining are col-
+lected in [212]. The term privacy-preserving data mining (PPDM) was coined in
+Anti-discrimination Analysis 709
+
+2000, although related work on inference control and statistical disclosure con-
+trol (SDC) started in the 1970s. A detailed description of different PPDM and
+SDC methods can be found in [58]. Data are sanitized prior to publication
+and analysis (according to some privacy criterion). In some cases, however, an
+attacker can still re-identify sensitive information from the sanitized data us-
+ing varying amounts of skill, background knowledge, and effort. Summaries of
+contributions and taxonomies of different privacy attacks strategies are collected
+in [4). Moreover, the problem of achieving simultaneous discrimination preven-
+tion and privacy protection in data publishing and mining was recently addressed
+in [q. However, to the best of our knowledge, this is the first work that exploits
+tools from the privacy literature to the purpose of discovering discriminatory
+practices under hard conditions such as those of three scenarios considered.
+
+Conclusion. The actual discovery of discriminatory situations and practices,
+hidden in a dataset of historical decision records, is an extremely difficult task.
+The reasons are as follows: First, there are a huge number of possible contexts
+may, or may not, be the theater for discrimination. Second, the features that may
+be the object of discrimination are not directly recorded in the data (scenario
+I). Third, the original data has previously been pre-processed due to privacy
+constraints (scenario IT) or for hiding discrimination (scenario III). In this pa-
+per, we proposed new discrimination discovery methods inspired by the privacy
+attack strategies for the three scenarios above. The results of this paper can be
+considered a promising step towards the systematic application of techniques
+from the well explored area of privacy-preserving data mining to the emerging
+and challenging area of discrimination discovery.
+
+References
+
+1. Chen, B.C., Kifer, D., Le Fevre, K., Machanavajjhala, A.: Privacy-preserving data
+publishing. Foundations and Trends in Databases 2(1-2), 1-167 (2009)
+
+2. Custers, B.H.M., Calders, T., Schermer, B.W., Zarsky, T.Z. (eds.): Discrimination
+and Privacy in the Information Society, Studies in Applied Philosophy, Epistemol-
+ogy and Rational Ethics, vol. 3. Springer (2013)
+
+3. Dobra, A., Fienberg, S.E.: Bounds for cell entries in contingency tables given
+marginal totals and decomposable graphs. Proc. of the National Academy of Sci-
+ences 97(22), 11185-11192 (2000)
+
+4. Domingo-Ferrer, J.: A survey of inference control methods for privacy-preserving
+data mining. In: Aggarwal, C.C., Yu, P.S. (eds.) Privacy-Preserving Data Mining.
+Advances in Database Systems, vol. 34, pp. 53-80. Springer (2008)
+
+5. Fung, B.C.M., Wang, K., Chen, R., Yu, P.S.: Privacy-preserving data publishing:
+A survey of recent developments. ACM Comput. Surv. 42(4), Article 14 (2010)
+
+6. Hajian, S., Domingo-Ferrer, J.: A methodology for direct and indirect discrimina-
+tion prevention in data mining. IEEE Trans. on Knowledge and Data Engineer-
+ing 25(7), 1445-1459 (2013)
+
+7. Hajian, S., Domingo-Ferrer, J., Farras, O.: Generalization-based privacy preserva-
+tion and discrimination prevention in data publishing and mining. Data Mining
+and Knowledge Discovery, 1-31 (2014), doi:10.1007/s10618-014-0346-1
+710
+
+10.
+
+11.
+
+12.
+
+13.
+
+14.
+
+15.
+
+S. Ruggieri et al.
+
+. Hundepool, A., Domingo-Ferrer, J., Franconi, L., Giessing, $., Nordholt, E.S.,
+
+Spicer, K., de Wolf, P.P.: Statistical Disclosure Control. Wiley (2012)
+
+. Kamiran, F., Calders, T.: Data preprocessing techniques for classification without
+
+discrimination. Knowledge and Information Systems 33, 1-33 (2012)
+
+Kamiran, F., Karim, A., Zhang, X.: Decision theory for discrimination-aware clas-
+sification. In: Proc. IEEE ICDM 2012, pp. 924-929 (2012)
+
+Machanavajjhala, A., Kifer, D., Gehrke, J., Venkitasubramaniam, M.: L[-diversity:
+Privacy beyond k-anonymity. ACM Trans. on Knowledge Discovery from Data
+1(1), Article 3 (2007)
+
+Romei, A., Ruggieri, $.: A multidisciplinary survey on discrimination analysis. The
+Knowledge Engineering Review, 1-57 (2014), doi:10.1017/S0269888913000039
+Ruggieri, S., Pedreschi, D., Turini, F.: Data mining for discrimination discovery.
+ACM Trans. on Knowledge Discovery from Data 4(2), Article 9 (2010)
+
+Wong, R.C.W., Fu, A.W.C., Wang, K., Pei, J.: Minimality attack in privacy pre-
+serving data publishing. In: Proc. of VLDB 2007, pp. 543-554 (2007)
+
+Xiao, X., Tao, Y.: Anatomy: Simple and effective privacy preservation. In: Proc.
+of VLDB 2006, pp. 139-150 (2006)
+

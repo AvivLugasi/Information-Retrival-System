@@ -1,0 +1,773 @@
+﻿A Versatile Framework for Evaluating Ranked Lists in terms of Group Fairness and Relevance 
+Tetsuya Sakai 
+Waseda University/Naver Corporation 
+Tokyo, Japan 
+tetsuyasakai@acm.org 
+Jin Young Kim 
+Naver Corporation 
+Belmont, CA, USA 
+jin.y.kim@navercorp.com 
+Inho Kang 
+Naver Corporation 
+Seoul, Korea 
+once.ihkang@navercorp.com 
+ABSTRACT 
+We present a simple and versatile framework for evaluating ranked lists in terms of group fairness and relevance, where the groups 
+1 
+0.5 
+0.75 
+0.50 
+0.50 
+JSD= 0.143 NMD= 0.250 RNOD= 0.250 0.25 
+B is better! B is better! 
+JSD= 0.143 NMD= 0.167 RNOD= 0.204 
+22
+(i.e., possible attribute values) can be either nominal or ordinal in nature. First, we demonstrate that, if the attribute set is binary, our 
+0 
+0.25 0.25 
+0.25 0.25 
+0 0 
+0 0 
+1 2 3 4 
+0
+2 
+r
+p
+A
+ 
+1
+ 
+]
+R
+I
+.
+s
+c
+[ 
+1v
+0820
+0.
+402
+2:
+v
+i
+X
+r
+a
+framework can easily quantify the overall polarity of each ranked list. Second, by utilising an existing diversified search test collec tion and treating each intent as an attribute value, we demonstrate that our framework can handle soft group membership, and that our group fairness measures are highly correlated with both ad hoc IR and diversified IR measures under this setting. Third, we demonstrate how our framework can quantify intersectional group fairness based on multiple attribute sets. We also show that the sim ilarity function for comparing the achieved and target distributions over the attribute values should be chosen carefully. 
+CCS CONCEPTS 
+• Information systems → Test collections; Retrieval effec tiveness. 
+KEYWORDS 
+evaluation; evaluation measures; fairness; group fairness 
+1 INTRODUCTION 
+Bias can breed bias. If a ranked list of items presented to the user is “unfair” or “biased” from the viewpoint of ranked entities (e.g., people, opinions, products, shops) or their stakeholders, the biased views may influence the users. Moreover, based on user feedback (e.g., clicks, views) on such ranked lists, the underlying search engine may tune itself and further intensify the bias. Hence, for example, those that are already enjoying much exposure or atten tion [7, 35]1 may further dominate the ranking, giving little or no room to those that have never been exposed to the users. It is our view that providers of search and ranking services should strive to prevent and eliminate such vicious circles. This is our motivation for addressing the problems of fairness in rankings [11]. 
+We address the problem of evaluating ranked lists based on group fairness [19], given a target distribution over attribute values in each attribute set. Consider a hypothetical situation where we want a group-fair ranking of people, say, scholarship applicants. Suppose that the applicants are classified into four classes that represent their income levels (i.e., our attribute values), and that ideally, we want 75% of the ranking to represent the lowest income group, 
+1While item exposure does not necessarily imply user attention [7, 35], we shall not differentiate between the two hereafter. 
+Income groups 
+Low High 
+gold System A System B 
+Figure 1: An example situation where the target distribu tion emphasises low-income groups and the distributions achieved by Systems A and B are being evaluated. 
+and the other 25% to represent the second lowest income group. As the user scans the ranked list of applicants, the list yields a series of achieved distributions over the four classes, based on the group membership of the item (i.e., income group of the applicant) at each rank. To measure the similarity between each achieved distribution and the gold distribution, we consider utilising ordinal quantification measures, namely, NMD (Normalised Match Distance, a normalised version of Earth Mover’s Distance [48]) and RNOD (Root Normalised Order-aware Divergence [40]), in addition to a nominal quantification measure, namely, JSD (Jensen-Shannon Di vergence) [29]. Ordinal quantification measures take the ordinal nature of the attribute values into account, and may be appropriate for some applications. For example, consider the situation shown in Figure 1. While nominal quantification measures such as JSD say that Systems A and B are equally effective, NMD and RNOD say that B is better, as B is leaning more towards the lower income groups (25% is given to Group 3 rather than Group 4).2 
+Our main contributions are as follows. (1) We present a sim ple and versatile framework for evaluating ranked lists in terms of group fairness and relevance, where the groups (i.e., possible attribute values) can be either nominal or ordinal in nature. (2) We demonstrate that, if the attribute set is binary (e.g., positive vs. negative opinions), our framework can easily quantify the overall polarity of each ranked list. (3) By utilising an existing diversified search test collection and treating each intent as an attribute value, we demonstrate that our framework can handle soft group mem bership (i.e., each ranked item can have multiple attribute values), and that our group fairness measures are highly correlated with both adhoc IR and diversified IR measures under this setting. (4) We demonstrate how our framework can quantify intersectional group fairness [20] based on multiple attribute sets. 
+2Calculations based on Eqs. 11, 14, and 19 from Sakai [40]. 
+2 RELATED WORK 
+Sections 2.1-2.4 discuss prior art that are highly relevant to our own group fairness evaluation framework. Here, we briefly men tion prior art that these subsections do not cover. The group-fair ranking measures proposed in Kuhlman et al. [27] assume the exis 
+The second proposal by Geyik et al. was to slightly modify a ranked retrieval measure of Yang and Stoyanovich [49], called rKL. The modified measure, which Geyik et al. refer to as Normalised Discounted KL divergence (NDKL), utilises the Kullback-Leibler Di vergence (KLD) to compare the achieved and gold distributions. 
+tence of a gold fair ranking, and are computed based on concordant and discordant pairs of ranked items by comparing the gold and system rankings. Their work focussed on binary attribute sets (i.e., 
+NDKL(��) = 
+Í|��| ��=1 
+�� ����@��(����)Sk(����, ��@��) /log2(�� + 1) 
+Í 
+Í|��| 
+��=11/log2(�� + 1) 
+. (1) 
+protected vs. non-protected groups). See also Kuhlman et al. [26] for a comparative study of measures under the binary setting. Raj et al. [35] compared single-ranking measures of Yang and Stoy anovich [49] and of Sapiezynski et al. [45] (which we discuss in Sections 2.1 and 2.2, respectively) as well as measures designed for distributions and sequences of rankings [5–7, 17, 46]. The latter class of measures is beyond the scope of our work, as we are interested in evaluating a single ranked list when the target distribution over attribute values for each attribute set is given, either top-down (e.g., requiring a uniform distribution over all attribute values) or as a result of some bottom-up derivation (e.g., requiring statistical par ity [19] based on statistics from the target corpus). Also beyond our scope are the following lines of research: Beutel et al. [4] propose to evaluate group fairness in the context of personalised recommen dation by collecting pairwise item preferences from each user (See also Narasimhan et al [32]); Kirnap et al. [33] estimate fair ranking measure scores from incomplete group membership labels. 
+2.1 Normalised Discounted KL Divergence Geyik et al. [21] considered two approaches to evaluating a ranked list of items (e.g., people), where the ranked list is expected to reflect as faithfully as possible a given target distribution over pos sible attribute values (e.g., female, male, other) in an attribute set (e.g., Gender), or over combinations of attribute values from mul tiple attribute sets (e.g., Gender AND Age Group). Let �� = {���� } denote an attribute set. Their first proposal is a set retrieval mea sure for the top-�� search results, and is computed for a particular attribute value. For a given query, let ��∗ (����) denote the desired proportion of items having attribute value ����in the ranked list, 
+s.t. Í�� ��∗ (����) = 1. That is, ��∗ is the gold probability mass function over ��. Let �� denote a ranked list, and let ��@�� denote its top-�� portion. Let ����@��(����) be the actual proportion of items having 
+attribute value ���� within the top-�� results, s.t. Í�� ����@��(����) = 1. That is, ����@��is the achieved probability mass function over ��. The Skew for ����is defined as Sk(����, ��@��) = loge(����@��(����)/��∗ (����)). Although Geyik et al. point out that situations where ��∗ (����) = 0 should be avoided, note that ��∗ (����) = 0 may well happen in practice, especially if combinations of multiple attribute sets are considered (e.g., Gender=“male” AND Age=“�� > 90” AND . . .). They also pro pose to utilise max�� Sk(����, ��@��) and min�� Sk(����, ��@��) to discuss the quality of the top-�� results with respect to the attribute set ��.3 However, it is clear that the skew-based measures focus only on 
+Note that NDKL overcomes Limitations (a) and (b) mentioned above, but not (c), since it is based on Skew. Yet another inconvenience with KLD is: (d) it is unbounded. We prefer to use Jensen-Shannon Divergence (JSD) instead as it solves Limitations (c) and (d); Draws et al. [18] and the TREC 2021 Fair Ranking Track4 has also adopted JSD. Furthermore, as we have mentioned in Section 1, our pro posed framework offers ordinal quantification measures as possible alternatives to nominal quantification measures such as JSD. 
+Geyik et al. (and Ghosh et al. [23, 24]) argue that intersectional group fairness [20] can be handled by considering combined at tribute values from multiple attribute sets, such as SkinType AND Gender [10]. However, we argue that this may not be the best ap proach to take if both nominal and ordinal attribute values need to be considered and if it seems appropriate to take the ordinal nature of the attribute values into account. For example, consider combin ing Gender (nominal) and Age Group (ordinal), and a combined attribute value Gender=“female” AND Age=“�� < 20.” Which of the following two combined attribute values is closer to the above, Gen der=“male” AND Age=“20 ≤ �� < 40” (Gender: incorrect; Age Group: not far off ) or Gender=“female” AND Age=“40 ≤ �� < 60” (Gender: correct; Age Group: far off )? Similar problems arise when multiple ordinal classes are combined. Hence, for applications where ordi nal quantification measures seem more appropriate than nominal ones such as JSD, we propose to compare the achieved and gold distributions for each attribute set at a time, and finally aggregate the scores across the multiple attribute sets. 
+NDKL adopted the log-based discounting scheme of nDCG [25, 38] because “it is more beneficial for an item to be ranked higher, it is also more important to achieve statistical parity at higher ranks.” The discounting scheme can be interpreted as reflecting user attention over a ranked list. However, Ghosh et al. [23] and Sapiezynski et al. [45] argue that the log-based decay is too fat-tailed for modelling user attention. The next section reviews their work. 
+2.2 Expected Cumulative Exposure 
+Inspired by the work of Sapiezynski et al. [45] that considered user attention over search results, Ghosh et al. [23] presented a group fairness measure called Attention Bias Ratio (ABR). Let ����@��(����) = 1 if the item at rank �� in ranked list �� has attribute value ����, and let ����@��(����) = 0 otherwise. The Mean Attention (MA) score of ���� for �� is defined as: 
+Í|��| 
+the worst-case and best-case attribute values. In summary, skew based measures are not adequate for our purpose because (a) they cannot handle ranked retrieval; and (b) they do not consider every 
+MA(����, ��) = 
+��=1����@��(����) Attention��@�� Í|��| 
+��=1����@��(����) 
+, (2) 
+attribute value in �� (when |��| > 2); and (c) ��∗ (����) = 0 can cause inconveniences. 
+3Similarly, Pitoura et al. [34] proposed to utilise max��|����@�� (����) − ��∗ (����) |. 
+where Attention��@�� = 100��(1 − ��)��−1, which is essentially the decay function of Rank-Biased Precision (RBP) for a given patience 
+4https://fair-trec.github.io/docs/Fair_Ranking_2021_Participant_Instructions.pdf
+parameter value �� = 1−�� [31]. Note that this decay depends entirely on the document rank; it considers neither relevance nor fairness of the documents seen so far. This limitation applies to NDKL (Eq. 1) as well. Hence, if relevance assessments are available, we use the cascade-based decay of Expected Reciprocal Rank (ERR) [12] as in Biega et al. [5, 6] and Diaz et al. [17]. 
+Ghosh et al. [23] define ABR as: 
+ABR(��) = (min 
+���� ∈��MA(����, ��))/(max 
+���� ∈��MA(����, ��)) . (3) 
+Thus, ABR quantifies the disparity between the attribute values with lowest and highest mean attention scores. It is clear that Limi tation (b) mentioned in Section 2.1 applies to this measure as well. In contrast, our group fairness framework considers every attribute value in each attribute set. 
+In Eq. 2, note that ����@��(����) is a group membership flag, repre senting hard group membership.5 However, in the original work of Sapiezynski et al. [45], group membership is formulated as a probability mass function over the attribute values (i.e., soft group membership). That is, let ����@��(����) be the probability that the item 
+at rank �� in �� has attribute ����, s.t. Í�� ����@��(����) = 1. If the group membership probability mass function ����@��is available for each ��, then ����@��(����) can replace ����@��(����) in Eq. 2. For ranked list ��, Sapiezynski et al. [45] compute a probability distribution over �� called the expected cumulative exposure (ECE), where the probability for ����is given by 
+∑︁|��| 
+available [36] in a binary setting, our framework can leverage them by converting them to group membership probabilities as follows. 
+����@��(��1) = (1 + ����@��)/2 , ����@��(��2) = 1 − ����@��(��1) . (5) 
+Experimental validation of the above method is left for future work. Gezici et al. [22] also proposed methods to quantify bias in SERPs (Search Engine Result Pages) in a binary setting, where the objective is to achieve equality of outcome, i.e., ��∗ (��1) = ��∗ (��2) = 1/2. They point out that measures like NDKL (Eq. 1) cannot tell whether a SERP is biased towards ��1 and ��2, and propose to compute a (weighted) average of the polarity value (����@��(��1) − ����@��(��2)) across document ranks, where �� is a group membership flag as before (See Eq. 2), but returns 1 only when the document at �� belongs to the group in question and is relevant. In Section 4.1, we demonstrate that our framework can easily quantify the overall polarity of each ranked list given a binary attribute set. 
+2.4 Diversity Evaluation Measures 
+Cherumanal et al. [14] applied the measures proposed by Yang and Stoyanovich [49] as well as a diversified search evaluation mea sure (��-nDCG [15]) to evaluate the Touché 2020 argument retrieval runs from CLEF 2020 [8]; they observed that systems are generally ranked differently by fairness, diversity, and relevance measures. Diaz et al. [17] discussed the connection between group fairness measures (for a distribution of ranked lists) and intent-aware diver sity measures [1, 12, 38]. On the other hand, for diversity evaluation, 
+���� (����) = 
+��=1 
+����@��(����) Attention��@�� . (4) 
+Sakai and Song [43, Table 7] demonstrated a few advantages of their D♯-measures over ��-nDCG and intent-aware measures; Sakai and 
+Note that this generalises the numerator of Eq. 2. Sapiezynski et al. propose to compare ���� with the gold probability mass function ��∗ by assuming that both ���� and ��∗ are binomial distributions, and conduct a form of statistical significance test with a test statistic threshold to discuss whether a ranked list is fair or not. In contrast, we are more interested in quantifying the degree of group fairness of a ranked list rather than binary classification, and do not rely on any distributional assumptions. As we shall demonstrate in Section 4.2, our framework can also handle soft group membership, which is important not only for situations where each ranked item can take multiple attribute values, but also for situations where the group membership of each item needs to be estimated with some degree of uncertainty. 
+2.3 Polarity on a Binary Attribute Set 
+Zeng [44] reported that an instance of the D♯-measure called D♯- nDCG outperformed intent-aware measures in terms of how the measure agrees with human SERP preferences. 
+Zehlike et al. [50] remarked that D♯-nDCG can be applied to group-fair ranking evaluation by treating their binary attribute set (protected/non-protected) as two search intents behind the same query. We generalise this idea and use D♯-nDCG as the representa tive of existing diversity measures in our experiments to see how group-fair and diversified ranking evaluations are related given either hard or soft group membership. D♯-nDCG is the average of intent recall (a.k.a. subtopic recall [51]) and D-nDCG [43]; the difference between the standard nDCG (for adhoc IR) and D-nDCG (for diversified IR) is that the latter is based on the global gain of each document ��: 
+∑︁ 
+GG(��) = 
+Consider a situation with a single binary attribute set, �� = {��1, ��2}, 
+�� ∈���� 
+e.g., Democrats vs. Republicans [28, 36]. Suppose that, for each 
+Pr(�� | ��)����(��) , (6) 
+item at rank �� in ranked list ��, its bias score ����@��is available [36], whose range is [−1, 1]; a negative score means leaning towards ��1, a positive score means leaning towards ��2, and 0 means neutral. Kulshrestha et al. [28] proposed the Output Bias (OB) measure, which is an average-precision-like measure based on bias scores. Whereas OB is only applicable to binary attribute sets, our frame work can handle any number of attribute values. If bias scores are 
+5Ghosh et al. [24] acknowledge that their method “does not take into account partial group membership.” 
+where ���� is the set of known intents for topic ��, Pr(�� | ��) is the prob ability that a user who enters �� as a query has Search Intent ��, and ����(��) is the gain value of �� for Intent ��. From Eq 6, it can be observed that if the intent probabilities are uniform and the attribute values are mutually exclusive (i.e., hard group membership is defined), the global gain reduces to a single gain value and therefore that D nDCG reduces to the standard nDCG. This is exactly the situation in our first experiment (Section 4.1), as it uses the aforementioned Touché 2020 data: each ranked item (i.e., opinion) is either PRO or CON, but not both.
+3 PROPOSED EVALUATION FRAMEWORK 
+Our premise is that we are given �� attribute sets, where the ��-th attribute set is ���� (�� = 1, . . . , ��) with �� specifying a particular attribute value ������(∈ ����). For each ����, we are also given a tar get distribution ����∗ over its attribute values, s.t. Í�� ����∗(������) = 1. An example setting with �� = 2 would be ��Gender 
+where Divergence(�� ∥ ��∗) is either JSD, NMD, or RNOD (See Sec tion 1); we use notations such as DistrSimJSD where appropriate. Note that JSD should be used for nominal attribute sets unless the attribute set is binary; for binary attribute sets, any of the above divergences can be used as there is no distinction between nomi nal and ordinal scales. In fact, as Sakai [41] shows that NMD and 
+∗(other) = 1/3, ��Age 
+∗(female) = 
+RNOD are the same when ���� = {��1, ��2}, we have two options for 
+��Gender 
+∗(male) = ��Gender 0.2, ��Age 
+∗(�� < 20) = ��Age 
+∗(x ≥ 80) = 
+the binary case: JSD and NMD (i.e., RNOD). 
+∗(20 ≤ �� < 80) = 0.6. Given these targets, we are also given a ranked list �� to evaluate, where each item at rank �� has a group 
+membership probability ����@��(������) s.t. Í�� ����@��(������) = 1 for ev ery ��. (Recall that group membership flag ����@��is a special case 
+Given �� attribute sets, we predefine a set of weights��0,��1, . . . ,���� s.t. Í����=0 ���� = 1, and compute the overall score of �� as a weighted average.7 We call it the GFR (Group Fairness and Relevance) score. 
+of ����@��.) If the item at rank �� does not correspond to any of the attribute values of ����, we let ����@��(������) = 1/|���� |. That is, we assume that the distribution over the attribute values is uniform for 
+GFR(��) = ��0Relevance(��) + 
+∑︁�� ��=1 
+����GF�� (��) , (10) 
+that item. Our objective is to quantify how well �� aligns with the target distributions and, if relevance assessments are also available, evaluate �� in terms of both group fairness and relevance. For each attribute set, we can evaluate the group fairness of �� as: 
+GF�� (��) =∑︁|��| 
+Decay����@��DistrSim����@��, (7) 
+��=1 
+where Decay����@��is a function that represents the user attention 
+where Relevance(��) is a relevance-based score; we let ��0 = 0 if relevance assessments are unavailable. In either case, the present study only considers unweighted versions of Eq. 10, and leaves the question of how ����’s should be set for future work. As for the choice of Relevance(��), we consider ERR and iRBU (intentwise Rank-Biased Utility) [42, 44] because these measures also rely on the realistic decay function given by Eq. 8 and therefore enable us to rewrite Eq. 10 as follows. 
+decay as they go down the ranked list, and DistrSim����@��compares the achieved distribuiton ������@��with the target distribution ����∗. In the present study, we employ the relevance-based decay of ERR [13, 
+∑︁|��| ��=1 
+Decay��@�� 
+  
+��0Utility��@�� + 
+∑︁�� ��=1 
+����GF����@�� 
+! 
+, (11) 
+17] by default, as we view this user model to be more realistic than those of nDCG and RBP that disregard item relevance. That is, 
+��Ö−1 
+where Utility��@�� = 1/�� for ERR and Utility��@�� = ����for iRBU.8 Whereas ERR is suitable for navigational searches, iRBU is a mea sure that behaves surprisingly similarly to nDCG [42, 44] and is 
+Decay��@�� = ��rel 
+��@�� 
+and Decay��@1 = ��rel 
+(1 − ��rel 
+��@��) (�� > 1) (8) 
+��=1 
+more geared towards informational searches. Eq. 11 implies a user model which says that the user is scanning down the ranked list while experiencing a sequence of documents with different rele 
+��@1, where ��rel 
+��@��= (2�� − 1)/2��if the relevance 
+grade of the item ranked at �� is �� [13]. Note that we have removed the �� from Eq. 8 as the present study assumes that group member ship for a particular attribute set does not affect attention decay. While “group fairness seen so far” may well affect the user atten tion decay just like “relevance seen so far,” this consideration is left for future work. When relevance assessments are unavailable, we employ the RBP-based decay instead: Decay��@�� = (1 − ��)����−1 with �� = 0.85. This is equivalent to assuming that ��rel 
+vance levels and a gradually changing distribution over the attribute values for each attribute set. However, as was mentioned earlier, our current decay component considers relevance only. 
+4 EXPERIMENTS WITH REAL DATA This section demonstrates the versatility of our group fairness evaluation framework through three case studies with real data. Hereafter, we consider evaluating the top |��| = 10 items of any given ranked list. All relevance-based measures are computed based 
+any �� and �� when computing Eq. 8.6 
+��@��= 0.15 for 
+on an exponential gain value setting. That is, a gain value of 2�� − 1 
+For each rank �� in ��, the achieved distribution ������@��is com puted by letting ����@��(������) =Í����=1����@��(������)/��. This is the aver age group membership probability over top �� for attribute value ������. As for DistrSim����@��, we consider different functions for compar ing ������@��with ����∗ depending on whether the attribute values are 
+nominal or ordinal and, in the latter case, whether considering the ordinal nature of the attribute values makes sense (See Section 1). More specifically, given an achieved and the gold probability mass functions �� and ��∗, we consider the following options. 
+DistrSim(�� ∥ ��∗) = 1 − Divergence(�� ∥ ��∗) , (9) 
+6For RBP, we let �� = 0.85 because this setting has been shown to align well with users’ SERP preferences [44] and was the choice in the recent work of Moffat et al. [30]. 
+is given to each ��-relevant document (�� = 0, 1, 2 . . .). 
+4.1 Ranking Pros and Cons: Quantifying the Polarity with One Binary Attribute Set As a case study of a ranking task with a binary attribute set, we follow Cherumanal et al. [14] and utilise the Touché 2020 Data from CLEF 2020 [8]. The task used the args.me corpus [2], which is a collection of opinions each tagged with either PRO (��1) or CON 
+7The aforementioned TREC 2021 Fair Ranking track used a product of a group fairness score and a relevance-based score, but we chose the ability to weight the component scores if required. 
+8For iRBU, we let �� = 0.99 in the present study as this setting has been shown to align well with users’ SERP preferences [44]. This is a parameter inherited from RBP, but is used for computing the SERP utility rather than the decay [3].
+Table 1: System ranking correlations (Kendall’s �� with 95%CIs) for the 21 Touché 2020 runs. 
+0.1 0.09 0.08 0.07 0.06 
+Discriminative  
+power at α= 5%  D#-nDCG 37% ERR 36% JSD 
+
+
+ERR 
+	iRBU 
+	ERR+GFJSD 
+	iRBU+GFJSD 
+	0.438 
+[0.154, 0.655] 
+- 
+- 
+- 
+- 
+	0.667 
+[0.455, 0.807] 
+0.771 
+[0.610, 0.871] 
+- 
+- 
+- 
+	0.552 
+[0.298, 0.733] 
+0.886 
+[0.796, 0.938] 
+0.886 
+[0.796, 0.938] 
+- 
+- 
+	0.829 
+[0.702, 0.905] 
+0.610 
+[0.375, 0.771] 
+0.838 
+[0.716, 0.910] 
+0.724 
+[0.538, 0.843] 
+- 
+	
+
+
+
+D♯-nDCG 
+0.05 
+ERR+GF 35% 
+GFJSD 0.648 
+0.04 
+iRBU 34% 
+JSD 
+Run pairs 
+[0.428, 0.795] 
+0.03 
+iRBU+GF 33% 
+0.02 
+JSD 
+(21*20/2 
+ERR 0.790 [0.639, 0.882] 
+iRBU 0.867 
+0.01 
+0 
+P 
+-
+v
+1 
+6 
+1 
+6 
+1 
+6 
+GF 30% 
+=210 pairs) 
+1 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+a
+3
+3
+4
+6 4
+[0.764, 0.927] 
+l
+01
+01
+11
+11
+21
+21
+1
+1
+1
+1
+51
+51
+61
+61
+71
+71
+81
+81
+91
+91
+02
+02
+ERR+GFJSD 0.867 
+u
+e 
+JSD JSD JSD 
+D#-nDCG ERR ERR+GF JSD iRBU iRBU+GF JSD GF JSD 
+[0.764, 0.927] 
+iRBU+GFJSD 0.800 [0.655, 0.888] 
+(��2). We use Version 1 of args.me,9 with the Version 1 qrels file from Touché 2020 (containing 2,964 topic-document pairs, cover ing 49 topics),10 and the 21 submitted runs. The qrels file offers graded relevance on a 6-point scale: �� = 1, . . . , 5 along with −2 (non-arguments). We treat the non-argument documents as non relevant (�� = 0). Although the runs were evaluated only in terms of relevance at Touché 2020,11 we computed the GFR scores us ing GFJSD (group fairness), ERR and iRBU (relevance); hence the GFR measures are denoted by ERR+GFJSD and iRBU+GFJSD.12 For now, let us consider a flat setting, where the target distribution is ��∗ (PRO) = ��∗ (CON) = 0.5. In addition, we also compute D♯-nDCG using the NTCIREVAL toolkit13 by treating PRO and CON as two search intents behind a query and treating the combination of the relevance level and the PRO/CON label for each document as a per-intent relevance label. As for intent probabilities, we also use a uniform distribution: Pr(PRO | ��) = Pr(CON | ��) = 0.5 (See Eq. 6). Note that, as we are dealing with hard group membership in this experiment, D♯-nDCG reduces to an average of intent recall and the standard nDCG (See Section 2.4). 
+Table 1 compares the run rankings of different measures under the flat setting using Kendall’s ��. It can be observed that: • GFJSD is only moderately correlated with ERR, iRBU, and D♯- nDCG (�� =0.438-0.667), which suggests that group fairness evaluation is related to but different from adhoc and diversity evaluations, at least in a hard group membership setting with a binary attribute set. This high-level observation is in line with the results of Cherumanal et al. [14] who also used the Touché 2020 data to compare NKDL, nDCG, and ��-nDCG. • The GFR measures (i.e., {ERR, iRBU}+GFJSD) are more highly correlated with D♯-nDCG (�� =0.800-0.867) than GFJSD is. That is, a combination of a group fairness measure and a relevance measure is relatively similar to a diversity measure (which actually is the average of intent recall and nDCG in this experiment). 
+Figure 2 shows the discriminative power curves [37, 38] of the measures for the 21 Touché runs (210 run pairs) based on a ran domised Tukey HSD test [39] with 5,000 trials conducted with the 
+9See https://webis.de/data/args-me-corpus.html and 
+https://doi.org/10.5281/zenodo.3274636 
+10The qrels file contains 50 topics, but Topic 25 has no relevant documents. 11The follow-up task, Touché 2021, computed nDCG based on rhetorical quality in addition to that based on relevance [9]. 
+12We also experimented with GFNMD (which equals GFRNOD for binary attributes), but we did not find this benficial over GFJSD. 
+13http://research.nii.ac.jp/ntcir/tools/ntcireval-en.html (version 200626) 
+Figure 2: Discriminative power curves based on the ran domised Tukey HSD test (Touché 2020 runs). 
+Discpower tool.14 For example, D♯-nDCG is the most discrimina tive (with 78 statistically significantly different run pairs out of 210 comparisons, i.e., 37%) at the 5% significance level. When we look at the actual significance test results at the 5% significance level (i.e., the raw results used to draw Figure 2), a run called WeissSchnee-1 is the top performer in terms of D♯-nDCG: this is the only run that outperforms 7 other runs.15 On the other hand, in terms of statistical significance with ERR, iRBU, and GFJSD, there are 4, 17, and 14 runs tied at the top; WeissSchnee-1 is in the highest per forming cluster for all three measures, and its rank in terms of mean scores is 1, 2, and 8, respectively. That is, WeissSchnee-1 is only the 8th-best among the 21 runs in the ranking according to mean GFJSD. This example also suggests that group fairness evaluation is not the same as relevance and diversity evaluations, at least in a hard group membership setting with a binary attribute set. 
+Figure 3 visualises how the iRBU-based and GFJSD-based run rankings are correlated (�� = 0.667 as shown in Table 1). We stress that it is important to visualise the runs in this way to complement a list of runs ranked by GFR scores (Eq. 10), so that we can see how the GF and relevance components are contributing to GFR.16 The dotted lines represent contour lines in terms of GFR (i.e., iRBU+GFJSD). Figure 4 visualises the per-topic iRBU and GFJSD scores for the lowest performer indicated in Figure 3: as shown with a baloon in Figure 4, we can easily spot SERPs that are relatively poorly balanced between group fairness and relevance in this way. 
+We now demonstrate how our framework can quantify the polarity of runs, i.e., whether the runs are biased towards PRO or towards CON, and by how much. Instead of the flat setting that we considered earlier, let us consider a 100% PRO setting (��∗ (PRO) = 1, ��∗ (CON) = 0) and a 100% CON setting (��∗ (PRO) = 0, ��∗ (CON) = 1). Let GFPRO(��) and GFCON(��) denote a GF score for ranked list �� computed under the two settings, respectively. Then ΔGF(��) = GFPRO(��) − GFCON(��) is a direct measure of the polarity of ��: a positive score implies an overall bias towards PRO, and so on. Note that replacing the target distribution affects only the DistrSim part of Eq. 7. 
+Figure 5 compares the mean ΔGFJSD scores of the 21 Touché 2020 runs. With the exception of the three runs shown only slightly below the ��-axis, it can be observed that the runs are generally biased towards PRO. Figure 6 examines the per-topic ΔGFJSD scores 
+14http://research.nii.ac.jp/ntcir/tools/discpower-en.html 
+15This run is also the official top performer of Touché 2020 in terms of nDCG [8, Table 3(a)]. 
+16Similar practices have been used in the NTCIR INTENT tasks (plotting relevance against diversity) [47], and more recently in the TREC Fair Ranking Tracks (plotting relevance against (un)fairness) [5, 6].
+1 
+0.5 
+(
+fa
+ir
+n
+e
+s
+s
+M
+e
+a
+n
+ 
+G
+F
+J
+Δ
+G
+0.4 
+F
+ 
+J
+Most biased  
+Most biased  towards PRO 
+0.9 
+) 
+S
+D 
+0.8 
+0.7 
+0.6 
+S
+D 
+0.3 
+0.2 
+0.1 
+0.0 
+-0.1 
+towards CON 
+Runs 
+0.5 
+Lowest performer both in  terms of both fairness  
+0.4 
+and relevance  
+Mean iRBU (relevance) 
+0.4 0.5 0.6 0.7 0.8 0.9 1 
+Figure 3: Visualising the mean group fairness and relevance scores of the 21 Touché runs (over 49 topics). 1 
+(G
+f
+a
+F
+Figure 5: Quantifying the polarity of the Touché 2020 runs (��-axis) using Mean ΔGF (��-axis) over 49 topics. 1 
+Δ
+G
+M
+ir
+n
+e
+s
+s
+  
+J
+S
+D 
+D
+ 
+J
+S
+0.5 
+D 
+) 
+0.8 
+0 
+Topic ID 
+0.6 0.4 0.2 
+Topic 41 “Should student  loan debt be easier to  discharge in bankruptcy?” iRBU = 0.6138 
+0 10 20 30 40 50 -0.5 
+-1 
+Most biased towards PRO Most biased towards CON 
+0 
+JSD 
+GF = 0.4643 
+iRBU (relevance) 
+Figure 6: Per-topic ΔGFNMD scores for the two most biased 
+0 0.2 0.4 0.6 0.8 1 
+Figure 4: Visualising the per-topic scores of the lowest per former from Figure 3. The Kendall’s �� between iRBU and GFJSD for this run is 0.867 (95%CI[0.810, 0.908], �� = 49). 
+for the two most extreme runs indicated in Figure 5: it can be observed that the most PRO-biased run is almost completely biased towards PRO for many topics (with 37 topics above the ��-axis), while the most CON-biased run is much more well-balanced (with 23 and 26 topics above and below the ��-axis, respectively). 
+We have thus demonstrated that our evaluation framework is ap plicable to a hard group membership setting with a binary attribute set where both group fairness and relevance need to be considered, and that our framework can quantify the polarity of each run as well as each ranked list in a straightforward manner. 
+4.2 Ranking Web Pages: Soft Group Membership with One Attribute Set 
+We now demonstrate that our framework can handle soft group membership, i.e., probabilities����@��(����) rather than flags ����@��(����) like PRO/CON. To this end, we utilise a diversified search data set from the NTCIR-9 INTENT Japanese subtask data [47]. We chose the NTCIR data over the TREC diversity task data [16] because (a) an NTCIR INTENT task data set (with associated runs) contains 100 topics (with 3-24 intents per topic) while a TREC diversity data set contains only 50; and more importantly, (b) unlike the TREC data, the NTCIR data contains intent probabilites based on assessors’ majority votes. In our experiments, we directly utilise these intent probabilities to define the target distribution in the group fairness context, by treating the search intents for each topic as attribute values. For example, Topic 0127 “Mikuniya” (a Japanese 
+runs from Figure 5. 
+proper name) is an ambiguous topic, because it can be a famous Japanese tea shop, a restaurant, a hot springs resort, and so on; these are all different entities; the tea shop intent has a 37% probability according to the INTENT data, and we use this directly as the gold probability for group fairness evalution. Thus, while search result diversification aims to satisfy many users with different intents behind the query Mikuniya, we view the problem in a group fairness context where we want to make sure that we are giving a fair exposure to each entity named Mikuniya. 
+In the INTENT data, a single document may be relevant to mul tiple intents and therefore soft group membership needs to be handled. For example, for “Mikuniya,” there are five documents that are relevant to as many as six intents. We define the soft group membership for an item based on its per-intent gain values: if there are three intents and the item has 3, 1, 0 as its per-intent gain values, the group membership is distributed across the intents as 3/4, 1/4, 0. To compute the ERR-based decay (Eq. 8), we utilise the per-topic relevance grades available from Sakai and Zeng [44], which were derived from the official per-intent relvance assessments. Along with GFJSD-based GFR measures, we also compute D♯-nDCG, the official diversity measure used in the INTENT task. Recall that D♯-nDCG utilises the intent probabilities as shown in Eq. 6. 
+Using Kendall’s ��, Table 2 compares the rankings of the 21 IN TENT runs according to different measures. Recall that, unlike Table 1, we are dealing with soft group membership with 3-24 in tents (i.e., attribute values) per topic. It can be observed that our GF and GFR measures are all highly correlated with the offcial diversity measure, i.e., D♯-nDCG. Interestingly, GFJSD is slightly more highly correlated with D♯-nDCG than the relevance-based measures (i.e., ERR and iRBU) are, although the differences are not statistically
+Table 2: System ranking correlations (Kendall’s �� with 95%CIs) for the 18 INTENT runs. 
+without relevance data). The purpose of this experiment is to show that (i) unlike prior art, our framework can consider the ordinal nature of the attribute values if required; (ii) for handling ordinal 
+
+
+ERR 
+	iRBU 
+	ERR+GFJSD 
+	iRBU+GFJSD 
+	0.843 
+[0.709, 0.918] 
+- 
+- 
+- 
+- 
+	0.791 
+[0.622, 0.890] 
+0.895 
+[0.801, 0.946] 
+- 
+- 
+- 
+	0.908 
+[0.824, 0.953] 
+0.935 
+[0.874, 0.967] 
+0.882 
+[0.777, 0.939] 
+- 
+- 
+	0.882 
+[0.777, 0.939] 
+0.935 
+[0.874, 0.967] 
+0.908 
+[0.824, 0.953] 
+0.974 
+[0.949, 0.987] 
+- 
+	
+
+
+
+D♯-nDCG 
+attribute values, the choice of the DistrSim function (Eq. 9) matters 
+GFJSD 0.895 [0.801, 0.946] 
+ERR 0.869 [0.754, 0.932] 
+iRBU 0.817 [0.665, 0.904] 
+ERR+GFJSD 0.882 [0.777, 0.939] 
+iRBU+GFJSD 0.856 [0.731, 0.925] 
+0.1 
+in some cases; and (ii) intersectional group fairness of rankings can be examined without directly combining different attribute sets. For this experiment, we constructed a data set based on a query log from a popular Local Shop and Restaurant Search service for smartphone users in Japan. Given a query, this Local Search service returns a ranked list of items (i.e., shops and restaurants) based on various features including the relevance to the query, the proximity of the item to the user’s location, and user ratings (i.e., review 
+0.09 0.08 
+Discriminative  
+scores). In our query log, each ranked item has a flag indicating 
+power at α= 5%  
+0.07 
+D#-nDCG 39% 
+0.06 
+GF 35% 
+whether it is a chain store owned by a company, and if it is, the name 
+0.05 
+JSD 
+JSD 
+of the company that owns it. For some queries, a small number of 
+ERR+GF 35% 
+0.04 
+iRBU 34%  
+Run pairs 
+companies that own many chain stores may dominate the ranking. 
+0.03 
+JSD 
+(18*17/2 
+iRBU+GF 31% 
+0.02 
+0.01 
+ERR 29%  
+0 
+P 
+-
+v
+a
+1 
+6 
+1 
+6 
+1 
+6 
+=153 pairs) 
+Hence, as an example of imposing a group fairness requirement based on a nominal attribute set (with hard group membership), we 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+1 
+6 
+l
+1 
+1 
+require, for each query, that the ideal ranking should provide the 
+u
+5
+5
+6
+6
+7
+7
+8
+8
+9
+9
+0
+0
+1
+1
+2
+2
+3
+3
+4
+4
+5
+D#-nDCG GF JSD ERR+GF JSD iRBU iRBU+GF JSD ERR JSD JSD JSD 
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+1
+e 
+Figure 7: Discriminative power curves based on the ran domised Tukey HSD test (INTENT runs). 
+significant according to the 95%CIs. This suggests that, at least in some search scenarios with soft group membership, group-fair ranking (for stakeholders of the ranked items) and search result diversification (for search engine users) may be two sides of the same coin, or at least, of two similar coins. This is in contrast to Cherumanal et al. [14] and the experiments in Section 4.1 where hard group membership with a binary attribute set was consid ered. One possible cause for the high correlation between GF and D♯-nDCG is that we have assumed that the target distribution for group fairness (See Eq. 9) and the probability distribution of intents given a topic (See Eq. 6) are one and the same. In practice, they may well differ, in which case GF and D♯-nDCG may possibly give us substantially different results. 
+Figure 7 shows the discriminative power curves of the measures for the 18 INTENT runs (153 run pairs). The most discriminative measure is D♯-nDCG, which is consistent with Figure 2. How ever, for the INTENT data set, it can be observed that GFJSD is at least as discriminative as ERR and iRBU. When we examine the raw significance test results at �� = 0.05, D♯-nDCG says that four runs (MSINT-D-J-{3,1,2,4}) are tied at the top, statistically sig nificantly outperforming 7 other runs. As for GFJSD, it says that MSINT-D-J-3 is the top performer, as it is the only run that statis tically significantly outperforms 8 other runs. In terms of mean scores, all measures except iRBU agree that MSINT-D-J-3 is the most effective among the 18 runs; the ranking by mean iRBU says that this run is the third best. 
+We have thus demonstrated that our framework can handle soft group membership, and that GFJSD (group fairness) and D♯-nDCG (diversity and relevance) are highly correlated under this setting. 
+4.3 Ranking Local Shops and Restaurants: Intersectional Group Fairness 
+Our third case study involves two attribute sets, one with nominal attribute values and the other with ordinal attribute values (but 
+same exposure to all relevant companies. More specifically, the gold distribution is defined as a uniform distribution over all companies that appear in the top 20 ranking (based on the current Local Search results) for that query, where each shop or restaurant that is not a chain store is treated as a distinct company. In order to demonstrate that our framework can evaluate group fairness from the above viewpoint, we first obtained a random sample from a one-year Local Search query log (from September 2020 to September 2021), and then filtered it so that each ranking contains at least one company with multiple chain stores listed in the top 20. This gave us a set of 418 queries for our experiment. 
+Our query log also contains a mean 5-point scale user rating score and a review count for each item. If an item has ��(> 0) re views, the mean rating is the average over �� user ratings; if there is no review, the mean rating is set to zero. We believe that imposing a group fairness requirement based on review count is of practical significance, because this statistic probably reflects the level of expo sure of each item in the past, and items with low past exposure may deserve more future exposure. Hence, as an example of handling an ordinal attribute set (with hard group membership), we consider a group fairness constraint based on this view. In the aforementioned query log (before filtering by chain store information), 45% of the ranked items had zero reviews (Group 1), 22% had 1-10 reviews (Group 2), 23% had 11-100 reviews (Group 3), and the remaining 10% had over 100 reviews (Group 4). We utilise this distribution as the gold distribution over the four review count groups for all queries, to demonstrate how this search application can be evaluated in terms of statistical parity [19].17 
+We evaluate the following four runs (i.e., ranking schemes) to demonstrate how our framework can handle a nominal attribute set and an ordinal attribute set at the same time and thereby enable us to quantify intersectional group fairness. 
+17The exact probabilities we used in our calculations (based on the statistics from our query log) are: ��∗ (��1) = 0.452239, ��∗ (��2) = 0.220319, ��∗ (��3) = 0.227721, ��∗ (��4) = 0.0997214.
+Base This represents the actual rankings returned by our cur rent Local Search engine. The search engines leverages vari ous features to produce the rankings as mentioned earlier, 
+Table 3: Mean GF scores of the 4 Local Search runs (over 418 topics). 
+but it suffices to treat it as a black box for the purpose of the 
+chain-GFJSD 
+	revcnt-GFJSD 
+	revcnt-GFNMD 
+	0.404 
+0.479 
+0.401 
+0.479 
+	0.495 
+0.545 
+0.445 
+0.506 
+	0.542 
+0.575 
+0.551 
+0.584 
+	
+
+
+
+revcnt-GFRNOD 
+present experiment. 
+Rating This reranks the top 20 search results by the mean ratings from user reviews, so that items with higher ratings are prioritised. This is likely to affect the review count-based group fairness. For example, if many of the items with higher ratings are those that have already enjoyed good exposure to users and therefore received many reviews (i.e., there is a high correlation between mean rating and review count), Rating may underperform Base in terms of review count based group fairness: recall that our gold distribution for review count groups allocates 45% to Group 1 (items with zero reviews). The actual Kendall’s �� between the mean rat ings and the review counts based on all ranked items for the 418 queries (�� = 9, 329 items) is 0.617 (95%CI[0.609, 0.625]); hence there is indeed a substantial positive correlation. On the other hand, note that even an item with only one review can have a mean rating of 5 (i.e., maximum); that is, ranking by mean rating is not the same as ranking by review count. 
+Base-UC Filter the top 20 items of the Base run so that each company (which can own multiple chain stores) appears no more than once. UC stands for “Unique Chain.” This is designed to improve the chain-based group fairness. 
+Rating-UC Similar to Base-UC, except that the input to the filtering step is the Rating run. This should also improve the chain-based group fairness of Rating. 
+Since relevance assessments are missing in this experiment, we use the RBP decay (See Section 3). For discussing the chain-based group fairness (where the number of nominal bins for the uniform gold distribution varies across topics), we compute GFJSD. For dis cussing the review count-based group fairness (with a statistical parity-based gold distribution over 4 ordinal bins common to all topics), we compute GFJSD, GFNMD, and GFRNOD. We shall denote these measures as chain-GFJSD, revcnt-GFNMD, etc.; we also aver age a chain-based score and a revcnt-based score as a special case of Eq. 10 with��0 = 0 (i.e., doing without relevance) and��1 = ��2 = 0.5 (where �� = 1, 2 represent the chain and revcnt attribute sets, respec tively). We shall refer to the averages as intersectional measures and denote them by chain-GFJSD+revcnt-GFNMD and so on. 
+Table 3 shows the mean GF scores of the 4 runs averaged over the 418 topics; intersectional measures are omitted here as they can easily be computed from the table. Table 4 summarises the significance test results for all 7 measures. Due to the large sample size (�� = 418), the differences shown in the table are all statistically highly significant (�� < 0.003). We can observe that: 
+(I) With all 7 measures, Base-UC statistically significantly out performs Base, and Rating-UC statistically significantly outperforms Rating. That is, the Unique Chain filtering step improves not only the chain-based GF but also the revcnt based GF. Put another way, trying to give each company a chance (regardless of how many chain stores they own) also diversifies the review counts in the rankings. 
+Base 0.460 Base-UC 0.500 Rating 0.422 Rating-UC 0.470 
+Table 4: Randomised Tukey HSD test results (�� = 0.05) for Table 3. “≫” means “statistically significantly better than.” 
+Measure Conclusions 
+(a) 4 pairs with a statistically significant difference 
+chain-GFJSD, Rating-UC ≫ Base, Rating 
+revcnt-GFNMD, Base-UC ≫ Base, Rating 
+chain-GFJSD+revcnt-GFNMD 
+(b) 5 pairs with a statistically significant difference 
+revcnt-GFJSD, Base-UC ≫ Rating-UC, Base, Rating revcnt-GFRNOD Rating-UC ≫ Rating 
+Base ≫ Rating 
+(c) 6 pairs with a statistically significant difference 
+chain-GFJSD+revcnt-GFJSD, Base-UC ≫ Rating-UC, Base, Rating chain-GFJSD+revcnt-GFRNOD Rating-UC ≫ Base, Rating 
+Base ≫ Rating 
+(II) In terms of chain-GFJSD, Base and Rating are equally effec tive. In other words, reranking by mean rating has a negligi ble effect on how different companies are represented in the rankings. 
+(III) Interestingly, while revcnt-GFJSD and revcnt-GFRNOD say that Base statistically significantly outperforms Rating (Ta ble 4(b)), revcnt-GFNMD says that Base slightly underper forms Rating on average. (The difference is not statisti cally significant). The results with revcnt-GFJSD and revcnt GFRNOD seem more intuitive, since mean ratings are highly correlated with review counts and therefore Rating prob ably tends to promote items with high review counts: at least, it is sure to demote items with zero reviews, since zero-review items are treated as zero-rating items in our experiments. 
+(IV) Two of our intersectional measures found extra statistically significant differences compared to the component GF mea sures (Table 4(c)). This demonstrates that our approach to handling intersectional group fairness effectively leverages information from both group fairness requirements. For ex ample, while the difference between Rating-UC and Base is not statistically significant in terms of revcnt-GFRNOD (Table 4(b)), it is statistically significant in terms of chain GFJSD+revcnt-GFRNOD (Table 4(c)). 
+Observation (III) is of particular importance, as this means that the choice of the DistrSim function (Eq. 9) matters in some cases. Recall that while NMD and RNOD take the ordinal nature of the attribute values into account, JSD cannot; yet, regarding the comparison of Base and Rating, it is actually revcnt-GFNMD that is the outlier among the three revcnt-GF measures. 
+To investigate the differences in the DistrSim functions and the revcnt-GF measures that are based on them, we first filtered the 418 queries and obtained those where one of the three GF measures disagreed with the other two; there were 102 such queries. Within this query set, revcnt-GFNMD disagreed with the other two for 83 queries (Case A); revcnt-GFJSD disagreed with the other two for 16 queries (Case B); and revcnt-GFRNOD disagreed with the other two
+NMD JSD RNOD 
+0.55 r
+(a) Topic 416: only GF  says Rating > Base  1 
+0.8 
+(b) Topic 1469: only GF says Base > Rating 1 
+0.9 
+(c) Topic 823: only GF Says Rating > Base 1 
+e
+v
+c
+n
+t 
+-
+G
+F
+Base-UC (0.479, 0.500) 
+0.7 0.8 
+0.7 
+ 
+0.51 
+R
+N
+Base 
+0.3 0.5 0.5 
+0.5 
+O
+0.5 0 
+0.2 
+0.5 0 
+0.2 
+0.1 0.1 0.2 0 
+(0.404, 0.460) 
+D 
+0.47 
+1 2 3 4 gold Base Rating 
+1 2 3 4 gold Base Rating 
+1 2 3 4 gold Base Rating 
+Reranking by mean  
+ratings 
+0.43 
+Rating-UC 
+(0.479, 0.470) 
+Filtering by 
+Figure 8: Review count distributions at rank �� = 10 achieved by Base and Rating for three example topics, with the com mon gold distribution. 
+0.39 
+chain stores 
+Rating 
+(0.401, 0.421) 
+0.35 
+chain-GF JSD 
+Table 5: DistrSim and revcnt-GF scores for the cases shown in Figure 8. Higher (i.e., better) scores are shown in bold. 
+0.35 0.39 0.43 0.47 0.51 0.55 
+Figure 9: Visualising intersectional group fairness using GF measures for the local search runs. 
+DistrSim / GF (JSD) 
+	DistrSim / GF (NMD) 
+	
+
+
+
+(a) Topic 416 (GFNMD is the outlier) 
+DistrSim / GF (RNOD) 
+disagree, and, if possible, examine which function seems more intu 
+Base 0.712 / 0.505 
+0.801 / 0.572 
+0.730 / 0.366 
+	0.742 / 0.566 
+0.807 / 0.576 
+	
+
+
+
+Rating 0.668 / 0.365 (b) Topic 1469 (GFJSD is the outlier) 
+Base 0.643 / 0.480 
+0.765 / 0.554 
+0.801 / 0.532 
+	0.708 / 0.553 
+0.742 / 0.614 
+	
+
+
+
+Rating 0.712 / 0.512 (c) Topic 823 (GFRNOD is the outlier) 
+Base 0.464 / 0.380 
+0.574 / 0.417 
+0.521 / 0.408 
+	0.458 / 0.454 
+0.492 / 0.423) 
+	
+
+
+
+Rating 0.528 / 0.414 
+for the remaining 3 queries (Case C). These results also show that revcnt-GFNMD tends to be the outlier. It is known that RNOD lies between JSD and NMD in terms of how it behaves as a divergence measure [40, 41]: our results show that the GF measures inherit their properties, as the GF measures are essentially weighted averages of DistrSim scores obtained at each rank (See Eq. 7). 
+To examine how these discrepancies between the three revcnt GF measures arise, we selected one topic each from Cases A, B, and C with relatively large score discrepancies, and examined the results closely. Figure 8 visualises the distributions over the re view count groups achieved at rank 10 by Base and Rating for the three selected topics, together with the common gold distribution. Table 5 shows the corresponding DistrSim scores as well as the final revcnt-GF scores. Table 5(a) shows that for Topic 416, GFNMD disagrees with GFJSD and GFRNOD precisely because DistrSimNMD disagrees with DistrSimJSD and DistrSimRNOD. However, Figure 8(a) shows that this behaviour of DistrSimNMD is rather counterintu itive: since the gold distribution gives the highest probability to the zero-review group (Group 1), the achieved distribution of Base (red) seems better than that of Rating (blue). On the other hand, Table 5(b) shows that for Topic 1469, while GFJSD disagrees with the other two, all three DistrSim functions agree that Rating is better than Base at rank 10. (Figure 8(b) shows the distributions.) That is, this discrepancy at the GF score level is due to the RBP-based weighted averaging step of Eq. 7. Finally, Table 5(c) shows that for Topic 823, while GFRNOD is the outlier at the GF score level, both DistrSimNMD and DistrSimRNOD (i.e., those that can handle ordinal classes) prefer Rating over Base. That is, DistrSimJSD is the actual outlier at the DistrSim level. From Figure 8(c), it can be observed that, for this topic, the order-aware measures penalise Base heavily for emphasing Group 4 (items with over 100 reviews) too much. Based on the above analysis, our recommendation for handling ordinal attribute sets is to use multiple similarity functions (e.g., DistrSimJSD and DistrSimRNOD), pay attention to cases where they 
+itive. As we have discussed in Section 1, researchers should also be aware that JSD ignores the ordinal nature of classes and therefore may not be appropriate for some applications. 
+Figure 9 provides a visual summary of our Local Search exper iment, by plotting the revcnt-GFRNOD scores against the chain GFJSD scores for the 4 runs we considered. Again, it is clear that the Unique Chain filtering step improves the ranking in terms of both chain-based and revcnt-based group fairness (green arrows), and that reranking by mean rating hurts the revcnt-based group fairness only (red arrow). We have thus demonstrated that our framework enables researchers to study intersectional group fairness, even when both nominal and ordinal attribute sets are involved. 
+We have also conducted a smaller experiment with both nom inal and ordinal attribute sets using data available from Inside Airbnb [7].18 The results are similar to what we have reported here, and are omitted in this paper. 
+5 CONCLUSIONS 
+We presented a simple and versatile framework for evaluating ranked lists in terms of group fairness and relevance, where the groups can be either nominal or ordinal in nature. First, we demon strated that, if the attribute set is binary, our framework can easily quantify the overall polarity of each ranked list. Second, by utilis ing an existing diversified search test collection and treating each intent as an attribute value, we demonstrated that our framework can handle soft group membership, and that our group fairness measures are highly correlated with both adhoc IR and diversified IR measures under this setting. Third, we demonstrated how our framework can quantify intersectional group fairness based on multiple attribute sets. We also showed that the choice of the simi larity function for comparing the achieved and target distributions over the attribute values matters in some cases. Our recommenda tion is to use multiple similarity functions (e.g., DistrSimJSD and DistrSimRNOD) if ordinal attribute values need to be considered. Data that are necessary for reproducing our experimental results are available from https://waseda.box.com/GFR20220401targz . 
+Our future work includes further investigation of the properties of the similarity functions in the context of group-fair ranking evaluation, and implementing this framework in a shared task. 
+18http://insideairbnb.com/get-the-data.html (visited September 8, 2021)
+REFERENCES 
+[1] Rakesh Agrawal, Gollapudi Sreenivas, Alan Halverson, and Samuel Leong. 2009. Diversifying Search Results. In Proceedings of ACM WSDM 2009. 5–14. [2] Yamen Ajjour, Henning Wachsmuth, Johannes Kiesel, Martin Potthast, Matthias Hagen, and Benno Stein. 2019. Data Acquisition for Argument Search: The args.me Corpus. In KI 2019: Advances in Artificial Intelligence (LNCS 11793). 48– 59. 
+[3] Enrique Amigó, Damiano Spina, and Jorge Carrillo de Albornoz. 2018. An Axiomatic Analysis of Diversity Evaluation Metrics: Introducting the Rank Biased Utility Metric. In Proceedings of ACM SIGIR 2018. 625–634. 
+[4] Alex Beutel, Jilin Chen, Tulsee Doshi, Hai Qian, Li Wei, Yi Wu, Lukasz Heldt, Zhe Zhao, Lichan Hong, Ed H. Chi, and Cristos Goodrow. 2019. Fairness in Recommendation Ranking through Pairwise Comparisons. In Proceedings of ACM KDD 2019. 2212–2220. 
+[5] Asia J Biega, Fernando Diaz, Michael D. Ekstrand, Sergey Feldman, and Sebastian Kohlmeier. 2021. Overview of the TREC 2020 Fair Ranking Track. In Proceedings of TREC 2020. 
+[6] Asia J Biega, Fernando Diaz, Michael D. Ekstrand, and Sebastian Kohlmeier. 2020. Overview of the TREC 2019 Fair Ranking Track. In Proceedings of TREC 2019. [7] Asia J. Biega, Krishna P. Gummadi, and Gerhard Weikum. 2018. Equity of Attention: Amortizing Individual Fairness in Rankings. In Proceedings of ACM SIGIR 2018. 405–414. 
+[8] Alexander Bondarenko, Maik Fröbe, Meriem Beloucif, Lukas Gienapp, Yamen Ajjour, Alexander Panchenko, Chris Biemann, Benno Stein, Henning Wachsmuth, Martin Potthast, and Matthias Hagen. 2020. Overview of Touché 2020: Argument Retrieval. In Proceedings of CLEF 2020 (LNCS 12260). 384–395. 
+[9] Alexander Bondarenko, Lukas Gienapp, Maik Fröbe, Meriem Beloucif, Ya men Ajjour, , Alexander Panchenko, Chris Biemann, Benno Stein, Henning Wachsmuth, Martin Potthast, and Matthias Hagen. 2021. Overview of Touché 2020: Argument Retrieval. In Proceedings of CLEF 2021 (LNCS 12880). 450–467. 
+[10] Joy Buolamwini and Timnit Gebru. 2018. Gender Shades: Intersectional Accu racy Disparities in Commercial Gender Classification. In Proceedings of Machine Learning Research, Vol. 81. 77–91. 
+[11] L. Elisa Celis, Damian Straszak, and Nisheeth K. Vishnoi. 2017. Ranking with Fairness Constraints. (2017). http://arxiv.org/abs/1704.06840 
+[12] Olivier Chapelle, Shihao Ji, Ciya Liao, Emre Velipasaoglu, Larry Lai, and Su Lin Wu. 2011. Intent-based Diversification of Web Search Results: Metrics and Algorithms. Information Retrieval 14, 6 (2011), 572–592. 
+[13] Olivier Chapelle, Donald Metzler, Ya Zhang, and Pierre Grinspan. 2009. Expected Reciprocal Rank for Graded Relevance. In Proceedings of ACM CIKM 2009. 621– 630. 
+[14] Sachin Pathiyan Cherumanal, Damiano Spina, Falk Scholer, and W. Bruce Croft. 2021. Evaluating Fairness in Argument Retrieval. In Proceedings of ACM CIKM 2021. 
+[15] Charles L.A. Clarke, Nick Craswell, Ian Soboroff, and Azin Ashkan. 2011. A Com parative Analysis of Cascade Measures for Novelty and Diversity. In Proceedings of ACM WSDM 2011. 75–84. 
+[16] Charles L.A. Clarke, Nick Craswell, and Ellen M. Voorhees. 2013. Overview of the TREC 2012 Web Track. In Proceedings of TREC 2012. 
+[17] Fernando Diaz, Bhaskar Mitra, Michael D. Ekstrand, Asia J. Biega, and Ben Carterette. 2020. Evaluating Stochastic Rankings with Expected Exposure. In Proceedings of ACM CIKM 2020. 275–284. 
+[18] Tim Draws, Nava Tintarev, and Ujwal Gadiraju. 2021. Assessing Viewpoint Diversity in Search Results Using Ranking Fairness Metrics. ACM SIGKDD Explorations NewsLetter 23 (2021), 50–58. Issue 1. 
+[19] Michael D. Ekstrand, Anubrata Das, Robin Burke, and Fernando Diaz. 2021. Fairness and Discrimination in Information Access Systems. (2021). https: //arxiv.org/abs/2105.05779 
+[20] James R. Foulds, Rashidul Islam, Kamrun Naher Keya, and Shimei Pan. 2019. An Intersectional Definition of Fairness. CoRR abs/1807.08362 (2019). http: //arxiv.org/abs/1807.08362 
+[21] Sahin Cem Geyik, Stuart Ambler, and Krishnaram Kenthapadi. 2019. Fairness aware Ranking in Search & Recommendation Systems with Application to LinkedIn Talent Search. In Proceedings of ACK KDD 2019. 2221–2231. 
+[22] Gizem Gezici, Aldo Lipani, Yucel Saygin, and Emine Yilmaz. 2021. Evaluation Metrics for Measuring Bias in Search Engine Results. Information Retrieval Journal 24 (2021), 85–113. 
+[23] Avijit Ghosh, Ritam Dutt, and Christo Wilson. 2021. When Fair Ranking Meets Uncertain Inference. In Proceedings of ACM SIGIR 2021. 1033–1043. 
+[24] Avijit Ghosh, Lea Genuit, and Mary Reagan. 2021. Characterizing Intersectional Group Fairness with Worst-Case Comparisons. CoRR abs/2101.01673 (2021). https://arxiv.org/abs/2101.01673 
+[25] Kalervo Järvelin and Jaana Kekäläinen. 2002. Cumulated Gain-based Evaluation of IR Techniques. ACM TOIS 20, 4 (2002), 422–446. 
+[26] Caitlin Kuhlman, Walter Gerych, and Elke Rundensteiner. 2021. Measuring Group Advantage: A Comparative Study of Fair Ranking Metrics. In Proceedings of AAAI/ACM AIES 2021. 674–682. 
+[27] Caitlin Kuhlman, MaryAnn VanValkenburg, and Elke Rundensteiner. 2019. FARE: Diagnostics for Fair Ranking using Pairwise Error Metrics. In Proceedings of WWW 2019. 2936–2942. 
+[28] Juhi Kulshrestha, Motahhare Eslami, Johnnatan Messias, Muhammad Bilal Zafar, Saptarshi Ghosh, Krishna P. Gunmadi, and Karrie Karahalios. 2017. Quantifying Search Bias: Investigating Sources of Bias for Political Searches in Social Media. In Proceedings of ACM CSCW 2017. 417–432. 
+[29] Jianhua Lin. 1991. Divergence Measures Based on the Shannon Entropy. IEEE Transactions on Information Theory 37, 1 (1991), 145–151. 
+[30] Alistair Moffat, Peter Bailey, Falk Scholer, and Paul Thomas. 2017. Incorporating User Expectations and Behavior into the Measurement of Search Effectiveness. ACM TOIS 35, 3 (2017). 
+[31] Alistair Moffat and Justin Zobel. 2008. Rank-Biased Precision for Measurement of Retrieval Effectiveness. ACM TOIS 27, 1 (2008). 
+[32] Harikrishna Narasimhan, Andrew Cotter, Maya Gupta, and Serena Wang. 2020. Pairwise Fairness for Ranking and Regression. In Proceedings of AAAI 2020. 5248– 5255. 
+[33] Ömer Kirnap, Fernando Diaz, Asia Biega, Michael Ekstrand, Ben Carterette, and Emine Yilmaz. 2021. Estimation of Fair Ranking Metrics with Incomplete Judgments. In Proceedings of WWW 2021. 1065–1075. 
+[34] Evaggelia Pitoura, Panayiotis Tsaparas, Giorgos Flouris, Irini Fundulaki, Pana giotis Papadakos, Serge Abiteboul, and Gerhard Weikum. 2017. On Measuring Bias in Online Information. ACM SIGMOD Record 46 (2017), 16–21. Issue 4. 
+[35] Amifa Raj, Connor Wood, Ananda Montoly, and Michael D. Ekstrand. 2020. Comparing Fair Ranking Metrics. (2020). https://arxiv.org/abs/2009.01311 [36] Ronald E. Robertson, Shan Jiang, Kenneth Joseph, Lisa Friedland, David Lazer, 
+and Christo Wilson. 2018. Auditing Partisan Audience Bias within Google Search. In Proceedings of the ACM on Human-Computer Interaction, Vol. 2. [37] Tetsuya Sakai. 2007. Alternatives to Bpref. In Proceedings of ACM SIGIR 2007. 71–78. 
+[38] Tetsuya Sakai. 2014. Metrics, Statistics, Tests. In PROMISE Winter School 2013: Bridging between Information Retrieval and Databases (LNCS 8173). 116–163. [39] Tetsuya Sakai. 2018. Laboratory Experiments in Information Retrieval: Sample Sizes, Effect Sizes, and Statistical Power. Springer. 
+[40] Tetsuya Sakai. 2020. Evaluating Evaluation Measures for Ordinal Classification and Ordinal Quantification. In Proceedings of ACL-IJCNLP 2021. 2759–2769. [41] Tetsuya Sakai. 2021. A Closer Look at Evaluation Measures for Ordinal Quantifi 
+cation. In Proceedings of the 1st International Workshop on Learning to Quantify. [42] Tetsuya Sakai. 2021. On the Instability of Diminishing Return IR Measures. In Proceedings of ECIR 2021 Part I (LNCS 12656). 572–586. 
+[43] Tetsuya Sakai and Ruihua Song. 2011. Evaluating Diversified Search Results using Per-intent Graded Relevance. In Proceedings of ACM SIGIR 2011. 1043–1052. [44] Tetsuya Sakai and Zhaohao Zeng. 2020. Retrieval Evaluation Measures that Agree with Users’ SERP Preferences: Traditional, Preference-based, and Diversity Measures. ACM TOIS 39, 2 (2020). 
+[45] Piotr Sapiezynski, Wesley Zeng, and Ronald E. Robertson. 2019. Quantifying the Impact of User Attention on Fair Group Representation in Ranked Lists. In Companion Proceedings of WWW 2019. 553–562. 
+[46] Ashudeep Singh and Thorsten Joachims. 2018. Fairness of Exposure in Rankings. In Proceedings of ACM KDD 2018. 2219–2228. 
+[47] Ruihua Song, Min Zhang, Tetsuya Sakai, Makoto P. Kato, Yiqun Liu, Miho Sugi moto, Qinglei Wang, and Naoki Orii. 2011. Overview of the NTCIR-9 INTENT Task. In Proceedings of NTCIR-9. 82–105. 
+[48] Michael Werman, Shmuel Peleg, and Azriel Rosenfeld. 1985. A Distance Metric for Multidimensional Histograms. Computer Vision, Graphics, and Image Processing 32 (1985), 328–336. 
+[49] Ke Yang and Julia Stoyanovich. 2017. Measuring Fairness in Ranked Outputs. In Proceedings of SSDBM 2017. 
+[50] Meike Zehlike, Francesco Bonchi, Carlos Castillo, Sara Hajian, Mohamed Mega hed, and Ricardo Baeza-Yates. 2017. FA*IR: A Fair Top-k Ranking Algorithm. In Proceedings of ACM CIKM 2017. 1569–1578. 
+[51] ChengXiang Zhai, William W. Cohen, and John Lafferty. 2003. Beyond Inde pendent Relevance: Methods and Evaluation Metrics for Subtopic Retrieval. In Proceedings of ACM SIGIR 2003. 10–17.
