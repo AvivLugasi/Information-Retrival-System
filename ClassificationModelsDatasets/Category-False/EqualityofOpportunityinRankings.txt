@@ -1,0 +1,137 @@
+﻿Equality of Opportunity in Rankings Extended Abstract 
+Ashudeep Singh 
+Cornell University 
+Ithaca, NY 
+ashudeep@cs.cornell.edu 
+ABSTRACT 
+Thorsten Joachims 
+Cornell University 
+Ithaca, NY 
+tj@cs.cornell.edu 
+being correctly classified be independent of group member 
+With the ubiquity of algorithmic methods for ranking in systems like search engines, recommendations, and advertisements, it be comes essential to ensure that these systems do not impact different groups at different rates. In this work, we focus on defining the no tions of fairness in such ranking scenarios in terms of the amount of exposure (opportunity) each item gets in its position while keeping in mind the protected groups. We formulate these definitions for protected groups of documents, queries as well as users. 
+1 INTRODUCTION 
+Recently, Google was fined by the EU for skewing its ranking and the claim that it “denied other companies the chance to compete on the merits”1. But what exactly does it mean to compete on merit when it comes to rankings and what makes a ranking fair? Even if one can argue that Google had no bad intention to disad vantage these companies through search result rankings on their shopping website, those companies probably would have gotten more business, if they had been presented higher in the ranking. This connects to concept of Fair Equality of Opportunity [9] defined by philosopher John Rawls, who states that "the social positions be formally open and meritocratically allocated, but, in addition, each individual is to have a fair chance to attain these positions" 2. In our case, most ranking algorithms are based on historic click through rates [4], but whether something gets clicked is itself a function of whether the historic rankings were fair. Hence, we may need to actively enforce some notion of fairness to gives equal opportunity (or exposure) to items in protected groups so that they can accumulate clicks. 
+In this work, we take inspiration from the following definitions of fairness in the classification settings to define fairness in rankings. In the following definitions, Y is the true class of an instance, Yˆ is the class predicted by the model, and each instance belongs to either one of the two groups A = 0 or A = 1 e.g. males and females, blacks and whites etc. 
+ship. 
+• Equal Opportunity for classification [3]: P(Yˆ = 1|Y = 1,A = 1) = P(Yˆ = 1|Y = 1,A = 0): This states that the probability of classifying positive examples Y = 1 correctly be independent of the group membership. 
+We propose how to extend these notions of fairness to the case of rankings in the next section. Interestingly, fairness considerations can be made both from the point of the user population, as well as from the point of the items that are being ranked. 
+2 FAIR RANKING FOR PROTECTED GROUPS OF ITEMS 
+Consider a rental website that displays results as a ranking of prop erties. Because of position bias, products at higher positions in the ranking get more views (more exposure) and hence probably sell better. It is therefore important that the ranking algorithm ranks properties by merit, and it should not unfairly disadvantage proper ties belonging to a protected group (say A1 or having A = 1). How can we define fairness in this case? 
+For now, consider a fixed query and let each document be either relevant or irrelevant to the query i.e. yi ∈ {0, 1}. Let wk be the fraction of users that visit a search result page and view/examine the document at position k, where k ∈ {1...K} called the position bias [5] e.g. {w1 = 1.0,w2 = 0.7,w3 = 0.51,w4 = 0.39 . . . }. Let A0 and A1 be two groups with different values of the sensitive attribute. Each document d either belongs to either A0 or A1. 
+A ranking r : D → {1 . . . K} is said to be fair according to the following definitions3if it satisfies the constraints: 
+Definition 1 (Demographic Parity for rankings). Ed[wr(d)|d ∈ A0] = Ed[wr(d)|d ∈ A1] 
+where r(d) is the rank of document d and wiis the position bias of position i (fraction of users that view the ith position). We can also write the same as: 
+• Demographic Parity for classification [2]: P(Yˆ = 1|A = 1) = P(Yˆ = 1|A = 0): This states that the rate of success be equal for the two groups. 
+1 
+|A0 | 
+Õ 
+d ∈A0 
+wr(d) =1|A1 |Õ d ∈A1 
+wr(d) 
+• Equalized Odds for classification [3]: P(Yˆ = 1|Y = 1,A = 1) = P(Yˆ = 1|Y = 1,A = 0) and P(Yˆ = 1|Y = 0,A = 1) = P(Yˆ = 1|Y = 0,A = 0): This states that the probability of 
+1http://money.cnn.com/2017/06/27/technology/business/google-eu-antitrust fine/index.html 
+2https://edeq.stanford.edu/sections/fair-equality-opportunity 
+WPOC2017, December 2017, Los Angeles, CA, USA 
+2017. ACM ISBN 978-x-xxxx-xxxx-x/YY/MM. . . $15.00 
+https://doi.org/10.1145/nnnnnnn.nnnnnnn 
+Since wkis the fraction of users who open the page and view the document ranked at position k, this definition is equivalent to saying that the fraction of views that the documents in A0 gets is equal to that of A1. 
+Definition 2 (Eqal Opportunity for rankings). Ed[wr(d)|d ∈ A0,Y(d) = 1] = Ed[wr(d)|d ∈ A1,Y(d) = 1] 3named similar to the classification fairness definitions described in section 1
+WPOC2017, December 2017, Los Angeles, CA, USA A. Singh et al. 
+where Y denotes whether the document is relevant to the query or not. We can also write it as: 
+before position k (i.e zk = 1 − wk, where wkis the position bias). A ranking r : D → {1 . . . K} is said to be fair if it satisfies the 
+1 
+|A0 ∩ Y = 1| 
+Õ 
+d ∈A0,y(d)=1 
+wr(d) =1 
+|A1 ∩ Y = 1| 
+Õ 
+d ∈A1,y(d)=1 
+wr(d) 
+following definition: 
+Definition 4 (Eqal Opportunity for Rankings in presence 
+where r(d) is the rank of document d. 
+This definition is equivalent to saying that the fraction of views that the relevant documents form the set A0 and the relevant docu ments from the set A1. 
+of Protected Users). 
+Eu [Ed[wr(d)|u ∈ A0,Y(d,u) = 1]] = Eu [Ed[wr(d)|u ∈ A1,Y(d,u) = 1]] where Y denotes whether the document is relevant to the user and query pair or not. We can also write the same as: 
+Since these constraints might not be satisfiable because we have finite number of documents and rank positions under consideration, we can apply the above definitions to distribution over rankings [8]. Distribution over rankings is defined as P(r(dj) = i)∀i, j such that 
+1 
+|A0 | 
+Õ 
+u ∈A0 
+1 
+|{d : y(d,u) = 1}| Õ 
+1 
+Õ 
+d,y(d,u)=1 1 
+zr(d) = 
+Õ 
+zr(d) 
+P : {1 . . . D} × {1 . . . K} → [0, 1] and is valid i.e. ∀jÍKi=1P(r(dj) = 
+|A1 | 
+u ∈A1 
+|{d : y(d,u) = 1}| 
+d,y(d,u)=1 
+i) = 1 and ∀iÍDj=1P(r(dj) = i) = 1. Now we can define the above definitions with respect to this distribution defined by P: 
+Definition 3 (Eqal opportunity for ranking distribu tions). 
+Er∼P [Ed[wr(d)|d ∈ A0,Y(d) = 1]] = Er∼P [Ed[wr(d)|d ∈ A1,Y(d) = 1]] where P is the ranking distribution. We can also write it as: 
+where r(d) is the rank of document d. 
+4 DISCUSSION 
+For both the user-centric and the item-centric view on fairness of a ranking, fairness potentially comes at reduction of ranking quality as defined by conventional ranking metrics like DCG. We are currently investigating what the price of fairness is, depending 
+1 
+|A0 ∩ Y = 1| 
+Õ 
+d ∈A0 Y (d)=1 
+ÕK k=1 
+wk P(r(d) = k) = 
+on the size of the protected class and the difference in relevance between classes. 
+Knowledge of true Y is typically unknown in practical ranking systems (as is in classification). However, equal opportunity relies 
+1 
+|A1 ∩ Y = 1| 
+Õ 
+d ∈A1 Y (d)=1 
+ÕK k=1 
+wk P(r(d) = k) 
+on the fact that there is a ground truth value Y for each document and query pair and asks for exposing these documents at equal rates. It is therefore interesting to think about how to efficiently measure fairness in real-world systems through targeted interventions. This 
+where K is the total number of ranks under consideration. 
+This definition means that the expected fraction of views for the relevant documents form the set A0 and the relevant documents from the set A1 is equal. 
+3 FAIR RANKING FOR PROTECTED GROUPS OF USERS 
+There is also an alternate case of fairness in rankings beyond fair ness to the items being ranked, but instead considering fairness of the ranking to the user population. For convenience, we will define fairness only for users but it is the same for queries as well since each user can be thought of as a (user, query) pair. This re lates to works, like [7], that audit search engines to see if there is a differential satisfaction of different demographics. 
+With respect to a user population, we would like our fairness constraints to convey that a user belonging to a protected group, on average, should not have to spend more effort than a user from outside the protected group. For example, a man looking for a movie he likes should not systematically need to do more or less work than a woman. 
+As before, considering a fixed query, let the users belong to group A0 and A1 and each document is either relevant to the user or not (Y = 0 or 1). Let zk be the amount of work required to inspect the document ranked at position k. For example, zkcould be the time it take to get to position k, or it can be interpreted as the fraction of people who drop out of viewing the ranking 
+has already proven feasible for inferring position bias [6]. The next step is to design new or adapt the existing machine learning algorithms that can satisfy (albeit approximately) these constraints while maximizing utility of the rankings. Related works such as [10] calculate set-wise parity at a series of cut-off points in ranking to measure fairness. This is very close to the demographic parity definition in our case. Meanwhile [1] solves the ranking problem as a maximum bipartite matching and inducing a similar constraint. Zehlike et al.[11] also satisfy a demographic parity like constraint while maximizing the utility of the model that is defined in terms of relevance. However similar, our definitions are an easy extension of their classification counterparts while having an inter pretation in terms of the exposure. Hence it will be interesting to see if the two constraints are compatible with each other as well as the machine learning methods that can find feasible solutions satisfying them. 
+The applications of fairness in ranking are numerous and it comes from the way we define our protected groups. For example, one such consequence of defining groups as differing ideologies or opinions. Fairness constraints allow the algorithm to maintain diversity of ideas, hence avoid polarization.
+Equality of Opportunity in Rankings WPOC2017, December 2017, Los Angeles, CA, USA 
+REFERENCES 
+[1] L Elisa Celis, Damian Straszak, and Nisheeth K Vishnoi. 2017. Ranking with 
+Fairness Constraints. arXiv preprint arXiv:1704.06840 (2017). 
+[2] Cynthia Dwork, Moritz Hardt, Toniann Pitassi, Omer Reingold, and Richard 
+Zemel. 2012. Fairness through awareness. In Proceedings of the 3rd Innovations in 
+Theoretical Computer Science Conference. ACM, 214–226. 
+[3] Moritz Hardt, Eric Price, Nati Srebro, et al. 2016. Equality of opportunity in 
+supervised learning. In Advances in Neural Information Processing Systems. 3315– 
+3323. 
+[4] Thorsten Joachims. 2002. Optimizing search engines using clickthrough data. 
+In Proceedings of the eighth ACM SIGKDD international conference on Knowledge 
+discovery and data mining. ACM, 133–142. 
+[5] Thorsten Joachims, Laura Granka, Bing Pan, Helene Hembrooke, Filip Radlinski, 
+and Geri Gay. 2007. Evaluating the accuracy of implicit feedback from clicks and 
+query reformulations in web search. ACM Transactions on Information Systems 
+(TOIS) 25, 2 (2007), 7. 
+[6] Thorsten Joachims, Adith Swaminathan, and Tobias Schnabel. 2017. Unbiased 
+learning-to-rank with biased feedback. In Proceedings of the Tenth ACM Interna 
+tional Conference on Web Search and Data Mining. ACM, 781–789. 
+[7] Rishabh Mehrotra, Ashton Anderson, Fernando Diaz, Amit Sharma, Hanna Wal 
+lach, and Emine Yilmaz. 2017. Auditing Search Engines for Differential Satisfac 
+tion Across Demographics. In Proceedings of the 26th International Conference 
+on World Wide Web Companion. International World Wide Web Conferences 
+Steering Committee, 626–633. 
+[8] Shuzi Niu, Yanyan Lan, Jiafeng Guo, and Xueqi Cheng. 2013. Stochastic rank 
+aggregation. arXiv preprint arXiv:1309.6852 (2013). 
+[9] John Rawls. 2009. A theory of justice. Harvard university press. 
+[10] Ke Yang and Julia Stoyanovich. 2016. Measuring fairness in ranked outputs. arXiv 
+preprint arXiv:1610.08559 (2016). 
+[11] Meike Zehlike, Francesco Bonchi, Carlos Castillo, Sara Hajian, Mohamed Mega 
+hed, and Ricardo Baeza-Yates. 2017. FA* IR: A Fair Top-k Ranking Algorithm. 
+arXiv preprint arXiv:1706.06368 (2017).
