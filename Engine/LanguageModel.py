@@ -66,25 +66,25 @@ class LanguageModel(System):
             self.language_model = joblib.load('LanguageModels/languageModelByTerms.pkl')
 
 
-# Main
-languageModelByTokens = LanguageModel()
-languageModelByTerms = LanguageModel()
-
-languageModelByTokens.build(after_linguistic_operations=False,
-                                      doc_path="../Engine/Utils/concat_txt_files.txt")
-languageModelByTerms.build(after_linguistic_operations=True, doc_path="../Engine/Utils/concat_txt_files.txt")
-
-print("length of language Model by tokens: " + str(len(languageModelByTokens.language_model)))
-print("length of language Model by tokens: " + str(len(languageModelByTerms.language_model)))
-print("length of language Model by tokens: " + str(len(languageModelByTokens.language_model)))
-print("length of language Model by tokens: " + str(len(languageModelByTerms.language_model)))
-
-counter_model_tokens = Counter(languageModelByTokens.language_model)
-print("\nprint top-5 worlds by probability: " + "\n" + counter_model_tokens.most_common(5).__str__())
-counter_model_terms = Counter(languageModelByTerms.language_model)
-print("\nprint top-5 worlds by probability: " + "\n" + counter_model_terms.most_common(5).__str__())
-
-# save both models in pkl files
-print("\nSaving models in LanguageModels/")
-joblib.dump(languageModelByTokens.language_model, 'LanguageModels/languageModelByTokens.pkl')
-joblib.dump(languageModelByTerms.language_model, 'LanguageModels/languageModelByTerms.pkl')
+# # Main
+# languageModelByTokens = LanguageModel()
+# languageModelByTerms = LanguageModel()
+#
+# languageModelByTokens.build(after_linguistic_operations=False,
+#                                       doc_path="../Engine/Utils/concat_txt_files.txt")
+# languageModelByTerms.build(after_linguistic_operations=True, doc_path="../Engine/Utils/concat_txt_files.txt")
+#
+# print("length of language Model by tokens: " + str(len(languageModelByTokens.language_model)))
+# print("length of language Model by tokens: " + str(len(languageModelByTerms.language_model)))
+# print("length of language Model by tokens: " + str(len(languageModelByTokens.language_model)))
+# print("length of language Model by tokens: " + str(len(languageModelByTerms.language_model)))
+#
+# counter_model_tokens = Counter(languageModelByTokens.language_model)
+# print("\nprint top-5 worlds by probability: " + "\n" + counter_model_tokens.most_common(5).__str__())
+# counter_model_terms = Counter(languageModelByTerms.language_model)
+# print("\nprint top-5 worlds by probability: " + "\n" + counter_model_terms.most_common(5).__str__())
+#
+# # save both models in pkl files
+# print("\nSaving models in LanguageModels/")
+# joblib.dump(languageModelByTokens.language_model, 'LanguageModels/languageModelByTokens.pkl')
+# joblib.dump(languageModelByTerms.language_model, 'LanguageModels/languageModelByTerms.pkl')

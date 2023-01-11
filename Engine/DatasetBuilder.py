@@ -5,15 +5,14 @@ from DocVector import DocVector
 from joblib import Parallel, delayed
 import joblib
 import pandas as pd
+import math
 
 class DatasetBuilder(System):
 
-    DIR_FILES_PATH = "../ClassificationModelsDatasets/Category-True"
-
-    def __init__(self, dir_txt_files_path: str, category: int):
+    def __init__(self, dir_txt_files_path: str, category: int, collection_file_path: str):
 
         list_files_names = self.import_docs(dir_txt_files_path)
-        self.idf_dict = self._idf_dict(dir_files_path=self.DIR_FILES_PATH)
+        self.idf_dict = self._idf_dict(dir_files_path=collection_file_path)
         self.dataset = self.build(dir_txt_files_path, list_files_names, category)
 
     def build(self, dir_txt_files_path: str, list_file_names: str, category:int):
@@ -43,28 +42,27 @@ class DatasetBuilder(System):
                     collection_idf_dict[term]=1
         # In this point we have (term, df) pairs for all terms in the collection
         for term, df in collection_idf_dict.items():
-            print(files_names)
-            collection_idf_dict[term]= math.log(df/len(files_names))
+            collection_idf_dict[term]= math.log(len(files_names)/df)
         # In this point we have (term, idf) pairs for all terms in the collection
         return collection_idf_dict
-# main
 
-# create False category dataset
-data_set_false = DatasetBuilder(dir_txt_files_path="../ClassificationModelsDatasets/Category-False", category=0)
-data_set_false.dataset.to_csv("../ClassificationModelsDatasets/Category-False-DF.csv")
 
-# create False category dataset
-data_set_True = DatasetBuilder(dir_txt_files_path="../ClassificationModelsDatasets/Category-True", category=1)
-data_set_True.dataset.to_csv("../ClassificationModelsDatasets/Category-True-DF.csv")
-        
-# Concatenating the data frames
-concatenated_df = pd.concat([data_set_True.dataset,data_set_false.dataset])
-
-# shuffle the data frame
-concatenated_df = concatenated_df.sample(frac=1, random_state=1).reset_index()
-
-# remove auto generated extra index column
-concatenated_df = concatenated_df.drop('level_0', axis=1)
-
-# save in csv file
-concatenated_df.to_csv("../ClassificationModelsDatasets/Concatenated-DF.csv")
+# # create False category dataset
+# data_set_false = DatasetBuilder(dir_txt_files_path="../ClassificationModelsDatasets/Category-False", category=0)
+# data_set_false.dataset.to_csv("../ClassificationModelsDatasets/Category-False-DF.csv")
+#
+# # create False category dataset
+# data_set_True = DatasetBuilder(dir_txt_files_path="../ClassificationModelsDatasets/Category-True", category=1)
+# data_set_True.dataset.to_csv("../ClassificationModelsDatasets/Category-True-DF.csv")
+#
+# # Concatenating the data frames
+# concatenated_df = pd.concat([data_set_True.dataset,data_set_false.dataset])
+#
+# # shuffle the data frame
+# concatenated_df = concatenated_df.sample(frac=1, random_state=1).reset_index()
+#
+# # remove auto generated extra index column
+# concatenated_df = concatenated_df.drop('level_0', axis=1)
+#
+# # save in csv file
+# concatenated_df.to_csv("../ClassificationModelsDatasets/Concatenated-DF.csv")
