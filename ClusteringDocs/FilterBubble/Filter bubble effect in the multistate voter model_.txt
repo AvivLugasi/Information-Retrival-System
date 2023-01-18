@@ -1,0 +1,1925 @@
+Filter Bubble effect in the multistate voter model
+
+Giulio lannelli,t;2 Giordano De Marzo*,!3:4 and Claudio Castellano
+
+5,1
+
+D Centro Ricerche Enrico Fermi, Piazza del Viminale, 1, I-00184 Rome, Italy.
+>) Dipartimento di Fisica, Universita di Roma “Tor Vergata”, 00133 Roma, Italy.
+3) Dipartimento di Fisica Universita “Sapienza”, P.le A. Moro, 2, I-00185 Rome,
+
+Ttaly.
+
+4) Sapienza School for Advanced Studies, “Sapienza”, P.le A. Moro, 2, I-00185 Rome,
+
+Ttaly.
+
+5) Istituto dei Sistemi Complessi (ISC-CNR), Via dei Taurini, 19, I-00185 Rome,
+
+Ttaly
+(*Electronic mail: giordano.demarzoQcref.it)
+
+(Dated: February 3, 2022)
+
+Social media influence online activity by recommending to users content strongly correlated with what they have
+preferred in the past. In this way they constrain users within filter bubbles that strongly limit their exposure
+
+recommendation algorithms.
+
+Information is nowadays mainly diffused via dig-
+| ital channels as people increasingly use online plat-
+2 forms instead of newspapers or television to access
+news. If, on the one hand, this makes information
+° easily available to all, on the other hand it allows
+¢) extremely detailed personalization. Most web sites
+"HA use recommendation algorithms to provide users
+
+with content in line with their taste and way of
+_& thinking. Examples are the personalized page rank
+©_of Google, “suggested for you” posts by Facebook
+—or the recommendations of Amazon and Netflix.
+— This leads to the formation of the so-called “filter
+> bubbles”, in which users are exposed almost ex-
+[™ clusively only to content they have already shown
+© to be interested to. In this manuscript we model
+—— this phenomenon by a modification of a very simple
+= model for opinion dynamics (the multi-state voter
+Oo model) where individuals are influenced not only
+AN by their peers but also by an external “field” which
+
+encodes information about the opinions the indi-
+N vidual held in the past. This field, if large enough,
+- «leads to a polarized steady state in which users
+> opinions are crystallized and consensus is no more
+
+Sd possible.
+
+—
+S
+
+I. INTRODUCTION
+
+ph] 2 Feb 2022
+
+S.SO
+
+The concept of “filter bubble” has crossed the bound-
+aries of the academic world reaching public discourse and
+mainstream media. This reflects the realization that on-
+line social media (OSM) have a tremendous impact on how
+people share information and form their opinions. For
+this reason they may constitute not only a great oppor-
+tunity for the diffusion of knowledge, but also a great
+threat for the stability of social fabric and the function-
+
+to new or alternative content. We investigate this type of dynamics by considering a multistate voter model
+where, with a given probability A, a user interacts with a “personalized information” suggesting the opinion
+most frequently held in the past. By means of theoretical arguments and numerical simulations, we show the
+existence of a nontrivial transition between a region (for small A) where consensus is reached and a region {above
+a threshold A.) where the system gets polarized and clusters of users with different opinions persist indefinitely.
+The threshold always vanishes for large system size N, showing that consensus becomes impossible for a large
+number of users. This finding opens new questions about the side effects of the widespread use of personalized
+
+ing of democracy. A filter bubble occurs when a user is
+selectively exposed predominantly to content that tends to
+reinforce his/her current opinion/belief/state, while sup-
+pressing other alternatives! ?. In OSM this typically hap-
+pens because of personalized recommender systems, which
+leverage information on past user activity to provide sug-
+gestions which, aiming at maximizing user satisfaction,
+tend to be very similar to what the user has already shown
+to prefer‘ *. Together with the “echo chamber” effect’,
+filter bubbles are thought to be at the heart of the overall
+increase of polarization and radicalization that is observed
+in many social contexts!-!?.
+
+A great deal of activity has been devoted in the last years
+to the goal of understanding what are the basic micro-
+scopic mechanisms underlying the rise of polarization and
+how phenomena observed at population scale are linked to
+them!3-?! These efforts follow the line of research aimed at
+understanding how basic mechanisms underlying the inter-
+action of individuals give rise to collective consensus phe-
+nomena?*?3_ The voter model?*?° played an important
+role in this activity, because of its extremely simple nature
+amenable to exact analytical treatment. Its dynamics de-
+scribes the evolution of a population of agents which have
+to choose between two perfectly equivalent alternatives and
+do it by selecting at random a peer and copying their se-
+lection. Starting from a disordered state, clusters of indi-
+viduals sharing the same opinion form and grow over time.
+For any structure of the interaction pattern among indi-
+viduals, consensus (i.e. all agents having the same opin-
+ion) is invariably reached. A very natural generalization
+is the Multistate Voter Model (MVM), where the number
+of available equivalent options is a fixed value M > 227-29,
+In mean-field, MVM reaches consensus for any value of
+M, and the average time required for it depends on M
+only weakly. In this paper we investigate the behavior of
+MVM in the presence of an additional interaction mecha-
+nism which biases the opinion of an agent toward the state
+the agent has chosen most frequently in the past. This
+interaction mimics the filter bubble effect of personalized
+recommenders in OSM, which present to users suggestions
+based on their previous behavior.
+
+The effect of personalized information on binary voter
+model dynamics has been investigated in a previous pub-
+lication®°®. In a homogeneous mean-field framework it was
+shown that for sufficiently strong coupling with the agents’
+past, consensus is no longer reached and the system re-
+mains stuck in a polarized state with coexistence of both
+opinions. Here we generalize the work in Ref.*° by studying
+both analytically and numerically the effect of personalized
+information in the context of the MVM. The goal is to un-
+derstand whether, depending on the number of agents N,
+the number of possible opinions M and the strength of the
+personalized information (A, to be defined below) consen-
+sus is reached or not. Depending on the scaling of M with
+respect to N we identify three different regimes and in each
+of them we compute the threshold A, separating consensus
+from polarized states. Numerical simulations are in good
+agreement with theory in all cases expect for Mf = N and
+they also show that the transition from consensus to po-
+larization is continuous and characterized by a power law
+distribution of opinions numerosity at the threshold. Re-
+markably, for N — co the threshold goes to zero in all
+three regimes and this implies that in large systems even a
+very small form of personalized information always breaks
+consensus, leading to opinion polarization.
+
+Il. MULTISTATE VOTER MODEL WITH
+PERSONALIZED INFORMATION
+
+A. Definition of the model
+
+Many real life situations are characterized by the pres-
+ence of more than two possible opinions or factions, as
+in the case of political elections or football clubs, and so
+the voter model with binary opinions is not suitable for
+schematizing the dynamics of such systems. However this
+difficulty can be easily bypassed by considering the usual
+voter dynamics and allowing the states of the N agents
+to vary among M distinct opinions instead of only two,
+so to obtain the so called multistate voter model. De-
+noting by o;(t) the opinion of agent i at time £ we have
+oi{t) =1...M and the update rule reads
+
+ 
+
+oi{t + dt) = 0;(£) with prob. Ass (1)
+
+yj Aig
+
+Here Aj; is the binary adjacency matrix of the undirected
+network over which the dynamics take place, while 6t =
+1/N. In the following we focus on the mean field case,
+meaning that the underlying network is a complete graph
+and it holds A;; = 1 for i # j; in this case the update rule
+Eq. (1) can be written as
+
+oi{t + 6t) = k with prob. wu (2)
+
+where N;,(£) is the number of agents with opinion k at time
+t. In order to endow this system with personalized infor-
+mation (PI) we consider also N PI fields e;, each coupled
+with the corresponding standard voter agent o;. The state
+of PI fields is a random variable ranging from 1 to M and
+which assumes the value & with probability Ple;(t) = k].
+This probability varies from agent to agent and over time,
+depending on the history of the corresponding voter: the
+more a voter has chosen a given opinion in the past, the
+higher the probability that its corresponding PI field sug-
+gests that opinion. In order to quantify this reinforcement
+process we generalize the expression for Ple;({t) = k] pro-
+posed in®® to the case of M distinct opinions, more pre-
+cisely
+
+(k)
+ne t
+
+Plei(t) =k] = Pini (t)| = ot) (3)
+
+jai ¢ © (t)
+
+where ni) (4) is the number of times agent i has chosen (or
+
+also confirmed) opinion k up to time ¢; in the following we
+
+¢
+
+will often write ni), keeping the time dependence implicit.
+The state of the system is thus described by N(M-+1) vari-
+
+ables, namely {(0;, ni), and the dynamics takes place as
+in the voter model with personalized information®®. Ini-
+tially each opinion o; is set equal to a random value; at
+each time step a given agent 7 is selected uniformly at ran-
+dom and with probability 1 — A it follows the usual voter
+dynamics, while with probability A the agent copies the
+state e;(t) of the corresponding PI field. More explicitly
+
+e;(£) with prob. »
+
+4
+k with prob. (1 — A)4 (4)
+
+oi{t + 6t) =
+
+As in®°, the parameter sets the strength of the personal-
+ized information with respect to the interaction with other
+individuals, while c determines how fast personalized in-
+formation adapts to the preferences of agents.
+
+B. Phenomenology of the multistate voter model with
+personalized information
+
+Let us illustrate the overall qualitative phenomenlogy
+of the model, common for generic values of M, N and c.
+A crucial observable is the number of surviving opinions
+M,{t) as function of time, which plays the role of the order
+parameter of the system. In the absence of personalized
+information (that is for A = 0), for a homogeneous initial
+condition with M,(0) = M states, the average value of
+M,(t) satisfies for t < N?"
+
+ 
+
+M(t) = , (5)
+
+For times of the order of N, M, reaches the value M, = 1,
+implying an ordered configuration (consensus) in which all
+agents share the same opinion, as also shown in Fig. la.
+Notice also that there is an intrinsic timescale tj = N/M
+in Eq. (5) such that M, remains constant and equal to
+M,(0) for times up to tp. As A increases deviations from
+ 
+
+ 
+
+Figure 1: Evolution of the number of surviving opinions for 100 realizations of the dynamical process with various
+values of A. (a) Very small \ = 0.001; (b) Slightly subcritical A = 0.04; (c) Critical A = 0.05; (d) Supercritical A = 0.08.
+In all panels N = M = 10000, c = co. For convenience we plot {+ 1 along the horizontal axis.
+
+Eq. (5) start to appear, but the system keeps reaching
+the ordered state after a sufficiently large amount of time,
+see Fig. 1b. The behavior changes as A approaches the
+threshold A,; in this case consensus can still be reached,
+but in some realizations the system remains trapped in a
+stable disordered state (also denoted as polarized state)
+characterized by the presence of more than one opinion
+(Fig. lc). Finally, for A substantially larger than A;., the
+system never reaches consensus and the asymptotic state
+is always the disordered one (Fig. 1d). This qualitative
+phenomenology is observed independently of the value of c
+(provided that ¢ > 1). This parameter only determines the
+possible presence of an initial transient dominated by the
+randomness of personalized information in the first time
+steps, as shown Fig. 2. Indeed for c= 1+6 with 6 < 1 the
+probability of PI fields, Eq. (3), can be approximated as
+
+asa 1 nls
+wate M+ dn?
+
+ 
+
+P [ni] =
+
+Exploiting the fact that it ni) is nothing but the num-
+ber of times agent 7 has been updated and that going from
+t to t+ 1 each agent is on average updated once we have
+
+yt ni?) = t so that
+
+«&)
+@) ttnd 1 bf aw t
+Pn ss eat My
+
+(*)
+
+Since 0 <n;"’ <1 this implies
+
+1 i (i) 1 i 1
+7 pe <P] <p +8 (0-H):
+
+As a consequence P [ni] = 3 + O(6t) and so for 6 small
+
+the dynamics is initially equal to that of a multistate voter
+model with external random field. This produces the ob-
+served transient. A detailed analysis of the multistate voter
+model in presence of random external information is be-
+yond the scope of this work, the interested reader can find
+further details in?!. In order to determine an upper bound
+of the c¢;;, above which no transient is observed, let us con-
+sider the first update of agent 2 and let us suppose that
+opinion m is selected. As a consequence the probability of
+— A=0.05 — A=0.15 — A=0.30 — A=0.35
+
+ 
+
+   
+   
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+10°E z
+
+= |
+
+10°E 400 =
+
+F 300 |
+
+10°= Ll ol? p1iitiul roti Loon 3
+10° 10° 10° 10° 10°
+
+t
+
+Figure 2: Temporal evolution of the number of surviving
+opinions for N = 1000, M = 1000, c = 1.2 and various
+values of A. The inset shows the same plot for \ = 0.35
+
+and various values of c.
+
+the corresponding PI field for the successive update is
+
+c
+——— fork=m
+
+re=n =f
+——— fork .
+lopwsi hem
+
+If the probability of the PI to be in state m is larger than
+the probability of being in any other state, a reinforcing
+loop gets established and the PI gets more and more po-
+larized along opinion m. This implies that a sufficient con-
+dition for observing a polarized PI already after the first
+step is
+
+Ple;(6t) =m] > S© Plei(st) = ki,
+
+kém
+which implies
+c M-1
+e+M-1°> c+M-1
+yielding a threshold value
+Cin = M—-1. (6)
+
+Fig. 2 shows that this estimate is an upper bound of
+the real c;;,. The duration of the transient governed by a
+random external field gets shorter as c is increased and it
+is completely absent for c © cy, = 999. Since c plays only
+a marginal role, in the rest of the paper we focus on the
+case C > Cp so as to remove the initial transient.
+
+Finally, we illustrate the nature of the transition ob-
+served as 4 is varied. As evident from Fig. 1, around the
+transition different realizations of the process lead to differ-
+ent outcomes: either consensus or a stationary state. The
+transition is characterized by the variation, as a function
+of A, of the fraction P, of runs reaching a stationary state
+(Fig. 3a,inset). As it is possible to see, the larger is N, the
+sharper the transition becomes. Moreover, since for large
+
+N the critical threshold , goes to zero (see Subsec. IITC
+and figures therein) and the transition gets very sharp, this
+implies that in large systems even an infinitesimal amount
+of personalized information is sufficient to make the reach-
+ing of consensus impossible. The main panel of Fig. 3a
+displays how the fraction of surviving opinions in the sta-
+tionary state M,(t > o0)/M = M&/M, averaged only
+over surviving runs, varies as a function of A. The quan-
+tity MS°/M grows in a continuous fashion, starting from
+a finite value decreasing with N. This suggests that in the
+large N limit the transition is continuous, as also confirmed
+by inspecting the distribution of S;(t + oo) = SP, the
+number of agents polarized along opinion k in the station-
+ary state. When c > c:, the number of polarized agents
+S, along opinion k is given by the number of agents such
+that n\*) > ni? for any 7 # k, since, in this case, the
+personalized information suggest the most chosen opinion.
+Indeed, by looking at Fig. 3b it is clear that such a distri-
+bution decays as a power-law for A = A,, with a nontrivial
+exponent approximately equal to 2.8 (for N = M).
+
+Ill. ANALYTICAL APPROACH
+
+As shown above, the phenomenology of the model is only
+marginally influenced by the parameter c. Therefore con-
+sider the case c >> cp, which can be more easily handled
+analytically. Indeed in such a situation the probability of
+the PI field e; is strongly peaked on the opinion more fre-
+quently held by agent i and Eq. (3) reduces to
+
+Ple; = k] = dem, (7)
+where m is the opinion which satisfies
+
+).
+
+m = argmax [ns
+k
+
+In other words the PI suggests only the favorite opinion
+
+in the past. Our goal is to derive, under the assumption
+
+of large c, analytical estimates of the critical value 4, for
+
+generic large values of N and M.
+
+A. Stability of polarized states
+
+Let us consider an agent 7 in state o; and let us as-
+sume that its PI is polarized along opinion m. Combining
+Eqs. (4) and (7) we can write the transition probability of
+this agent?? as
+
+J gpsa-n54| fork=m
+1 Nr
+Uy Vay
+
+For the overall stability of the polarized state, the PI field
+e; should remain polarized on opinion m so as to keep the
+agent we are considering fixed (on average) on this same
+opinion. This requires the transition probability to opinion
+m to be larger than the transition probability to any other
+
+Wlo,>k)= (8)
+
+fork Am.
+ 
+
+ 
+
+  
+    
+       
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+0.25) . y = 1 1 T T TT Tiny T TOTTI T TTTiTiiiy
+Qe = 4 4
+cole N31 2 10 — N=10
+
+0.207 ge ete 7 10 — N=3-104
+
+3S ~@- N=3-10 — N=7-104
+> 0.15— ae N=7-10% | 107%
+© we oe i? —* int —e 108 nD ,
+* es plo 107
+2 0.10F he * 2 “
+ra ae Bos- 10%
+0.05 8 ‘ 4 “6
+S 0.0m 10
+° 0.8 10 ASA
+0.00 l l I I 107" l 11 tiidil | pot oiiitl
+0.00 0.05 0.10 0.15 0.20 0.25 10° 10 107 108
+A Sr
+(a) (b)
+
+Figure 3: a) Main: Stationary value of the fraction M, of opinions, for Mf = N, averaged only over surviving runs.
+Inset: Probability that consensus is reached as a function of \ for N = 107, 10*, 10° and M = 20. As N increases the
+transition between consensus and polarization becomes sharper and sharper. b) Probability distribution of the number
+
+of agents 5S; polarized along opinion k at criticality for N = M. This has been obtained by letting the system evolve
+toward the stationary state and then performing a binning over the 5; so to obtain their histogram. Note that such an
+histogram corresponds to a single realization of the system.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+104 Z
+10° z
+10° z
+FO Npex— N/M 4
+104e 4
+: - Nm) 5
+10° ! L L I L q
+0 1000 2000 3000 4000 5000
+t
+(a)
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+10% z
+10° z
+10° 4
+Fp NEX— N/M 3
+IL a
+10E - Nm¢(A) :
+10° ! ! ! ! 4
+0 1000 2000 3000 4000 5000
+t
+(b)
+
+Figure 4: Temporal evolution of Ninax — N/M, compared with the critical value Nm,(A) for N = 10+, M = 200: a)
+A = 0.07; b) A = 0.08. Different colors correspond to different simulations.
+
+opinion /, otherwise n would grow faster than ni) and
+
+the PI would eventually depolarize and then polarize along
+opinion /. As a consequence, in order for the polarized state
+to be stable it must be
+
+Wo, > m) > W(o; > I) ViAm,
+which yields, using Eq. (8)
+N,, —N; d
+mT my),
+a A = m2) (9)
+
+Here, in analogy with®°, we defined the critical magnetiza-
+tion m_{A) as
+
+(10)
+
+We can then repeat this same reasoning but considering an
+agent 7 whose PI field e; is polarized along opinion !. This
+
+leads to
+Nim — Ni;
+N
+
+Combining this expression with Eq. (9) we obtain the fol-
+lowing necessary condition for a polarized state to be stable
+
+<m-{A).
+
+<m{A)  V{l,m).
+
+Nn —N;
+
+ 
+
+By introducing the partial magnetization m, along opin-
+ion k, we can also rewrite this constraint as
+
+Ne — Vive Ne 2N;, — N
+ny = ox —_ = —
+N N
+In this way Eq. (11) becomes
+“- < Me. (12)
+
+ 
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+= _
+c t=50 4
+
+10°: t=1005
+
+E £=150 4
+
+104 t= 200%
+
+—_~ E t= 250 J
+®.. 108 #= 300%
+S&F t= 450 4
+Ooh ¢=600 J
+E £=750 4
+
+10°F (a0 |
+10° 3
+
+0 50 100 150 200
+
+Figure 5: Temporal evolution of the Qin”) distribution
+as a function of time. Data are for c = 400, N = 10°,
+M = 20, X =0.07. The component with high mean value
+represents agents polarized along opinion k; the
+component with low mean value represents agents
+unpolarized or polarized along other opinions.
+
+The conclusion if the difference between any two magneti-
+zations is smaller than the threshold m, then the polarized
+state is stable. Note, however, that this condition is very
+strict and a polarized state can be stable on average even if
+there are some opinions held by a small number of agents
+not fulfilling it. Indeed in such a situation these opinions
+will be absorbed by the others, but still consensus will not
+be reached. As a consequence what really matters is that
+(11) is fulfilled when considering the most common opin-
+ion whose size is Niaz and the average opinion size given
+by N/M. The condition ensuring the system not to reach
+consensus is thus
+
+N
+Ninae ~ <= < Nme(A). (13)
+
+M
+
+Fig. 4 checks and confirms the validity of this argument
+in numerical simulations. Note that m, is larger than 1 for
+A > 1/2 and so, as in the voter model with personalized
+information, above A = 1/2 an opinion can survive even
+with only a single agent supporting it.
+
+B. Polarization time
+
+In deriving Eq. (12) we assumed all PI fields to be po-
+larized on a certain opinion, meaning that for any i there
+
+is only one & such that n\*)
+
+ni) = 0 for all pairs (i,k) and the randomness of voter
+updates implies the occurrence of several ties between the
+various ni), The assumption that PI fields are polarized
+starts to be valid only after a polarization time t* > 0.
+
+In order to compute this time we write down the master
+
+is maximum. However initially
+
+equation for the distribution of the ni) values, a(n),
+
+that reads
+
+dQ (n\")
+
+= NR(u Jalal? —2)-NA(o)a(u)
+14
+
+where we introduced the single transition probability
+
+NR(n\”) =(1- a + AP(e; =k)
+
+1
+
+ew (1 — A) Wt) +AP(e; =k). (15)
+Here we assumed that all surviving opinions share approx-
+imately the same number of agents and so we can make
+the approximation N;,/N = 1/M,(t). Now, considering
+opinion k, only a fraction $;/N of the agents is polarized
+along this opinion and thus we assume that the distribu-
+tion Q(n) is formed by two normalized components @ 1
+and @2 corresponding to the two types of agents: those po-
+larized on opinion & (component @2) and those polarized
+
+on any other opinion or not polarized at all (component
+Q,). We can then write Q as a bimodal distribution
+
+O(n) = (1 ar (n®) + St00(n),
+
+Both components evolve according to the same general
+master equation Eq. (14), but the transition rates are dif
+ferent. For what concerns the polarized component @2 we
+have
+
+NR(n\”) =(1- NanH +
+
+and using this expression and Eq. (14) we can compute
+both the mean value nz and the variance of of the distri-
+bution Qe for polarized agents, finding
+
+2 ‘ t 1-4
+ma=o3= J dt may? , (16)
+
+Analogously, the transition rate of the component @1, cor-
+responding to agents not polarized on opinion &, is
+
+1
+MO
+
+ 
+
+NR(n\”) =(1—2)
+
+and so the mean value n, and the variance o? are
+
+nm =ot= [ a (573): (17)
+
+Detailed computations are reported in Appendix A.
+Looking at Eqs. (16) and (17) it is clear that initially
+the two components are indistinguishable since they both
+have null mean and variance. However, having different
+velocities they tend to separate over time. This behavior
+is shown in Fig. 5. Until Qi and Q2 are superposed there
+is no real distinction between polarized and unpolarized
+agents, as all agents can change their preferred opinion in
+one or few voter updates. Consequently we identify the
+polarization time ¢* introduced above as the time when
+the two components split for the first time. This can be
+readily determined by imposing the distance between the
+two peaks to be equal to their widths, that is
+
+no(t*) — my (t* )=2| one) + yoate)).
+
+where the factor 2 is somewhat arbitrary and does not in-
+fluence the scaling of ¢*. Substituting Eqs. (16) and (17)
+into this last expression we come up with an implicit inte-
+gral expression for the polarization time ¢*
+
+sat (18)
+
+ 
+
+    
+
+      
+
+SL Baal
+
+C. The transition point
+
+Once the polarization time has been obtained we can
+turn to the determination of the critical parameter A,. The
+idea is the following: In the initial stage of the dynamics,
+the numbers of agents holding the different opinions, N;,
+tend to fluctuate and their differences tend to grow over
+time. If this growth is slow enough, at the polarization
+time t* the condition for the stability of polarized states,
+Eq. (13) is satisfied. In such a case the disordered state
+with multiple coexisting opinions is stable and persists for-
+ever. Conversely, if at ¢* Eq. (13) is violated, the system
+will eventually evolve toward the consensus state. The con-
+dition for A, thus reads
+
+Lmax(t*) = Nyax(t*) — x = Nz a (19)
+By means of numerical simulations and a simple scaling
+argument (see Appendix B) we determine that for M «< N
+2max{t) scales as
+
+ 
+
+Ni/2
+
+Bnax(t) ~ wart” 2, (20)
+
+where y * 1/4 is a numerical constant. We also derived an
+equation for the time growth of N;,—N/M and we checked
+that the temporal scaling of tmax(£) is consistent with this
+expression, see Appendix C. Replacing this last expression
+into Eq. (19) we obtain an equation for A,
+
+pet ane,
+implying
+
+yA Oe)?
+N+ (SO)
+
+Eq. (21), together with Eq. (18) for the polarization
+time, provide a closed system of equations in A, and ¢
+
+SE bee fae}
+
+a (#*)3/2
+
+de = (21)
+
+ 
+
+ 
+
+ 
+
+ey
+NSE
+
+c
+
+In order to solve this system we need an explicit ex-
+pression for the number M(t) of surviving opinions. We
+consider two possible assumptions, which are expected to
+be fairly accurate for different values of Mf and N. Here
+we limit ourselves to report the main results, the interested
+reader can find detailed calculations in Appendix D.
+
+DD M<N
+
+If the number of opinions in much smaller than the num-
+ber of agents, each opinion is initially shared by a large
+number of individuals. As a consequence during a first
+time interval no opinion disappears and it is reasonable to
+make the approximation
+
+M(t) = M
+
+In this way Eq. (22) can be rewritten as
+
+2
+~ a4 fey. fee
+~ 2 M ©
+
+ 
+
+ 
+
+M
+(23)
+
+V/s iy
+A (ey?
+
+\e = ——
+N+ 7X (3?
+
+Depending on how large M/ is with respect to N, the solu-
+tions of this system scale in different ways.
+
+eM<«N*¥/
+
+ta 4(MN)M4
+de 2(MaN) MS. (24)
+
+oNF<cM<EN
+
+eee 28/5(N M2)1°
+ee 92/5 (wM2) M5, (25)
+
+E. M=N
+
+If M = N each agent has initially a different opinion.
+Hence, even during the first time steps, some opinions dis-
+appear by chance. In this case we can approximate the
+surviving opinions M,(£) with the expression valid for the
+simple multistate voter model, Eq. (5), that is for M = N,
+
+N
+
+M,(t) =. (26)
+
+Substituting this expression in Eq. (22) and imposing M =
+N > 1, A. < 1 we obtain the following system
+
+32NV/2 4 8)\.N
+2(2.N — 16)
+NMP)?
+N + N-Y2[e(A0)]9/?°
+
+ra
+(27)
+whose solution scales as
+be x 94/3 N2/3
+
+Ae x AN V2 (28)
+
+IV. NUMERICAL SIMULATIONS
+
+We now compare theoretical predictions with numerical
+simulations. We iterate MVM dynamics for various values
+of M and N up to ¢ = 2000 and we determine the fraction
+of times P,() the system has reached consensus. We take
+as numerical estimate of A, the values such that P,(A.) =
+1/2.
+
+For fixed value of M and increasing size N, the analytical
+results predict initially a scaling regime given by Eq. (25)
+as long as N is much larger than Af but much smaller than
+M3, followed by a scaling given by Eq. (24). For M = 20,
+the first regime spans a short interval of N values. In
+Fig. 6a we see only a hint of the associated scaling, while
+for larger values of N the agreement between theory and
+numerics is very good. For M = 200 instead (see Fig. 6b),
+the first regime extends to much larger values of N, so that
+feasible values of N lie only in this regime. In this case A,
+nicely scales as N~/5, as predicted by Eq. (25), although
+the prefactor is not predicted exactly.
+
+For the case Mf = N instead, Figure 6c show that the
+theory is not able to catch the correct scaling. This mis-
+match has various potential origins. Indeed using Eq. (26)
+for the temporal dependence of M,(t) is a quite rough ap-
+proximation, as the number of different opinions actually
+decays much more slowly over time. But also the use of
+Eq. (19) for tmax(£) is not warranted for M = N. A deeper
+understanding of the phenomenology of the case M = N
+remains an interesting open question.
+
+Vv. CONCLUSIONS
+
+In this paper we have introduced and analyzed a mul-
+tistate voter model where the coupling with an exter-
+nal history-dependent individual field mimics the effect
+of personalized recommendation algorithms in online so-
+cial media. A population of agents, initially having dif-
+ferent opinions, reaches consensus on a single opinion or
+remains polarized on multiple different opinions, depend-
+ing on the strength of personalized information. The phe-
+nomenology is governed by the competition between the
+fluctuations induced by voter dynamics and the tendency,
+due to personalized information, to bind agents to the
+opinion they adopted most frequently in the past. By
+means of arguments based on this physical picture, we
+estimated analytically the critical threshold between the
+two regimes, obtaining a reasonable agreement with sim-
+ulations for M < N. Conversely, the dynamics when the
+initial number of opinions is comparable with the number
+of agents seems to elude our approach.
+
+From a more general point of view, our study indicates
+how difficult reaching consensus is, in the presence of per-
+sonalized recommendations. For any number M of initial
+
+opinions the threshold , tends to vanish when the num-
+ber of agents N diverge. This means that no matter how
+weak is the coupling with the personalized information, if
+the system is large enough polarization unavoidably arises.
+In this respect, note that voter dynamics is extremely fa-
+vorable to the establishment of consensus: for any inter-
+action pattern, consensus is necessarily reached for any fi-
+nite number of interacting individuals. The addition of a
+personalized recommendation completely changes this pic-
+ture, at least for large systems. For a finite number of
+interacting agents instead consensus is still reached if the
+strength of personalized information is small enough. The
+transition between the two regimes exhibits nontrivial fea-
+tures that may be the focus of future activity along with
+generalizations to include nontrivial interaction patterns
+or a different functional dependence between the proba-
+bility distribution of the personalized information and the
+number of times an opinion has been selected in the past.
+
+A natural extension of this work would be to analyze
+more realistic recommendation algorithms. With respect
+to this, a promising possibility is to consider collabora-
+tive filtering algorithms®®, which are based on similarities
+among the history of different users or opinions instead of
+considering only the history of the user itself. This typol-
+ogy of algorithm is used in real life applications***°, but
+still it is sufficiently simple to try an analytical study of its
+effects on opinion dynamics models.
+
+REFERENCES
+
+IR. Pariser, The filter bubble: What the Internet is hiding from you
+(Penguin UK, 2011).
+
+2T.R. Dillahunt, C. A. Brooks, and S. Gulati, “Detecting and visu-
+
+alizing filter bubbles in google and bing,” in Proceedings of the 33rd
+
+Annual ACM Conference Extended Abstracts on Human Factors
+
+in Computing Systems, CHI EA 715 (Association for Computing
+
+Machinery, New York, NY, USA, 2015) p. 1851-1856.
+
+S. Nagulendra and J. Vassileva, “Understanding and controlling the
+
+filter bubble through interactive visualization: A user study,” in
+
+Proceedings of the 25th ACM Conference on Hypertext and Social
+
+Media, HT ’14 (Association for Computing Machinery, New York,
+
+NY, USA, 2014) p. 107-115.
+
+47. T. Nguyen, P.-M. Hui, F. M. Harper, L. Terveen, and J. A.
+Konstan, “Exploring the filter bubble: The effect of using recom-
+mender systems on content diversity,” in Proceedings of the 23rd
+International Conference on World Wide Web, WWW ’14 (Asso-
+ciation for Computing Machinery, New York, NY, USA, 2014) p.
+677-686.
+
+5L. V. Bryant, “The youtube algorithm and the alt-right filter bub-
+ble,” Open Information Science 4, 85-90 (2020).
+
+®D. O’Callaghan, D. Greene, M. Conway, J. Carthy, and P. Cun-
+ningham, “The extreme right filter bubble,” arXiv preprint
+arXiv:1308.6149 (2013).
+
+M. Cinelli, G. De Francisci Morales, A. Galeazzi, W. Quat-
+trociocchi, and M. Starnini, “The echo chamber ef-
+fect on social media,” Proceedings of the National
+Academy of Sciences 118 (2021), 10.1073/pnas.2023301118,
+https://www.pnas.org/content /118/9/e2023301118.full.pdf.
+
+SW. Cota, S. C. Ferreira, R. Pastor-Satorras, and M. Starnini,
+“Quantifying echo chamber effects in information spreading over
+political communication networks,” EPJ Data Science 8, 35 (2019).
+
+°P. Barbera, J. T. Jost, J. Nagler, J. A. Tucker, and
+R. Bonneau, “Tweeting from left to right: Is online po-
+litical communication more than an echo chamber?” Psy-
+chological Science 26, 1531-1542 (2015), pMID: 26297377,
+https: //doi.org/10.1177/0956797615594620.
+
+w
+(a) M=20€N.
+
+~< » — aMsnye
+2/5 M2N)-VS
+ -- Simulations data
+
+  
+
+4H :
+10! 10? 10° 104 10° 10° 107 108 10° 108
+N
+
+(b) M =200«.N.
+
+ 
+
+  
+   
+    
+ 
+
+N
+
+— AMPN) 8
+25 MeN) HS
+-@- Simulations data
+
+ 
+
+ 
+
+ 
+
+ 
+
+N
+
+ 
+
+— 4n-12
+
+ 
+
+      
+
+L —®-- Simulations data
+
+ 
+
+ 
+
+10°
+
+10°
+
+Figure 6: Comparison of analytical predictions for the threshold A, and numerical estimates of it
+
+10“The partisan divide on political values grows even wider,”
+https: // www.pewresearch.org/politics/2017/10/05/the-partisan-
+divide-on-political-values-grows-even-wider/ (2017), accessed:
+2021-10-04.
+
+11, Chitra and C. Musco, “Analyzing the impact of filter bubbles
+on social network polarization,” in Proceedings of the 13th Inter-
+national Conference on Web Search and Data Mining, WSDM ’20
+(Association for Computing Machinery, New York, NY, USA, 2020)
+p. 115-123.
+
+12M. Maes and L. Bischofberger, “Will the personalization of online
+social networks foster opinion polarization?” Available at SSRN
+2553436 (2015).
+
+138. Galam, “Rational group decision making: A random field ising
+model at t= 0,” Physica A: Statistical Mechanics and its Applica-
+tions 238, 66-80 (1997).
+
+14N. Crokidakis, “Role of noise and agents’ convictions on opinion
+spreading in a three-state voter-like model,” Journal of Statistical
+Mechanics: Theory and Experiment 2013, P07008 (2013).
+
+15G, L. Ciampaglia, A. Nematzadeh, F. Menczer, and A. Flammini,
+“How algorithmic popularity bias hinders or promotes quality,”
+Scientific Reports 8, 15951 (2018).
+
+16N, Perra and L. E. Rocha, “Modelling opinion dynamics in the age
+of algorithmic personalisation,” Scientific reports 9, 7261 (2019).
+
+ITA. Sirbu, D. Pedreschi, F. Giannotti, and J. Kertesz, “Algorithmic
+bias amplifies opinion fragmentation and polarization: A bounded
+confidence model,” PLOS ONE 14, 1-20 (2019).
+
+18P, Freitas, A. R. Vieira, and C. Anteneodo, “Imperfect bifurcations
+in opinion dynamics under external fields,” Journal of Statistical
+Mechanics: Theory and Experiment 2020, 024002 (2020).
+
+19F, Baumann, P. Lorenz-Spreen, I. M. Sokolov, and M. Starnini,
+“Modeling echo chambers and polarization dynamics in social net-
+works,” Phys. Rev. Lett. 124, 048301 (2020).
+
+290A. F. Peralta, M. Neri, J. Kertész, and G. Ifiiguez, “Effect of
+algorithmic bias and network structure on coexistence, consensus,
+and polarization of opinions,” Phys. Rev. E 104, 044312 (2021).
+
+217, W. Baron, “Consensus, polarization, and coexistence in a con-
+tinuous opinion dynamics model with quenched disorder,” Phys.
+Rev. E 104, 044309 (2021).
+
+22. Castellano, 8. Fortunato, and V. Loreto, “Statistical physics of
+social dynamics,” Rev. Mod. Phys. 81, 591-646 (2009).
+
+23P. Sen and B. K. Chakrabarti, Sociophysics: an introduction (Ox-
+ford University Press, 2014).
+
+24P. Clifford and A. Sudbury, “A model for spatial conflict,”
+Biometrika 60, 581-588 (1973).
+
+251. Frachebourg and P. L. Krapivsky, “Exact results for kinetics of
+catalytic reactions,” Phys. Rev. E 53, R3009-R3012 (1996).
+
+26P. L. Krapivsky, S. Redner, and E. Ben-Naim, A kinetic view of
+statistical physics (Cambridge University Press, 2010}.
+
+27M. Starnini, A. Baronchelli, and R. Pastor-Satorras, “Ordering
+dynamics of the multi-state voter model,” Journal of Statistical
+Mechanics: Theory and Experiment 2012, P10027 (2012).
+
+28W. Pickering and C. Lim, “Solution of the multistate voter model
+and application to strong neutrals in the naming game,” Phys. Rev.
+E 93, 032318 (2016).
+
+29. F, Peralta, N. Khalil, and R. Toral, “Ordering dynamics in
+the voter model with aging,” Physica A: Statistical Mechanics and
+its Applications 552, 122475 (2020), tributes of Non-equilibrium
+Statistical Physics.
+
+39G. De Marzo, A. Zaccaria, and C. Castellano, “Emergence of po-
+larization in a voter model with personalized information,” Phys.
+Rev. Research 2, 043117 (2020).
+
+31, Herrerias-Azcué and T. Galla, “Consensus and diversity in mul-
+tistate noisy voter models,” Phys. Rev. E 100, 022304 (2019).
+
+32.Note that these transition probabilities do not depend on the state
+10
+
+o; of the agent.
+
+33], B. Schafer, D. Frankowski, J. Herlocker, and S. Sen, “Col-
+laborative filtering recommender systems,” in The adaptive web
+(Springer, 2007) pp. 291-324.
+
+34G. Linden, B. Smith, and J. York, “Amazon.com recommenda-
+tions: item-to-item collaborative filtering,” IEEE Internet Com-
+puting 7, 76-80 (2003).
+
+35B, Smith and G. Linden, “Two decades of recommender systems
+at amazon.com,” IEEE Internet Computing 21, 12-18 (2017).
+
+36Only two because the scaling \ < N~!/? corresponds to negative
+times.
+
+Appendix A: Moments of the distribution of ni")
+
+Let us consider the distribution Q(n\",1), where ni)
+is defined as the number of times agent 7 has chosen or
+confirmed opinion & in the past. The evolution of this
+
+distribution is given by
+Q(n\?.1 + ot) = R(n\” _ 1 Q(n\” _ 1,t)+
++ A - R(n\) |Q(n\,2).
+
+Expanding the left hand side for small 6t = 1/N we obtain
+which yields Eq. (14)
+
+Co)
+100) _ (at a) ola
+—NR (ni Ja(ni”). (AL)
+Now we consider the two components Qi(n\",t) and
+
+Qo (ni® ; t) introduced in ITT B and we compute their mean
+
+value and variance. We recall that Q2 corresponds to
+agents whose PI are polarized along k, while Q, to the
+remaining agents, and that both components evolve ac-
+cording to the same master equation Eq. (14), but with
+different transition rates. The general equation for the
+drift of the distribution (also called average drift in the
+following) is
+
+ 
+
+a(n) - oy €2(ni")
+—-Srn® LL
+
+dt ° dt
+
+a
+
+nk
+a
+
+and using Eq. (Al) we obtain
+
+_ i) (ke) (%) 4)
+v= a NR(n\ 1Q(n\ 1)
+
+~ wR (a®)a(o")] =
+Eom (nolo)
+
+Analogously the evolution of the second moment is
+
+d ni) ° , ni
+o ) scum “ot )
+
+nk
+a
+
+that using Eq. (Al) becomes
+
+NOOD (ey jobe
+
+wr (n)a(ni®)) =
+= Yo (n” + 1) wR(ni) a(n”) _
+
+-(oPYen(a ole)
+_ p(n) oln®™
+=7 42 nl n(ni”)Q(n\"),
+
+n
+a
+
+(A3)
+
+where we used Eq. {A2). Let us firstly consider agents
+polarized along & and so Qo, the transition rate is
+
++A.
+
+ 
+
+NR» (n\") =(1-)
+
+M,(t)
+and putting this expression into Eqs. (A2) and (A3) we get
+
+m= N5pqy th
+
+Mery), _ 1
+
+dt (1) M,(2)
+
+(Ad)
+
+ 
+
++afaa +2nz),
+
+where we defined nz = (ni) . Analogously for the com-
+2
+ponent Q, it holds
+
+ 
+
+NRi(n\) =(1- >) ,
+
+ 
+
+ 
+
+M(t)
+and so
+m1 =(- NaH
+ny) (A5)
+a(( : } an d) ! (1 + nz)
+dt M,(t)
+
+Finally, considering that
+
+t
+n= [| y- dt’
+Oo
+2
+72 ((ni®)”)— (ai?)
+
+dot KO) ) gon sot?)
+
+dt dt dt
+
+we can write the expressions for the mean value and vari-
+ance of both components
+
+o3(t) = [ a (a * \) (A6)
+o2(t) a
+
+t
+1
+dt’
+far
+
+These are Eqs. (16) and (17).
+
+n2
+
+ 
+
+(t) =
+(t) =
+
+ny
+11
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+   
+
+  
+  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+10% z
+
+10"e 3
+
+10° 3
+
+10% 4
+
+LOE 3
+
+10° 10! 10” 10°
+t
+(a)
+T T T TTT T T TUTTI] T T |
+108 10" 5
+a 10% 10" z
+| E c a
+z F = E q
+eH 1L = T 7
+i: Ae 3
+& c E 7
+oL L 4
+107! [ y
+10*e1 bop pil a on |
+10° 10! 10° 108 10° 10! 10° 108
+t t
+(b) (c)
+
+Figure 7: (a) Temporal evolution of 2max(t), Ymax(t) and their difference for N = 10’, M = 20, \ * ,. (b) Collapse
+plot to check the scaling (20) with respect to N; M = 20 and \ & A. {c) Collapse plot to check the scaling (20) with
+respect to M; N= 10" and A & Ag.
+
+Appendix B: Scaling of tmax(t)
+
+As discussed in the main text, near the transition point
+the quantity tmax(t) = Nmax(t) — N/M satisfies Eq. (20),
+that is
+
+Ni/2 3/2
+2max(t) = WF le,
+This is shown in Fig. 7, where we test both the evolution in
+time and the scaling with respect to M and N. The latter
+can be also explained by considering the dynamics during
+the first steps. Initially all ni) are null and all opinions are
+equally common, so each agent, when updated, chooses an
+
+opinion with uniform probability. This regime lasts up to
+
+t <#, where f is defined as the time when the n‘*) becomes
+statistically different from zero and so the PI stops to be
+completely random. This implies that for fixed i and up to
+tthe M variables ni) are distributed according to a multi-
+
+nomial distribution with uniform probability 1/44. The
+)
+
+multinomial regime ends when the maximum max, [ns
+
+(k)y
+
+exceeds the average (n;°’); by one, since when this occurs
+the external information stops to suggest random opinions.
+
+The mean value after ¢ extractions satisfies in), =t/M,
+while by drawing from a multinomial we numerically deter-
+mined that max; [ny | — (nk*)),, ww t/2M—-/4, see Fig. 8.
+
+4
+ 
+
+10°
+
+   
+  
+    
+
+F —— M=10 —— M=80 s
+Cc —— M=20 — M=160 q
+F —— M=40 ---- 24/2 4
+
+   
+
+ma
+
+10
+
+[max(rx) — (rax)] - M4
+
+ 
+
+poy yout
+10 10° 10° 104
+number of extractions ¢
+
+ 
+
+ 
+
+Figure 8: Growth of the maximum of a multinomial
+distribution with M equally probable classes as a
+function of the number of extractions ¢ for different values
+of Mf. We denote by n, the number of counts in the kth
+classe. We plotted the quantity {max [ng] — (nz) } M14
+to highlight the scaling with respect to Mf and we
+averaged over 25 different realizations of the process.
+
+We can then obtain the time # as
+
+PP M-M4—1 3 f=MY?, (Bl)
+
+Now we consider the evolution of the number of agents
+Ny, in opinion k in the simple multistate voter model. The
+transition rates are
+
+ 
+
+WN: > Net l= 1N- Na Ne Ne
+a ONOUN (B2)
+1 N—(Ng+1) Np4+1
+Neel N) —————_
+W(Ni #1 Ne) = $y N
+
+where dt =1/N. The master equation for N; is thus
+
+P(N; t+6t) = P(N: + 1,t)W(N;, +135 Ne)+
++[1—W(N;, > Ni, — 1)
+
+Expanding for 6¢ small we get
+
+dP(Nz,t)
+
+aL -6t =W(N;, +1 Ny) P(N; + 1,0)
+
++W(N; -1l> Ni) P(N« — 1,é)+
+
+—(W(N;, +15 Nz) +W(N; -1l> Nx)|PCN«, t)-
+
+(B3)
+
+Starting from this master equation we can compute the
+average drift and the variance of N;. The average drift
+
+ 
+
+satisfies
+“ENE PiNet oP Net)
+“ay DAW (Ns + Ne +1) — WN; > Ne — 1))PCNg, t) =
+“eG 2 (Nest) = So ve(Na) Piet), (BA)
+
+Ne
+
+_— WN: > Ne+ 1)|P(Ng, t).
+
+where we also introduced the drift ~,(N,) = [W(N, >
+Np+1)—W(N; — Ni —1)]/6t. Note that while the average
+drift v, determines how the mean value of the distribution
+P(N;,) moves in time, the drift v;,(N;,) allows to compute
+(neglecting diffusion) how a specific value of N; evolves.
+Using Eqs. (B2) we get
+
+Nni(0) = 2.
+
+y,=0 > (Nz (t)) = Mw
+
+(B5)
+Analogously the evolution of the variance is
+
+doz _ d(Ng)
+dt — dt
+
+a(Nx) _ d(Nz)
+— 9(N,) Se) = Tite
+Ved Gg dt”
+where the last equality follows from Eq. (B5). Exploiting
+Eq. (B3) we then obtain
+
+d(N2 29 , 9
+AD — yo yp PPE — (iy — E002),
+
+whose solution is
+
+N2 N*\ _,4 N?
+(Ng) () = GR - ar) oN +
+
+The variance is thus
+
+(Ni) "(t) = (+ - a) (1.2),
+
+(B6)
+As also shown in Fig. 1, for small times and small values of
+> our model with personalized information behaves as the
+usual voter model. This is due to the fact that for t < # the
+external information is completely random and so, being
+all opinions equally numerous at the beginning, a voter
+model-like update or a personalized information update
+are equivalent. This implies that we can use Eqs. (B5) and
+(B6) to determine how Nmax and thus 2max evolve for small
+times even in the presence of personalized information
+
+Nynax(£)
+
+= (NA) -
+
+(Ng (t)) + on(t) 2 tmax(t) & op(t).
+
+By expanding Eq. (B6) for small times we thus obtain
+
+gt Nv af Xa § t<t.
+—( — —- —~] x —+t for
+N\M M? M 7°
+
+where again we assumed M > 1. Finally, we know from
+empirical evidence that for large times it holds tmax(t) ~
+t°/2. this implies that the functional form of 2max{t) must
+
+be
+iN
+max({t) = Be? 2 4h?
+
+The prefactor a can now be determined imposing the #°/2
+scaling to become dominant when the binomial scaling t!/2
+ends, so fort =t = VM. This gives
+
+af/? = [Spr
+
+Tmax (t) xs
+ 
+
+and so
+Ni/2
+a=:
+This shows that for sufficiently large t it holds
+N1/2
+Tmax (t) ~ ——#”?,
+
+Appendix C: Evolution of N, — N/M
+
+The transition rate for N;, in the presence of personalized
+information is
+
+W(Ne > Ne +1) =~) NONE yy Poy on,
+N WN
+where the first term is the usual voter contribution, while
+the second one is due to PI. Denoting as S, = Ns, the
+number of agents whose PI is polarized along opinion k,
+we can write the latter as
+
+N Ne — Vien Sk 1
+
+N M,(t)
+
+Let us explain this expression. Among all the N agents,
+those already with opinion k do not contribute to the tran-
+sition rate to opinion k, while those whose PI is polarized
+along 7 # k can make a transition toward k only by a
+voter update. As a consequence only N — Nz — ek Sk
+should be considered in computing the transition proba-
+bility. Moreover the PI of such agents will be unpolarized
+and so we can assume that it suggests a random opinion,
+giving the factor 1/M,(¢). Analogously
+N— WN; Ne
+
+WN, +> Nz -— 1) = a _ Hr + APpr ko
+
+ 
+
+Peron =
+
+with
+P _ Ne — Sk Ms{t) —1
+PLR = — “MA
+
+Inserting these transition rates in Eq. (B4) we can write
+the drift of Nz as
+
+Xr
+
+N—S—M,(Nz — Sx),
+= (Ni ~ Sx)
+where we introduced the total number of polarized agents
+as S = 5°, Sx. The time evolution of N;, neglecting diffu-
+sive fluctuations, is thus
+
+t= (4) (2)
+
+For N >> M and short times we can make the approxima-
+tion M, ~ M and so defining y;, = S;, — S/M we arrive at
+an expression for the time evolution of x, = N;, — N/M
+
+vp (Ng) =
+
+ 
+
+ 
+
+ 
+
+a = Ayr — x] + diffusive terms. (C1)
+This expression provides additional support to our analyti-
+cal approach. Indeed, as shown in Fig. 7, it holds ymaz(t)—
+2mae(t) ~ t'/? and so Eq. (C1) predicts amax(t) ~ 1/2, as
+actually observed in Fig. 7. Note that by ymaz we denote
+max, [Ye].
+
+13
+Appendix D: Scaling regimes of the critical threshold
+1. M<«N
+
+For M < N during the first steps no opinion disappears
+and so we can make the approximation M,(t) = M. In-
+serting this into Eq. (22) yields Eq. (23), that is
+
+2
+[4 fl-x fT—r,
+~ 2 M ° M
+
+1/2 ay
+Le ya (t 3/2
+Cc 1/2 .
+N +754)?
+
+ 
+
+ 
+
+(D1)
+
+From the expression for the polarization time ¢* we see
+that there are two possible regimes.
+
+A) 5x «A
+The first equation in Eq. (D1) becomes
+r= 4
+=>
+
+and replacing this expression into the second equa-
+tion we obtain
+
+yNU2f-1 (+)
+
+dQ = ee N21 3/2,
+° 1/2,g-1( 4 3/2 ‘
+N+ NVM (4)
+This gives
+de = 22/5(N M2),
+so that
+
+AM = PEN MMA,
+
+Our initial assumption A, > 1 is then verified pro-
+vided that
+
+MPs NV 5 Ue NYE,
+
+Recalling that we are assuming M@ «< N we then have
+
+-1/5
+
+Ae = 27/5(NM?) for NYS <M KN.
+
+Putting together the expressions for ¢* and A», we
+finally obtain Eq. (25)
+
+e* = 28/5(N M2)"
+de = 22/8 (M2) 1°
+
+B) 4 >A
+In this case the polarization time becomes
+* 16
+= —
+M22
+
+and again, by putting this expression into the expres-
+sion for A. we obtain
+yN1V/2 M128 8/2 3
+
+— eee te ot yp -8/2 1/2) -3
+re N + yN1V2M-126 3/273 Mee Ns
+14
+
+This gives
+do = 2(MeN)
+and so
+
+Md, & INNS A,
+
+Consequently the two hypotheses M« N and
+MX <1 are both satisfied if
+
+M«<Ni’e
+and the expressions for ¢* and A, are
+
+t* =~ 4(MN)‘/4
+de 2(MaN) 1/8
+
+For M = N one can no longer make the assumption
+M,{t) = M,(0) = M, since some of the opinions disappear
+even during the first steps. In this case we can approxi-
+mated the decrease of M,(t) exploiting Eq. (5), which is
+exact for a simple multistate voter model with M = N.
+The general expression is
+
+and putting it into Eq. (22) we get
+
+ 
+
+v=
+
++y/ (164¥ — SAN — 1645)” — 64N(A2N + 16d — 16) — 84% + SAN + 16
+
+ 
+
+202N + 16\ — 16) ’
+
+which, for M/ = N, becomes
+
+ 
+
++\/(16A —8\N — 16)” — 64N(\2N + 16 — 16) — 16 + 8AN + 16
+
+ 
+
+In the limit of large N and small 4 this expression can be
+approximated as
+
+_ +£32N1/? + 8\N
+
+n= 2(2N — 16) (m2)
+
+and, as it is possible to see, there are two distinct solutions.
+Requiring the denominator to vanish gives
+
+- < 4
+2 _ =—
+
+Note that while the solution with the plus, t%., diverges in
+this limit, the one with the minus, t* is finite and positive,
+indeed
+
+—32N1/2 4 8\N
+
+ 
+
+\aN-1/2 202N — 16)
+ANV2 — 4
+=gnv2 4; a
+\san-1/2 2(.\NT/2 +4) (ANT? — 4)
+Ni/2
+==>.
+
+Moreover, while for \ <  ¢* is positive, the other one is
+negative, meaning that t1 is meaningful only in the region
+A > XA since a time must be a positive quantity. For the
+solution with the minus we can then take the limit A > 0,
+which should give back the behavior of the multistate voter
+model
+
+—32N1/2 + 8\N
+
+_ NYV2.
+02 — 16)
+
+lim t= = lim
+A+0 A+0
+
+202N + 16\ — 16) ’
+
+ 
+
+This result suggest that the solution ¢* is non physical,
+since if A = 0 it holds n, = nz (see Eqs. (17) and (16)) and
+so the two peaks should never split meaning that ¢* = oo.
+In conclusion the expression for the splitting time is the
+one with the plus and it is not defined for any value of A,
+more precisely
+
+*
+
+_ 32N1/2 4 8AN
+
+— a with A> A=
+I02N—16) >
+
+4
+ye (D3)
+
+In the limit A — 0 and N — co we have two possible
+
+scaling regimes?®
+
+A) AN > NV? 5 \> NV?
+In this case we can approximate ¢* as
+
+em — NL
+5 re
+
+O2N— 16) X
+
+i
+
+and substituting this expression into Eq. (21) we get
+
+4\¥5
+~ —3/5
+do» (5) ~N
+
+where we also exploited the fact that M = N. Note,
+however, that this result is in contrast with the initial
+assumption A > N~‘/? and so this scaling regime is
+impossible.
+
+B) \~ N72
+In this case we can set \7N = 16+ and Eq. (D3)
+becomes
+
+32N1/2
+
+ 
+
+4
+eS
+
+Moreover, using Eq. (21), we obtain
+
+dex yN~3/2(¢8)3/? — 9138/2 yy—-3/4,-3/2
+
+15
+
+and setting A, =
+6 = QH/3 V6.
+
+This is consistent with ¢€ being a small correction
+(that is our initial assumption) and moreover we see
+that it is the smaller the larger is N.
+
+In conclusion we have
+
+ti wy 24/3 N2/3
+
+~ 4
+Xe ~ Ni/2>
+
+that is Eq. (28).
+

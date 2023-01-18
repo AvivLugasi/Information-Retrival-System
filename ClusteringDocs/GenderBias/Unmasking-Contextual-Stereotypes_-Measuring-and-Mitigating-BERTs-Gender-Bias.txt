@@ -1,0 +1,783 @@
+                                                                  Unmasking Contextual Stereotypes:
+                                                             Measuring and Mitigating BERT’s Gender Bias
+
+                                                  Marion Bartl                        Malvina Nissim                  Albert Gatt
+                                              University of Groningen              University of Groningen         University of Malta
+                                                University of Malta                 m.nissim@rug.nl            albert.gatt@um.edu.mt
+                                             marion.bartl.18@um.edu.mt
+
+
+
+
+                                                              Abstract                             As NLP applications reach more and more users
+                                                                                                directly (Sun et al., 2019), bias in NLP and as well
+                                             Contextualized word embeddings have been           as resulting societal implications, have become an
+arXiv:2010.14534v1 [cs.CL] 27 Oct 2020
+
+
+
+
+                                             replacing standard embeddings as the repre-        area of research (Hovy and Spruit, 2016a; Shah
+                                             sentational knowledge source of choice in          et al., 2019). The ACL conference includes a work-
+                                             NLP systems. Since a variety of biases have
+                                                                                                shop on ethics in NLP since 2017 (Hovy et al.,
+                                             previously been found in standard word em-
+                                             beddings, it is crucial to assess biases en-
+                                                                                                2017) and one that specifically addresses gender
+                                             coded in their replacements as well. Focus-        bias since 2019 (Costa-jussà et al., 2019).
+                                             ing on BERT (Devlin et al., 2018), we measure         The present work contributes to promoting fair-
+                                             gender bias by studying associations between       ness in NLP by exploring methods to measure
+                                             gender-denoting target words and names of          and mitigate gender bias in BERT (Devlin et al.,
+                                             professions in English and German, compar-         2018), a contextualized word embedding model.
+                                             ing the findings with real-world workforce         Its widespread and quick adoption by the research
+                                             statistics. We mitigate bias by fine-tuning
+                                                                                                community as the backbone for a variety of tasks
+                                             BERT on the GAP corpus (Webster et al.,
+                                             2018), after applying Counterfactual Data Sub-     calls for an assessment of possible biases encoded
+                                             stitution (CDS) (Maudslay et al., 2019). We        in it.
+                                             show that our method of measuring bias is ap-
+                                                                                                Research Questions We combine researching
+                                             propriate for languages such as English, but
+                                             not for languages with a rich morphology and       how we can measure gender bias in BERT (RQ1)
+                                             gender-marking, such as German. Our results        and how such potential gender bias can be mit-
+                                             highlight the importance of investigating bias     igated (RQ2), with two further perspectives: a
+                                             and mitigation techniques cross-linguistically,    comparison with real-world statistics and a cross-
+                                             especially in view of the current emphasis on      lingual approach. We investigate whether gen-
+                                             large-scale, multilingual language models.         der bias in BERT is statistically related to ac-
+                                                                                                tual women’s workforce participation (RQ3), and
+                                         1    Introduction                                      whether a method that we successfully apply to as-
+                                                                                                sess gender bias in English is portable to a language
+                                         The biases present in the large masses of language
+                                                                                                with rich morphology and gender marking such as
+                                         data that are used to train Natural Language Pro-
+                                                                                                German, since such languages have proven chal-
+                                         cessing (NLP) models naturally leak into NLP sys-
+                                                                                                lenging to existing methods (Gonen et al., 2019;
+                                         tems. These systematic biases can have real-life
+                                                                                                Zmigrod et al., 2019; Zhou et al., 2019) (RQ4).
+                                         consequences when such systems are e.g. used to
+                                         rank the resumes of possible candidates for a va-      Contributions This work makes the following
+                                         cancy in order to aid the hiring decision (Bolukbasi   contributions: (i) We present and release the Bias
+                                         et al., 2016). If, for example, a model does not as-   Evaluation Corpus with Professions (BEC-Pro),
+                                         sociate female terms with engineering professions,     a template-based corpus in English and German,
+                                         because these do not often co-occur in the same        which we created to measure gender bias with re-
+                                         context in the training corpus, then the system is     spect to different profession groups. We make
+                                         likely to rank male candidates for an engineering      the dataset and code for all experiments publicly
+                                         position higher than equally qualified female can-     available at https://github.com/marionbartl/
+                                         didates.                                               gender-bias-BERT. (ii) Through a more diverse
+sentence context in our corpus than in previous           2019) or sentences randomly sampled from a cor-
+research, we confirm that the method of query-            pus (Zhao et al., 2019; Basta et al., 2019). May et al.
+ing BERT’s underlying MLM (Masked Language                (2019) adapt the Word Embedding Association Test
+Model), proposed by Kurita et al. (2019), can be          (WEAT; Caliskan et al., 2017) to pooled sentence
+used for bias detection in contextualized word em-        representations, resulting in the SEAT (Sentence
+beddings. (iii) We test our bias analysis on BERT         Encoder Association Test). However, the authors
+against actual U.S. workforce statistics, which           express concerns about the validity of this method.
+helps us to observe that the BERT language model          Zhao et al. (2019) analyze the gender subspace fol-
+does not only encode biases that reflect real-world       lowing Bolukbasi et al. (2016), and also classify
+data, but also those that are based on stereotypes.       the vectors of occupation words that occur in the
+For bias mitigation, (iv) we show the success of          same context with male and female pronouns, using
+a technique on BERT, which was previously ap-             coreference resolution as an extrinsic measure of
+plied on ELMo (Peters et al., 2018; Zhao et al.,          gender bias. They mitigate bias via Counterfactual
+2019). Finally, (v) we attempt the cross-lingual          Data Augmentation (CDA) and neutralization.1 Re-
+transfer of a bias measuring method proposed for          sults show that CDA was more effective. Basta et al.
+English, and show how this method is impaired by          (2019) measure gender bias by projection onto the
+the morphological marking of gender in German.            gender direction (Bolukbasi et al., 2016) as well as
+                                                          clustering and classification, following Gonen and
+Bias Statement The present work focuses on
+                                                          Goldberg (2019). Results from these adapted meth-
+gender bias specifically. Gender bias is the system-
+                                                          ods show that contextualized embeddings encode
+atic unequal treatment on the basis of gender (Moss-
+                                                          biases just like standard word embeddings (Zhao
+Racusin et al., 2012; Sun et al., 2019). While we
+                                                          et al., 2019; Basta et al., 2019).
+are treating gender as binary in this study, we are
+                                                             Instead of adapting bias measuring methods
+aware that this does not include people who identify
+                                                          from standard word embeddings, Kurita et al.
+as non-binary, which can create representational
+                                                          (2019) exploit the Masked Language Model
+harm (Blodgett et al., 2020). In the context of our
+                                                          (MLM), native to BERT (Devlin et al., 2018). Un-
+study of the BERT language model, gender bias
+                                                          like ELMo (Peters et al., 2018) or GPT-2 (Radford
+occurs when one gender is more closely associ-
+                                                          et al., 2019), BERT learns contextualized word rep-
+ated with a profession than another in language use,
+                                                          resentations using a masked language modelling
+resulting in biased language models. Before the
+                                                          objective (Devlin et al., 2018), making the model
+backdrop of gender participation statistics, we can
+                                                          bi-directional. Crucially, this makes it possible to
+assess whether a biased representation is related to
+                                                          obtain the probability of a single token in a sen-
+the employment situation in the real world or based
+                                                          tence. Kurita et al. (2019) use the MLM to esti-
+on stereotypes. In the latter case, this constitutes
+                                                          mate the probability of a masked, gendered target
+representational harm, because actual participation
+                                                          word being associated with an attribute word in a
+in the workforce is rendered invisible (Blodgett
+                                                          sentence. This method was shown to capture differ-
+et al., 2020). Moreover, if word representations
+                                                          ences in association across the categories covered
+are used in downstream systems that affect hiring
+                                                          by Caliskan et al. (2017) in an interpretable way.
+decisions, gender bias, irrespective of whether it is
+                                                             One of the problems of current research in NLP
+representative of real-world data, may lead to allo-
+                                                          is that most work focuses on English (Hovy and
+cational harm, because male and female candidates
+                                                          Spruit, 2016b; Sun et al., 2019). Methods devel-
+are not equally associated with a profession from
+                                                          oped to study gender bias in English do not trans-
+the start (Blodgett et al., 2020).
+                                                          late well to languages that have grammatical gen-
+2   Background and Previous Work                          der, since grammatical gender can have a veiling
+                                                          effect on the semantics of a word. For example,
+Approaches to gender bias in contextualized word          Gonen et al. (2019) find that words with the same
+embeddings borrow techniques originally devel-            grammatical gender were regarded as more simi-
+oped for standard embedding models. However,              lar, as opposed to words that have similar mean-
+they need to rely on sentence contexts since contex-      ings. This can occur, for instance, because gender
+tualized word representations are conditioned on             1
+                                                               Neutralization means that at test time, gender-swapping
+the sentence the word occurs in. Previous research        is applied to an input sentence, and the ELMo representation
+uses either templates (May et al., 2019; Kurita et al.,   for both sentences are averaged (Zhao et al., 2019).
+agreement between articles and adjectives (Corbett,                The historical Octavia Minor’s first husband was Gaius
+                                                                   Claudius Marcellus Minor, and she bore him three children,
+2013) renders the contexts in which nouns with                     Marcellus, Claudia Marcella Major and [Claudia Marcella Mi-
+the same grammatical gender occur more similar.                    nor]; the [Octavia] in Rome is married to a nobleman named
+Gonen et al. (2019) also found that due to this                    Glabius, with whom [she] has no children.
+grammatical gender bias, the debiasing method                                 Figure 1: GAP example sentence
+of Bolukbasi et al. (2016) was ineffective on Ital-
+ian and German word embeddings. Zmigrod et al.
+(2019) propose to use CDA as a debiasing method                    spired the structure of the BEC-Pro, and we borrow
+for gender-marking languages, because it is a pre-                 from it the person words used in our templates.
+processing method and as such independent from                        The GAP corpus (Webster et al., 2018) was de-
+the resulting vectors. The researchers measure gen-                veloped as a benchmark for measuring gender bias
+der bias extrinsically by using a neural language                  in coreference resolution systems. It contains 8,908
+model, following Lu et al. (2018).                                 ambiguous pronoun-name pairs in 4,454 contexts
+                                                                   sampled from Wikipedia. An example sentence
+Present Work In the present research, we follow                    can be found in Figure 1.
+Kurita et al. (2019) in measuring gender bias. We                     We use this corpus to fine-tune BERT (Sec-
+apply their method of querying the MLM for a                       tion 4.6).
+more diverse range of sentence templates from a
+professional context. Additionally, we base the                    3.2   BEC-Pro
+choice of professions on workforce statistics, in                  In order to measure bias in BERT, we created a
+order to compare bias to the real-world situation.                 template-based corpus in two languages, English
+For mitigating gender bias, we apply Maudslay                      and German. The sentence templates contain a
+et al.’s (2019) version of CDA to fine-tuning data                 gender-denoting noun phrase, or <person word>,
+for BERT, because it has shown promising results                   as well as a <profession>.
+for both mitigating bias in English ELMo (Zhao                        We obtained 2019 data on gender and race par-
+et al., 2019) and in embeddings of morphologically                 ticipation for a detailed list of professions from
+rich languages (Zmigrod et al., 2019).                             the U.S. Bureau of Labor Statistics (2020)3 . This
+                                                                   overview shows, among others, the percentage
+3       Data                                                       of female employees for professions with more
+In line with previous research (Kurita et al., 2019;               than 50,000 employed across the United States.
+Zhao et al., 2019; Basta et al., 2019), we measure                 From the lowest-level subgroup profession terms,
+gender bias in BERT using sentence templates. For                  we selected three groups of 20 professions each:
+this purpose we create the Bias Evaluation Cor-                    those with highest female participation (88.3%-
+pus with Professions (BEC-Pro), containing En-                     98.7%), those with lowest female participation
+glish and German sentences built from templates                    (0.7%-3.3%), and those with a roughly 50-50 dis-
+(Section 3.2). We also use two previously existing                 tribution of male and female employees (48.5%-
+corpora, which are described in Section 3.1.                       53.3%). Profession terms were subsequently short-
+                                                                   ened to increase the likelihood that they would
+3.1      Existing Corpora                                          form part of the BERT vocabulary and make them
+The Equity Evaluation Corpus (EEC) was devel-                      easier to integrate in templates.
+oped by Kiritchenko and Mohammad (2018) as                            For example, the phrase ‘Bookkeeping, account-
+a benchmark corpus for testing gender and racial                   ing, and auditing clerks’, was shortened to ‘book-
+bias in NLP systems in connection with emotions.                   keeper’.
+It contains 8,640 sentences constructed using 11                      To maximize comparability, we translated the
+sentence templates with the variables <person>,                    shortened English professions into both their mas-
+which is instantiated by a male- or female-denoting                culine and feminine German counterparts, using
+NP; and <emotion word>, whose values can be                        the online dictionary dict.cc4 . Translations were
+one of the basic emotions. We use this corpus for                  corrected by a native speaker of German. Feminine
+preliminary bias assessment.2 This corpus also in-                 word forms were mostly created using the highly
+    2
+    The templates from the EEC corpus were used in prelimi-        we do not discuss here the results on the EEC data.
+                                                                      3
+nary experiments to test the validity of our method. For the            https://www.bls.gov/cps/cpsaat11.htm
+                                                                      4
+sake of space, and to focus on the association with professions,        https://www.dict.cc/
+productive suffix -in. We note that feminine forms                4.2   Masking for Bias Evaluation
+can have a low frequency, which can influence the                 The method for measuring bias used in this work
+probability assigned by the language model. The                   is based on the prediction of masked tokens and
+full list of German professions alongside their En-               moreover relies on masking tokens to create po-
+glish original and shortened counterparts can be                  tentially neutral settings to be used as prior. In all
+found in Table 6 in the Appendix.                                 our experimental settings, targets are person words,
+   Following the template-based approach in the                   and attributes are professions.
+EEC (Kiritchenko and Mohammad, 2018), we cre-                        We apply masking to a sentence in three stages,
+ated five sentence templates that include a person                illustrated in Table 2, and add the different masked
+word, i.e. a noun phrase that describes a person and              versions to the BEC-Pro. Note that only target
+carries explicit gender information, and a profes-                words (not determiners) are masked. If an attribute
+sion term. These templates are shown in Table 1.                  contains more than one token, all tokens of the
+The sentences were first constructed in English                   respective phrase are masked individually.
+and then translated to German. Person words were
+taken from the EEC and translated into German.5                   4.3   Pre-processing
+   For example, in English, template 4 in Table
+                                                                  The inputs for both measuring and mitigating gen-
+1 could generate the sentence ‘[My mother], the
+                                                                  der bias largely go through the same pre-processing
+[firefighter], had a good day at work.’ The same
+                                                                  steps. For GAP corpus instances, which can con-
+German template would then generate the sentence
+                                                                  tain several sentences, we precede these steps by
+[Meine Mutter], die [Feuerwehrfrau], hatte einen
+                                                                  splitting instances into sentences.
+guten Arbeitstag.
+                                                                     As a first step, the fixed input sequence length
+   For each language, this led to a combined num-
+                                                                  is determined as the smallest power of two greater
+ber of 5,400 sentences (5 sentence templates ×
+                                                                  than or equal to the maximum sequence length.
+18 person words × 20 professions × 3 profession
+                                                                  In a second step, the inputs are tokenized by the
+groups).
+                                                                  pre-trained BertTokenizer and padded to the
+                                                                  previously determined fixed sequence length. From
+4     Method
+                                                                  the padded and encoded inputs, attention masks are
+4.1    Technical Specifications and Models                        created. Attention mask tensors have the same size
+                                                                  as the input tensors. For each index of the input
+We use the Huggingface transformers library                       tensor, non-pad tokens are marked with a 1 and
+(Wolf et al., 2019) for PyTorch with a default                    pad tokens with a 0 in the attention mask tensor.
+random seed of 42 for all experiments (Adams,
+2017).                                                            4.4   Measuring Association Bias
+   The model used for bias evaluation and fine-                   Following Kurita et al. (2019), who take inspira-
+tuning is a pre-trained BERTBASE model (Devlin                    tion from the WEAT (Caliskan et al., 2017), we
+et al., 2018) with a language modelling head on                   measure the influence of the attribute (A), which
+top. For reasons of simplicity, this model will be                can be a profession or emotion, on the likelihood
+referred to as BERT language model from here on.                  of the target (T), which denotes a male or female
+   For English, the tokenizer and model are loaded                person: P (T |A). It is assumed that in the BERT
+with the standard pre-trained uncased BERTBASE                    language model, the likelihood of a token is influ-
+model. Unlike in English, where capitalization for                enced by all other tokens in the sentence. Thus,
+nouns is only relevant for proper names (which we                 we assume that the target likelihood is different
+do not use), in German capitalization is an inte-                 depending on whether or not an attribute is present:
+gral part of the orthography (Stocker, 2012). For                 P (T ) 6= P (T |A). Moreover, we assume that the
+German we use the cased model provided by DB-                     likelihoods of male- and female-denoting targets
+MDZ.6                                                             are influenced differently by the same attribute
+    5
+      The phrases ‘this girl/this boy’ were excluded, because     word: P (Tf emale |A) 6= P (Tmale |A).
+they denote children and are therefore less likely to appear in      Following Kurita et al. (2019), we will go on to
+sentences that refer to a professional context. Even though the   call the probability of a target word in connection
+word ‘girl’ is often used to refer to grown women, this does
+not apply to the word ‘boy’ to a similar extent.                  with an attribute word the association of the target
+    6
+      https://github.com/dbmdz/berts                              with the attribute.
+                           English                                                          German
+ 1   <person>is a <profession>.                                   <person>ist <profession>.
+ 2   <person> works as a <profession>.                            <person>arbeitet als <profession>.
+ 3   <person>applied for the position of <profession>.            <person>hat sich auf die Stelle als <profession>beworben.
+ 4   <person>, the <profession>, had a good day at work.          <person>, die/der <profession>, hatte einen guten Arbeitstag.
+ 5   <person>wants to become a <profession>.                      <person>will <profession>werden.
+
+                                   Table 1: Sentence patterns for English and German
+
+
+ original       My son is a medical records technician.              bility, i.e. the probability of the target decreased
+ T masked       My [MASK] is a medical records technician.
+ A masked       My son is a [MASK] [MASK] [MASK].                    through the combination with the attribute. A posi-
+ T+A masked     My [MASK] is a [MASK] [MASK] [MASK].                 tive association value means that the probability of
+                                                                     the target increased through the combination with
+               Table 2: Masking example
+                                                                     the attribute, with respect to the prior probability.
+                                                                     Our hypotheses are summarized in Table 3.
+1. Take a sentence with a target and attribute word
+  “He is a kindergarten teacher.”
+                                                                     4.5   Bias Mitigation
+2. Mask the target word
+  “[MASK] is a kindergarten teacher.”                                It has been shown that one of the more effective
+3. Obtain the probability of target word in the sentence             strategies for removing bias in traditional word
+   pT = P (he = [M ASK]|sent)                                        embeddings involves modifying the training data
+4. Mask both target and attribute word. In compounds, mask           instead of trying to change the resulting vector
+   each component separately.                                        representation (Gonen and Goldberg, 2019). One
+  “[MASK] is a [MASK] [MASK].”                                       such strategy is a derivative of CDA (Lu et al.,
+5. Obtain the prior probability, i.e. the probability of the         2018), Name-based Counterfactual Data Substitu-
+   target word when the attribute is masked                          tion (CDS) (Maudslay et al., 2019) in which the
+   pprior = P (he = [M ASK]|masked sent)
+                                                                     gender of words denoting persons in a training cor-
+6. Calculate the association by dividing the target probability      pus is swapped in place in order to counterbalance
+   by the prior and take the natural logarithm                       bias. First names are exchanged as well.
+         pT
+   log pprior
+                                                                       To apply CDS in the context of English BERT,
+                                                                    we use Maudslay et al.’s (2019) code for apply-
+Figure 2: Procedure to calculate the log probability
+score, after Kurita et al. (2019).                                  ing CDS to the GAP corpus (Webster et al., 2018).
+                                                                    Subsequently, these gender-swapped data are used
+                                                                    for fine-tuning the English BERT language model.
+   The sentence templates from the BEC-Pro (Sec-                    Table 3 illustrates how we expect fine-tuning to in-
+tion 3.2), are used to measure the association of                   fluence associations in the English BERT language
+target and attribute in a sentence. For measuring                   model. Since GAP instances are balanced between
+the association, we need to obtain the likelihood of                male and female genders, we expect this balance
+the masked target from the BERT language model                      to be preserved after CDS, which would in turn
+in two different settings: with the attribute masked                influence male and female entities in the English
+(prior probability) and not masked (target probabil-                BERT model to the same extent during fine-tuning.
+ity). The prior and target probabilities are obtained
+by applying the softmax function to the logits that                  4.6   Fine-tuning
+were predicted by the BERT language model for
+the position of the target in the sentence. This pro-                For fine-tuning, each instance in the gender-
+duces a probability distribution over the BERT vo-                   swapped GAP corpus is tokenized into sentences.
+cabulary for that position in the sentence. We then                  Subsequently, the sentences are pre-processed and
+obtain the (prior) probability of the respective tar-                attention masks are created. For training, the inputs
+get word by using its vocabulary index. The steps                    need to undergo a masking procedure in order to be
+to calculate the association are shown in Figure 2.                  compatible with BERT’s MLM. We follow the stan-
+   For interpretation, a negative association be-                    dard procedure for masking the inputs, as outlined
+tween a target and an attribute means that the prob-                 by Devlin et al. (2018). The masking is carried out
+ability of the target is lower than the prior proba-                 using the mask tokens function from code by
+    id                           hypothesis                                       expected observation
+           There is a strong association of female (male)
+                                                                  Positive association scores between female (male)
+           person-denoting noun phrases (NPs) with
+ H1                                                               NPs and statistically female (male) professions,
+           statistically female (male) professions, which
+                                                                  which decrease after fine-tuning.
+           is reduced through fine-tuning.
+           There is a weak association of female (male) NPs       Negative association scores between female (male)
+ H2        with statistically male (female) professions, which    NPs and statistically male (female) professions,
+           is strengthened through fine-tuning.                   which increase after fine-tuning.
+           There is no difference between the associations        Both association scores of female and male NPs
+           of female and male person-denoting NPs with            have approx. the same value, which is likely located
+ H3
+           statistically gender-balanced professions.             around zero. After fine-tuning, the association score
+           Associations do not change much after fine-tuning.     does not deviate much from its original value.
+
+Table 3: Hypotheses on associations between targets (person words) and attributes (professions) in the BEC-Pro
+
+
+Gururangan et al. (2020).7 The unchanged input                                      pre    post    diff.   Wilcoxon test
+sentences then function as labels.                                jobs   person   mean    mean    mean         W     r
+   For training, the instances are randomly sampled                         f     -0.35    0.20    0.55
+                                                                   B                                       359188   -0.47
+                                                                           m       0.05    0.07    0.01
+and a batch size of one is used. The model is trained
+                                                                            f      0.50    0.36   -0.14
+for three epochs using an AdamW optimizer with a                   F                                        96428   -0.32
+                                                                           m      -0.68   -0.14    0.55
+learning rate of 5×10−5 and a linear scheduler with
+                                                                            f     -0.83    0.13    0.96
+warm-up. The fine-tuned model is subsequently                      M                                       395974   -0.58
+                                                                           m       0.16    0.21    0.05
+used to carry out the exact same bias evaluation as
+outlined in Section 4.4.                                         Table 4: Results for English association scores before
+                                                                 (pre) and after fine-tuning (post). For jobs, B=balanced,
+5        Results                                                 F=female, M=male. In each row, N=900. All W tests
+                                                                 are significant at p =2e-16.
+Table 4 displays the mean association scores be-
+tween targets (person words) and attributes (pro-
+fessions) before and after fine-tuning the English               are paired with statistically female (male) profes-
+BERT language model on the GAP corpus, to                        sion terms. Table 4 shows that in fact, there are
+which CDS was applied (pre-association vs. post-                 positive pre-association values in both pro-typical
+association). The difference between these two                   settings and negative pre-association values in both
+association scores is used to perform the statisti-              anti-typical settings, which confirms hypotheses H1
+cal analysis using the Wilcoxon signed-rank test                 and H2. In other words, bias in BERT corresponds
+(W ) for all three profession groups individually.               to real-world workforce statistics.
+The effect size r is calculated following Rosenthal                 For the balanced professions, we expected that
+(1991) and Field et al. (2012). A positive difference            association values would not change much as a re-
+score means that the association has increased after             sult of fine-tuning (H3). This hypothesis could
+fine-tuning, a negative value indicates a decrease               only be confirmed for the male person words,
+in association after fine-tuning.                                while the female person words show a negative
+                                                                 pre-association (-0.35) that changes to a positive
+5.1       Overall results                                        post-association (0.20). This shows that male per-
+Similar to research by Rudinger et al. (2018), Table             son words hold a neutral position with respect to
+4 contains pro- and anti-typical settings, which cor-            gender-balanced professions. For female person
+respond to hypotheses H1 and H2, formulated in Ta-               terms, however, the negative pre-association shows
+ble 3. In the pro-typical setting (H1), male (female)            that the gender-parity in the real world data is not
+person words are paired with statistically male (fe-             reflected in the English BERT language model.
+male) profession terms. Conversely, in the anti-                    In general, male person words are relatively sta-
+typical setting (H2), male (female) person words                 ble in BERT. Associations for these are less strong,
+     7
+                                                                 i.e. less affected by the presence of the profes-
+   https://github.com/allenai/
+dont-stop-pretraining/blob/master/                               sion words, and also less affected by fine-tuning.
+scripts/mlm_study.py                                             These results correspond to Kurita et al.’s (2019)
+finding of strong male bias in BERT. Further sup-       remain negative after. This could be due to the
+port for this can be found in the results for the       fact that the values were more extreme to begin
+balanced profession group, which show similar be-       with. Female person words show positive associ-
+havior to those for the male group, though with         ations that are less extreme and have a narrower
+lower absolute values. This suggests that workers       range after fine-tuning. In contrast, on the far right-
+in non-stereotypical professions are more likely to     hand side of Figure 4 (paralegal, speech-language
+be talked about with male person terms.                 pathologist, billing clerk, dental hygienist), the as-
+   In contrast, female person words have higher         sociations are very low for both female and make
+positive scores in pro-typical settings and lower       person terms, suggesting they are more gender-
+negative scores in anti-typical settings, which are     neutral in English BERT. Overall, Figure 4 shows
+more susceptible to change after fine-tuning, re-       that female bias was reduced, but the model still
+sulting in positive scores for all professions after    retained a preference for female person words in
+fine-tuning. On one hand, the more extreme associ-      context with these professions, which corresponds
+ation scores of female terms, as compared to male       to the real-world statistics.
+terms, illustrate them as more marked in language;
+on the other hand, it shows that the representations    Balanced Professions The results for the statis-
+of female person words can be more easily adapted.      tically balanced professions are displayed in Fig-
+                                                        ure 5. They are especially interesting, because
+5.2   Profession results – English                      strong male or female biases do not correspond to
+This section zooms in on each individual profes-        real-world data and can be ascribed to language use
+sion group. The results for all profession groups are   in BERT’s training data.
+presented as two bar graphs, the upper graph show-         Figure 5 shows that the general trend for the
+ing the pre-associations and the lower showing the      associations of female person words with balanced
+post-associations. The individual professions are       professions before fine-tuning follows the results
+ordered in descending order by the absolute differ-     for statistically male professions: there are mostly
+ence in association before and after fine-tuning.       negative pre-associations for female person words,
+                                                        which exposes bias in the English BERT language
+Male Professions Figure 3 shows the associa-            model. These associations mostly become positive
+tions before and after fine-tuning for professions      after fine-tuning.
+with predominantly male workers. It can be seen            For male person words, the results show both
+that there are nearly only negative associations be-    negative and positive pre-associations. Profes-
+fore fine-tuning for female person words with these     sions with negative pre-associations for male per-
+professions. After fine-tuning, the associations for    son words are generally very specific (such as elec-
+female person words increase and almost all pro-        trical assembler or director of religious activities),
+fessions show a positive association with female        therefore, the negative associations may be due to
+person words. The male person words have small          low frequency of these terms. Professions with a
+positive associations which do not change drasti-       positive pre-association for male person words are
+cally after fine-tuning, in contrast to female pro-     e.g. crossing guard, medical scientist, or lifeguard.
+fession terms. Generally, fine-tuning brings the as-    These are more common, therefore, the positive as-
+sociation values of male and female person words        sociation values reveal male-favoring bias in BERT
+closer, which indicates mitigation of gender bias.      for the professions in question. Figure 5 shows
+The exception to this trend is the word taper, whose    converging levels of association after fine-tuning,
+behaviour can be attributed to the ambiguity of the     illustrating the method’s effectiveness in mitigating
+term, whose more common sense is ‘narrowing             gender bias.
+towards a point’, rather than the profession.
+Female Professions The results for the statisti-        5.3   Profession Results – German
+cally female professions are summarized in Figure       Due to the ineffectiveness of the method for Ger-
+4. Before fine-tuning, Figure 4 depicts very strong     man, we only report on pre- and not on post-
+association values for more stereotypical profes-       associations in Table 5. In order to statistically
+sions, such as housekeeper, nurse, receptionist or      test the difference between associations for male
+secretary. For male person words, these associ-         and female person words, the Wilcoxon signed-
+ations are highly negative before fine-tuning and       rank test was again computed for each profession
+      Figure 3: Pre- and post-associations of female and male person words with statistically male professions
+
+
+                 pre association           Wilcoxon           agree with the grammatical gender of the corre-
+ jobs   person   mean      sd       p         W         r
+                                                              sponding person word. We believe that this gram-
+           f     2.14      2.4
+  B                                2e-16   315,058    -0.34   matical difference generates similar association val-
+          m      1.36     2.06
+           f     2.05     2.45                                ues across the three profession groups.
+  F                                2e-16   304,635    -0.31
+          m      1.34     2.09                                   Specifically, the gender marker of the attribute
+           f     2.14     2.46
+  M
+          m      1.46     2.15
+                                   2e-16   297,605    -0.29   (profession) influences the likelihood of the target
+                                                              (person word). The fact that the associations for
+Table 5: Results and statistical evaluation for German        female person words are consistently higher corre-
+associations across professions and person words. For         sponds to the marking of the feminine noun form,
+jobs, B=balanced, F=female, M=male. The number of             e.g. with the suffix -in, which is attached to the un-
+instances for each row is 900.
+                                                              marked masculine form. However, even though it is
+                                                              the unmarked word form, the masculine profession
+                                                              term also carries grammatical gender information,
+group separately.
+                                                              which we assume causes high positive associations
+   Table 5 shows that the results across all three
+                                                              across all profession groups.
+profession groups are highly similar: the mean as-
+sociations for female person words have a value of            6   Discussion and Conclusions
+around 2.1, and the values for male person words
+are around 1.4. This difference between the groups            The goal of this work is to measure and mitigate
+of person words is significant in all three profession        gender bias in English and German BERT models
+groups with a medium effect size. Nevertheless,               (Devlin et al., 2018).
+the fact that all three groups follow the same pat-              For measuring gender bias, we use a method
+tern indicates that the associations do not capture           first proposed by Kurita et al. (2019): word proba-
+social gender bias. This can also be observed when            bilities taken from the BERT language model are
+looking at the pre-associations for the individual            used to calculate association bias between a gender-
+professions (We show them in Figure 6 in the Ap-              denoting target word and an attribute word, such as
+pendix).                                                      a profession. Our success in making gender bias
+   The common pattern points to the main differ-              in the English BERT model visible supports the
+ence between the German and English profession                establishment of the method as a unified metric.
+terms: German terms are divided into masculine                Moreover, we create the BEC-Pro (Bias Evaluation
+and feminine forms (Section 3.2), because they                Corpus with Professions), a template-based cor-
+   Figure 4: Pre- and post-associations of female and male person words with statistically female professions
+
+
+pus set in a professional context, which includes         show greater changes in post-association.
+professions from three different statistical groups          One possible reason could be BERT’s male bias,
+as well as several male and female person words.          which has been previously investigated by Kurita
+With this corpus, which we make available to the          et al. (2019). Male person terms seem to have a
+community, we contribute to streamlining the vi-          more stable position in BERT, which could cause
+sualization of gender bias in other contextualized        their probabilities in the model to not vary much
+word embedding models.                                    depending on the context and make them less sus-
+   For mitigating gender bias, we first apply CDS         ceptible to change through fine-tuning. Another
+(Maudslay et al., 2019) to the GAP corpus (Webster        explanation for female terms being more affected
+et al., 2018) and then fine-tune the English BERT         by fine-tuning could be that the GAP corpus con-
+language model on this corpus. We confirm Zhao            tained somewhat more female pronouns and nouns,
+et al.’s (2019) finding that CDA, or CDS in this          but especially first names, after CDS. Fine-tuning
+case, is useful for mitigating gender bias in the         on a corpus with a slight surplus of female per-
+English BERT model.                                       son words and first names could have made the
+   Using professions based on workforce statistics        likelihood of these terms more sensitive to change.
+allows for a comparison of bias in the BERT lan-             In the balanced profession group before fine-
+guage model with real-world data. We find that            tuning, we observe that the BERT language model
+the English BERT language model reflects the real-        does not only encode biases that reflect real-world
+world bias of the male- and female-typical profes-        data, but also those that are based on stereotypes.
+sion groups through positive pro-typical associa-         Despite the fact that all of the balanced professions
+tions and negative anti-typical associations before       have an approximately even distribution of male
+fine-tuning. After fine-tuning, we observe a reduc-       and female employees in the U.S. (Bureau of Labor
+tion in association only for female person words          Statistics, 2020), there is a significantly lower, neg-
+and female-typical professions, but there is an in-       ative association for female person words before
+crease in association in both anti-typical settings.      fine-tuning. This signifies that women’s visibility
+This lends support to the effectiveness of our bias       in these professions is inhibited, i.e. that women
+mitigation method.                                        are seen as less likely to carry out such a profes-
+   However, we also observe that female person            sion. In general, the associations in the balanced
+words have higher absolute pre-association values         profession group behave similarly to those in the
+in both the pro- and anti-typical settings, and also      male-typical profession group. Thus, unless a pro-
+  Figure 5: Pre- and post-associations of female and male person words with statistically balanced professions
+
+
+fession is typically carried out by women, such as        There are many more contextualized word embed-
+the professions kindergarten teacher or nurse, the        ding models besides BERT, such as GPT-2 (Rad-
+default ‘worker’ is culturally seen as male.              ford et al., 2019) or ELMo (Peters et al., 2018).
+   Our results moreover show that a method that           Moreover, there have been various developments
+works well for English is not necessarily trans-          and enhancements of the initial BERT model, such
+ferable to other languages. Since German is a             as DistilBERT (Sanh et al., 2019), ALBERT (Lan
+gender-marking language, the agreement between            et al., 2019), or RoBERTa (Liu et al., 2019). There-
+the grammatical gender of the person word and the         fore, future work could focus on gender bias in a
+profession influences the associations. Still, the        variety of models and investigate whether there are
+consistently higher associations of female person         common patterns.
+words compared to male person words illustrate the           Secondly, the present work extensively relies
+linguistic markedness of feminine word forms, as          on choices made by the researchers, due to the
+opposed to the default masculine forms, in German.        template-based method of measuring bias. On one
+                                                          hand, the method is dependent on curated lists of
+   Furthermore, the fact that English and Ger-
+                                                          person words and profession terms, which already
+man both belong to the Germanic language family
+                                                          introduce human bias (Sun et al., 2019). We tried to
+(Dryer and Haspelmath, 2013) highlights that (ge-
+                                                          partially counteract this bias by basing the choice
+netic) linguistic relatedness does not predict the
+                                                          of professions on recent labor statistics. On the
+cross-linguistic success of a method. Especially
+                                                          other hand, the words in the templates themselves
+for a relatively new model such as BERT, develop-
+                                                          influence the target likelihood, because word rep-
+ing language-specific methods to assess its limita-
+                                                          resentations in BERT are dependent on the entire
+tions is crucial to prevent bias propagation to down-
+                                                          sentence context (Devlin et al., 2018). Therefore,
+stream applications in the language concerned. Our
+                                                          future research could include a broader variety of
+lack of success in transferring the method to Ger-
+                                                          sentences, which could also be randomly sampled.
+man emphasizes the need for more typological vari-
+ety in NLP research as well as language-specific so-
+lutions (Sun et al., 2019; Hovy and Spruit, 2016b).
+   Naturally, there are a number of limitations of
+this work. We specifically focus on two, here.
+Firstly, we work with only one very specific En-
+glish BERT model, namely the uncased BERTBASE .
+Acknowledgments                                           Andy Field, Jeremy Miles, and Zoë Field. 2012. Dis-
+                                                            covering statistics using R. Sage publications.
+This work is based on the first author’s master the-
+sis, which was conducted under the ERASMUS                Hila Gonen and Yoav Goldberg. 2019. Lipstick on a
+Mundus Program Language and Communication                   pig: Debiasing methods cover up systematic gender
+                                                            biases in word embeddings but do not remove them.
+Technologies (EMLCT). We would like to thank                arXiv preprint arXiv:1903.03862.
+the Center for Information Technology of the Uni-
+versity of Groningen for providing access to the          Hila Gonen, Yova Kementchedjhieva, and Yoav Gold-
+                                                            berg. 2019. How does grammatical gender affect
+Peregrine high performance computing cluster.
+                                                            noun representations in gender-marking languages?
+                                                            arXiv preprint arXiv:1910.14161.
+References                                                Suchin Gururangan, Ana Marasović, Swabha
+                                                            Swayamdipta, Kyle Lo, Iz Beltagy, Doug Downey,
+Douglas Adams. 2017. The Ultimate Hitchhiker’s              and Noah A. Smith. 2020. Don’t stop pretraining:
+  Guide to the Galaxy, volume 6. Pan Macmillan.             Adapt language models to domains and tasks. In
+Christine Basta, Marta R Costa-jussà, and Noe Casas.       Proceedings of ACL.
+  2019. Evaluating the underlying gender bias in
+  contextualized word embeddings. arXiv preprint          Dirk Hovy, Shannon Spruit, Margaret Mitchell,
+  arXiv:1904.08783.                                         Emily M. Bender, Michael Strube, and Hanna Wal-
+                                                            lach, editors. 2017. Proceedings of the First ACL
+Su Lin Blodgett, Solon Barocas, Hal Daumé III, and         Workshop on Ethics in Natural Language Process-
+  Hanna Wallach. 2020. Language (technology) is             ing. Association for Computational Linguistics, Va-
+  power: A critical survey of “bias” in NLP. In Pro-        lencia, Spain.
+  ceedings of the 58th Annual Meeting of the Asso-
+  ciation for Computational Linguistics, pages 5454–      Dirk Hovy and Shannon L. Spruit. 2016a. The social
+  5476, Online. Association for Computational Lin-          impact of natural language processing. In Proceed-
+  guistics.                                                 ings of the 54th Annual Meeting of the Association
+                                                            for Computational Linguistics (Volume 2: Short Pa-
+Tolga Bolukbasi, Kai-Wei Chang, James Y Zou,                pers), pages 591–598, Berlin, Germany. Association
+  Venkatesh Saligrama, and Adam T Kalai. 2016.              for Computational Linguistics.
+  Man is to computer programmer as woman is to
+  homemaker? debiasing word embeddings. In Ad-            Dirk Hovy and Shannon L Spruit. 2016b. The social
+  vances in neural information processing systems,          impact of natural language processing. In Proceed-
+  pages 4349–4357.                                          ings of the 54th Annual Meeting of the Association
+                                                            for Computational Linguistics (Volume 2: Short Pa-
+Bureau of Labor Statistics. 2020. Labor force statis-       pers), pages 591–598.
+  tics from the current population survey. [Online; ac-
+  cessed 16-March-2020].                                  Svetlana Kiritchenko and Saif M Mohammad. 2018.
+                                                            Examining gender and race bias in two hun-
+Aylin Caliskan, Joanna J Bryson, and Arvind                 dred sentiment analysis systems. arXiv preprint
+  Narayanan. 2017. Semantics derived automatically          arXiv:1805.04508.
+  from language corpora contain human-like biases.
+  Science, 356(6334):183–186.                             Keita Kurita, Nidhi Vyas, Ayush Pareek, Alan W Black,
+                                                            and Yulia Tsvetkov. 2019. Measuring bias in con-
+Greville G. Corbett. 2013. Number of genders. In
+                                                            textualized word representations. arXiv preprint
+  Matthew S. Dryer and Martin Haspelmath, editors,
+                                                            arXiv:1906.07337.
+  The World Atlas of Language Structures Online.
+  Max Planck Institute for Evolutionary Anthropol-        Zhenzhong Lan, Mingda Chen, Sebastian Goodman,
+  ogy, Leipzig.                                             Kevin Gimpel, Piyush Sharma, and Radu Soricut.
+Marta R. Costa-jussà, Christian Hardmeier, Will Rad-       2019. Albert: A lite bert for self-supervised learn-
+ ford, and Kellie Webster, editors. 2019. Proceed-          ing of language representations. arXiv preprint
+ ings of the First Workshop on Gender Bias in Natu-         arXiv:1909.11942.
+ ral Language Processing. Association for Computa-
+ tional Linguistics, Florence, Italy.                     Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Man-
+                                                            dar Joshi, Danqi Chen, Omer Levy, Mike Lewis,
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and               Luke Zettlemoyer, and Veselin Stoyanov. 2019.
+   Kristina Toutanova. 2018. BERT: pre-training of          Roberta: A robustly optimized bert pretraining ap-
+   deep bidirectional transformers for language under-      proach. arXiv preprint arXiv:1907.11692.
+   standing. CoRR, abs/1810.04805.
+                                                          Kaiji Lu, Piotr Mardziel, Fangjing Wu, Preetam Aman-
+Matthew S. Dryer and Martin Haspelmath, editors.            charla, and Anupam Datta. 2018. Gender bias in
+ 2013. WALS Online. Max Planck Institute for Evo-           neural natural language processing. arXiv preprint
+ lutionary Anthropology, Leipzig.                           arXiv:1807.11714.
+Rowan Hall Maudslay, Hila Gonen, Ryan Cotterell,           Jieyu Zhao, Tianlu Wang, Mark Yatskar, Ryan Cot-
+  and Simone Teufel. 2019. It’s all in the name: Mit-         terell, Vicente Ordonez, and Kai-Wei Chang. 2019.
+  igating gender bias with name-based counterfactual          Gender bias in contextualized word embeddings.
+  data substitution. arXiv preprint arXiv:1909.00871.         arXiv preprint arXiv:1904.03310.
+Chandler May, Alex Wang, Shikha Bordia, Samuel R           Pei Zhou, Weijia Shi, Jieyu Zhao, Kuan-Hao
+  Bowman, and Rachel Rudinger. 2019. On mea-                 Huang, Muhao Chen, Ryan Cotterell, and Kai-
+  suring social biases in sentence encoders. arXiv           Wei Chang. 2019. Examining gender bias in lan-
+  preprint arXiv:1903.10561.                                 guages with grammatical gender. arXiv preprint
+                                                             arXiv:1909.02224.
+Corinne A Moss-Racusin, John F Dovidio, Victoria L
+  Brescoll, Mark J Graham, and Jo Handelsman. 2012.        Ran Zmigrod, Sebastian J Mielke, Hanna Wallach,
+  Science faculty’s subtle gender biases favor male stu-     and Ryan Cotterell. 2019. Counterfactual data
+  dents. Proceedings of the national academy of sci-         augmentation for mitigating gender stereotypes in
+  ences, 109(41):16474–16479.                                languages with rich morphology. arXiv preprint
+                                                             arXiv:1906.04571.
+Matthew E Peters, Mark Neumann, Mohit Iyyer, Matt
+ Gardner, Christopher Clark, Kenton Lee, and Luke
+ Zettlemoyer. 2018. Deep contextualized word repre-
+ sentations. arXiv preprint arXiv:1802.05365.
+Alec Radford, Jeffrey Wu, Rewon Child, David Luan,
+  Dario Amodei, and Ilya Sutskever. 2019. Language
+  models are unsupervised multitask learners. OpenAI
+  Blog, 1(8):9.                                            Appendix
+
+Robert Rosenthal. 1991. Applied social research meth-      This appendix contains the detailed list of all profes-
+  ods series, Vol. 6. Meta-analytic procedures for so-     sions used in this paper in Table 6. The professions
+  cial research (Rev. ed.). Sage Publications, Inc.        were chosen from a list of professions provided by
+  https://doi. org/10.4135/9781412984997.                  the U.S. Bureau of Labor Statistics (2020) based on
+Rachel Rudinger, Jason Naradowsky, Brian Leonard,          the percentage of women employed, shortened and
+  and Benjamin Van Durme. 2018.           Gender           subsequently translated into German masculine and
+  bias in coreference resolution.  arXiv preprint          feminine forms. Table 6 is referred in Section 3.2,
+  arXiv:1804.09301.
+                                                           where we describe how our template-based BEC-
+Victor Sanh, Lysandre Debut, Julien Chaumond, and          Pro was created.
+  Thomas Wolf. 2019. Distilbert, a distilled version          Additionally, we provide an illustration of the
+  of bert: smaller, faster, cheaper and lighter. arXiv
+  preprint arXiv:1910.01108.                               associations for the German individual professions
+                                                           of the three profession groups in Figure 6. Fig-
+Deven Shah, H Andrew Schwartz, and Dirk Hovy.              ure 6 is referred in Section 5.3 when discussing
+  2019. Predictive biases in natural language process-
+  ing models: A conceptual framework and overview.
+                                                           that the associations do not capture gender bias for
+  arXiv preprint arXiv:1912.11078.                         the German model due to grammatical agreement.
+Paul Stocker. 2012. Nouns. In A Student Grammar of
+  German, page 11–29. Cambridge University Press.
+Tony Sun, Andrew Gaut, Shirlyn Tang, Yuxin Huang,
+  Mai ElSherief, Jieyu Zhao, Diba Mirza, Eliza-
+  beth Belding, Kai-Wei Chang, and William Yang
+  Wang. 2019. Mitigating gender bias in natural lan-
+  guage processing: Literature review. arXiv preprint
+  arXiv:1906.08976.
+Kellie Webster, Marta Recasens, Vera Axelrod, and Ja-
+  son Baldridge. 2018. Mind the gap: A balanced cor-
+  pus of gendered ambiguous pronouns. In Transac-
+  tions of the ACL, page to appear.
+Thomas Wolf, Lysandre Debut, Victor Sanh, Julien
+  Chaumond, Clement Delangue, Anthony Moi, Pier-
+  ric Cistac, Tim Rault, R’emi Louf, Morgan Funtow-
+  icz, and Jamie Brew. 2019. Huggingface’s trans-
+  formers: State-of-the-art natural language process-
+  ing. ArXiv, abs/1910.03771.
+                                                                                                      %                       German profession
+                      original profession                           shortened profession
+                                                                                                    women                         (masc./fem.)
+Preschool and kindergarten teachers                              kindergarten teacher                 98.7   Kindergärtner/Kindergärtnerin
+Dental hygienists                                                dental hygienist                     96.0   Dentalhygieniker/Dentalhygienikerin
+Speech-language pathologists                                     speech-language pathologist          95.8   Logopäde/Logopädin
+Dental assistants                                                dental assistant                     94.9   Zahnarzthelfer/Zahnarzthelferin
+Childcare workers                                                childcare worker                     93.4   Kinderbetreuer/Kinderbetreuerin
+Medical records and health information technicians               medical records technician           93.3   Medizintechniker/Medizintechnikerin
+Secretaries and administrative assistants                        secretary                            93.2   Sekretär/Sekretärin
+Medical assistants                                               medical assistant                    92.7   Arzthelfer/Arzthelferin
+Hairdressers, hairstylists, and cosmetologists                   hairdresser                          92.3   Friseur/Friseurin
+Dietitians and nutritionists                                     dietitian                            92.1   Ernährungsberater/Ernährungsberaterin
+Licensed practical and licensed vocational nurses                vocational nurse                     90.8   Berufskrankenpfleger/Berufskrankenpflegerin
+Teacher assistants                                               teacher assistant                    89.7   Betreuungslehrer/Betreuungslehrerin
+Paralegals and legal assistants                                  paralegal                            89.6   Rechtsanwaltsgehilfe/Rechtsanwaltsgehilfin
+Billing and posting clerks                                       billing clerk                        89.5   Fakturist/Fakturistin
+Phlebotomists                                                    phlebotomist                         89.3   Phlebologe/Phlebologin
+Receptionists and information clerks                             receptionist                         89.3   Rezeptionist/Rezeptionist
+Maids and housekeeping cleaners                                  housekeeper                          89.0   Haushälter/Haushälterin
+                                                                                                             staatlich geprüfter Krankenpfleger/
+Registered nurses                                                registered nurse                     88.9
+                                                                                                             staatlich geprüfte Krankenpflegerin
+Bookkeeping, accounting, and auditing clerks                     bookkeeper                           88.5   Buchhalter/Buchhalterin
+Nursing, psychiatric, and home health aides                      health aide                          88.3   Gesundheitsberater/Gesundheitsberaterin
+Drywall installers, ceiling tile installers, and tapers          taper                                 0.7   Trockenbaumonteur/Trockenbaumonteurin
+Structural iron and steel workers                                steel worker                          0.9   Stahlarbeiter/Stahlarbeiterin
+Miscellaneous vehicle and mobile equipment                                                                   Mechaniker für mobile Geräte/
+                                                                 mobile equipment mechanic             1.3
+mechanics, installers, and repairers                                                                         Mechanikerin für mobile Geräte
+Bus and truck mechanics and diesel engine specialists            bus mechanic                          1.5   Busmechaniker/Busmechanikerin
+Heavy vehicle and mobile equipment service technicians                                                       Kfz-Servicetechniker/
+                                                                 service technician                    1.5
+and mechanics + Automotive service technicians and mechanics                                                 Kfz-Servicetechnikerin
+Heating, air conditioning, and                                                                               Heizungsmechaniker/
+                                                                 heating mechanic                      1.5
+refrigeration mechanics and installers                                                                       Heizungsmechanikerin
+Electrical power-line installers and repairers                   electrical installer                  1.6   Elektroinstallateur/Elektroinstallateurin
+Operating engineers and other construction equipment operators   operating engineer                    1.7   Betriebsingenieur/Betriebsingenieurin
+Logging workers                                                  logging worker                        1.8   Holzfäller/Holzfällerin
+Carpet, floor, and tile installers and finishers                 floor installer                       1.9   Bodenleger/Bodenlegerin
+Roofers                                                          roofer                                1.9   Dachedecker/Dachdeckerin
+                                                                                                             Bergbaumaschinentechniker/
+Mining machine operators                                         mining machine operator               2.0
+                                                                                                             Bergbaumaschinentechnikerin
+Electricians                                                     electrician                           2.2   Elektriker/Elektrikerin
+Automotive body and related repairers                            repairer                              2.2   Kfz-Mechaniker/Kfz-Mechanikerin
+Railroad conductors and yardmasters                              conductor                             2.4   Schaffner/Schaffnerin
+Pipelayers, plumbers, pipefitters, and steamfitters              plumber                               2.7   Klempner/Klempnerin
+Carpenters                                                       carpenter                             2.8   Zimmermann/Zimmerin
+                                                                                                             Installateur von Sicherheitssystemen/
+Security and fire alarm systems installers                       security system installer             2.9
+                                                                                                             Installateurin von Sicherheitssystemen
+Cement masons, concrete finishers, and terrazzo workers          mason                                 3.0   Maurer/Maurerin
+Firefighters                                                     firefighter                           3.3   Feuerwehrmann/Feuerwehrfrau
+Retail salespersons                                              salesperson                          48.5   Verkäufer/Verkäuferin
+                                                                                                             Leiter religiöser Aktivitäten/
+Directors, religious activities and education                    director of religious activities     48.6
+                                                                                                             Leiterin religiöser Aktivitäten
+Crossing guards                                                  crossing guard                       48.6   Verkehrslotse/Verkehrslotsin
+Photographers                                                    photographer                         49.3   Fotograf/Fotografin
+Lifeguards and other recreational,
+                                                                 lifeguard                            49.4   Bademeister/Bademeisterin
+and all other protective service workers
+Lodging managers                                                 lodging manager                      49.5   Herbergsverwalter/Herbergsverwalterin
+Other healthcare practitioners and technical occupations         healthcare practitioner              49.5   Heilpraktiker/Heilpraktikerin
+Advertising sales agents                                         sales agent                          49.7   Vertriebsmitarbeiter/Vertriebsmitarbeiterin
+Mail clerks and mail machine operators, except postal service    mail clerk                           49.8   Postbeamter/Postbeamtin
+Electrical, electronics, and electromechanical assemblers        electrical assembler                 50.4   Elektro-Monteur/Elektro-Monteurin
+Insurance sales agents                                           insurance sales agent                50.6   Versicherungskaufmann/Versicherungskauffrau
+Insurance underwriters                                           insurance underwriter                51.1   Versicherungsvermittler/Versicherungsvermittlerin
+                                                                                                             medizinischer Wissenschaftler/
+Medical scientists                                               medical scientist                    51.8
+                                                                                                             medizinische Wissenschaftlerin
+Statisticians                                                    statistician                         52.4   Statistiker/Statistikerin
+Training and development specialists                             training specialist                  52.5   Ausbilder/Ausbilderin
+Judges, magistrates, and other judicial workers                  judge                                52.5   Richter/Richterin
+Bartenders                                                       bartender                            53.1   Barkeeper/Barkeeperin
+Dispatchers                                                      dispatcher                           53.1   Fahrdienstleiter/Fahrdienstleiterin
+Order clerks                                                     order clerk                          53.3   Auftragssachbearbeiter/Auftragssachbearbeiterin
+Postal service mail sorters, processors,
+                                                                 mail sorter                          53.3   Postsortierer/Postsortiererin
+and processing machine operators
+
+
+   Table 6: Shortening and translation of English profession terms into German masculine and feminine forms
+Figure 6: Mean associations for single professions of balanceed, female and male profession groups for German
+BERT language model
+

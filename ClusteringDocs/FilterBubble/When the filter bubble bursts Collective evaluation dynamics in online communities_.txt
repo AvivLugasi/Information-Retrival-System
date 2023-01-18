@@ -1,0 +1,1527 @@
+1602.05642v1 [cs.SI] 18 Feb 2016
+
+arXiv
+
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+When the Filter Bubble Bursts:
+Collective Evaluation Dynamics in Online Communities
+
+Adiya Abisheva, David Garcia, Frank Schweitzer
+
+Abstract
+
+We analyze online collective evaluation processes through positive and negative votes
+in various social media. We find two modes of collective evaluations that stem from the
+existence of filter bubbles. Above a threshold of collective attention, negativity grows faster
+with positivity, as a sign of the burst of a filter bubble when information reaches beyond the
+local social context of a user. We analyze how collectively evaluated content can reach large
+social contexts and create polarization, showing that emotions expressed through text play
+a key role in collective evaluation processes.
+
+Categories and Subject Descriptors: Human-centered computing, Collaborative and social comput-
+ing, Empirical studies in collaborative and social computing
+
+Keywords: Social filtering, emotions, collective dynamics
+
+1 Introduction
+
+When the filter bubble bursts Rebecca Black, an amateur teenage singer, posted a music video!
+on YouTube on February 10, 2011. The song originally circulated mostly among the Facebook friends of
+its 13-year old singer and was loved and positively commented. Rebecca Black’s song received the "all
+the usual friends things" [36] and was enough to please her, but it suddenly went viral in the wrong
+direction. From initial 4,000 views on YouTube her song skyrocketed to 13 Million views. This sudden
+popularity brought mostly negative attention, up to the point of becoming officially the most disliked
+YouTube video”, and by June 15, 2011 the song received 3.2 Million dislikes in YouTube against less than
+half a million likes. From local fame her song soared to the heights of global shame.
+
+The anecdotal example of Rebecca Black’s song is paradigmatic of some aspects of the collective dynamics
+of evaluations in online media. A video can become relatively popular within a small community and
+receive initial positive evaluations, but when larger audiences are reached, negativity rises faster than
+in early moments. Figure 1 shows this phenomenon through an example of the relative daily volume of
+likes and dislikes of a YouTube video. Initially, the video is positively evaluated, but the volume of likes
+decreases quickly. While initial dislikes also decrease, they start rising after the fourth day, reaching a
+peak at the ninth day.
+
+The early viewers of a YouTube video are prone to like it, either due to a social connection with the
+uploader, or given the similarity of the video with their past liked content. This is a consequence of the
+
+ 
+
+'The original video was deleted and reuploaded again at: https: //www. youtube .com/watch?v=kf Vsf0SbIYO
+*http://knowyourmeme . com/memes/rebecca-black- friday
+
+ 
+
+1/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+ 
+
+@ 0.257
+
+E 0.204 — Likes
+
+5B 015H — Dislikes
+
+oO ISI
+
+> 0.104
+
+2 o054
+
+0 —
+
+oO T T
+
+5 10 15 20
+
+day
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 1: Example of evaluation dynamics in Youtube. Normalized daily volume of likes
+and dislikes for a video in our YouTube dataset. Likes appear soon after the video is uploaded,
+while dislikes tend to appear later.
+
+purpose of social filtering mechanisms and recommender systems, which is to personalize content selection
+such that users find content that they consider relevant and of good quality. In contrast, the video can
+also spread through other media towards more general users, and eventually reach a global audience with
+users more critical or negative towards the video. Beyond YouTube videos, this phenomenon can be seen
+as another aspect of the filter bubble [51]: The reinforcement of opinions caused by filtering mechanisms
+creates an initial pocket of positivity, but when the filter bubble bursts, collective negativity can backlash.
+
+Our study sets out to understand collective evaluation processes in various social media through likes
+and dislikes, as manifestations of opinions towards the evaluated content. We test the duality of collective
+evaluations in the local versus global behavior illustrated above, looking for the existence of a threshold
+of positivity after which negative evaluations rise faster and polarization emerges.
+
+Emotions in polarization Technological filters are not the only factor that shapes collective evalua-
+tions; emotions influence cognitive information processing, shaping opinions and attitudes towards online
+content. A number of studies in social psychology show how emotions influence individual evaluations,
+judgements, and opinions [35, 24, 25], based on the theory of core affect [57]. Within this theoretical frame-
+work, emotions are composed of two dimensions: i) valence, which characterizes the feeling of pleasure or
+displeasure, and ii) arousal, which encompasses a feeling of activation or deactivation, and quantifies mo-
+bilization and energy [57]. Additional dimensions can improve the representation of emotional experience,
+such as potency or surprise [15], but their consistent inclusion in psychological research about opinions
+is still to be explored.
+
+Research in psychology on the role of emotions in evaluations show that arousal can lead to extreme
+reactions and polarized responses [55]. The theory of misattribution explains this effect [76, 55] as a
+transfer of residual emotions between events that intensifies the reaction to the second event. For instance,
+men in a state of high emotional arousal {for example from physical exercises) give more extreme ratings
+of attractiveness to women in comparison to the situation in which raters are in a calm emotional state.
+Similarly, valence can be misattributed and bias evaluations [58], in particular when individuals inspecting
+their current feelings, which might be caused by an incidental source rather than the evaluated content.
+
+Further theoretical explanations for the role of emotions in evaluations pose the reduction of cognitive
+complexity induced by emotional states, which bias the formulation of evaluations towards fast rather than
+informed responses. The theory of affect priming explains this through the attribution of an individual’s
+
+ 
+
+2/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+mood to similarly valenced signals in memory, which helps reducing the effort of evaluation tasks [29].
+Empirical evidence shows that the subjective experience of arousal motivates evaluation on the extremes
+[52]. For example, the ratings of famous figures by students are found to be more polarized right before
+taking an exam, in comparison to weeks before or after. This kind of reactions are especially salient when
+arousal is experienced along with negative valence (such as the stress before an exam), and thus we can
+expect the expression of negative and aroused emotions to motivate more polarized collective evaluations
+in social media. The digital traces of collective evaluations allow us to analyze further the role of emotions
+in online evaluation processes.
+
+Contributions of this article In this work we analyze collective evaluations across different social
+media to reveal statistical regularities related to information filters and emotions. First, we test if the
+distributions of likes and dislikes of evaluated content shows signs of the existence of multiplicative growth
+processes of social interaction. Second, we test if the relationship between likes and dislikes is non-linear
+with a division in to two different modes, corresponding to local and global collective evaluations. Third,
+we test if the emotions expressed in the evaluated content lead to global and polarized collective responses.
+Our work provides insights into the properties of collective evaluations and tests established psychology
+theories on the role of emotions in opinion formation.
+
+2 Background
+
+Collective dynamics In the last years, lots of research focused on the topic of online communities,
+ie. large groups of individuals that interact through an online medium. Collective phenomena such as
+dynamics of trends [75, 70], or viral marketing [38] can be assessed with data from online communities.
+Examples of studies on online user behaviour are understanding dynamics of replying activity and website
+engagement of users [56], buyer activity in online shopping websites [37] and communication dynamics in
+forums [30]. Another example is research on social influence, which was shown to exist in YouTube [12], in
+Facebook [50], and in Twitter [69]. Furthermore, social influence on popularity of Facebook applications
+has been shown to arise from a mixture of local and global signals [50]. While the former notion indicates
+how friends and local community influence an individual’s behaviour, the latter suggests the effect of
+the aggregate popularity of products or behaviours on an individual. Additionally, previous results for
+popularity distributions show that the amount of votes for Digg stories [67] and tweets in trending topics
+[6] follow log-normal distributions that are explained by social coupling.
+
+Collective evaluations Online voting dynamics and dynamics of human appraisal were studied in a
+number of previous research. Studies on collective evaluations mostly interrelates and finds explanations
+in research on collective popularity of the online content, with the assumption that more likes lead to
+item’s popularity. Despite the differences in the ways of measuring popularity, as a number of views in
+YouTube [60], or as a number of likes and dislikes in Reddit [44], or as a number of votes in Digg [67|
+or as a time span of trending topics in Twitter [6], these measures showed the existence of statistical
+regularities of content popularity, and fit to the log-normal distribution.
+
+ 
+
+3/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+Studies on collective dynamics of negative evaluations are scarcer, but some recent works illustrate that
+social influence effects are present in movie ratings from imdb.com [41], and that controversiality expressed
+through movie ratings evolves with time [5]. Additionally, herding effects have been observed in random
+manipulations of votes in Reddit [73], which shows that the way users vote depends on the votes of other
+users. Further research on Reddit [44] showed a non trivial dependency between likes and dislikes at the
+collective level, in line with the questions we address in this article.
+
+Online polarization The proliferation of online participatory media, such as social network sites,
+blogs and online fora, increases users engagement in discussions on political and societal issues, which in its
+turn may - under certain conditions - split individuals apart in their opinion space. Opinion polarization is
+characterzied by a division of the population into a small number of fractions with high internal consensus
+and sharp disagreement between them [14]. Agent-based models [40, 42] and experimental studies [68]
+explain some aspects of opinion formation and its role in consensus and polarization.
+
+Based on data from digital traces, previous research investigated polarization from the network perspective
+in political blogs [3], in follower and mention links in Twitter [11], and in Swiss politicians profiles [19], as
+well as in a non-political domains like friendship networks [26], and cultural expression [22]. Additionally,
+exprerimental evidence shows that group processes like polarization function differently in computer-
+mediated communication than in a face-to-face interaction [62], for example as the relative annonymity
+of online media dampens inhibiting effects like the spiral of silence [48].
+
+Online emotions Emotional expression through online text has been analyzed in earlier research on
+data from MySpace [66], Yahoo answers [34], IRC channels [18], Wikipedia [28], BBC, Digg, YouTube and
+Twitter [64]. Availability of large-scale quantitative datasets allows us to understand emotions and their
+role in various domains. Studies in the field of subjective well-being leverage extensively on quantifying
+emotions through text. For instance, subjective well-being is manifested in Facebook status updates [71],
+and shows a pattern of assortativity in social networks [54] in relation to feelings of loneliness [7]. This is
+in a close relation to the quantification of mood in Twitter which has been used to validate theories of
+periodic mood oscillations [23].
+
+Twitter mood measured in terms of valence and arousal reveals aspects of the relation between mood
+states and online interaction and participation [9], and the psycholinguistic analysis of emotions reveal
+the traces of mental health issues [10]. Furthermore, segregation patterns in geographical space [39] and
+gender-based patterns [32, 66] can be partially attributed to differences in emotional expression. In online
+interaction, for example in real-time chat conversations [18] and product reviews [21], emotions are not
+a phenomenon characteristic to just an individual, but exhibit collective properties [59].
+
+Lastly, information-centric role of online emotions has been studied through blogs [45], in Twitter [53],
+and in Yahoo answers [34]. Emotions are the building blocks for a creation of social network structures
+[74, 61] through empathy [31] that lead to correlations between emotional expression and popularity
+[33, 63]. Negative emotional posts were shown to be drivers of communication among users and responsible
+for extension of the lifetime of online discussions in forums [8]. Furthermore, the digital traces of emotions
+synchronize with political outcomes [24], which goes inline with the findings that political discussions are
+emotionally charged [27], in particular during election periods [20].
+
+ 
+
+4/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+3 Data and Methods
+
+3.1 Data on collective evaluations
+
+Datasets The data used in this research is the result of our crawl of four publicly accessible online
+communities.
+
+YouTube (http://www. youtube.com/) is a video sharing website on which registered users can upload
+and view videos, as well as post comments and rate videos with likes and dislikes. Our crawl? was launched
+in June 2011 to daily collect a combination of top videos in various categories and to iteratively explore
+the channels of general users [2], including 6.3 Million videos by February 2015.
+
+Reddit (http://www.reddit.com) is a message board in which registered users submit posts with links
+and text, and vote up and down for posts to appear on a frontpage. Conversations between users appear
+in one of the many thematic boards, called subreddits, covering diverse topics from politics to science
+fiction and adult content. From 2012 to 2014 our daily Reddit crawl* collected 338,000 submissions from
+1,972 subreddits. While the user interface of Reddit provides fuzzed amounts of votes, it is possible to
+construct the total amount of up and downvotes to a submission based on the JSON fields of reddit
+score and like ratio. This way, we count with the text and the final amount of up and downvotes for each
+submission in our dataset.
+
+Imgur (http://www. imgur.org/) is an image hosting and sharing website where registered users upload,
+rate, and discuss uploaded images. Image sharing traffic of Imgur has a large presence in Reddit such
+that every 6th successful Reddit post has a link to an image on Imgur [49]. Our daily crawl? collected
+200,000 images and their user activity statistics between December 2015 and January 2016.
+
+Finally, Urban Dictionary (http://www.urbandictionary.com/) is an online crowdsourced platform
+consisting of non-standard lexicon of slang words and idioms. Registered users can submit new terms and
+provide definitions, and all users of the website, registered and anonymous, can vote up and down for the
+best definitions. Between April and May 2013 our python-based crawl collected 220,000 definitions and
+their votes.
+
+All platforms provide functionality for users to evaluate uploaded content positively and negatively by
+clicking an upvote/like or downvote/dislike button respectively. For simplicity, from now on we refer
+to evaluated videos, submissions, images and definitions as items and we denote as likes and dislikes to
+positive and negative evaluations, including up and down votes respectively.
+
+Sentiment Analysis To quantify emotional expression, we applied sentiment analysis to headers
+or titles of each item, leaving for a future research the analysis of longer descriptions, transcripts, and
+comments. We applied sentiment analysis techniques to video descriptions in YouTube, image titles in
+Imgur, submission headers in Reddit and term definitions in Urban Dictionary. Headers and titles area
+
+ 
+
+“YouTube Data API Java wrapper (https: //developers. google .com/youtube/v3/)
+
+“PRAW (https://pypi. python. org/pypi/praw)
+
+°PyImgur Python API wrapper (https: //github.com/Damgaard/PyImgur). Seed images were selected from
+Imgur’s gallery sitemap (http://imgur.com/gallery/sitemap.xm1)
+
+ 
+
+5/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+ 
+
+Number of items, NV
+
+ 
+
+ 
+
+Dataset Nossa Nyc Nope Num. of likes Num. of dislikes
+Urban Dict. definitions 220, 270 213,512 208, 441 61, 100, 699 26, 508, 869
+YouTube video descriptions 6,279,461 3, 864, 480 2, 750, 554 763, 291, 676 41, 214,035
+Reddit submissions 338, 845 174, 444 142, 662 5, 078, 242 947,519
+Imgur image titles 201,181 147, 752 125, 230 54, 786, 629 1,931,918
+
+ 
+
+Table 1: Number of items in each dataset. Nerayieq counts the number of crawled items,
+and Nyear>1 the number of items in English and that existed for more than a year. NUp>1
+counts items that received at least 1 like and 1 dislike.
+
+good proxy of the emotional tone of a discussion, in line with earlier research on forum-like conversations
+[24].
+
+We measured emotional content of items by applying two complementary sentiment analysis methods.
+First, we apply a lexicon of affective norms of valence V, arousal A and dominance D of nearly 14,000
+English words [72]. In line with previous findings [72], the scores of valence and dominance in our dataset
+are highly correlated, in comparison with the weaker correlation between valence and arousal as explained
+more in detail in the Results section. This motivates our focus to only valence and arousal as suggested
+by the theory of core affect.
+
+Second, we apply the SentiStrength classifier [65, 64] a state-of-the-art lexicon-based method [34, 1] that
+has been used in earlier research on the online data from MySpace [66], Yahoo! [34], IRC channels [18],
+BBC, Digg, YouTube [64], Twitter [64, 53] and Wikipedia [28]. The core of the SentiStrength method
+is to predict the sentiment of a text, based upon the occurrences of the words from a lexical corpora,
+which contains the set of terms with known sentiment of a text. The classifier incorporates various rules,
+which strengthen or weaken sentiments of the lexicon words detected in the short text. Among the rules
+are syntactic rules, e.g. exclamation marks and punctuation, language modifiers and intensifiers, such
+as negation and booster words, and spelling correction rules. The final sentiment score is composed of a
+positive P and a negative N score for each text as two discrete values in the range of [+1, +5] and [—5, —1]
+respectively. In our analysis, we normalize all emotions variables to [0..1] mapping P from [+1,+5] to
+(0, 1] and reversing and rescaling N from [—1,—5] to (0, 1].
+
+To ensure a valid measurement of sentiment and collective evaluations, we apply two filters to our datasets.
+First, since both sentiment analysis techniques are designed only for English texts, we apply language
+classification [47] and filter out all non-English texts. Second, we remove all items with less than a like
+and a dislike, and that existed for less than a year in all platforms, to ensure that positive and negative
+evaluations are stable. Detailed statistics on the number of posts in each dataset are shown in Table 1,
+showing that they are still sufficient for large scale analyses. We will make these datasets available for
+research purposes.
+
+3.2 Statistical analysis methods
+
+Distribution fits We apply a Maximum Likelihood criterion to fit the distributions of likes and
+dislikes [4], to confirm early findings of the fits of the popularity distribution to the log-normal distribution
+
+ 
+
+6/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+|67, 6]. We use the powerlaw python package to fit four statistical distributions related to complex growth
+phenomena [46]: power law, log-normal, truncated power law and exponential distributions. We compare
+the likelihood of each distribution using the log-likelihood ratio R = In(L,/L2) between the two candidate
+distributions and its significance value p. Positive ratios indicate evidence for the first distribution, and
+negative ratios for the second one. Instead of testing the hypothesis of the data following a certain
+distribution, this comparative test answers the question of which parametric distribution provides the
+best fit available, following the principle of Maximum Likelihood estimation [4]. To finally assess the
+quality of the best fit, we measure the Kolmogorov-Smirnov distance between the best fitting distribution
+and the emprical data.
+
+Dual regime analysis We test the existence of a dual local versus global regime in collective evalua-
+tions by analyzing the non-linear properties of the relationship between the amounts of likes and dislikes
+for each item.
+
+We use an extension of a traditional linear modelling, multivariate adaptive regression splines (MARS)
+[17, 16] implemented in the R programming language package earth. MARS fits a continuous piecewise
+regression function with knots that join locally linear pieces. In our analysis, we are interested to test a
+dual pattern in the relationship between the number of likes L and the number of dislikes D, therefore
+we set the number of knots to one and fit a model of the form
+
+D(L) = I+ a, * max(0,L — L,) + ag x max{0,L, — L)
+
+The values of likes above LE, and the values of dislikes above D(Z,) correspond to observations in the
+global regime, after the bubble bursts, and the values in which any is below map to the local regime.
+
+To evaluate the quality of the MARS model, we compare it to the Ordinary Least Squares (OLS) regression
+using the Generalized Cross-Validation prediction error (GCV) defined as
+
+RSS
+
+GCV = ——_
+Nea ep
+
+where N is the number of observations, RSS is the residual sum of squares, and ENP is the effective
+number of parameters to avoid overfitting [16]. We use the implementation provided by the package boot
+in R as well as the coefficient of determination R? of both OLS and MARS fits.
+
+Emotion and polarization analysis Having identified the two regimes and their thresholds in the
+relationship between the number of dislikes and the number of likes, we can mark items either in the global
+or the local regime as a binary class. We test how emotions influence the chances of items reaching the
+global regime through two logistic regression models, one for each sentiment analysis technique. Similarly,
+we combine the values of likes and dislikes through their geometric mean to measure polarization, as
+manifested by simultaneous large amounts of positive and negative evaluations. We regress this measure
+of polarization through two linear models depending on the emotions expressed on the items.
+
+Prior to modelling, we examine the normalized emotional dimensions for multicollinearity by computing
+the Spearman’s rank correlation coefficients, to avoid singularities. We assess the quality of fits in com-
+parison to null models, by measuring the x? statistic of model likelihood ratio tests implemented in the
+imtest R package.
+
+ 
+
+7/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+4 Results
+
+4.1 Stylized facts of evaluation distributions
+
+Figure 2 shows the probability density functions of the distributions of the amount of likes and dislikes
+for items in each of the four datasets. To understand the process that generates these distributions, we
+fit a set of parametric distributions that provide insights into how likes and dislikes are given to items.
+Following the categorization of [46], generative mechanisms produce stylized size distributions that can
+be traced back to the properties of growth processes. If the appearance of likes and dislikes follows
+an uncorrelated process and new evaluations are independent of previous ones, likes and dislikes should
+follow exponential distributions. On the other hand, the presence of likes and dislikes can motivate further
+evaluations through social effects, creating multiplicative growth {also known as preferential attachment
+in the context of networks). In the presence of multiplicative growth, if items have similar lifespans,
+likes and dislikes follow log-normai distributions. On the other hand if multiplicative growth is combined
+with heterogeneous lifespans, likes and dislikes follow a power law distribution. This power law can be
+corrected by adding an exponential cutoff if finite size effects limit the growth of likes and dislikes, a case
+in which the distributions would be better fitted by a truncated power law.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Urban Dictionary YouTube Reddit Imgur
+107
+a 4. _ _
+yn a g wn
+© io g x Z
+a 5 107 a a
+a a a a
+10% “10
+\ 10
+\
+1 10° 10° 10° 1088108107
+Likes Likes
+
+107 _ 197!
+a a io? a
+£ x 10" & Z 103
+a a Dips B
+= 2 107 a” Bio
+= ao = —
+o Dig 10° ie \
+
+10! 10° 10) 108 10°10” 118 wm 18
+Dislikes Dislikes Dislikes Dislikes
+
+Figure 2: Probability density function of collective evaluations. Probability density
+function of the number of likes (top) and the number of dislikes (bottom) with exponential
+binning and fits to log-normal distribution InN(j1, 0) (red dashed lines). For all datasets, the
+results of the log-likelihood pairwise comparisons of the four distributions (see text) identified
+the log-normal distribution as the best fit.
+
+For all datasets, the results of pairwise comparisons of the four proposed distributions identified the
+log-normal distribution as the best fit, with significant and positive log-likelihood ratios as shown in
+Table 2 along with the best fitting parameter estimates. The dashed lines in Figure 2 show the fitted
+distributions, revealing the quality of the fit. The cases of YouTube and Urban Dictionary provide very
+
+ 
+
+8/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+ 
+
+ 
+
+Urban Dictionary YouTube Reddit Imgur
+P(Likes) P(Dislikes) P(Likes) P(Dislikes) P(Likes) P(Dislikes) P(Likes) P(Dislikes)
+be 4.092 3.657 5.492 1.405 2.197 0.492 4.668 1.821
+o 1.705 1.435 2,28 2,528 1.332 1.35 2.46 1.447
+D 0.008 0.008 0.009 0.002 0.029 0.01 0.098 0.031
+
+ 
+
+in (2) 123115.6°* =129462.1*** 174835.6"" = 42309.5"** = 45355.3*** 13898.9*** 65314.8*** 34103.6***
+In ( -) 55538.6°* 61135.1°** 252646.1°** = 42592.3° = 17182.5** 10084*** =20108.5*** 3662.4***
+
+PL
+
+in (x) 260098.8*** — 126865*** 953075" = 1270237.6** 149405*** =70261.5°* =75817.7* = 26681.4***
+
+ 
+
+ 
+
+Table 2: Log-normal fit parameters of collective evaluations and comparison to
+other distributions. Estimated parameters of the fitted log-normal distribution InN’(u,o) and
+Kolmogorov-Smirnov distances D. The bottom row shows the log-likelihood ratios of pairwise
+comparison between the log-normal distribution fit (numerator) and the other three distribu-
+tions: power law, truncated power law and exponential. All three ratios are positive, large and
+significant (p < 0.05) which confirms that among the four candidate distributions the log-normal
+distribution is the best fit.
+
+good fits with extremely low Kolmogorov-Smirnov D statistics. The fits are not so good at the tails of
+Reddit and Imgur, but the the Kolmogorov-Smirnov D statistic provide good values below 0.05 and the
+log-normal distribution clearly outperforms all others. The worst fit is for the number of likes in Imgur,
+for which Figure 2 suggests a bimodal pattern. Identifying the possible mechanisms that can produce such
+bimodality goes beyond the scope of this research. We can conclude that the amounts of likes and dislikes
+display a general heavy tailed behavior of log-normal distributions, lending evidence for the production
+of evaluations following socially coupled growth processes with homogeneous life spans.
+
+4.2 The dual pattern of collective evaluations
+
+We explore the existence of a dual relationship between likes and dislikes through non-linear MARS fits,
+testing if the relationship can be divided in a local and a global regime. We restrict the number of model
+terms to have a single knot, measuring if a dual model outperforms a linear pattern. Figure 3 shows the
+results of MARS fits between the logarithms of likes and dislikes. Vertical and horizontal lines mark the
+likes cutoff value LE, and its corresponding value of dislikes in the fit D(Z,.). These cutoff values divide
+the system in a local versus a global regime, with the fitted functions of the form D « L* and D « LY
+respectively.
+
+In all datasets, the exponent of the global regime is larger than exponent of the local one, for example
+in YouTube y = 0.93 > A = 0.29. While both exponents are below 1 and indicate sublinear scaling, the
+much higher value of the second one shows that, beyond a threshold value of likes, the dislikes given
+to items grow faster than below the threshold as a sign of the burst of a filter bubble. The presence of
+scaling in Reddit votes was previously reported in a smaller data subsample [44], concluding the existence
+of superlinear scaling of dislikes with likes. Our analysis shows that the relationship between likes and
+dislikes in Reddit is better approximated by a dual regime model, in line with the results of the other
+three datasets.
+
+ 
+
+9/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+    
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Tae y 5.
+Urban Dictionary aw YouTube ax Reddit 10 ae _‘Imgur
+5. ag 5s) Dox L™ D«L” De L™
+10°97 DeL 10 09 0.42 -0.37
+De [28 De«L™ jo74} Dx L™ De L™
+3 3 3 & ip
+x, x, x x 10
+= 10 = 10 3 3
+wn wn wn wn
+a a a a
+count + count 1 count count
+3 1000 1000 10 ~~ 104 2 1000
+ae wy i! 0 is
+1 » 1 1 1 7]
+10! 10° 10° 10! 10° 10° 10! 10° 10! 10° 10°
+Likes Likes Likes Likes
+
+Figure 3: Relationship between the number of dislikes and likes. Two-dimensional joint
+distributions with 50 bins, bin colors indicate the count of observations within the bin. Pur-
+ple and red lines show the local and global regimes of the non-linear relationship between the
+number of dislikes and the number of likes. Threshold estimates are located at L,, estimated
+as L, = 155 in Urban Dictionary; L, = 131 in YouTube; L, = 7 in Reddit; and L, = 27 in
+
+Imgur.
+
+We evaluate the goodness of the dual model against a single regime model in Table 3. The dual model
+outperforms in R? and GCV to the single regime model, lending strong evidence to the existence of two
+regimes. We further tested if additional knots could improve the fits, and found that a dual regime is the
+optimal model for Urban Dictionary, YouTube, and Reddit, and only a 4 knot model could improve the
+
+Imgur fit by a marginal GCV of less than 0.01.
+
+ 
+
+ 
+
+ 
+
+model Urban Dict. YouTube Reddit Imgur
+
+R? (1m) 0.646 0.634 0.727 0.505
+R? (MARS) 0.654 0.683 0.741 0.597
+GCV (1m) 0.785 1.283 0.301 0.804
+GCV (MARS) 0.767 1.111 0.286 0.654
+
+ 
+
+Table 3: The goodness of the dual and the linear model. Comparison of the linear and
+the MARS models of the relationship between the number of dislikes and the number of likes.
+Top row shows the coefficient of determination R? (higher is better). Bottom row shows the
+
+generalized 10-fold cross-validation prediction error (GCV) (lower is better). The dual model
+
+outperforms in R? and in GCV compared to the linear model.
+4.3. Emotions in the global regime
+
+Figure 4 illustrates the rank correlations between emotional dimensions. In all datasets valence and
+dominance are highly correlated with p > 0.7°**, and therefore we discard the dominance variable from
+regression analysis as it is difficult to distinguish from valence. Valence and positivity P have a minor pos-
+itive significant correlation p € [0.2,0.3], and valence and negativity N have a slightly negative correlation
+p = —0.3, illustrating the relation of emotion variables accross both valence/arousal and positive/negative
+
+models.
+
+ 
+
+10/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+A D P N A D P N A D P N A D P N_|,
+V |-0.01 0.33 V | 0.12 02 V |-0.05 0.29 V |0.26 0.31
+G 33 Ga V |012| GF 02 GV 005 GP 029] V 620 GF 030/93]
+A |-0.08] 0.11 | 0.16 A | 0.02 | 0.06 | 0.16 A |-0.12] 8 | 0.19 A | 0.15 | 0.17 |(0.23
+0
+D0. Dio. Do. D |025
+025 027 0.18 038 027 024 025 os
+P| o.14 P 024 P | o.16 P |-0.05
+-l
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 4: Correlations of emotions. Spearman’s correlation matrix of emotional dimensions, in
+an order from left to right: A) Urban Dictionary, B) YouTube, C) Reddit, D) Imgur. Significance
+level p < 0.05. Insignificant correlations are crossed out. Predictors are normalized to [0..1].
+Dominance is highly correlated with valence, and therefore the dominance variable is discarded
+from the further analysis.
+
+We fit two regression models in which the probability of the event of an item reaching the global regime
+G depends on the emotions expressed in the evaluated item. The first model uses V and A as explana-
+tory variables, and focuses on the role of emotions as quantified through their pleasant /unpleasant and
+active/calm dimensions. The second model takes P and N as predictors, and measures significance of
+positive and negative sentiments in bringing an item to global regime. Table 4 reports the results of
+logistic regression of the form logit(G) ~ V + A and logit(G) ~ P + N respectively. The role of arousal
+is heterogeneous, having a significant positive effect in Urban Dictionary and Imgur, but a weak nega-
+tive effect in YouTube and a non-significant one in Reddit. The effect of valence is also mixed, in Urban
+Dictionary and YouTube the chances of reaching the global regime grow with valence, while in Reddit
+and Imgur is the opposite case. The second model sheds more light to this: the pattern is the same
+for positive sentiment, but negative sentiment increases the chance of reaching the global regime in all
+datasets but Reddit, where the effect is not significant.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Urban Dict. YouTube Reddit Imgur
+Intercept —2.071*** —0.305*** —0.111*** 0.228***
+V 0.976*** 0.618"** —0.262*** —0.209***
+A 0.584°** —0.049"* = —0.006(n) 0.300***
+x? 547.3" 2791.4** 44.1*** 35.7°"*
+
+Urban Dict. YouTube Reddit Imgur
+Intercept —1.369"** —0.115***  —0.259*** 0.261***
+P 1.019*** 0.581*** —0.166*** —0.296***
+N 0.170*** 0.218"** = —0.006(n) 0.191***
+x? 2552.6" 17150.9** 41.9*** 120.3°*
+
+ 
+
+“p< 0.001, **p < 0.01, *p < 0.05, (m) not significant.
+
+Table 4: The role of emotions in the global regime. Logistic regression models,
+logit(G) ~ V + A and logit(G) ~ P+ N, results for probability of an item to be in a global
+regime. The effect of arousal and valence is heterogeneous, and depends on the dataset.
+
+ 
+
+11/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+4.4 Analysis of emotions in polarization
+
+Since the distributions of likes and dislikes are approximately log-normal, we can treat the logarithms
+of likes In(L) and dislikes In(D) as centrally distributed around their means ([n(D)) and (In(L)). We
+standardize the logarithmic counts In(D) and In(L) as:
+
+_ _ In(D) = (in(D))
+4u = sd(In(L)) 4p = sd(In(D))
+
+where sd(In(L)) and sd{in(D)) are the standard deviations. Then, we compute a measure of polariza-
+tion as the geometric mean of both values: Pol = \/Z, * Zp. This measure captures the principle that
+polarization is high under simultaneous large amounts of positive and negative evaluations, and that
+polarization is low when only one of the values is dominant.
+
+To understand which kind of emotional content creates polarization, we fit two regression models as in
+the previous section, one of polarization as a function of valence and arousal in the evaluated item, and
+another as a function of positive and negative sentiment scores. The results of the fits are shown in
+Table 5. In line with the theory that links arousal to more extreme opinions, we find a general pattern
+in three datasets where arousal leads to higher levels of polarization. While there is no significant effect
+in Reddit, all the other datasets show that items that contain words that transmit higher arousal also
+create a stronger polarized response.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Urban Dict. YouTube Reddit Imgur
+Int. 2.0508*** 1.4543" = 1.3511" 1.7623***
+V 0.3132" 0.2980*** —0.1954""* —0.1908**
+A 0.2662*** 0.1005*** —0.0327(n) 0.2399***
+x? 480.64" 3420.4" 97.315°*  —88.669""*
+Urban Dict. YouTube Reddit Imgur
+Int. 2.2744*** 1.5896** = 1.2220*** —-1.7625***
+P 0.4889" 0.3059"* —0.1107"* —0.1484*"*
+N 0.1194*** 0.1698*** 0.0077(n) 0.1672***
+x? 3271.2** 19830.0*** 63.073" 170.81°*
+
+ 
+
+*%*n < 0.001, **p < 0.01, *p < 0.05, (m) not significant
+
+Table 5: The role of emotions in the polarization. Linear regression models, Pol ~ V + A
+and Pol ~ P+N, results for polarization of the evaluation of an item as a function of emotions
+expressed on its text. Arousal and negativity drive polarization in all datasets except Reddit.
+The effect of valence and positivity is dataset-dependent.
+
+This also manifests in the model using positive and negative scores, where negative content predicts
+higher polarization in the same three cases as for arousal. The results of these two metrics are consistent
+with the hypothesis that the expression of activating and negative feelings, such as anger or outrage,
+
+ 
+
+12/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+tend to create more polarized responses, in line with the theoretical argument that poses emotions as
+mechanisms to speed up evaluation processes at the expense of more extreme reactions.
+
+Valence in evaluated items creates different responses. Two communities, Imgur and Reddit, show a
+negative relation of polarization with valence and positive sentiment. The other two, Urban Dictionary
+and YouTube, show the opposite, where polarization increases with valence. This suggests a context
+dependent interpretation of positive expression, which does not necessarily motivate positive empathy
+but can also fuel polarized responses. The positive and negative scores model works better than the valence
+and arousal model in all cases but Reddit, where the valence and arousal model was more explanatory
+for polarization, as evidenced by x? tests comparing both models.
+
+5 Discussion
+
+Our study of emotions focuses on understanding the role of emotions expressed in the text of items with
+relation to the chances that the items reach the global regime and produce polarized evaluations. While
+we used two established and validated sentiment analysis methods based on metrics from psychology,
+future advanced techniques can reveal new patterns and potentially falsify the conclusions of our analysis
+with current techniques. Furthermore, deeper analyses on individual data can correlate the expression
+of individual emotions in the comments of a user and the evaluations given by the user, bridging closer
+this way the measurement of emotional states and evaluations and providing a better understanding of
+interpersonal emotions.
+
+Following an observational approach to collective evaluations has the advantage of having high ecological
+validity, but lacks the level of control that can be induced in experimental scenarios. We can deduce
+insights on the factual properties of collective evaluations, such as the dual regime between likes and
+dislikes, but testing the conditions that produce them requires a controlled set up. Our motivation and
+explanation for the dual regime stems from the phenomenon of filter bubbles [51], but to fully understand
+how these filters affect our behavior we need to experiment on how individual evaluations respond to
+filtering mechanisms. While these experiments can be carried out it in typical psychological settings and
+surveys, large platforms like Facebook can also experiment with the behavior of their users in this respect
+(under the appropriate ethical considerations). A complete understanding of online evaluations can only
+be achieved when our results are complemented by experimental approaches.
+
+The use of observational data has the advantage of taking a natural exposure approach: we analyze the
+evaluations of what people actually see, rather than the forced exposure to content in experiments [43].
+In contrast, using digital traces of evaluations contains a selection bias by which some users might be
+responsible for much larger amounts of likes and dislikes than other users. While this selection bias is
+natural at the collective level, inferring conclusions about the behavior of individuals needs to consider
+corrections and use richer datasets [13], or apply agent-based modelling approaches to connect the micro
+and macro levels [59].
+
+We explain the dual pattern between likes and dislikes as the result of filter bubbles, but other possible
+explanations might also be plausible. Some unkown deleting mechanism might downsample videos with a
+lot of dislikes in the local regime, or some external factor like audience size might explain the values of the
+thresholds. The results of our statistical analyses of distributions of likes and dislikes fit to hypothetical
+
+ 
+
+13/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+mechanisms of multiplicative growth, in line with previous findings on popularity metrics rather than
+evaluations [67, 6]. Our in depth statistics also provide a clear view on the limits of our results, for exam-
+ple in the worse fits of log-normal distributions in Imgur. Future research can conjecture on the possible
+alternative explanations of our findings, in particular with respect to which filtering mechanisms are in
+place. Our results do not allow us to distinguish social filtering, based on friends and follower links, from
+recommender systems, which are based on previous evaluations of a user. Further research with informa-
+tion on individual behavior can shed light on these different processes, for example measuring evaluation
+tendencies to content produced by friends versus strangers, or across assortative and disassortative links
+with respect to opinions.
+
+Our analysis of the relation between likes and dislikes is based on the amounts given to items after a long
+time has passed. This way, we evaluate items after they do not attract lots of attention and their counts
+are stable. In a figurative way, we study the fossils of broken filter bubbles, but we do not study them
+in a live setting. To fully understand the dynamics of collective evaluations, we need data with temporal
+resolution on the counts of likes and dislikes. In general, such data is not publicly available on the sites,
+which requires a much more powerful crawling approach to monitor items on a frequent basis, or access
+to proprietary data.
+
+6 Conclusions
+
+Our analysis of collective evaluations across various online media shows statistical regularities in the
+distributions of evaluations and their relationships. Our contribution is threefold: First we report that
+the distributions of the amounts of likes and dislikes per item are well fitted by log-normal distributions,
+a result that gives insights into the properties of the process that creates evaluations. Second, we test
+the existence of a dual pattern in the relation between likes and dislikes, finding robust evidence of the
+existence of a local and a global regime that is consistent with our hypotheses about the burst of filter
+bubbles. Third, we found evidence for the role of emotions in the creation of polarization and the access to
+the global regime, lending support for psychology theories about the role of affect, in particular arousal,
+in the polarization of opinions.
+
+Our results have implications for the design of online platforms and filtering mechanisms. Recommender
+systems and filtering mechanisms allow users to discover content of relevance and quality, but can have
+unintended consequences in the large scale. Our results suggest that the increasing polarization levels
+of discussions might be created by these filtering mechanisms, and that users are at risk of receiving a
+negative backlash to their content when it goes beyond their local social context. Such abrupt behavior
+with respect to negative evaluations can have important consequences to user motivation and engagement,
+which might only be visible on the long run.
+
+Our findings shed light on fundamental polarization processes, in particular with respect to the role
+of emotions. Increasing levels of polarization pose a risk of social conflict and hinder collaboration and
+common goods, but a healthy society needs certain level of disagreement to be able to deliberate, discuss,
+and take decisions about important topics. Calibrating the design of web and social media offers this way
+the chance to find a balance between stagnation and polarization, leading to productive interaction in
+our current online society.
+
+ 
+
+14/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+7
+
+Acknowledgments:
+
+This research was funded by the Swiss National Science Foundation (CR2111_146499/1).
+
+References
+
+[1]
+
+[2]
+
+[3]
+
+[4]
+
+[5]
+
+[6]
+
+[7
+
+[8]
+
+[9]
+
+[10]
+
+[11]
+
+ABBASI, A., Hassan, A., AND Duar, M. Benchmarking twitter sentiment analysis tools. In Pro-
+ceedings of the Ninth International Conference on Language Resources and Evaluation (LREC’14)
+(Reykjavik, Iceland, may 2014), European Language Resources Association (ELRA).
+
+ABISHEVA, A., GARIMELLA, V. R. K., GARcIA, D., AND WEBER, I. Who watches (and shares)
+what on youtube? and when? using twitter to understand youtube viewership. In In Proceedings of
+the 7th ACM international conference on Web search and data mining, pages: 593-602 (February
+2014).
+
+ADAMIC, L. A., AND GLANCE, N. The political blogosphere and the 2004 us election: divided
+they blog. In Proceedings of the 3rd international workshop on Link discovery (2005), ACM,
+pp. 36-43.
+
+ALSTOTT, J., BULLMORE, E., AND PLENZ, D. powerlaw: A python package for analysis of heavy-
+tailed distributions. PLoS ONE 9, 1 (01 2014), e85777.
+
+AMENDOLA, L., MARRA, V., AND QuARTIN, M. The evolving perception of controversial movies.
+Palgrave Communications 1 (2015).
+
+Asur, S., HUBERMAN, B. A., $zaBo, G., AND WaNG, C. Trends in social media: Persistence
+and decay. Available at SSRN 1755748 (2011).
+
+Burke, M., MARLow, C., AND LENTO, T. Social network activity and social well-being. In
+Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (2010), ACM,
+pp. 1909-1912.
+
+CHMIEL, A., SOBKOWICZ, P., SIENKIEWICZ, J., PALTOGLOU, G., BUCKLEY, K., THELWALL,
+M., AND Hotyst, J. A. Negative emotions boost user activity at {BBC} forum. Physica A:
+Statistical Mechanics and its Applications 390, 16 (2011), 2936 — 2944.
+
+CuHoupuurRY, M. D., Counts, $., AND GAMON, M. Not all moods are created equal! exploring
+human emotional states in social media. In ICWSM (2012), J. G. Breslin, N. B. Ellison, J. G.
+Shanahan, and Z. Tufekci, Eds., The AAAI Press.
+
+CuHoupuHury, M. D., AND DE, S. Mental health discourse on reddit: Self-disclosure, social sup-
+
+port, and anonymity. In Proceedings of the Eighth International Conference on Weblogs and Social
+Media, ICWSM 2014, Ann Arbor, Michigan, USA, June 1-4, 2014. (2014).
+
+Conover, M., RATKIEWICz, J., FRANcIsco, M. R., GONGALVES, B., MENCZER, F., AND
+FLAMMINI, A. Political polarization on twitter. JCWSM 133 (2011), 89-96.
+
+ 
+
+15/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+[12]
+
+[13]
+
+[14]
+
+[15]
+
+[16]
+[17]
+[18]
+
+[19]
+
+[20]
+
+[21]
+
+[22]
+
+[23]
+
+[24]
+
+[25]
+
+[26]
+
+[27|
+
+CRANE, R., AND SORNETTE, D. Robust dynamic classes revealed by measuring the response
+function of a social system. Proceedings of the National Academy of Sciences 105, 41 (2008),
+15649-15653.
+
+CUDDEBACK, G., WILSON, E., ORME, J. G., AND COMBS-ORME, T. Detecting and statistically
+correcting sample selection bias. Journal of Social Service Research 30, 3 (2004), 19-33.
+
+FLAcHE, A., AND Macy, M. W. Small worlds and cultural polarization. The Journal of Mathe-
+matical Sociology 35, 1-3 (2011), 146-176.
+
+FONTAINE, J. R., SCHERER, K. R., ROESCH, E. B., AND ELLSwWorRTH, P. C. The world of
+emotions is not two-dimensional. Psychological science 18, 12 (2007), 1050-1057.
+
+FOR COMPUTATIONAL STATISTICS, S. U. L., AND FRIEDMAN, J. H. Fast MARS. 1993.
+FRIEDMAN, J. H. Multivariate adaptive regression splines. The annals of statistics (1991), 1-67.
+
+Garas, A., Garcia, D., Skowron, M., AND SCHWEITZER, F. Emotional persistence in online
+chatting communities. Scientific Reports 2, arXiv:1205.2466 (May 2012), 402. 34 p. Comments: 34
+pages, 4 main and 12 supplementary figures.
+
+Garcia, D., ABISHEVA, A., SCHWEIGHOFER, S., SERDULT, U., AND SCHWEITZER, F. Ideo-
+logical and temporal components of network polarization in online political participatory media.
+Policy & Internet 7, 1 (2015), 46-79.
+
+Garcia, D., MENDEZ, F., SERDULT, U., AND SCHWEITZER, F. Political polarization and pop-
+ularity in online participatory media : An integrated approach. In Proceedings of the first edition
+workshop on Politics, elections and data - PLEAD ’12 (2012), pp. 3-10.
+
+Garcia, D., AND SCHWEITZER, F. Emotions in product reviews AAS empirics and models. Pro-
+ceedings of 2011 IEEE International Conference on Privacy, Security, Risk, and Trust, and IEEE
+International Conference on Social Computing, PASSAT/SocialCom (2011), 483- 488.
+
+Garcia, D., AND TANASE, D. Measuring cultural dynamics through the eurovision song contest.
+Advances in Complex Systems 16, 08 (2013), 1350037.
+
+GOLDER, S. A., AND Macy, M. W. Diurnal and seasonal mood vary with work, sleep, and
+daylength across diverse cultures. Science 333, 6051 (2011), 1878-1881.
+
+GONZALEZ-BAILON, S., BANCHS, R. E., AND KALTENBRUNNER, A. Emotional reactions and
+the pulse of public opinion: Measuring the impact of political events on the sentiment of online
+discussions. CoRR abs/1009.4019 (2010).
+
+Gorn, G., PHAM, M. T., AND SIN, L. Y. When arousal influences ad evaluation and valence
+does not (and vice versa). Journal of consumer Psychology 11, 1 (2001), 43-55.
+
+GueErRRA, P. H. C., MEIRA JR, W., CARDIE, C., AND KLEINBERG, R. A measure of polariza-
+tion on social media networks based on community boundaries. In JCWSM (2013).
+
+Hoana, T.-A., CoHEN, W. W., LIM, E.-P., PrERcE, D., AND REDLAWSK, D. P. Politics, shar-
+ing and emotion in microblogs. In Proceedings of the 2013 IEEE/ACM International Conference
+on Advances in Social Networks Analysis and Mining (2013), ACM, pp. 282-289.
+
+ 
+
+16/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+[28]
+
+[29]
+
+[30]
+
+[31]
+
+[32]
+
+[33]
+
+[34]
+
+[35]
+
+[36]
+
+[37]
+
+[38]
+
+[39]
+
+[40]
+
+[41]
+
+[42|
+
+Iosus, D., LAntapo, D., CASTILLO, C., FUSTER MORELL, M., AND KALTENBRUNNER, A.
+
+Emotions under discussion: Gender, status and communication in online collaboration. PLoS ONE
+9, 8 (2014), e104880.
+
+Isen, A. M., SHALKER, T. E., CLARK, M., AND Karp, L. Affect, accessibility of material
+
+in memory, and behavior: A cognitive loop? Journal of personality and social psychology 36, 1
+(1978), 1.
+
+Kan, A., CHAN, J., HAYES, C., AND HoGan, B. Studying forum dynamics from a user engage-
+ment perspective.
+
+kim, S., Bak, J., AND OH, A. H. Do you feel what i feel? social aspects of emotions in twitter
+conversations. In JCWSM (2012).
+
+KIVRAN-SWAINE, F., BRopy, S., DIAKOPOULOS, N., AND NAAMAN, M. Of joy and gender:
+Emotional expression in online social networks. In Proceedings of the ACM 2012 Conference on
+Computer Supported Cooperative Work Companion (2012), CSCW °12, pp. 139-142.
+
+KIVRAN-SWAINE, F., AND NAAMAN, M. Network properties and social sharing of emotions in
+
+social awareness streams. In Proceedings of the ACM 2011 conference on Computer supported
+cooperative work (2011), ACM, pp. 379-382.
+
+KucukTuNcC, O., CAMBAZOGLU, B. B., WEBER, I., AND FERHATOSMANOGLU, H. A large-scale
+
+sentiment analysis for yahoo! answers. In Proceedings of the Fifth ACM International Conference
+on Web Search and Data Mining (New York, NY, USA, 2012), WSDM 712, ACM, pp. 633-642.
+
+KUune, R., ET AL. Political news, emotions, and opinion formation: Toward a model of emo-
+
+tional framing effects. In Annual Conference of the International Communication Association
+(ICA), Phoenix, AZ (2012).
+
+LARSEN, P. O.c.’s rebecca black talks about ‘friday’. http://www.ocregister.com/articles/
+-292662--.html. Accessed: 2016-02-02.
+
+Leg, M., Ha, T., HAN, J., AND Rua, J.-Y. Online footsteps to purchase: Exploring consumer
+behaviors on online shopping sites.
+
+LEesKoveEc, J., ADAMIc, L. A., AND HUBERMAN, B. A. The dynamics of viral marketing. ACM
+Transactions on the Web (TWEB) 1, 1 (2007), 5.
+
+Lin, Y.-R. Assessing sentiment segregation in urban communities. In Proceedings of the 2014
+International Conference on Social Computing (2014), pp. 9:1-9:8.
+
+LORENZ, J. Continuous opinion dynamics under bounded confidence: A survey. International
+Journal of Modern Physics C 18, 12 (2007), 1819-1838.
+
+LORENZ, J. Universality in movie rating distributions. The European Physical Journal B 71, 2
+(2009), 251-258.
+
+MAs, M., AND FLacHE, A. Differentiation without distancing. explaining bi-polarization of opin-
+ions without negative influence. PloS one 8, 11 (2013), e74516.
+
+ 
+
+17/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+[13]
+
+[44]
+
+[45]
+
+[46]
+
+[47|
+
+[48]
+
+[49]
+[59]
+
+[51]
+[52|
+
+[53]
+
+[54]
+
+[55]
+
+[56]
+
+[57|
+
+[58]
+
+[59]
+
+McPHEE, W.N. Formal theories of mass behavior. ‘The Free Press of Glencoe, Collier-
+Macmillian, London, 1963.
+
+MIEGHEM, P. V. Human psychology of common appraisal: The reddit score. [EEE Transactions
+on Multimedia 13, 6 (2011), 1404-1406.
+
+MILLER, M., SATHI, C., WIESENTHAL, D., LESKOVEC, J., AND POTTS, C. Sentiment flow
+through hyperlink networks. In ICWSM (2011).
+
+MITZENMACHER, M. A brief history of generative models for power law and lognormal distribu-
+tions. Internet mathematics 1, 2 (2004), 226-251.
+
+NAKATANI, S. Language detection library for java. https://github.com/shuyo/
+language-detection/blob/wiki/ProjectHome.md, 2010-current.
+
+NOELLE-NEUMANN, E., AND NOELLE-NEUMANN, E. The spiral of silence: Public opinion, our
+social skin. University of Chicago Press Chicago, 1993.
+
+OLson, R. A data-driven guide to creating successful reddit posts, redux. Accessed: 2016-02-02.
+
+ONNELA, J.-P., AND REED-TsocHas, F. Spontaneous emergence of social influence in online
+systems. Proceedings of the National Academy of Sciences 107, 43 (2010), 18375-18380.
+
+PARISER, E. The filter bubble: What the Internet is hiding from you. Penguin UK, 2011.
+
+PAULHUS, D. L., AND Lim, D. T. Arousal and evaluative extremity in social judgments: A dy-
+namic complexity model. European Journal of Social Psychology 24, 1 (1994), 89-99.
+
+PFITZNER, R., GARAS, A., AND SCHWEITZER, F. Emotional divergence influences informa-
+tion spreading in twitter. In ICWSM (2012), J. G. Breslin, N. B. Ellison, J. G. Shanahan, and
+Z. Tufekci, Eds., The AAAI Press.
+
+QuerciA, D., CAPRA, L., AND CROWCROFT, J. The social world of twitter: Topics, geography,
+and emotions. In ICWSM (2012), J. G. Breslin, N. B. Ellison, J. G. Shanahan, and Z. Tufekci,
+Eds., The AAAI Press.
+
+REISENZEIN, R. The schachter theory of emotion: two decades later. Psychological bulletin 94, 2
+(1983), 239.
+
+Rowe, M., anp ALANI, H. Mining and comparing engagement dynamics across multiple so-
+cial media platforms. In Proceedings of the 2014 ACM conference on Web science (2014), ACM,
+pp. 229-238.
+
+RUSSELL, J. A., AND BARRETT, L. F. Core affect, prototypical emotional episodes, and other
+things called emotion: Dissecting the elephant. Journal of Personality and Social Psychology 76,5
+(1999), 805-819.
+
+SCHWARZ, N., AND CLORE, G. How doi feel about it? the informative function of affective
+states. Affect, cognition, and social behavior (1988), 44-62.
+
+SCHWEITZER, F., AND GaARcIA, D. An agent-based model of collective emotions in online com-
+munities. The European Physical Journal B 77, 4 (2010), 533- 545.
+
+ 
+
+18/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+ 
+
+[60]
+
+[61]
+
+[62|
+
+[63]
+
+[64]
+
+[65]
+
+[66]
+
+[67|
+
+[68]
+
+[69]
+
+[70]
+
+[71]
+
+[72|
+
+[73]
+
+[74]
+
+SZABO, G., AND HUBERMAN, B. A. Predicting the popularity of online content. Communications
+of the ACM 53, 8 (2010), 80-88.
+
+Tan, C., LEE, L., Tanc, J., JIANG, L., ZHou, M., AND LI, P. User-level sentiment analysis
+incorporating social networks. In Proceedings of the 17th ACM SIGKDD International Conference
+on Knowledge Discovery and Data Mining (2011), KDD 711, pp. 1397-1405.
+
+TAYLOR, J., AND MACDONALD, J. The effects of asynchronous computer-mediated group interac-
+tion on group processes. Social Science Computer Review 20, 3 (2002), 260-274.
+
+TcHoxnI, S., O SEAGHDHA, D., AND QuErRcIA, D. Emoticons and phrases: Status symbols in
+social media. In Proceedings of the 8th International AAAI Conference on Weblogs and Social
+Media (ICWSM 2014) (Ann Arbor, MI, 2014).
+
+THELWALL, M., BUCKLEY, K., AND PALTOGLOU, G. Sentiment strength detection for the social
+web. J. Am. Soc. Inf. Sci. Technol. 63, 1 (Jan. 2012), 163-173.
+
+THELWALL, M., BUCKLEY, K., PALTOGLOU, G., Cal, D., AND Kappas, A. Sentiment in short
+strength detection informal text. J. Am. Soc. Inf. Sci. Technol. 61, 12 (Dec. 2010), 2544-2558.
+
+THELWALL, M., WILKINSON, D., AND UPPAL, S. Data mining emotion in social network commu-
+
+nication: Gender differences in myspace. Journal of the American Society for Information Science
+and Technology 61, 1 (2010), 190-199.
+
+VAN MIEGHEM, P., BLENN, N., AND DOERR, C. Lognormal distribution in the digg online social
+network. The European Physical Journal B 83, 2 (2011), 251-261.
+
+VAN Swot, L. M. Extreme members and group polarization. Social Influence 4, 3 (2009), 185-
+199.
+
+VAROL, O., FERRARA, E., OGAN, C. L., MENCZER, F., AND FLAMMINI, A. Evolution of on-
+line user behavior during a social upheaval. In Proceedings of the 2014 ACM conference on Web
+science (2014), ACM, pp. 81-90.
+
+WANG, C., AND HUBERMAN, B. A. Long trend dynamics in social media. EPJ Data Science 1, 1
+(2012), 1-8.
+
+Wanc, N., KosINsk1, M., STILLWELL, D., AND Rust, J. Can well-being be measured using
+facebook status updates? validation of facebookaAZs gross national happiness index. Social Indi-
+cators Research 115, 1 (2014), 483-491.
+
+WaRRINER, A., KUPERMAN, V., AND BRYSBAERT, M. Norms of valence, arousal, and dominance
+for 13,915 english lemmas. Behavior Research Methods 45, 4 (2013), 1191-1207.
+
+WENINGER, T., JOHNSTON, T. J., AND GLENSKI, M. Random voting effects in social-digital
+spaces: A case study of reddit post submissions. In Proceedings of the 26th ACM Conference on
+Hypertext & Social Media (2015), ACM, pp. 293-297.
+
+WEsT, R., Paskov, H., LESKOVEc, J., AND PoTTs, C. Exploiting social network structure for
+
+person-to-person sentiment analysis. Transactions of the Association for Computational Linguis-
+tics 2 (2014), 297-310.
+
+ 
+
+19/20
+ 
+
+Adiya Abisheva, David Garcia, Frank Schweitzer:
+When the Filter Bubble Bursts: Collective Evaluation Dynamics in Online Communities
+Submitted to the 8th International ACM Web Science Conference 2016
+
+[75] Wu, F., AND HUBERMAN, B. A. Novelty and collective attention. Proceedings of the National
+Academy of Sciences 104, 45 (2007), 17599-17601.
+
+[76] ZILLMANN, D. Excitation transfer in communication-mediated aggressive behavior. Journal of
+experimental social psychology 7, 4 (1971), 419-434.
+
+ 
+
+20/20
+

@@ -1,0 +1,520 @@
+ROC curve
+
+ 
+
+— that
+10 7|— tow
+
+— GassiannB
+— BernoulliNB
+
+   
+
+os
+
+a6
+
+ 
+
+ 
+
+ 
+
+ 
+
+z
+os
+02
+ao
+00 02 rv 06 08 10
+False postive rate
+2 2 :
+where s%. and s=_ are given b
+Xu XP 8 y
+SM
+Xu =~
+Nu
+SF
+oe = 2F,
+F
+
+and Xj, and Xp are the sample means of male and female, s '¥,, and sx,, are
+their standard errors, s,y¢ and sp are their sample standard deviations, and Nay
+and Nr are their sample size respectively. Note that the Welch—Satterthwaite
+equation approximates the degree of freedom 1,
+
+ 
+
+ 
+
+2 2
+(<4 SE ?
+
+= Nu Ne’ _
+= a 52
+SM SF
+
+NR em Nir
+
+; where ty, = Nyy —1landtp = Ne -1
+
+We apply the Welch t-test on common punctuations and words and found
+that some punctuations and words are good gender indicators. The complete
+lists are in Appendix B.
+
+5 Acknowledgement
+
+I thank Professor Martin J. Strauss for leading me to think about this problem
+and for all the valuable discussions and feedback. This work is supported by
+
+3 Data
+
+3.1 Dataset Description
+
+We conduct extensive experiments on Enron email corpus, a publicly available
+real-world email corpus in English{6]. It is collected and prepared by the CALO
+project in 2001. There are around 1.7Gb messages from 114 users, among which
+86 users are male and 28 of them are females. After discarding unlabelled emails,
+we have 24887 labeled emails, and among these, 16476 are from males and 8411
+are from females.
+
+3.2 Data Preprocessing
+We use NTLK pacakge to preprocess the messages in the following ways.
+
+e Lowercase: we change all capital letters to its lowercase.
+e.g. ‘Eat’ > ‘eat’
+
+e Tokenization: we split sentences to pieces, or in other words, we remove
+all whitespaces and punctuations.
+eg. Tlike apples.’ > [I, like, apples]
+
+e Porter Stemmer: we normalize all the words by removing the common
+morphological and inflexional endings from words.
+e.g.: ‘moved’/ ‘move’/ ‘moving’ > ‘move’
+
+e Stop words: we discard some words that occur extremely frequently in
+any text but unnecessary. The full list of stopwords we used can be found
+in Appendix A.
+
+e.g. is, to, we, ...
+
+However, we have some concerns regarding these preprocessing steps. For ex-
+ample, some punctuations or the frequency of common stop words might be
+good gender indicators. Hence, we analyze the occurrence of some punctuations
+and the frequency of common stop words statistically in section 4.
+
+3.3 Data Inprocessing: n-gram
+
+An n-gram is a contiguous sequence of n words from a given sentence, and an
+n-gram model is a probabilistic model for predicting the next word in a sentence
+of the form of an (n-1) - order Markov model [8}[9]. For example, if the original
+sentence is ‘I am on my way home now,’ then different values of n will lead to
+different processed results shown below.
+
+e unigram (or l-gram): [‘I’, ‘am’, ‘on’,
+
+‘my’, ‘way’, ‘home’, ‘now’
+e bigram (or 2-gram): [‘I am’, ‘am on’, ‘on my’, ‘my way’, ‘way home’,
+‘home now’
+
+1
+
+Gender Prediction Using Email Data for
+Algorithmic Fairness
+
+Peihan Liu, Matrin J. Strauss
+
+August 2021
+
+Abstract
+
+Gender identification is an essential subject of natural language pro-
+cessing. For example, authorship analysis can help people identify the
+authors’ gender based on the texts and help people improve their writ-
+ing to be more neutral. There are many well-known linguistic models
+to address this problem. Specifically, we use Naive Bayesian methods,
+including Bag-Of-Words (BOW) and Term frequency-inverse document
+frequency (TF-IDF), to predict gender and measure the neutral degree”
+numerically. We also provide some concerns about the existing model and
+some potential directions to use the model for algorithmic fairness.
+
+Introduction
+
+Gender identification has been a topic of intense study with the rapid growth
+
+of
+
+echnologies. Many essential models have been proposed to identify gender-
+
+based texts, such as BERT [I], ROBERTa [2], Word2Vec [3}[4], GPT-3 [7], and
+many neural networks, including CNN, RNN, etc. Pre-trained models show im-
+pressive performance on gender prediction, as they reduce the need for training
+
+dai
+
+a. However, given enough data and computing resources, we use the classic
+
+Naive Bayes (NB) method [5] to identify gender using the Enron dataset [6],
+
+coll
+
+ected and prepared by the CALO project in 2001.
+Moreover, we study the related algorithmic fairness problems. It is a rel-
+
+atively new area attracting much attention due to the growing importance of
+
+ad
+
+ressing social biases in machine learning. We analyze the usage of some
+
+interesting n-grams and punctuations statistically. Finally, we develop a tool
+
+for
+sta
+
+users to check their texts as to gendered languages based on our models and
+istical results.
+The material in this paper is organized as follows. In section two, we recall
+
+some basic definitions; in section three, we introduce the data we used and pre-
+process the data. Next, we present our results in section four, where we perform
+
+sta
+
+ 
+
+istical analysis. The last section is about the future works and limitations
+
+of this paper.
+
+e trigram (or 3-gram): [‘I am on’, ‘am on my’, ‘on my way’, ‘my way home’,
+‘way home now’]
+We mainly work on the cases when n is less than or equal to 6, and we
+noticed that the difference between cases of various n is not significant. Hence,
+we set n to be 1 in this paper.
+
+4 Results
+
+4.1 Experiments on gender prediction
+
+We include 70% of the email messages as the training data and the rest as the
+testing data; preprocess the data and use 1-gram. For comparison purposes, we
+present accuracies of BOW NB, TF-IDF NB, and two pre-trained NB models,
+Gaussian NB [10] and Bernoulli NB [11].
+
+Table 1: Accuracies comparison
+
+ 
+
+ 
+
+Method Accuracy
+BOW (Bag-Of-Words) Naive Bayesian: 0.67
+TF-IDF Naive Bayesian 0.75
+Gaussian Naive Bayesian (pretrained) 0.65
+Bernouli Naive Bayesian (pretrained) 0.66
+
+ 
+
+We also present the ROC curve shown below. The performance of TF-
+IDF NB is the best compared to BOW NB, GNB, and BNB. However, we
+observe some interesting results that might need further study. Given that the
+original data is imbalanced, we train these models with imbalanced and balanced
+training data, but the difference of accuracies is insignificant. Also, the accuracy
+of males and accuracy of females is different on average,
+
+truthM _predictedM ~
+truthM predictedM + truthF_predictedM ~
+truthF predictedF 7
+truthF predictedF + truthM _predictedF ~
+
+60%
+
+ 
+
+75%.
+
+ 
+
+4.2 Fairness
+
+We also study the punctuations and common words that might be gender indi-
+
+cators. The statistical tool we employed is the Welch t-test. We only need to
+
+assume that male and female populations are normally distributed. Compared
+
+to the regular t-test, we do not need to require the variances to be the same.
+The test statistics t is computed as follows,
+
+» Ok _ Xu — Xr
+
+ 
+
+ 
+
+[5]
+
+(6
+
+[7]
+
+[8]
+
+(9
+
+[10]
+
+[11]
+
+Harry Zhang, The Optimality of Naive Bayes, Proceedings of the Sev-
+enteenth International Florida Artificial Intelligence Research Society
+Conference, 2014
+
+Bryan Klimt and Yiming Yang, The Enron Corpus: A New Dataset
+for Email Classification Research, Proceedings of 15th European Con-
+ference on Machine Learning, online available at
+200,
+
+Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared
+Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish
+Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen
+Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel M.
+Ziegler, Jeffrey Wu, Clemens Winter, Christopher Hesse, Mark Chen,
+Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark,
+Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever,
+Dario Amodei, Language Models are Few-Shot Learners, Proceedings
+of Advances in Neural Information Processing Systems 33, 2020
+
+Peter F. Brown, Vincent J. Della Pietra, Peter V. deSouza, Jenifer C.
+Lai, Robert L. Mercer, Class-based n-gram models of natural language,
+Computational Linguistics, 1992
+
+William B. Cavnar, John M. Trenkle, N-Gram-Based Text Categoriza-
+tion, Proceedings of 3rd Annual Symposium on Document Analysis and
+Information Retrieval, 1994
+
+George H. John, Pat Langley, Estimating continuous distributions in
+Bayesian classifiers, Proceedings of the Eleventh conference on Uncer-
+tainty in artificial intelligence, 1995
+
+Andrew McCallum, Kamal, Nigam, A Comparison of Event Models for
+Naive Bayes Text Classification, Proceedings in Workshop on Learning
+for Text
+
+2 Preliminary
+
+The Naive Bayes model is based on the Bayes theorem stated as follows. The
+two techniques we use in our research are bag-of-words (BOW) NB and term
+frequency-inverse document frequency (TF-IDF) NB. We are going to illustrate
+them separately using the Bayes theorem.
+
+Theorem 2.1 (Bayes Theorem).
+
+ 
+
+P(A|B) = -
+
+2.1 Bag-Of-Words (BOW) Naive Bayes
+
+The conditional probability of the author who wrote the sentence “ word; word
+
+. wordy, ” being male is simply P(male|word, 4 word, A... \ wordy). Hence,
+let A be the indicator variable of author’s gender and B be the occurrence of
+words in a given sentence, i.e. the occurrence of word; A wordz 9... 0 wordn,
+then we have the following,
+
+P(male|word, 0 word, 0 ... 0 wordn)
+
+P(male n word, 0 word2 0 ... A wordy)
+
+ 
+
+ 
+
+P(word, 0 word, 0... 0 wordn)
+
+P(word, 0 word: 9 ... 0 word,|male) - P(male)
+
+ 
+
+ 
+
+P(word, 9 word: 9 ... 0 wordy)
+
+based on the Bayes theorem. If we further assume the independence of the
+words, then we have a simpler form given by,
+
+P(male|word, 0 word, 0 ... 0 wordn)
+
+P(word, A word: 9 ... 0 word, |male) - P(male)
+
+ 
+
+ 
+
+P(word, A word: 9 ... 0 wordy)
+P(word,|male) P(word:|male)...P(wordy,|male) P(male)
+P(word,)P(word:)...P(wordn)
+II_, P(word;|male)
+~ II?_, P(word;)
+
+ 
+
+ 
+
+where P(word;|male) is the probability of the occurrence of word; given that
+the author is male and P(word;) is the probability of the occurrence of word;,
+ie.
+# of word; in male class
+P(word;|male) = = J —__—___—_
+( i ) Total# of words in male class
+of word; in all classes
+P(word;) = __- ie ot eur fh A Ge _
+Total# of words in all classes
+However, BOW NB assumes the independence of words and does not include
+information on the grammar of the sentences nor on the ordering of the words.
+
+Nonetheless, it might still better than word-embedding since the context of
+Enron is domain specific, which makes it harder to find corresponding vector
+
+from pre-trained word embedding models, such as Word2Vec.
+
+2.2 TF-IDF Naive Bayes
+
+Term frequency—inverse document frequency (TF
+
+-IDF) shows how important
+
+a word is to a dataset. It is often used as a weighting factor, which helps to
+
+adjust for the fact that some words appear more
+different measure. Similar to BOW, TF-IDF is
+
+frequently. i.e. TF-IDF gives
+
+feature and can not capture semantics, but it val
+
+only useful as a lexical level
+ues the rareness of words. It
+
+is especially useful when we need to catch a signal in a dataset. Also, TF-IDF
+is good at capturing text similarities, which is important for the algorithmic
+
+fairness problem we will discuss in the later part
+The definition of TF-IDF consist of two par
+
+of this paper.
+s, TF and IDF, are given as
+
+follows,
+# of word in a document
+TF rd) =
+(word) # of all words in a document
+IDF(word) = # of all documents
+
+# of all documents containing word"
+
+ 
+
+In practice, we usually use IDF’s logarithm to make computations more reliable
+and the numbers more easily manipulated.
+
+IDF (word) = log
+
+# of all documents
+# of all documents containing word
+
+Similar to BOW, we have the following results based on the Bayes theorem,
+
+P(male|word, 0 word, 0... 0 wordn)
+
+_ P(word,|male) P(words|male)...P(wordn|male) P(male)
+
+ 
+
+P(word,)P(word2)...P(wordn)
+
+However, we don’t use the frequency to compute the probabilities. Instead, we
+use the definitions of TF and IDF, given by following,
+
+P(word;|male) =
+
+P(word;) =
+
+TF(word;|male)I DF (word;)
+word, EF (word;|male) IDF (word;)
+
+# of word; in male class 1,
+# of all words in male class‘ ‘O8 # of all
+
+# of word; in male class
+Duwond # of all words in male class *
+
+TF(word;)I DF (word;)
+Lword, PF (word;)IDF(word;)
+
+# of all messages
+messages containing word;
+ik # of all messages
+& Ff of all messages containing word;
+
+# of word; in male class
+# of all words in male class
+# of word, in male class
+
+Dwar # of all words in male class ©
+
+‘log goran
+
+# of all messages
+messages containing word;
+ik # of all messages
+
+8 Ff of all messages containing word;
+
+University of Michigan REU program.
+
+Appendix A
+
+Stopwords: ourselves hers between yourself but again there about once during
+out very having with they own an be some for do its yours such into of most
+itself other off is s am or who as from him each the themselves until below are
+we these your his through don nor me were her more himself this down should
+our their while above both up to ours had she all no when at any before them
+same and been have in will on does yourselves then that because what over why
+so can did not now under he you herself has just where too only myself which
+those i after few whom t being if theirs my against a by doing it how further
+was here than
+
+Appendix B
+Punctuations: .:! #$-?;
+
+Common words: me my we our yourself he him she her they them which whom
+that these those am is are be have had a an the and but as while of at for with
+about through after to from in on over further then there how all more some
+such no not so will should now
+
+References
+
+[1] Jacob Devlin, Ming-Wei Chang, Kenton Lee, Kristina Toutanova,
+BERT: Pre-training of Deep Bidirectional Transformers for Language
+Understanding, Proceedings of 2019 Annual Conference of the North
+American Chapter of the Association for Computational Linguistics,
+2019
+
+[2] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Dangi
+Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, Veselin Stoyanov,
+RoBERTa: A Robustly Optimized BERT Pretraining Approach, https:
+//arxiv.org/abs/1907 .11692| 2019
+
+[3] Tomas Mikolov, Kai Chen, Greg Corrado, Jeffrey Dean, Efficient Esti-
+mation of Word Representations in Vector Space, |https://arxiv.org/
+2013
+
+[4] Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg Corrado, Jeffrey Dean,
+Distributed representations of words and phrases and their composi-
+tionality, Proceedings of the 26th International Conference on Neural
+Information Processing Systems, 2013
+
+ 

@@ -1,0 +1,819 @@
+                                         Queens are Powerful too: Mitigating Gender Bias in Dialogue Generation
+
+
+                                         Emily Dinan∗ , Angela Fan∗†, Adina Williams, Jack Urbanek, Douwe Kiela, Jason Weston
+                                                                           Facebook AI Research
+                                                        †Laboratoire Lorrain d’Informatique et Applications (LORIA)
+
+
+
+
+                                                                    Abstract                       Gendered word counts in dialogue datasets
+                                             Models often easily learn biases present in           Dataset                   % gend.       % male
+                                             the training data, and their predictions di-
+                                                                                                                             words         bias
+arXiv:1911.03842v2 [cs.CL] 16 Apr 2020
+
+
+
+
+                                             rectly reflect this bias. We analyze gender
+                                             bias in dialogue data, and examine how this           LIGHT                     0.94          73.4
+                                             bias is actually amplified in subsequent gener-       Reddit                    1.32          69.76
+                                             ative chit-chat dialogue models. We measure           Wizard of Wikipedia       0.076         65.9
+                                             gender bias in six existing dialogue datasets,
+                                                                                                   Daily Dialog              1.02          59.04
+                                             and focus on the most biased one, the multi-
+                                             player text-based fantasy adventure dataset           Empathetic Dialogues      2.07          53.45
+                                             LIGHT (Urbanek et al., 2019), as a testbed for        ConvAI2                   1.28          50.05
+                                             our bias mitigation techniques. The LIGHT
+                                             dataset is highly imbalanced with respect to        Table 1: Counts of gendered words in several di-
+                                             gender, containing predominantly male char-         alogue datasets. We report the percent of gendered
+                                             acters, likely because it is entirely collected     words (% gend. words) as well as the percentage of
+                                             by crowdworkers and reflects common biases          male-gendered words among all gendered words (%
+                                             that exist in fantasy or medieval settings. We      male bias). Datasets are arranged in descending order
+                                             consider three techniques to mitigate gender        from most to least male biased. Among these, LIGHT
+                                             bias: counterfactual data augmentation, tar-        has the most male bias, making it an ideal testbed.
+                                             geted data collection, and bias controlled train-
+                                             ing. We show that our proposed techniques
+                                             mitigate gender bias in LIGHT by balancing          Zhao et al., 2019), visual semantic role label-
+                                             the genderedness of generated dialogue utter-       ing (Zhao et al., 2017), natural language infer-
+                                             ances and are particularly effective in combi-
+                                                                                                 ence (He et al., 2019), abusive language classifi-
+                                             nation. We quantify performance using vari-
+                                             ous evaluation methods—such as quantity of
+                                                                                                 cation (Park et al., 2018), and coreference resolu-
+                                             gendered words, a dialogue safety classifier,       tion (Zhao et al., 2018a). Although research into
+                                             and human studies—all of which show that our        bias in NLP is maturing, bias in dialogue utter-
+                                             models generate less gendered, but equally en-      ances has received somewhat less attention (Liu
+                                             gaging chit-chat responses.                         et al., 2019; Sheng et al., 2019; Henderson et al.,
+                                         1   Introduction                                        2018). However, with the rapid development of
+                                                                                                 real-world use-cases for dialogue agents, such as
+                                         Machine learning algorithms learn to model pat-         interactive assistants, bias in dialogue models has
+                                         terns present in training datasets, so data qual-       the very real potential not only to replicate exist-
+                                         ity affects what they learn. Model predictions          ing social biases, but also to exacerbate them. Di-
+                                         have been shown to directly reflect harmful so-         alogue debiasing is thus becoming an increasingly
+                                         cietal biases present in training datasets, such as     important problem in NLP. In this work, we aim
+                                         racial bias in sports reports (Merullo et al., 2019)    to address this issue by measuring gender bias in
+                                         and political bias in news data (Fan et al., 2019).     dialogue data and mitigating its effects on down-
+                                         Moreover, biases have been discovered in many           stream dialogue generation models.
+                                         NLP tasks, for example, in learned word embed-             Previous work has noted that gender bias
+                                         dings (Bolukbasi et al., 2016; Brunet et al., 2018;     is prevalent in many machine learning datasets
+                                             ∗
+                                             Joint first authors.                                (Stock and Cisse, 2017; Zhao et al., 2017), and
+Persona Example (Original LIGHT Dataset)
+daughter:           I spend most of my time doing household chores. I want to find meaning in life. I am energetic and happy.
+chief wife:         I am the king’s chief wife. Of all the women that he has married, or who are his concubines, I am the
+                    principal one. I represent the kingdom of my father, who is the king’s biggest ally. My sons are the ones
+                    who will most likely become the king after the death of my husband.
+women:              I live with my husband and 4 children in the village. I spend my days washing clothing and cleaning our
+                    home. My husband works for the royal army defending out town.
+farmer Bob’s wife: I am farmer Bob’s wife. I like to take care of all our animals. I help Farmer Bob everyday on the farm.
+mother:             I am a mother of eight children. I live with my family in a cottage in the countryside. I spend every day
+                    tending to the needs of all of my little ones which can be overwhelming, but I always manage to maintain
+                    a pleasing disposition and a happy smile.
+wife:               I am the wife of a farmer. While I may not be the most attractive woman ever, I am loyal and loving. My
+                    husband is a good man, but only seems to stay with me out of duty.
+shady lady:         I am a shady lady. I work in a tavern, and I am willing to trade sexual favors for money. I have to split the
+                    money with the tavernkeeper, so that he will offer me a room to work in. I am beginning to get sick from
+                    the “king’s evil”, which doctors call syphilis. My future is bleak: madness and death. But this is the only
+                    way that I can support myself, so I continue.
+
+Table 2: Examples of gender biased personas in LIGHT. In a review that we conducted in this work, none of
+these characters were flagged as sexist or offensive. For male examples, see Appendix Table 11.
+
+
+here we analyzed the gender bias in several exist-                Dialogue Example (Original LIGHT Dataset)
+ing dialogue datasets (see Table 1, and §3 for more               wife:         I was married off by my family about five
+discussion). As a testbed for our investigation,                                years ago. I spend my days cooking and
+                                                                                cleaning so my husband will have something
+we chose the dialogue dataset from the LIGHT                                    to eat when he returns from his work and can
+text adventure world (Urbanek et al., 2019), be-                                enjoy a clean home. I love my husband dearly
+cause we find it to be significantly more male-                                 because he works very hard to provide for us.
+biased than other comparable dialogue datasets.                   merchant:     What a great day for more money.
+Not only is it large enough to train neural chit-                 wife:         Oh my. That is some thick dust!
+                                                                  merchant:     Indeed, it is very old.
+chat dialogue models, LIGHT is also interesting,                  wife:         This room is going to take a while to clean.
+because has multiple potential sources of bias—                                 You might want to come back later.
+                                                                  merchant:     It is fine I can set my booth up here.
+namely, characters, personas, and dialogues. In                   wife:         With all the foot traffic?
+the dialogue creation process, crowdworkers were                  merchant:     Yes it should be ok.
+presented with a character (with names such as                    wife:         It doesn’t appear that anyone ever comes up
+                                                                                here!
+“farmer” or “witch”) process, as well as an associ-               merchant:     Well they will when they know I am here.
+ated persona—a short textual description for the                  wife:         I have my doubts but I’ll just go about my
+character. Supplied with characters and personas,                               cleaning.
+                                                                  merchant:     Yea sounds like a good idea.
+crowdworkers were paired, up and tasked with                      wife:         What is that supposed to mean?
+generating a dialogue between the characters. All                 merchant:     I am saying we should both do our jobs.
+dialogues contained within LIGHT are entirely                     wife:         Don’t take that tone with me!
+crowdsourced—thus susceptible to reflecting the
+                                                                 Table 3: A dialogue from the original LIGHT data. The
+gender biases of crowdworkers (Otterbacher et al.,               text for the wife persona was crowdsourced.
+2018; Barbosa and Chen, 2019). We investigate
+characters, personas, and dialogues as possible
+sources of bias in turn in §3.
+
+  After measuring gender bias in LIGHT, we then                  collection, and (iii) Bias Controlled text genera-
+explore three bias mitigation techniques, each of                tion. We show that these techniques are most ef-
+which is either wholly novel, or novel in its appli-             fective in combination, resulting in dialogue mod-
+cation to dialogue: (i) Counterfactual Data Aug-                 els that produce engaging responses with measur-
+mentation (CDA) (Maudslay et al., 2019; Zmi-                     ably less gender bias and offensive content (see
+grod et al., 2019), (ii) a targeted data collection              §5). Models and code will be released at parl.
+method, which we refer to as Positive-Bias Data                  ai/projects/genderation_bias.
+2   Related Work                                                                        # Characters            # Ref
+                                                                                   F      M     N    All    F        M
+                                                                   LIGHT
+Recently, the NLP community has focused on ex-                     Orig Data      159    258   1460   1877 439 1238
+ploring gender bias in NLP systems (Sun et al.,                    Swap Persona   336    230    694   1260 1419 1030
+2019), uncovering many gender disparities and                      New Charac.    151    120   1448   1719 357 275
+                                                                   Total          646    608   3602   4856 2215 2543
+harmful biases in algorithms and text (Cao and
+                                                                   ConvAI2
+Daumé 2019; Chang et al. 2019; Chang and McK-                     Orig Data      1109 1048 4214 6371 1283 1148
+eown 2019; Costa-jussà 2019; Du et al. 2019;
+Emami et al. 2019; Garimella et al. 2019; Gaut                 Table 4: Analysis of gender in LIGHT and Con-
+et al. 2019; Habash et al. 2019; Hashempour 2019;              vAI2: the original LIGHT dataset contains 1.6× as
+Hoyle et al. 2019; Kang et al. 2019; Lee et al.                many male-gendered as female-gendered characters.
+2019a; Lepp 2019; Qian 2019; Qian et al. 2019;                 We compare the original dataset with the dataset ob-
+Sharifirad et al. 2019; Sharifirad and Matwin                  tained after gender-swapping personas and collecting
+                                                               new characters (with new personas). The references
+2019; Stanovsky et al. 2019; O’Neil 2016). Partic-
+                                                               column indicates the gender of characters mentioned in
+ular attention has been paid to uncovering, analyz-            the personas. By contrast, ConvAI2 contains a roughly
+ing, and removing gender biases in word embed-                 equal number of male and female gendered personas.
+dings (Basta et al., 2019; Kaneko and Bollegala,
+2019; Zhao et al., 2019, 2018b; Bolukbasi et al.,
+2016). This word embedding work has extended                   3     Measuring Bias
+to multilingual work on gender-marking (Gonen
+et al., 2019; Williams et al., 2019; Zhou et al.,              Before one can mitigate bias, one must first mea-
+2019). Despite these efforts, many methods for                 sure it. To determine which dataset to focus on,
+debiasing embeddings remain problematic—i.e.,                  we initially measured both the amount of gen-
+they have only succeeded in hiding word embed-                 dered words used, and the percent of those which
+ding biases as opposed to removing them (Gonen                 referred to male characters, for six existing dia-
+and Goldberg, 2019)—making gender debiasing                    logue datasets (Table 1). Throughout, we compare
+still an open area of research.                                LIGHT to the other dialogue datasets, and find
+                                                               that it is considerably more biased, which leads
+    Despite the relatively ample literature on gen-
+                                                               us to give LIGHT particular attention in this pa-
+der debiasing for word-level representations, very
+                                                               per. We primarily address three sources of gender
+little work has focused on sentence representa-
+                                                               bias in dialogue: (i) imbalance in character gen-
+tions (Liang et al., 2019; Liu et al., 2019; Sheng
+                                                               ders, (ii) personas (Table 2), and (iii) dialogues be-
+et al., 2019; Lee et al., 2019b). The majority of
+                                                               tween characters (Table 3).
+sentence debiasing work up until this point fore-
+                                                                  Dialogue research has found that incorporating
+grounds measuring bias (Lee et al., 2019b; Sheng
+                                                               personas, or personality descriptions that ground a
+et al., 2019). For example, Liu et al. present
+                                                               speaker’s chat, like I love fishing, increases engag-
+a test dataset for dialogue created counterfactu-
+                                                               ingness and improves consistency (Zhang et al.,
+ally by combining templates and hand-created lists
+                                                               2018; Shuster et al., 2018; Mazaré et al., 2018;
+of word pairs; this work shows that models pro-
+                                                               Olabiyi et al., 2018; Li et al., 2016). However,
+duce less diverse dialogues when prompted with
+                                                               they can also crystallize gender bias (Clark et al.,
+sentences containing words describing individu-
+                                                               2019; Henderson et al., 2018), propagating it to
+als from underrepresented groups. Acknowledg-
+                                                               subsequently generated conversations. We answer
+ing the obvious importance of measuring gender
+                                                               three questions in the context of persona-based di-
+bias (see, e.g., Liu et al. 2019), our dialogue work
+                                                               alogue: when creating dialogue datasets, (i) do
+is novel in that we also propose and compare three
+                                                               crowdworkers generate an equal number of male
+methods for directly mitigating it1 .
+                                                               and female characters, (ii) do these characters’
+                                                               personas feature sexism or gender biases, and (iii)
+    1
+      To the best of our knowledge, only one other work        are the resulting dialogue utterances biased?
+attempts to gender-debias sentence representations (Li
+et al., 2018); however, it extends a word-embedding post-      Bias in Number of Characters. We first answer
+processing method (Bolukbasi et al., 2016) shown to be inef-
+fective at removing gender bias (Gonen and Goldberg, 2019)     the question: do crowdworkers create an equal
+to sentences. Thus, we take a different tack.                  number of male and female characters? In addi-
+tion to LIGHT, we also consider the persona-based            kinds of unsafe text), let alone measure it at scale,
+dialogue dataset ConvAI2 (Zhang et al., 2018).               is very challenging. A simple answer is to rely on
+   To examine gender balance in characters, we               annotation where annotators operate under their
+asked annotators to label the gender of each char-           own, albeit subjective, definition(s) of sexism. To
+acter in both the LIGHT and ConvAI2 datasets                 assess the pervasiveness of unsafe content in ex-
+based on the persona (choosing neutral if the gen-           isting personas, we asked three independent an-
+der was not explicit). This annotation is possible           notators to examine each persona for potentially
+because many personas include text such as I am a            offensive content. If annotators detected content
+young woman, although the majority of personas               was ‘offensive’ or ‘maybe offensive’, they were
+do not mention an explicit gender.                           asked to place it in one of four categories—racist,
+   We find LIGHT characters to be highly gender              sexist, classist, other—and to provide a reason for
+imbalanced: in Table 4, we can see that there are            their response. Just over 2% of personas were
+over 1.6 times as many male characters as female             flagged by at least one annotator, and these per-
+ones2 . It is considerably less gender-balanced than         sonas and the dialogues between these personas
+ConvAI2, which has a nearly equal number of                  were removed from the dataset.
+male and female gendered personas.3
+Bias in Personas. In addition to the stark under-
+                                                             Bias in Human-Generated Dialogue Utter-
+representation of female characters, the medieval
+                                                             ances. After uncovering bias in the gender of
+setting in LIGHT is likely to encourage crowd-
+                                                             characters and personas— qualitatively and in
+workers to generate dialogues accentuating his-
+                                                             number of gendered words—we go on to exam-
+torical biases and inequalities of the time period
+                                                             ine how those biases may propagate to the dia-
+(Bowman, 2010; Garcia, 2017). There is no obli-
+                                                             logues that are created from crowdworkers playing
+gation to recreate historical biases: one can instead
+                                                             the role of these personas.
+use creative license to craft a fun world with gen-
+der parity. Therefore, we investigate references to             First, we count the number of male and female
+men or women in the text of personas, as another             gendered words in the training sets of various di-
+source of bias. To motivate this, take for example,          alogue datasets (LIGHT, ConvAI2, Reddit, Wiz-
+a female persona that contains a gendered refer-             ard of Wikipedia, Daily Dialog, Empathetic Dia-
+ence such as I want to follow in my father’s foot-           logues, and ConvAI2), using the same word list as
+steps rather than in my mother’s. Using gendered             before (Zhao et al., 2018b). We use this to calcu-
+relational nouns (Barker, 1992; Williams, 2018),             late the percentage of gendered words out of all
+such as father, doesn’t always signal gender bias,           words, and the percent male bias, or the percent-
+but if female characters are predominantly defined           age of male gendered words among all gendered
+in reference to male characters, it becomes a prob-          words. Results are shown in Table 1. LIGHT
+lem. We count the appearance of gendered words               is the most gender imbalanced dataset among all
+in personas using the list compiled by Zhao et al.           datasets in this table, with a male bias of 73%.
+(2018b) and find that men are disproportionately                With this in mind, we qualitatively examine the
+referred to in the personas: there are nearly 3x as          LIGHT dataset and find many biased utterances
+many mentions of men than women (see Table 2                 present in the training data. For example, the
+for examples, and Table 4 for counts).                       queen persona adheres to negatively stereotyped
+   Qualitatively, LIGHT personas contain many                gender roles when uttering the line I spend my
+examples that strike us as gender biased (see Table          days doing embroidery and having a talk with the
+2). For example, the character description for girl          ladies. Another character admires a sultry wench
+contains the line I regularly clean and cook din-            with fire in her eyes. We see the direct effect of the
+ner. Gender bias and sexism are clearly present in           biased persona on the resultant dialogue (see Table
+many dialogue datasets (Henderson et al., 2018),             3): for example, a wife persona contains the text I
+but finding a clear way to define sexism (and other          spend my days cooking and cleaning so my hus-
+   2
+      We use “female” and “male” for LIGHT characters –      band will have something to eat when he returns
+rather than “woman” and “man” – because some are binarily    from his work..., and, in dialogue with a merchant,
+gendered, but not human.
+    3
+      Note that annotators may widen the gender gap by im-   discusses only her cleaning duties. The merchant
+plicitly assuming genders for ungendered personas.           even derisively refers to cleaning as the wife’s job.
+Figure 1: We compare the performance of various bias mitigation methods—Counterfactual Data Augmentation
+(CDA), Positive-Bias Data Collection (Pos. Data), Bias Control Model (Bias Ctrl), and combining these methods
+(ALL)—on the test set, splitting the test set across the four genderedness bins: F0/+ M0/+ . X0 indicates there are no
+X-gendered words in the gold response, while X+ indicates that there is at least one. We measure the percent of
+gendered words in the generated utterances (% gend. words) and the percent of male bias (% male bias), i.e. the
+percent of male-gendered words among all gendered words generated. While each of these methods yield some
+improvement, combining all of these methods in one yields the best control over the genderedness of the utterances
+while improving the F1-score.
+
+
+4     Mitigating Bias in Generative Dialogue                 Zhao et al. (2018b). The augmentation is limited
+                                                             to words on the gendered word list, and the swap-
+As we found the LIGHT was considerably more                  ping is performed automatically.
+biased than other dialogue datasets, throughout the
+rest of the paper we use the LIGHT dataset as a              4.2   Positive-Bias Data Collection
+testbed for developing a general framework for
+mitigating bias in generative dialogue.                      While CDA has been shown to be a somewhat ef-
+                                                             fective strategy for mitigating bias in word embed-
+   When we train dialogue models on biased
+                                                             dings, this method has several pitfalls: it may re-
+datasets, the bias will manifest in model-generated
+                                                             sult in ungrammatical sentences and it relies on
+dialogues. We explore data augmentation and
+                                                             existing (and incomplete) word pair lists to deter-
+other algorithmic methods to mitigate bias in gen-
+                                                             mine and swap gender. To resolve these issues, we
+erative Transformer models. We (i) extend coun-
+                                                             use humans to collect additional dialogue data via
+terfactual data augmentation to dialogue (Maud-
+                                                             a two-pronged Positive-Bias Data Collection (Pos.
+slay et al., 2019; Zmigrod et al., 2019) to swap
+                                                             Data) strategy. We first collect additional personas
+gendered words, (ii) perform positive data col-
+                                                             by having humans (i) manually swap the gender of
+lection by augmenting the existing dataset via
+                                                             the persona (rather than relying on the word lists)
+targeted data collection with crowdworkers, and
+                                                             and (ii) write additional, diversified personas. We
+lastly, (iii) present a bias controlled dialogue gen-
+                                                             then use these personas to seed the collection of
+eration method that controls how many male and
+                                                             additional, positively biased dialogue data, which
+female gendered words models produce.
+                                                             we refer to as Pos. Data throughout.
+4.1    Counterfactual Data Augmentation
+                                                             New Personas. As LIGHT contains more male
+A solution proposed for gender bias in word em-              personas than female personas (see §3), we bal-
+beddings is Counterfactual Data Augmentation                 ance existing personas with gender swapping.
+(CDA) (Maudslay et al., 2019; Zmigrod et al.,                For every gendered persona, annotators create a
+2019; Liu et al., 2019). CDA swaps, say, all in-             new opposite-gendered persona for which refer-
+stances of grandmother with grandfather, she with            ring nouns or pronouns are changed, but the rest of
+he, and so on. We apply this word-based data aug-            the character description remains unchanged. For
+mentation to dialogue generation by first copying            example, for every persona describing a king, an-
+every dialogue with a gendered word(s) in it, then           notators will create a new one describing a queen.
+swapping it with its pair from the list provided by          Annotators are instructed to swap the gender(s) of
+other characters referred to in the text (e.g., if an                         F0 M0   F0 M+   F+ M0   F+ M+
+original persona describes a female in relation to            % of test set   60.65   27.21    7.61    4.63
+her father, the new male persona will describe a
+male in relation to his mother). This method en-        Table 5: Percentage of dialogue examples in each
+sures that the created sentences will be grammati-      of the four genderedness bins —F0/+ M0/+ — for the
+cal, unlike heuristic data augmentation.                LIGHT dialogue data test set.
+
+   However, simply balancing references to men
+and women is insufficient, as female characters         4.3   Bias Controlled Training
+might be described in sexist ways (see §3). As          Gender bias in dialogue can take the form of im-
+detecting sexism is challenging, we take our qual-      balanced use of gendered words. To create dia-
+itative analysis to be sufficient, and move to offset   logue models that can generate an equal number
+it by collecting a new set of interesting and inde-     of gendered words, we control model output with
+pendent female characters. We do this by priming        Bias Control (Bias Ctrl) via conditional training.
+workers with examples like adventurer with per-         Previous conditional training models learn to asso-
+sonas like I am a woman passionate about explor-        ciate specific control tokens with some desired text
+ing a world I have not yet seen. I embark on am-        properties (Kikuchi et al., 2016; Fan et al., 2017;
+bitious adventures. We also provide crowdwork-          Oraby et al., 2018; See et al., 2019), but have not
+ers with additional instruction to guide them to-       been applied to address bias issues.
+wards creating diverse characters: We’re looking           We apply conditional training techniques to
+for strong and diverse descriptions. Avoid descrip-     control gender bias in generative dialogue by
+tions that could be considered hateful, offensive,      learning to associate control tokens with proper-
+or stereotypical. Even with this explicit instruc-      ties of gender bias. Any general function that takes
+tion, 3 times as many male characters as female         as input a dialogue utterance and outputs a con-
+characters were created; this fact alone reveals        tinuous or discrete value that provides informa-
+the inherent gender biases of the available crowd-      tion about gender bias could be used as a control
+worker pool. We ultimately exclude all male-            variable. In our case, prior to training, each dia-
+gendered personas created in this fashion from the      logue response is binned into one of four bins—
+new dataset, which brings the number of men and         F0/+ M0/+ —where X0 indicates that there are zero
+women and the number of references to male or           X-gendered words in the response. X+ indicates
+female gendered words to approximate balance in         the presence of one or more X-gendered word.
+the new dataset (see Table 4). In total, we add         The percentage of examples from the test set that
+2,629 new personas.                                     fall into each bin is noted in Table 5. Nouns and
+                                                        adjectives are binned via an aggregation of ex-
+                                                        isting gendered word lists (Zhao et al., 2018b,a;
+New Dialogues. After gender-balancing the per-          Hoyle et al., 2019). Note that other functions
+sonas, we focus next on our main goal: debiasing        could be used as well, such as a bias classifier.
+generated dialogues. As the personas are a starting        We append a special token to the input that in-
+point for bias entering the dataset, it is important    dicates the bin that the response falls into. During
+to address balance in personas as a prior step.         Bias Ctrl training, the model should learn to as-
+   We use the gender-balanced set of personas de-       sociate the special token with the genderedness of
+rived from the two methods described above to           the dialogue response, such that at inference time,
+crowdsource additional dialogues. We select more        we could modify these special tokens to control
+female-gendered characters for new dialogue col-        the genderedness of the model output. For exam-
+lection, and instructed annotators to be mindful of     ple, a model trained with multiple gender control
+gender bias. In particular, we encourage them to        bins could be set to the gender neutral (in this case,
+assume equality—social, economic, political, or         F0 M0 ) setting at inference time, to produce a re-
+otherwise—between genders in this fantasy set-          sponse containing no gendered words.
+ting. We collect a total of 507 new dialogues con-
+taining 6,658 utterances (approximately 6% of the       4.4   Implementation Details
+original dataset size). We refer to this additional     Following Urbanek et al. (2019), we fine-tune
+dialogue data as Pos. Data.                             a large, pre-trained Transformer encoder-decoder
+Figure 2: Performance of the ALL debiasing model controlled by indicating specific bins for all examples at test
+time. We report results for each possible conditioning bin choice. Across bins, the model maintains performance
+as measured by F1 whilst radically changing the genderedness of the language generated.
+
+
+neural network in all generation experiments on           et al., 2015; Fan et al., 2018), which makes it likely
+the dialogues in the LIGHT dataset. Following             they will reproduce statistical biases present in
+Humeau et al. (2019), the model was pre-trained           datasets. As described previously (see §2), work
+on Reddit conversations using a previously ex-            shows that machine learning models reflect biases
+isting Reddit dataset extracted and obtained by a         (Zhao et al., 2019; Brunet et al., 2018). Moreover,
+third party and made available on pushshift.io.           biases can be easier to learn than more challeng-
+During pre-training, models learned to generate a         ing reasoning (Bolukbasi et al., 2016; Lewis and
+comment conditioned on the full thread leading            Fan, 2018), suggesting that Transformer models
+up to the comment. Comments containing URLs               are likely to reflect dataset bias.
+or under 5 characters in length were removed,                Figure 9 compares the performance of the var-
+along with child comments, resulting in approx-           ious techniques. We compare our methods to the
+imately 2.2 billion training examples. Similar to         gold labels from the test set and a baseline Trans-
+pre-training, during fine-tuning, the models are          former generative dialogue model trained on the
+conditioned on the full dialogue history leading up       original data without any bias mitigation tech-
+to the next utterance. The model is based on the          niques. To do this, we divide the test set into four
+ParlAI implementation of Miller et al. (2017), and        genderedness bins (as defined in Section 4.3)—
+is an 8-layer encoder, 8-layer decoder, with 512          F0 M0 , F0 M+ , F+ M0 , and F+ M+ —and calculate:
+dimensional embeddings and 16 attention heads.            (i) the F1 word overlap with the gold response,
+For final generations, we decode sequences with           (ii) the percentage of gendered words generated
+beam search size of 5.                                    (% gend. words), and (iii) the percentage of male-
+                                                          gendered words generated (relative to the sum to-
+5   Results                                               tal of gendered words generated by the model).
+We train five Transformer models: a baseline,                We find that Transformer models not only re-
+three models, one for each of our new methods             flect dataset biases, but also they amplify them.
+(see §4.1 for CDA, §4.2 for Positive-Bias Data            When the model produces gendered words (from
+Collection, and §4.3 for Bias Control), then one          our gendered word list), it generates male-
+final model, ALL, which combines all three meth-          gendered words the vast majority of the time.
+ods and achieves the best results.                        Even on utterances for which it is supposed to gen-
+                                                          erate only female-gendered words (the gold label
+Bias is Amplified in Generation. Existing                 only contains female-gendered words), it gener-
+Transformer generative dialogue models (Serban            ates male-gendered words nearly 78% of the time.
+et al., 2016; Yang et al., 2018; Urbanek et al.,
+2019) are trained to take the dialogue context as         Comparing Debiasing Methods As shown in
+input and generate the next utterance. Generative         Figure 1, each of our methods improves the
+models are well-known to produce generic text (Li         metrics—percent gendered words, percent male
+bias, and F1—over the baseline Transformer, but        Generation Examples
+we find combining all methods in one in the ALL-       Bin       F0 M0
+model is most advantageous. While ALL has more         Context   [P1:] Owl can you find out how I died?
+data than CDA and Bias Ctrl, more data alone is                  [P2:] I can look around the forest, but I need
+                                                                        more information to help. Tell me what
+not enough — the Positive-Bias Data Collection                          you remember about your past life.
+model does not achieve as good results. Both the                 [P1:] I don’t remember anything I was hoping
+Bias Ctrl and ALL models benefit from knowing                           you could find out.
+                                                                 [P2:] Your form is very hazy. Do you remember
+the data split (F0 M0 , for example), and both yield                    if you are a man or woman?
+a gender ratio closest to ground truth.                Baseline: i am not a man. i am a man of the forest.
+                                                       ALL:      no, i don’t remember.
+                                                       Gold:     I don’t know what’s wrong with me!
+Bias Controlled Training Controls Gendered
+                                                       Bin       F+ M0
+Words. Our Bias Ctrl method can control the            Context   [P1:] I do not believe my eyes, for an angel is
+number of gendered words in generated dialogues,                        upon me! Angel, please tell me your name.
+as shown in Figure 10. We examine the effect of                  [P2:] My name is Abigail!
+                                                       Baseline: my name is abigail. i am the king of this kingdom.
+Bias Ctrl by generating responses conditioning the     ALL:      i am the queen’s daughter!
+ALL model on each bin. We observe that changing        Gold:     Abigail! Such a beautiful name. To what do I owe
+the bin radically changes the genderedness of gen-               the pleasure of meeting you?
+erated text with only small differences in overall
+F1. We can control the male bias of the generated      Table 6: Example generations from the baseline
+dialogue by manipulating these bins.                   model and the proposed debiased models. Gold truth
+                                                       (‘Gold’) either contains no gendered words or only
+   Examples of generated text from both the base-
+                                                       female-gendered words, but the baseline model still
+line and the ALL model are shown in Table              generates male-gendered words.
+6. The baseline model generates male-gendered
+words when the gold response contains no gen-
+                                                                           Gold Labels    Baseline     ALL
+dered words or only female-gendered words, even
+                                                             % Offensive           13.0      14.25    10.37
+generating unlikely sequences such as my name is
+abigail. i am the king of this kingdom.
+                                                       Table 7: Offensive language classification of model
+   For various methods, we show the top 20 words       responses on the LIGHT dialogue test set.
+generated on the test set (after removing stop
+words) in Table 8. We denote gendered nouns
+using an asterisk. Among the top 20 words gen-         5.2   Human Evaluation: Bias and Quality
+erated by the baseline model, there are only two
+                                                       We compare the quality of our debiasing methods
+gendered nouns—knight and king—and both are
+                                                       using human evaluation (see Figure 3). One might
+male-gendered. The ALL model generates a simi-
+                                                       hypothesize that some gender debiasing methods
+lar set of words, but also features queen in its top
+                                                       work by replacing contentful words (e.g., witch)
+20 words, another indication that it is more bal-
+                                                       with bleached or uninteresting ones (e.g., person,
+anced across the male and female genders.
+                                                       thing), effectively trading off gender bias with en-
+                                                       gagingness. We use the dialogue evaluation sys-
+5.1   Safety of Generated Text
+                                                       tem Acute-Eval (Li et al., 2019) to ask human
+In Table 7, following Liu et al. (2019), we use        evaluators to compare two conversations from dif-
+a Transformer-based dialogue safety classifier to      ferent models and decide which model generates
+classify model-generated utterances as offensive       (i) more biased dialogues and (ii) more engag-
+or safe. The classifier was fine-tuned on an of-       ing dialogues. We collect 100 model conver-
+fensive language classification task (Dinan et al.,    sations with crowdworkers. Then, we compare
+2019), and achieves state-of-the-art results.          conversations between a human and the baseline
+   We apply this classifier to each utterance gen-     model to conversations between a human and the
+erated by the ALL and baseline models on the test      ALL model with all generations set to the F0 M0
+set, in addition to the gold (human generated) la-     gender-neutral control bin. Asking for predictions
+bels from the test set. Our proposed ALL model is      of speaker gender was found to be more effective
+rated as less offensive than both the baseline model   than asking about sexism or gender bias directly.
+and the ground truth (gold) labels (see Table 7).         As shown in Figure 3, it is more challenging to
+                                                                More Fine-Grained Control. We present an ef-
+                                                                fective method to control the quantity of gen-
+                                                                dered words generated by manipulating control
+                                                                bins. This technique is general and could be used
+                                                                to control other properties of generated utterances.
+                                                                For example, a sexism or bias classifier could be
+                                                                used instead of the gendered word list.
+Figure 3: Human Evaluation of ALL model (F0 M0 )
+compared to baseline Transformer generative model.              Quality of Generated Dialogue. Generative di-
+Evaluators choose which model output they prefer                alogue models are prone to overuse frequent words
+for dialogue engagingness and difficulty of predicting
+                                                                and produce generic utterances, the so-called I
+speaker gender. The ALL model produces less gen-
+dered text while engagingness is not affected.                  don’t know problem (Li et al., 2015). We also ob-
+                                                                serve these effects which can affect bias.
+
+    Model       Top 20 generated words                          7   Conclusion
+    Baseline    sorry, hear, not, what, glad, doing, don,
+                king*, thank, sure, will, your, can, much,      We propose general purpose techniques for reduc-
+                do, know, but, knight*, blacksmith, going       ing gender bias in dialogue. Our methods combine
+    ALL         sorry, hear, sure, not, what, help, doing,      data augmentation, positive-bias data collection,
+                your, course, trying, glad, thank, queen*,      and bias controlled training. Our new data col-
+                don, good, king*, but, yes, know, sir*          lection techniques help mitigate issues, so clearly
+    ALL F0 M0   sorry, hear, sure, what, not, doing, glad,      bias should be considered at the earliest stages of
+                thank, your, yes, course, but, don, do,         a project. Bias control training lessens bias at the
+                know, help, have, enjoying, fool, much
+                                                                training stage, and is also beneficial. Together,
+    ALL F0 M+   sorry, hear, help, trying, sure, good, king*,   they are especially effective, producing less gen-
+                sir*, not, your, day, course, father*, he*,
+                don, thank, happy, guard*, glad, have           dered, more gender balanced, safer utterances that
+                                                                maintain engaging dialogue with humans.
+    ALL F+ M0   sorry, hear, queen*, sure, miss*, not, your,
+                thank, how, hello, today, guard*, she*, yes,
+                course, kind, woman*, help, glad, what
+    ALL F+ M+   sorry, queen*, hear, guard*, help, trying,
+                                                                References
+                your, sure, good, course, day, knight*, not,    Natã M Barbosa and Monchu Chen. 2019. Rehuman-
+                protect, yes, friend, king*, woman*, she*,
+                thank
+                                                                  ized crowdsourcing: A labeling framework address-
+                                                                  ing bias and ethics in machine learning. In Proceed-
+                                                                  ings of the 2019 CHI Conference on Human Factors
+Table 8: Genderedness bins control the gendered-                  in Computing Systems, page 543. ACM.
+ness of generated text. The top 20 words (test set)
+with stop words removed. * indicates gendered nouns.            Chris Barker. 1992. Possessive descriptions.
+
+                                                                Christine Basta, Marta R Costa-jussà, and Noe Casas.
+predict the gender of ALL model generations (sig-                 2019. Evaluating the underlying gender bias in con-
+                                                                  textualized word embeddings. In Proceedings of the
+nificant at p < 0.01) but the responses are just as               1st Workshop on Gender Bias in Natural Language
+engaging according to human evaluators. We con-                   Processing.
+clude our proposed methods are able to mitigate
+gender bias without degrading dialogue quality.                 Tolga Bolukbasi, Kai-Wei Chang, James Y Zou,
+                                                                  Venkatesh Saligrama, and Adam T Kalai. 2016.
+                                                                  Man is to computer programmer as woman is to
+6     Discussion                                                  homemaker? debiasing word embeddings. In Ad-
+                                                                  vances in neural information processing systems,
+                                                                  pages 4349–4357.
+Generality of Gendered Words. The gendered
+word lists used may not be comprehensive (Zhao                  Sarah Lynne Bowman. 2010. McFarland and Co.
+et al., 2018a,b; Hoyle et al., 2019). For example,
+                                                                Marc-Etienne Brunet, Colleen Alkalay-Houlihan, Ash-
+they do not include hag or wench, which are com-                 ton Anderson, and Richard Zemel. 2018. Under-
+mon in LIGHT. Further, a more continuous repre-                  standing the origins of bias in word embeddings.
+sentation of gender should be used in the future.                arXiv preprint arXiv:1810.03611.
+Yang Trista Cao and Hal Daumé. 2019. Toward                Joint Conference on Natural Language Processing
+  gender-inclusive coreference resolution. arXiv            (EMNLP-IJCNLP), pages 6342–6348, Hong Kong,
+  preprint arXiv:1910.13913.                                China. Association for Computational Linguistics.
+Kai-Wei Chang, Vinod Prabhakaran, and Vicente Or-         Antero Garcia. 2017. Privilege, power, and dungeons
+  donez. 2019. Bias and fairness in natural language        & dragons: How systems shape racial and gender
+  processing. In Proceedings of the 2019 Confer-            identities in tabletop role-playing games. Mind,
+  ence on Empirical Methods in Natural Language             Culture, and Activity, 24(3):232–246.
+  Processing and the 9th International Joint Confer-
+  ence on Natural Language Processing (EMNLP-             Aparna Garimella, Carmen Banea, Dirk Hovy, and
+  IJCNLP): Tutorial Abstracts, Hong Kong, China.            Rada Mihalcea. 2019. Womens syntactic resilience
+  Association for Computational Linguistics.                and mens grammatical luck: Gender-bias in part-
+                                                            of-speech tagging and dependency parsing. In Pro-
+Serina Chang and Kathy McKeown. 2019. Automat-              ceedings of the 57th Annual Meeting of the Asso-
+  ically inferring gender associations from language.       ciation for Computational Linguistics, pages 3493–
+  In Proceedings of the 2019 Conference on Empirical        3498.
+  Methods in Natural Language Processing and the
+  9th International Joint Conference on Natural Lan-      Andrew Gaut, Tony Sun, Shirlyn Tang, Yuxin Huang,
+  guage Processing (EMNLP-IJCNLP), pages 5745–              Jing Qian, Mai ElSherief, Jieyu Zhao, Diba Mirza,
+  5751, Hong Kong, China. Association for Computa-          Elizabeth Belding, Kai-Wei Chang, et al. 2019. To-
+  tional Linguistics.                                       wards understanding gender bias in relation extrac-
+Christopher Clark, Mark Yatskar, and Luke Zettle-           tion. arXiv preprint arXiv:1911.03642.
+  moyer. 2019. Don’t take the easy way out: Ensem-
+  ble based methods for avoiding known dataset bi-        Hila Gonen and Yoav Goldberg. 2019. Lipstick on a
+  ases. arXiv preprint arXiv:1909.03683.                    pig: Debiasing methods cover up systematic gender
+                                                            biases in word embeddings but do not remove them.
+Marta R Costa-jussà. 2019. An analysis of gender bias      In Proceedings of the 2019 Conference of the North
+ studies in natural language processing. Nature Ma-         American Chapter of the Association for Computa-
+ chine Intelligence, pages 1–2.                             tional Linguistics: Human Language Technologies,
+                                                            Volume 1 (Long and Short Papers), pages 609–614,
+Emily Dinan, Samuel Humeau, Bharath Chintagunta,            Minneapolis, Minnesota. Association for Computa-
+  and Jason Weston. 2019. Build it break it fix it for      tional Linguistics.
+  dialogue safety: Robustness from adversarial human
+  attack. arXiv preprint arXiv:1908.06083.                Hila Gonen, Yova Kementchedjhieva, and Yoav Gold-
+                                                            berg. 2019. How does grammatical gender affect
+Yupei Du, Yuanbin Wu, and Man Lan. 2019. Explor-            noun representations in gender-marking languages?
+  ing human gender stereotypes with word associa-           arXiv preprint arXiv:1910.14161.
+  tion test. In Proceedings of the 2019 Conference on
+  Empirical Methods in Natural Language Processing        Nizar Habash, Houda Bouamor, and Christine Chung.
+  and the 9th International Joint Conference on Natu-       2019. Automatic gender identification and reinflec-
+  ral Language Processing (EMNLP-IJCNLP), pages             tion in arabic. In Proceedings of the First Workshop
+  6135–6145.                                                on Gender Bias in Natural Language Processing,
+                                                            pages 155–165.
+Ali Emami, Paul Trichelair, Adam Trischler, Ka-
+  heer Suleman, Hannes Schulz, and Jackie Chi Kit         Reyhaneh Hashempour. 2019. A deep learning ap-
+  Cheung. 2019. The knowref coreference corpus:             proach to language-independent gender prediction
+  Removing gender and number cues for difficult             on twitter. In Proceedings of the 2019 Workshop on
+  pronominal anaphora resolution. In Proceedings of         Widening NLP.
+  the 57th Annual Meeting of the Association for Com-
+  putational Linguistics, pages 3952–3961.                He He, Sheng Zha, and Haohan Wang. 2019. Unlearn
+Angela Fan, David Grangier, and Michael Auli. 2017.         dataset bias in natural language inference by fitting
+  Controllable abstractive summarization.     arXiv         the residual. arXiv preprint arXiv:1908.10763.
+  preprint arXiv:1711.05217.
+                                                          Peter Henderson, Koustuv Sinha, Nicolas Angelard-
+Angela Fan, Mike Lewis, and Yann Dauphin. 2018. Hi-         Gontier, Nan Rosemary Ke, Genevieve Fried, Ryan
+  erarchical neural story generation. arXiv preprint        Lowe, and Joelle Pineau. 2018. Ethical challenges
+  arXiv:1805.04833.                                         in data-driven dialogue systems. In Proceedings of
+                                                            the 2018 AAAI/ACM Conference on AI, Ethics, and
+Lisa Fan, Marshall White, Eva Sharma, Ruisi Su,             Society, AIES 2018, New Orleans, LA, USA, Febru-
+   Prafulla Kumar Choubey, Ruihong Huang, and               ary 02-03, 2018, pages 123–129.
+   Lu Wang. 2019. In plain sight: Media bias through
+   the lens of factual reporting. In Proceedings of the   Alexander Miserlis Hoyle, Lawrence Wolf-Sonkin,
+   2019 Conference on Empirical Methods in Natu-            Hanna Wallach, Isabelle Augenstein, and Ryan Cot-
+   ral Language Processing and the 9th International        terell. 2019. Unsupervised discovery of gendered
+  language through latent-variable modeling. In Pro-     Margaret Li, Jason Weston, and Stephen Roller. 2019.
+  ceedings of the 57th Annual Meeting of the Asso-        Acute-eval: Improved dialogue evaluation with opti-
+  ciation for Computational Linguistics, pages 1706–      mized questions and multi-turn comparisons. arXiv
+  1716, Florence, Italy. Association for Computa-         preprint arXiv:1909.03087.
+  tional Linguistics.
+                                                         Raymond Li, Samira Ebrahimi Kahou, Hannes Schulz,
+Samuel Humeau, Kurt Shuster, Marie-Anne Lachaux,           Vincent Michalski, Laurent Charlin, and Chris Pal.
+  and Jason Weston. 2019. Real-time inference in           2018. Towards deep conversational recommenda-
+  multi-sentence tasks with deep pretrained transform-     tions. In Advances in Neural Information Process-
+  ers. arXiv preprint arXiv:1905.01969.                    ing Systems, pages 9748–9758.
+
+Masahiro Kaneko and Danushka Bollegala. 2019.            Paul Pu Liang, Irene Li, Emily Zheng, Yao Chong Lim,
+ Gender-preserving debiasing for pre-trained word          Ruslan Salakhutdinov, and Louis-Philippe Morency.
+ embeddings. arXiv preprint arXiv:1906.00742.              2019. Towards Debiasing Sentence representations.
+                                                         Haochen Liu, Jamell Dacon, Wenqi Fan, Hui Liu, Zi-
+Dongyeop Kang, Varun Gangal, and Eduard Hovy.
+                                                           tao Liu, and Jiliang Tang. 2019. Does gender mat-
+  2019. (male, bachelor) and (female, Ph.D) have
+                                                           ter? Towards fairness in dialogue systems. CoRR,
+  different connotations: Parallelly annotated stylis-
+                                                           abs/1910.10486.
+  tic language dataset with multiple personas. In
+  Proceedings of the 2019 Conference on Empirical        Rowan Hall Maudslay, Hila Gonen, Ryan Cotterell,
+  Methods in Natural Language Processing and the           and Simone Teufel. 2019. It’s all in the name: Mit-
+  9th International Joint Conference on Natural Lan-       igating gender bias with name-based counterfactual
+  guage Processing (EMNLP-IJCNLP), pages 1696–             data substitution. CoRR, abs/1909.00871.
+  1706, Hong Kong, China. Association for Computa-
+  tional Linguistics.                                    Pierre-Emmanuel Mazaré, Samuel Humeau, Martin
+                                                            Raison, and Antoine Bordes. 2018.        Training
+Yuta Kikuchi, Graham Neubig, Ryohei Sasano, Hiroya          millions of personalized dialogue agents. arXiv
+  Takamura, and Manabu Okumura. 2016. Control-              preprint arXiv:1809.01984.
+  ling output length in neural encoder-decoders. arXiv
+  preprint arXiv:1609.09552.                             Jack Merullo, Luke Yeh, Abram Handler, Alvin Gris-
+                                                            som II, Brendan O’Connor, and Mohit Iyyer. 2019.
+Nayeon Lee, Yejin Bang, Jamin Shin, and Pascale             Investigating sports commentator bias within a large
+  Fung. 2019a. Understanding the shades of sexism           corpus of American football broadcasts. In Pro-
+  in popular TV series. In Proceedings of the 2019          ceedings of the 2019 Conference on Empirical Meth-
+  Workshop on Widening NLP.                                 ods in Natural Language Processing and the 9th In-
+                                                            ternational Joint Conference on Natural Language
+Nayeon Lee, Andrea Madotto, and Pascale Fung.               Processing (EMNLP-IJCNLP), pages 6354–6360,
+  2019b. Exploring social bias in chatbots using            Hong Kong, China. Association for Computational
+  stereotype knowledge. In Proceedings of the 2019          Linguistics.
+  Workshop on Widening NLP, pages 177–180.
+                                                         A. H. Miller, W. Feng, A. Fisch, J. Lu, D. Batra,
+Haley Lepp. 2019. Pardon the interruption: Automatic       A. Bordes, D. Parikh, and J. Weston. 2017. Parlai:
+  analysis of gender and competitive turn-taking in        A dialog research software platform. arXiv preprint
+  united states supreme court hearings. In Proceed-        arXiv:1705.06476.
+  ings of the 2019 Workshop on Widening NLP, pages
+                                                         Oluwatobi O Olabiyi, Anish Khazane, and Erik T
+  143–145, Florence, Italy. Association for Computa-
+                                                           Mueller. 2018. A persona-based multi-turn conver-
+  tional Linguistics.
+                                                           sation model in an adversarial learning framework.
+Mike Lewis and Angela Fan. 2018. Generative ques-          In 2018 17th IEEE International Conference on Ma-
+  tion answering: Learning to answer the whole ques-       chine Learning and Applications (ICMLA), pages
+  tion. ICLR.                                              489–494. IEEE.
+                                                         Cathy O’Neil. 2016. Weapons of math destruction:
+Jiwei Li, Michel Galley, Chris Brockett, Jianfeng Gao,     How big data increases inequality and threatens
+   and Bill Dolan. 2015. A diversity-promoting objec-      democracy. Broadway Books.
+   tive function for neural conversation models. arXiv
+   preprint arXiv:1510.03055.                            Shereen Oraby, Lena Reed, Shubhangi Tandon,
+                                                           TS Sharath, Stephanie Lukin, and Marilyn Walker.
+Jiwei Li, Michel Galley, Chris Brockett, Georgios Sp-      2018. Controlling personality-based stylistic varia-
+   ithourakis, Jianfeng Gao, and Bill Dolan. 2016. A       tion with neural natural language generators. arXiv
+   persona-based neural conversation model. In Pro-        preprint arXiv:1805.08352.
+   ceedings of the 54th Annual Meeting of the Associa-
+   tion for Computational Linguistics (Volume 1: Long    Jahna Otterbacher, Alessandro Checco, Gianluca De-
+   Papers), pages 994–1003, Berlin, Germany. Associ-        martini, and Paul Clough. 2018. Investigating user
+   ation for Computational Linguistics.                     perception of gender bias in image search: the role
+  of sexism. In The 41st International ACM SIGIR           Tony Sun, Andrew Gaut, Shirlyn Tang, Yuxin Huang,
+  Conference on Research & Development in Informa-           Mai ElSherief, Jieyu Zhao, Diba Mirza, Eliza-
+  tion Retrieval, pages 933–936. ACM.                        beth Belding, Kai-Wei Chang, and William Yang
+                                                             Wang. 2019. Mitigating gender bias in natural lan-
+Ji Ho Park, Jamin Shin, and Pascale Fung. 2018. Re-          guage processing: Literature review. arXiv preprint
+   ducing gender bias in abusive language detection.         arXiv:1906.08976.
+   In Proceedings of the 2018 Conference on Em-
+   pirical Methods in Natural Language Processing,         Jack Urbanek, Angela Fan, Siddharth Karamcheti,
+   pages 2799–2804, Brussels, Belgium. Association            Saachi Jain, Samuel Humeau, Emily Dinan, Tim
+   for Computational Linguistics.                             Rocktäschel, Douwe Kiela, Arthur Szlam, and Ja-
+                                                              son Weston. 2019. Learning to speak and act in
+Yusu Qian. 2019. Gender stereotypes differ between            a fantasy text adventure game. In Proceedings
+  male and female writings. In Proceedings of the             of the 2019 Conference on Empirical Methods in
+  57th Annual Meeting of the Association for Com-             Natural Language Processing and the 9th Interna-
+  putational Linguistics: Student Research Workshop,          tional Joint Conference on Natural Language Pro-
+  pages 48–53.                                                cessing (EMNLP-IJCNLP), pages 673–683, Hong
+                                                              Kong, China. Association for Computational Lin-
+Yusu Qian, Urwa Muaz, Ben Zhang, and Jae Won                  guistics.
+  Hyun. 2019. Reducing gender bias in word-level
+  language models with a gender-equalizing loss func-      Adina Williams. 2018. Representing Relationality:
+  tion. arXiv preprint arXiv:1905.12801.                     MEG Studies on Argument Structure. Ph.D. thesis,
+                                                             New York University.
+Abigail See, Stephen Roller, Douwe Kiela, and Jason
+  Weston. 2019. What makes a good conversation?            Adina Williams, Damian Blasi, Lawrence Wolf-
+  how controllable attributes affect human judgments.        Sonkin, Hanna Wallach, and Ryan Cotterell. 2019.
+  arXiv preprint arXiv:1902.08654.                           Quantifying the semantic core of gender systems. In
+                                                             Proceedings of the 2019 Conference on Empirical
+Iulian Vlad Serban, Ryan Lowe, Laurent Charlin, and
+                                                             Methods in Natural Language Processing and the
+   Joelle Pineau. 2016. Generative deep neural net-
+                                                             9th International Joint Conference on Natural Lan-
+   works for dialogue: A short review. arXiv preprint
+                                                             guage Processing (EMNLP-IJCNLP), pages 5733–
+   arXiv:1611.06216.
+                                                             5738, Hong Kong, China. Association for Computa-
+Sima Sharifirad, Alon Jacovi, Israel Bar Ilan Univesity,     tional Linguistics.
+  and Stan Matwin. 2019. Learning and understand-
+  ing different categories of sexism using convolu-        Yinfei Yang, Steve Yuan, Daniel Cer, Sheng-yi Kong,
+  tional neural networks filters. In Proceedings of the      Noah Constant, Petr Pilar, Heming Ge, Yun-Hsuan
+  2019 Workshop on Widening NLP, pages 21–23.                Sung, Brian Strope, and Ray Kurzweil. 2018.
+                                                             Learning semantic textual similarity from conversa-
+Sima Sharifirad and Stan Matwin. 2019.           Using       tions. arXiv preprint arXiv:1804.07754.
+  attention-based bidirectional lstm to identify differ-
+  ent categories of offensive language directed toward     Saizheng Zhang, Emily Dinan, Jack Urbanek, Arthur
+  female celebrities. In Proceedings of the 2019 Work-       Szlam, Douwe Kiela, and Jason Weston. 2018. Per-
+  shop on Widening NLP, pages 46–48.                         sonalizing dialogue agents: I have a dog, do you
+                                                             have pets too? In Proceedings of the 56th Annual
+Emily Sheng, Kai-Wei Chang, Premkumar Natarajan,             Meeting of the Association for Computational Lin-
+  and Nanyun Peng. 2019. The woman worked as                 guistics, pages 2204–2213, Melbourne, Australia.
+  a babysitter: On biases in language generation. In         Association for Computational Linguistics.
+  Proceedings of the 2019 Conference on Empirical
+  Methods in Natural Language Processing and the           Jieyu Zhao, Tianlu Wang, Mark Yatskar, Ryan Cot-
+  9th International Joint Conference on Natural Lan-          terell, Vicente Ordonez, and Kai-Wei Chang. 2019.
+  guage Processing (EMNLP-IJCNLP), pages 3398–                Gender bias in contextualized word embeddings. In
+  3403, Hong Kong, China. Association for Computa-            NAACL (short).
+  tional Linguistics.
+                                                           Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente
+Kurt Shuster, Samuel Humeau, Antoine Bordes, and              Ordonez, and Kai-Wei Chang. 2017. Men also
+  Jason Weston. 2018. Engaging image chat: Model-             like shopping: Reducing gender bias amplifica-
+  ing personality in grounded dialogue. arXiv preprint        tion using corpus-level constraints. arXiv preprint
+  arXiv:1811.00945.                                           arXiv:1707.09457.
+
+Gabriel Stanovsky, Noah A Smith, and Luke Zettle-          Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+  moyer. 2019. Evaluating gender bias in machine              donez, and Kai-Wei Chang. 2018a. Gender bias
+  translation. arXiv preprint arXiv:1906.00591.               in coreference resolution: Evaluation and debias-
+                                                              ing methods. In Proceedings of the 2018 Confer-
+Pierre Stock and Moustapha Cisse. 2017. Convnets              ence of the North American Chapter of the Associ-
+   and imagenet beyond accuracy: Explanations, bias           ation for Computational Linguistics: Human Lan-
+   detection, adversarial examples and model criticism.       guage Technologies, NAACL-HLT, New Orleans,
+  Louisiana, USA, June 1-6, 2018, Volume 2 (Short
+  Papers), pages 15–20.
+Jieyu Zhao, Yichao Zhou, Zeyu Li, Wei Wang, and Kai-
+   Wei Chang. 2018b. Learning gender-neutral word
+   embeddings. In Proceedings of the 2018 Confer-
+   ence on Empirical Methods in Natural Language
+   Processing, Brussels, Belgium, October 31 - Novem-
+   ber 4, 2018, pages 4847–4853.
+Pei Zhou, Weijia Shi, Jieyu Zhao, Kuan-Hao Huang,
+  Muhao Chen, Ryan Cotterell, and Kai-Wei Chang.
+  2019. Examining gender bias in languages with
+  grammatical gender.       In Proceedings of the
+  2019 Conference on Empirical Methods in Natu-
+  ral Language Processing and the 9th International
+  Joint Conference on Natural Language Processing
+  (EMNLP-IJCNLP), pages 5275–5283, Hong Kong,
+  China. Association for Computational Linguistics.
+
+Ran Zmigrod, Sebastian J. Mielke, Hanna Wallach, and
+  Ryan Cotterell. 2019. Counterfactual data augmen-
+  tation for mitigating gender stereotypes in languages
+  with rich morphology. In Proceedings of the 57th
+  Annual Meeting of the Association for Computa-
+  tional Linguistics, pages 1651–1661, Florence, Italy.
+  Association for Computational Linguistics.
+Data Split:               F0 M0                      F0 M+                      F+ M0                     F+ M+            All
+               % gend. % male   F1 % gend. % male   F1 % gend. % male   F1 % gend. % male   F1    F1
+Model           words    bias score words    bias score words    bias score words    bias score score
+Gold Lbl             0          0     -      4.11        100     -      4.03          0     -      6.67     50.71     -     -
+Baseline          2.37      88.39 11.24      3.66      90.26 11.77      2.44      77.99 11.54      3.05     80.05 11.43 11.42
+ConvAI2 FT        0.79      71.09 7.78        1.1      78.31 7.94       1.35       51.6 8.75       1.97     67.23 8.99 7.95
+Reddit Base       2.18      73.68 9.93       3.03      81.78 11.54      2.81      52.99 10.99      3.94     63.16 12.61 10.57
+CDA               0.88      71.03   11.63    1.38      68.57 11.7        1.2      56.18   11.43    1.17     58.01 11.12 11.62
+Pos. Data         2.76      82.44   10.46    3.68      86.43 10.07      4.59       72.1   10.07    4.43      86.5 9.88 10.44
+Bias Ctrl         0.14      68.75   10.72    5.83      98.08 13.01       4.8       2.69   10.84    4.05     45.86 11.35 11.38
+ALL               0.14      64.19   11.72    6.59      97.94 12.77      5.84       7.13   11.28    8.81     50.94 12.22 11.99
+
+Table 9: We compare the performance of various bias mitigation methods—Counterfactual Data Augmentation
+(CDA), Positive-Bias Data Collection (Pos. Data), Bias Control Model (Bias Ctrl), and combining these methods
+(ALL)—on the test set, splitting the test set across the four genderedness bins: F0/+ M0/+ . X0 indicates there are no
+X-gendered words in the gold response, while X+ indicates that there is at least one. We measure the percent of
+gendered words in the generated utterances (% gend. words) and the percent of male bias (% male bias), i.e. the
+percent of male-gendered words among all gendered words generated. While each of these methods yield some
+improvement, combining all of these methods in one yields the best control over the genderedness of the utterances
+while improving the F1-score.
+
+
+
+
+ Data Split:             F0 M0                      F0 M+                      F+ M0                     F+ M+            All
+               % gend. % male   F1 % gend. % male   F1 % gend. % male   F1 % gend. % male   F1    F1
+ Model          words    bias score words    bias score words    bias score words    bias score score
+ Gold Lbl           0          0     -      4.11       100      -      4.03          0     -      6.67     50.71     -     -
+ Baseline        2.37      88.39 11.24      3.66      90.26 11.77      2.44      77.99 11.54      3.05     80.05 11.43 11.42
+ ALL F0 M0       0.14      64.19 11.72      0.24      80.11   11.51    0.22       25.0 11.63      0.23     81.58   10.72 11.61
+ ALL F0 M+       6.47      97.97 9.58       6.59      97.94   12.77    7.22      96.33 10.0       6.27     97.52   12.21 10.6
+ ALL F+ M0       4.77      11.66 10.27      5.12      15.84   10.94    5.84       7.13 11.28      5.03     13.64   11.23 10.57
+ ALL F+ M+       9.53      53.34 8.89        9.6      55.35   11.19    9.42      48.65 10.5       8.81     50.94   12.22 9.79
+
+Table 10: Performance of the ALL debiasing model controlled by indicating specific bins for all examples at test
+time. We report results for each possible conditioning bin choice. Across bins, the model maintains performance
+as measured by F1 whilst radically changing the genderedness of the language generated.
+
+
+
+
+Persona Example (Original LIGHT Dataset)
+son:                I am spoiled and rich. I enjoy running in the castle. I like hide and seek.
+men:                I am an average man in the village. I do what ever work that my King requires me to do. At night, I spend
+                    my time in the local pub with my fellow men.
+farmer Bob:         I was born in a poor village. I eat what we grow. I love being close to the earth.
+father:             I am a role model for my children. I provide for the family with meat and I keep a roof over their heads. I
+                    am stability to the family, and keep things together and provide safety to my children.
+husband:            I try to be good to my wife. I want to provide for my family. I try to be strong.
+
+  Table 11: Examples of male gender biased personas written for gendered characters in the LIGHT dataset.
+

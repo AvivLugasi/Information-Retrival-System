@@ -1,0 +1,1414 @@
+16.
+
+17.
+
+18.
+
+19.
+
+20.
+
+22.
+
+23.
+
+27.
+
+28.
+
+29.
+
+30.
+
+31.
+
+32.
+
+36.
+
+Towards Formal Fairness in Machine Learning 865
+
+Corbett-Davies, S., Pierson, E., Feller, A., Goel, S., Huq, A.: Algorithmic decision
+making and the cost of fairness. In: KDD 2017, pp. 797-806 (2017)
+
+Cormen, T.H., Leiserson, C.E., Rivest, R.L., Stein, C.: Introduction to Algo-
+rithms, 3rd edn. MIT Press (2009). http://mitpress.mit.edu/books/introduction-
+algorithms
+
+Demsar, J., et al.: Orange: data mining toolbox in python. J. Mach. Learn. Res.
+14(1), 2349-2353 (2013)
+
+Dressel, J., Farid, H.: The accuracy, fairness, and limits of predicting recidivism.
+Sci. Adv. 4(1), eaa05580 (2018)
+
+Dwork, C., Hardt, M., Pitassi, T., Reingold, O., Zemel, R.: Fairness through aware-
+ness. In: ITCS, pp. 214-226 (2012)
+
+Kén, N., Sdrensson, N.: An extensible SAT-solver. In: Giunchiglia, E., Tacchella,
+A. (eds.) SAT 2003. LNCS, vol. 2919, pp. 502-518. Springer, Heidelberg (2004).
+https: //doi.org/10.1007/978-3-540-24605-3_37
+
+Ehlers, R.: Formal verification of piece-wise linear feed-forward neural networks.
+n: D’Souza, D., Narayan Kumar, K. (eds.) ATVA 2017. LNCS, vol. 10482, pp.
+269-286. Springer, Cham (2017). https://doi.org/10.1007/978-3-319-68167-2_19
+European Union High-Level Expert Group on Artificial Intelligence: Ethics guide-
+ines for trustworthy AI, April 2019. https://ec.europa.eu/digital-single- market /
+en/news/ethics-guidelines-trustworthy-ai
+
+Feldman, M., Friedler, S.A., Moeller, J., Scheidegger, C., Venkatasubramanian, S.:
+Certifying and removing disparate impact. In: KDD, pp. 259-268. ACM (2015)
+Friedler, S.A., Scheidegger, C., Venkatasubramanian, S.: On the (im)possibility of
+‘airness. CoRR abs/1609.07236 (2016). http://arxiv.org/abs/1609.07236
+
+Friedler, S.A., Scheidegger, C., Venkatasubramanian, $., Choudhary, S., Hamilton,
+E.P., Roth, D.: A comparative study of fairness-enhancing interventions in machine
+earning. In: FAT, pp. 329-338 (2019)
+
+Galhotra, S., Brun, Y., Meliou, A.: Fairness testing: testing software for discrimi-
+nation. In: FSE, pp. 498-510 (2017)
+
+Garg, S., Perot, V., Limtiaco, N., Taly, A., Chi, E.H., Beutel, A.: Counterfactual
+‘airness in text classification through robustness. In: AIES, pp. 219-226 (2019)
+Gario, M., Micheli, A.: PySMT: a solver-agnostic library for fast prototyping of
+SMT-based algorithms. In: SMT Workshop (2015)
+
+Ghosh, B., Meel, K.S.: IMLI: an incremental framework for MaxSAT-based learn-
+ing of interpretable classification rules. In: AIES, pp. 203-210 (2019)
+Grgic-Hlaca, N., Zafar, M.B., Gummadi, K.P., Weller, A.: The case for process
+fairness in learning: feature selection for fair decision making. In: NIPS Symposium
+on Machine Learning and the Law (2016)
+
+Han, J., Kamber, M., Pei, J.: Data Mining: Concepts and Techniques, 3rd edn.
+Morgan Kaufmann (2012)
+
+ 
+
+. Hardt, M., Price, E., Srebro, N.: Equality of opportunity in supervised learning. In:
+
+Lee, D.D., Sugiyama, M., von Luxburg, U., Guyon, I., Garnett, R. (eds.) Advances
+in Neural Information Processing Systems 29, pp. 3315-3323 (2016). http://papers.
+nips.cc/paper/6374-equality-of opportunity-in-supervised-learning
+
+Holstein, K., Vaughan, J.W., Daumé IH, H., Dudik, M., Wallach, H.M.: Improving
+fairness in machine learning systems: what do industry practitioners need? In: CHI,
+p. 600 (2019)
+
+. Hu, H., Siala, M., Hebrard, E., Huguet, M.J.: Learning optimal decision trees with
+
+MaxSAT and its integration in AdaBoost. In: IJCAI, pp. 1170-1176 (2020)
+Hu, X., Rudin, C., Seltzer, M.: Optimal sparse decision trees. In: NeurIPS, pp.
+7265-7273 (2019)
+
+Towards Formal Fairness in Machine Learning 851
+
+Remark 2. To test condition (2) we only need to test pairs y1,y2 which differ
+on a single feature. This is because if (2) holds for some x, y1,y2 then it must
+hold for some x,y", y"*+ (r € {0,...,K —1}) where y” is equal to y; on the
+first K—r features of P and equal to y2 on the other features of P. Analyzing
+each feature separately reduces the search space that needs to be considered.
+
+Checking Bias in Consistent Datasets. By exploiting Remark1
+or Remark 2, we can devise a test to assess whether a dataset exhibits unfairness
+(in which case we say that the dataset is biased). We consider first the case
+when the dataset is consistent, and use the insights to consider the more general
+case of inconsistent datasets. For a consistent dataset, the following condition
+captures FTU in the dataset.
+
+Definition 4 (Consistent dataset bias under FTU). A consistent dataset
+T is biased if the following holds:
+
+A(x € N) A(y1, y2 € P).[(, y1), & y2) € TA (r(x, ¥1) A Yr (x, y2))] (3)
+
+Intuitively, a dataset is biased if the protected features serve to distinguish
+
+between two different predictions when the non-protected features take the same
+values. Although (3) is harder to read than (2), it is actually simple to develop
+a polynomial time procedure for assessing whether a dataset is FTU-biased.
+However, we develop instead a polynomial (indeed, linear) time algorithm for
+the more general case of inconsistent data, which is also applicable in the case
+of consistent data.
+Checking Bias in Inconsistent Datasets. Even if the training data is incon-
+sistent, one can devise a test to assess whether a dataset exhibits bias. As moti-
+vated in Sect.2, in the presence of inconsistent data, we model the expected
+input-output behavior (given the dataset) as a relation. In the case of an incon-
+sistent dataset, the following condition captures FTU in the dataset.
+
+Definition 5 (Inconsistent dataset bias under FTU). An inconsistent
+dataset T is biased if the following holds:
+
+A(x € N) A(y1,y2 € P)A(ei,c2 €C).[y1i Fy2Nca1 Fo A
+(x, y1), (X, y2) € TA T(x, y1, c1) A E(x, yo, c2)| (4)
+
+There is an alternative definition that considers the dataset to be fair if for
+each x € N, yi, yo € P, the sets of classes c € C for which (x, y1,c) or (x, yo, c)
+hold are identical. We ruled out this alternative definition for reasons described
+in Sect. 5.
+
+There is a fairly simple linear-(amortized)-time algorithm that can be used
+both with consistent and with inconsistent data, as shown in Algorithm 1. Cor-
+rectness of the algorithm follows from the fact that condition (4) is actually
+logically equivalent to
+
+A(x € N)A(yi,y2,¥1,¥2 € P) Alen, c2,¢1,¢4 €C).ly1 Ay2ANc1 Ace A
+
+(x, y1), (%,y2), (x, yi); (ye) ETA
+T(x. ¥1,¢4) A T(x, y2.¢h) AEX ¥1.€1) A U(X, ¥2, C2) (5)
+
+Towards Formal Fairness in Machine Learning 863
+
+ 
+
+ 
+
+Adult Compas German Ricci Adult Compas German Ricci
+orig. features 12 ll 21 5 min.(s) 0.31 0.24 2.50 0.33
+binary features 65 46 1073 235 avg.(s) 12.22 0.56 87.08 0.36
+
+examples 14113 6172 1000 118 max.(s) 63.77 3.37 1062.32 0.43
+
+ 
+
+(a) Size of the considered datasets. (b) Running Time for Checking Model Fairness.
+
+Fig. 2. Size of the Datasets (left) & Time for Assessing (XGBoost) Model Fairness
+(right)
+
+6.3 Synthesizing Fair Decision Sets
+
+This section aims at synthesizing fair decision sets for the case of biased dataset
+Compas and unbiased dataset Ricci, based on the approach of [41] (results for
+Adult and German are not reported here because synthesis of DS models for
+these datasets seems too challenging). While for the former dataset (Compas)
+one can drop the protected features from the dataset and then trade off accuracy
+with DS size, for the unbiased Ricci dataset it suffices to modify the DS model,
+as described in Sect. 4.
+
+Furthermore, since Ricci is unbiased wrt. the protected feature Race, we
+can achieve 100% accuracy with the resulting DS model (similarly with decision
+trees/lists). In fact, a perfectly accurate decision set for Ricci computed by the
+modified MINDS3 model [41] has only two rules, i.e. one rule per class. The
+downside here is that each rule is quite long, s.t. the decision set has 68 literals
+in total. This is in clear contrast to the interpretability purpose of decision sets.
+However, by trading off accuracy with the DS size, one can get the following
+non-overlapping MINDS; model [41] with 97.5% accuracy and having only 4
+rules and 7 literals in total, which is easy to interpret:
+
+IF Position A Leutenant A Oral < 63.75 THEN Class =0
+IF Combine < 69.372 THEN Class =0
+IF Position = Leutenant \ Combine > 69.372 THEN Class = 1
+IF Oral > 63.75 A Combine > 69.372 THEN Class=1
+
+Since Compas is biased wrt. the protected features, training a fair ML model
+for this dataset can be done by sacrificing the model’s accuracy. Concretely,
+the maximum feasible accuracy for this dataset is 69.73%. Although DS models
+achieving this accuracy for Compas can be trained, they are too large to inter-
+pret (each has at least a few hundred literals). Thus, one may want to sacrifice
+accuracy further and get a more interpretable (i.e. smaller) DS model instead.
+For instance, the following non-overlapping MINDS, model has 66.32% accuracy
+and it is fair with respect to all the protected features:
+
+IF Number_of Priors > 17.5 \ —score factor THEN — Two-yr_Recidivism
+IF Number_of Priors > 17.5 A Age_Above_FourtyFive \ Misdemeanor THEN Two_yr_Recidivism
+IF Number-of Priors < 17.5 THEN —=Two-yr-Recidivism
+IF score-factor \ sAge-Above-FourtyFive THEN —Two-yr-Recidivism
+
+IF score_factor \ Misdemeanor THEN —=Two-yr_Recidivism
+
+862 A. Ignatiev et al.
+
+6.1 Assessing Dataset Bias
+
+The first part of the experimental assessment aims at checking whether the afore-
+mentioned datasets exhibit bias with respect to the corresponding protected fea-
+tures. Note that although the Compas and German datasets are inconsistent,
+they can still be tested for bias (see Sect. 3). Running Algorithm 1 reports that
+(1) Compas and Adult are biased with respect to all the protected features while
+(2) German and Ricci do not exhibit bias with respect to any protected feature.
+Point (1) indicates that there is no way to train an ML model of maximum
+accuracy whilst being fair with respect to the protected features. In particular,
+this confirms the famous bias-related issues of the Compas algorithm. Moreover,
+the results for the Ricci dataset should be highlighted. Since this dataset is unbi-
+ased, one is guaranteed that a fair ML model can be synthesized. (This should
+be contrasted with the unfair heuristic models studied in earlier work [26]).
+
+6.2 Assessing Model Fairness
+
+Here we focus on testing fairness of boosted tree models trained with the
+XGBoost algorithm [13] for the considered datasets. To perform an exhaustive
+experiment assessing accuracy of the target models and to be able to draw con-
+clusions, we followed the standard paradigm of 10-fold cross-validation. As such,
+each dataset is randomly divided into 10 equally sized chunks of examples and
+he experiment is done 10 times (one per chunk), each time dealing with 90%
+arget dataset, i.e. with 1 of the 10 chunks discarded. This way every dataset is
+ested for fairness of the respective model wrt. each protected feature 10 times.
+Overall, this results in 60 fairness tests for Compas, 20 for Adult, 20 for German,
+and 10 for Ricci — the total number of tests to perform is 110. (Recall that each
+est is made as an SMT oracle call dealing with formula (2).)
+
+Each XGBoost model trained for this experiment contains 50 trees per class
+
+with each tree having depth 3 (this suffices to get a reasonable classification
+accuracy). Boosted trees are encoded into SMT by applying a simple encoding
+proposed in [40].
+The minimum, maximum, and average running time per test for each of the
+datasets is shown in Fig. 2b. Observe that testing fairness is not computation-
+ally expensive and can be done for medium-sized boosted trees. Also note that
+airness tests are on average more time consuming for the German dataset.
+
+Regarding the fairness of the trained ML models, the tests reported that
+only 2 (out of 10) models trained for the Compas dataset are fair wrt. protected
+eature Other. All the other models trained for all datasets are unfair with
+respect to every protected feature. This should not come as a surprise given that
+hese models were trained with no knowledge about the protected features, which
+is usually the case in practice. Since the fairness check (2) is model agnostic, this
+result confirms the power and applicability of the proposed ideas in practical
+situations when fairness of ML models is a concern.
+
+ 
+
+ 
+
+60.
+
+61.
+
+62.
+
+63.
+64.
+
+66.
+
+67.
+
+Towards Formal Fairness in Machine Learning 867
+
+. Narodytska, N., Ignatiev, A., Pereira, F., Marques-Silva, J.: Learning optimal deci-
+
+sion trees with SAT. In: IJCAI, pp. 1362-1368 (2018)
+Narodytska, N., Kasiviswanathan, S.P., Ryzhyk, L., Sagiv, M., Walsh, T.: Verifying
+properties of binarized deep neural networks. In: AAAI, pp. 6615-6624 (2018)
+
+. Pedregosa, F., et al.: Scikit-learn: machine learning in Python. J. Mach. Learn.
+
+Res. 12, 2825-2830 (2011)
+
+. du Pin Calmon, F., Wei, D., Vinzamuri, B., Ramamurthy, K.N., Varshney, K.R.:
+
+Optimized pre-processing for discrimination prevention. In: NeurIPS, pp. 3992—
+4001 (2017)
+
+Pulina, L., Tacchella, A.: An abstraction-refinement approach to verification of
+artificial neural networks. In: Touili, T., Cook, B., Jackson, P. (eds.) CAV 2010.
+LNCS, vol. 6174, pp. 243-257. Springer, Heidelberg (2010). https://doi.org/10.
+1007/978-3-642-14295-6_24
+
+Ruan, W., Huang, X., Kwiatkowska, M.: Reachability analysis of deep neural net-
+works with provable guarantees. In: IJCAI, pp. 2651-2659 (2018)
+
+Shih, A., Choi, A., Darwiche, A.: A symbolic approach to explaining Bayesian
+network classifiers. In: IJCAI, pp. 5103-5111 (2018)
+
+Supreme Court of the United States: Ricci v. DeStefano. U.S. 557, 174 (2009)
+Verma, S., Rubin, J.: Fairness definitions explained. In: FairWare@ICSE, pp. 1-7
+(2018)
+
+. Verwer, S., Zhang, Y.: Learning decision trees with flexible constraints and objec-
+
+tives using integer optimization. In: Salvagnin, D., Lombardi, M. (eds.) CPAIOR
+2017. LNCS, vol. 10335, pp. 94-103. Springer, Cham (2017). https://doi.org/10.
+1007/978-3-319-59776-8_8
+
+Verwer, S., Zhang, Y.: Learning optimal classification trees using a binary linear
+program formulation. In: AAAI, pp. 1625-1632 (2019)
+
+Wu, M., Wicker, M., Ruan, W., Huang, X., Kwiatkowska, M.: A game-based
+approximate verification of deep neural networks with provable guarantees. Theor.
+Comput. Sci. 807, 298-329 (2020). https://doi.org/10.1016/j.tes.2019.05.046
+
+ 
+
+ot
+a
+
+Towards Formal Fairness in Machine Learning 8:
+
+noting that, by Proposition 2 the problem of testing whether all predictions are
+universally fair is in co-NP, since the counter-example certificate is simply the
+values of x, y1, y2 Satisfying criterion (2). This is somewhat counter-intuitive in
+that testing the universal fairness of all predictions may be easier than testing
+the universal fairness of one prediction.
+
+3.4 Relation of Fairness to Robustness and Adversarial Examples
+
+Informally speaking, robustness is the property that two almost identical inputs
+(i.e. points in feature space F) should be labelled equally. We give a general
+formal definition for robustness, then we show that fairness can be seen as a
+particular case. This may enable previous work on robustness to be adapted
+for fairness. We discuss this particular point by presenting the relationship with
+adversarial examples.
+
+Let P(F) be the power set of F. Let f be a neighbourhood function: that is,
+f :¥F— P(E). We say that an ML model M with corresponding function ¢ is
+robust w.r.t. a neighbourhood function f if Vz € F, Vz’ € f(z), y(z) = y(z’).
+Consider the example of adversarial robustness [57]. The neighbourhood function
+related to adversarial robustness can be defined as f“"(z) = {z’ | d(z,z’) < e}
+where d: F x F > R? is a distance metric and € > 0. Adversarial robustness
+can then be defined as the property that Vz € F, Va’ € f*"(z), y(z) = yz’).
+
+Fairness can be viewed a particular case of robustness. Note that defining
+fairness using distance (thus neighbourhood) functions is used in the so-called
+“fairness through awareness” measure [20,64]. We can consider the neighbour-
+hood function f* : F + P(F) such that f*(x.y) = {x.y’ | y’ € P}. That is, the
+neighbourhood of an input z is the set of inputs that have the same unprotected
+features. The robustness property using the f* neighbourhood function is iden-
+tical to the fairness criterion (1): two inputs that have the same unprotected
+features should be labelled equally.
+
+Using this observation, we can relate work on robustness and fairness. For
+example, if one can construct an adversarial example (or counterexample) that
+uses changes to protected features, then the model is deemed unfair.
+
+4 Learning Fair ML Models
+
+Section 3 showed how to assess whether datasets or models could be checked for
+a specific fairness criterion. The purpose of this section is to investigate ways
+of synthesizing ML models when a dataset is unbiased, and when it is biased.
+Whereas the case of unbiased datasets requires simple changes to existing ML
+model synthesis approaches, the case of biased datasets requires more substantial
+changes. As argued earlier, the paper focuses on logic-based ML models, namely
+decision sets, decision trees and decision li: Moreover, the dataset is assumed
+to be consistent, for simplicity. The modifications to the case of inconsistent
+datasets are also briefly discussed.
+
+   
+
+858 A. Ignatiev et al.
+
+obtaining a DS that maximizes accuracy on training data. For each u € N having
+Vi, V2 € P such that y(u, vi) 4 y(u, v2), consider the set of examples, denoted
+by Conflict,, where the values of the non-protected features are those in tuple
+u. Consider the least frequent class among examples in Conflict,. (For ties,
+pick one class randomly.) Redefine the training data by removing the examples
+in Conflict, that are associated to the least frequent class. Now, use the model
+proposed in Sect. 4 to learn a DS, that discards the protected features.
+
+Proposition 5. The algorithm above yields a fair decision set with maximum
+accuracy.
+
+Proof. The learned DS is fair by construction. Moreover, the lack of accuracy
+is solely due to protected features being relevant for constructing an accurate
+decision set. For each set of common non-protected features, the most frequently-
+occurring prediction is chosen. Hence, accuracy cannot be improved if the model
+is to be fair. Oo
+
+4.3 Non-accurate Interpretable Models
+
+In practice, 100% accurate models are often unwieldy. So an interesting problem
+is how to synthesize a fair DS, that respects some accuracy target, while placing
+some bound on the size of the ML model. The solution we propose is when values
+x of the non-protected features have multiple predictions (due to the protected
+features y) to allow freedom of the prediction to be picked (instead of imposing
+a majority vote) provided it is a function of only x. This ensures fairness of the
+learnt model according to (1), but this flexibility can be used for reducing the
+number of rules (or the number of literals in rules) while ensuring that some
+target accuracy metric is met.
+
+We now study how to synthesize interpretable models that are not 100%
+accurate. It should be noted that earlier work often makes a number of assump-
+tions regarding trading off accuracy with representation size [5,30,36,51]; ours
+makes none.
+
+We consider the encoding proposed in Sect. 4 for computing a smallest deci-
+sion set. Recall that to ensure fairness, we add the constraints (sj,
+for each F, € P, so that protected features F,, are not be used in any rule j. A
+model corresponding to a solution of this SAT instance covers all positive exam-
+ples and discriminates all negative examples. To adapt this model, i.e. (6) to
+(10), so that it is not necessarily accurate, one can allow each negative example
+in the training data not to be discriminated. For eg € T~, let ndjq denote that
+€, is not discriminated by rule j, and let nd, denote that e, is not discriminated
+(by any rule). Then, we update the model as follows:
+
+ 
+
+nde (A, ~a") jE {L...,N}Aeg €T>
+
+(11)
+nly (Via nidg) égeT-
+
+Towards Formal Fairness in Machine Learning 853
+
+Proposition 1. Consider a consistent dataset T, and let the dataset T’ be
+obtained by discarding the protected features P of T. Hence, T’ may have
+examples with duplicated sets of feature values. T is unbiased iff there are no
+inconsistencies in T’.
+
+3.3. Local Fairness via Explanations
+
+ 
+
+In this section we consider local notions of fairness. An individual is probably
+more interested in the fairness of a particular decision concerning themselves
+than in the global fairness of the model. We use the notion of explanation to
+define local fairness. It turns out that there are two possible definitions of local
+fairness based on explanations.
+
+To be concrete, consider the problem of an unemployed woman who has been
+refused a loan and who wants to know if this is because she is a woman. Suppose
+the bank has learned the following simple model: refuse a loan if the client is
+unemployed or if they are a woman. This model is clearly unfair with respect
+to gender, but in this particular case the bank can claim that they would have
+refused the loan even if the client had been a man. On the other hand, the client
+can point out there are two explanations for the refusal: the first explanation is
+that she is unemployed (since all unemployed are refused a loan) and the second
+explanation is that she is a woman (since all women are refused a loan), and
+hence the decision should be considered unfair.
+
+There is recent work investigating similar themes [3] which shows that expla-
+nations can be used to fake fairness, but the authors study statistical measures
+
+ 
+
+of fairness.
+
+Following [39,62], given an ML model M computing some function y, an
+explanation of some prediction y(z) = c is a prime implicant of the mapping
+a+ c, where c is considered fixed (i.e. a subset-minimal subset of the literals
+of z which still entails the prediction c). This notion of explanation allows us to
+define fairness of a particular decision/prediction of a model M.
+
+In the following we view a z € F as a set of literals, one per feature.
+
+Definition 6 (Fair explanation). An explanation e of a prediction y(z) =c¢
+is a subset of 2 which is minimal under subset inclusion such that Vz' € F, if
+e Cz’ then p(z') =c. Ifa = (x,y) withx EN, y € P, we say that e is fair if
+eny =90 (i.e. e uses no protected literals).
+
+Definition 7 (Universal/existential Fairness). A prediction y(z) = ¢ is
+universally fair if all of its explanations are fair. It is existentially fair if at least
+one of its explanations is fair.
+
+It turns out that there is a close connection between FTU and universal
+fairness.
+
+Proposition 2. Let y be the function computed by a ML model M. M is fair
+according the FTU criterion (1) iff all predictions y(z) = c (z € F) are universally
+fair.
+
+848 A. Ignatiev et al.
+
+features defined by F = IIX_, D; is referred to as feature space [32]. Throughout
+the paper, all domains in the examples and experiments will be binary, i.e. Dj =
+{0,1}, but the results will be derived assuming arbitrary (discrete) domains?.
+Since all features are binary, a literal on a feature F. will be represented as F.
+or as aF,..
+
+To learn a classifier, one starts from given training data (also referred to
+as examples) T = {e1,...,e.¢}. Each example has an associated class taken
+from a set of classes C. The paper focuses mostly on binary classification, i.e.
+C = {co, cr}. (We will associate co with 0 and c; with 1, for simplicity.) Thus, T is
+partitioned into T+ and T~ , denoting the examples classified as positive (c, = 1)
+and as negative (co = 0), respectively. Each example e, € T is represented as
+a pair (zq,Cqy), Where zy € F denotes the literals associated with the example
+and cg € {0,1} is the class to which the example belongs. We have cg = 1 if
+eg € Tt and cy = 0 if eg € T~. The training data T is consistent if (zq,0) €
+TN (aq,1) €T => 2 F %q, and inconsistent otherwise. A literal 1, on a
+feature F,, 1, € {F,,-F,}, discriminates an example e, if z,[r] = Wl,, ie. the
+feature takes the value opposite to the value in the example. We assume that all
+features are specified for all examples; the work can be generalized for situations
+where the value of some features for some examples is left unspecified.
+
+An ML model M is represented as a function y : F > C. With a slight abuse
+of notation, a consistent training data will also be viewed as a partial function
+yr : F >C. Ina general setting, where the training data can be inconsistent,
+we represent the possible values of training data in each point of feature space
+by a relation I CF x C.
+
+Unless otherwise stated, we focus on accurate ML models, indicating that
+100% of the training data examples are classified correctly. A non-accurate ML
+model may misclassify some examples of training data (e.g. this is the case for
+inconsistent data).
+
+ 
+
+  
+
+Examples of ML Models. The paper focuses almost exclusively on logic-based
+ML models, namely decision sets (DSs) and trees (DTs).
+
+Definition 1 (Decision set). A DNF formula @ over the literals
+Ur.exth -F} is a decision set for a training set T if the function that maps
+z€F toc, if z is a model of d and to co otherwise is equal to pr on T.
+
+Definition 2 (Decision tree). A decision tree for a training set T is a decision
+set @=\/;t; such that there exists a rooted tree with edges labelled with literals
+of @ and such that for every term t; of @ there is a path from the root to a leaf
+whose set of labels consists of exactly the literals in t;.
+
+Fairness. Following standard notation [48], throughout this paper we will
+assume that F is partitioned into a set of protected features P = {Fr41,..., Fi}
+
+1 Real-value features can be discretized. Moreover, to focus on binary features, the
+fairly standard one-hot-encoding [58] is assumed for handling non-binary categorical
+features.
+
+854 A. Ignatiev et al.
+
+Proof. It suffices to prove that M is unfair according to criterion (2) iff there
+exists an unfair explanation of some prediction.
+
+Suppose that M is unfair because y(x,yi1) = c # »(x,y2). All predictions
+have at least one explanation, so let e be an explanation of y(x,y1) = c. Thus,
+by Definition 6, Vz’ € F, ife C a’ then y(z’) = c. Since v(x, y2) # c, this implies
+that eN y1 #0 and hence e is an unfair explanation.
+
+Suppose that the prediction y(z) = ¢ (where z = (x,y)) has an unfair
+explanation e. Let e’ = e \ y. Since e is unfair, en y 4 0 and so e’ is a proper
+subset of e. By subset minimality of the explanation e, e’ cannot be a valid
+explanation of y(z) = c, and so Jz’ € F such that e’ C 2’ and y(z’) 4 c. Let
+feat(e) denote the features which occur in e and 2z’[feat(e)| the subset of z’ on
+these features. Now, let z’” = eU (z’ \ z'[feat(e)]). Since e is an explanation of
+p(z) =c and e C z”, we must have »(z”) = y(z) = c. But then 2” and 2’ differ
+only on the features of eM y (i.e. on protected features) but y(z”) = c Z y(z’),
+so M is unfair according to criterion (2). Oo
+
+Using our rigourous definition of explanation and our two notions of fairness
+of a prediction, we consider two concrete questions, given a prediction y(z) = c:
+
+1. Are all explanations fair (ie. do not include any feature from the set of
+protected features)? This problem will be referred to as universal fairness
+checking (UFC).
+
+2. Does there exist a fair explanation (i.e. that does not include any protected
+feature)? This problem will be referred to as existential fairness checking
+
+(EFC).
+
+These two problems correspond to our two different notions of fairness of a
+prediction (existential and universal). They clearly differ semantically, but it
+would appear that they also differ in terms of the computational complexity to
+answer them.
+
+Proposition 3. For polytime-computable ~~, EFC € co-NP and UFC € II.
+
+Proof. To see EFC € co-NP, observe that a prediction y(x,y) = c has a fair
+explanation iff the non-protected features x entail the predicted class c. Thus
+the non-existence of a fair explanation is equivalent to the existence of y’ € P
+such that p(x, y’) #c.
+
+To see UFC € IJ’, observe that all explanations of a prediction y(z) =
+c (where z = (x,y)) are fair iff for all putative explanations e C z of this
+prediction, either e does not entail the predicted class c or e \ y does entail c.
+This is logically equivalent to
+
+W(e C2) V2" De\y) Hz! De). (le!) £0) V (yle"”) = 0)]
+
+which clearly places UFC in II?’. o
+
+ 
+
+Whether UFC is complete for IJ is an open problem. We conjecture that
+it is, since there is no obvious polynomial-time verifiable certificate. It is worth
+
+Towards Formal Fairness in Machine Learning 857
+
+3. Each negative example e, € T~ must be discriminated by each of the N rules
+(eq satisfies no rule). Recall that z,[r] denote the value of feature F;. for eg.
+Then, we have:
+
+(V, a") je {l,...,N} Ae, €T- (8)
+
+4. Each positive example e, € T+ must be covered by (i.e. satisfy) some rule.
+— First, define whether a rule covers some specific positive example:
+
+ome (A, a") ge {l,...,N}Aeg Ee T* (9)
+
+— Second, each eg € T* must be covered by some rule.
+
+N
+(Vv. on) eg Tt (10)
+j=
+
+To ensure that the DS respect the FTU rule, we add the constraints (s;,),
+j =1,...,N, for each F, € P, denoting that a literal of feature F;. should not
+be used in rule j. This way, the synthesized DS will not include literals on the
+protected features.
+
+4.2 Biased Datasets
+
+If a dataset is biased, then a completely accurate ML model must exhibit unfair-
+ness.
+
+Proposition 4. For a consistent dataset T, if (4) holds, ie. the dataset is
+biased, then any ML model that is accurate must exhibit FTU unfairness.
+
+Proof. If (4) holds, then there exist in T a point (x, y,) with some prediction c,
+and a point (x, y2) with some prediction c2. Thus, if some ML model is accurate,
+criterion (2) must be false. Qa
+
+Proposition 4 indicates that if a dataset is biased then accuracy implies loss
+of fairness and fairness implies loss of accuracy. This section investigates how
+logic-based models can be synthesized such that fairness is ensured. Due to
+Proposition 4, the price to pay is that the model is no longer 100% accurate®.
+Furthermore, this section also illustrates how accuracy can be traded off with
+the size of the ML model representation.
+
+Maximum Accuracy. The first problem we study is: find a DS that is fair
+and has maximum accuracy. As we show next, there is a simple algorithm for
+
+$ Tt should be noted that, in ML settings, logic-based models that are not 100% accu-
+rate are expected to be less sensitive to overfitting. Thus, the fact that some accuracy
+is lost is not necessarily a drawback [8].
+
+860 A. Ignatiev et al.
+
+which is only justified in the context of explainable AI: other notions of fairness
+are possible if we relax this simplicity condition [64].
+
+We say that a dataset is class-uniform if it classifies all data into the same
+class and that it is protected-uniform if all data are identical on the protected
+features. A criterion f for bias is discerning if it categorizes as unbiased at least
+one dataset which is neither class-uniform nor protected-uniform and categorizes
+as biased at least one dataset.
+
+It turns out that the FTU (as given by (4)) is the only possible criterion for
+bias that satisfies all the above conditions.
+
+Proposition 6. The only discerning criterion for data set bias which satisfies
+the coding-independence, lack of arbitrariness, monotonicity and simplicity con-
+ditions is the FTU.
+
+Proof. By coding independence, we can merge all non-protected features in NV
+and all protected features in P, so that we effectively have only two features
+(with possibly large domains). Coding-independence means that applying any
+permutation to values does not change bias. This implies that the only opera-
+tion we can use on features or classes is equality (or inequality). The simplicity
+condition implies that we can detect bias from two examples (xi, y1), (x2, y2)
+which belong to different classes. Since the criterion for bias is not arbitrary,
+we know that it cannot impose y; = yg. A criterion which was a function only
+of x1, X2 would violate the monotonicity condition, since eliminating all unpro-
+tected features would then leave us with a trivial bias criterion. We therefore
+have to impose the condition y1 4 y2 in the test for bias.
+
+Suppose now that the criterion decides bias by testing just y; # y2. Since the
+criterion is discerning, it must categorize as unbiased some dataset T which is
+neither class-uniform nor protected-uniform. Since T is not protected-uniform,
+there are data (uj, v1), (u2,v2) in T such that vj 4 ve. Since T is categorized
+as unbiased, both (uj,vi), (u2,v2) must belong to the same class in T. Now,
+since JT is not class-uniform, there is (ug3,v3) which belongs to another class in
+T. But, since v3 cannot be equal both to v; and vg, the criterion for bias decides
+that T is biased, which is a contradiction.
+
+We therefore have to impose y; # y2 together with a condition on xj, x2
+in the criterion for bias. If we also impose x; 4 X2, then this would not satisfy
+monotonicity (since eliminating all unprotected features could render the dataset
+unbiased). The only remaining case is to impose the condition x; = x2 together
+with y; # y2. This criterion for bias corresponds exactly to the FTU (as given
+by (4)). Oo
+
+Another desirable property of a dataset bias criterion is that bias is invariant
+under the addition of irrelevant (i.e. not used by the model) unprotected features,
+such as shoe-size when deciding to grant a loan. This appears to be a reason-
+able condition. However, the following proposition shows that it is impossible
+to satisfy this irrelevant-features condition together with all conditions stated
+above.
+
+ 
+
+ 
+
+852 A. Ignatiev et al.
+
+Algorithm 1: Checking dataset bias
+
+Input: T,.NV,P
+Output: Biased / Unbiased
+1 begin
+
+2 foreach ((xi,yi),ci) € T do
+3 CSet[x;:] — 0
+4 YSet[xi] — 0
+5 foreach ((x;,yi),ci) € T do
+6 CSet[xi] — CSet[x;] U {ci} ;
+7 YSet[x;] — YSet[x:] U {yi}
+8 foreach ((x:,yi),ci) € T do
+9 if |CSet[x;]| > 1 A |YSet[x;]| > 1 then
+10 return Biased
+11 return Unbiased
+12 end
+
+ 
+
+Table 1. Extension of the dataset of our running example
+
+ 
+
+Ex. | Sunny | Windy | Classes | Exams | Gender | Hike?
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+The implication (4) + (5) is immediate. To see the implication (5) > (4),
+suppose that T(x, y1, c) AZ(x, yo, ch) AE (x, y}, c1) AE (x, yb, c2) where y1 # yo,
+c, # C2, but that (4) does not hold. We can deduce that ci, = cy and y{ = ys and
+(vi =i VG =e1); (1 = ¥2VG = C2), (V2 =H VG = er), (¥2 = ¥2VEp = C2)
+for which it can easily be verified that there is no solution.
+
+In Algorithm 1 each vector x on the non-protected features is used for index-
+ing both sets CSet, YSet using hashtables. By inspection, the amortized running
+time is linear (since operations on a hash table have constant amortized com-
+plexity [17]).
+
+ 
+
+ 
+
+Example 2. Running the proposed algorithm on the dataset of Example 1 with
+protected feature set Y = {Gender} confirms that the dataset is unbiased. How-
+ever, if the same dataset is extended with the rows in Table 1 (where e; is added
+for convenience), then the algorithm reports, as expected, that the dataset is no
+longer unbiased. Clearly, with x; = (1,0,0,0) = xg = x7 = Xs, there are now
+two different predictions and the dataset is inconsistent. Moreover, there are two
+reasons for the dataset to be deemed biased: e; and eg are one reason, and e7
+and eg are the other. It should also be noted that e; and e7 do not represent a
+possible reason to declare bias in the dataset.
+
+One way to tackle fairness is to discard the protected features. The following
+simple result will be used later in the paper.
+
+®
+
+Check for
+updates
+
+Towards Formal Fairness in Machine
+Learning
+
+Alexey Ignatiev!, Martin C. Cooper?) , Mohamed Siala?*,
+Emmanuel Hebrard**, and Joao Marques-Silva*
+
+1 Monash University, Melbourne, Australia
+alexey.ignatiev@monash.edu
+2 IRIT, Université de Toulouse III, Toulouse, France
+cooper@irit.fr
+3 LAAS-CNRS, Université de Toulouse, CNRS, INSA, Toulouse, France
+{siala,hebrard}@laas.fr
+4 ANITI, Université de Toulouse, Toulouse, France
+joao.marques-silva@univ-toulouse.fr
+
+Abstract. One of the challenges of deploying machine learning (ML)
+systems is fairness. Datasets often include sensitive features, which ML
+algorithms may unwittingly use to create models that exhibit unfairness.
+Past work on fairness offers no formal guarantees in their results. This
+paper proposes to exploit formal reasoning methods to tackle fairness.
+Starting from an intuitive criterion for fairness of an ML model, the
+paper formalises it, and shows how fairness can be represented as a deci-
+sion problem, given some logic representation of an ML model. The same
+criterion can also be applied to assessing bias in training data. Moreover,
+we propose a reasonable set of axiomatic properties which no other def-
+inition of dataset bias can satisfy. The paper also investigates the rela-
+tionship between fairness and explainability, and shows that approaches
+for computing explanations can serve to assess fairness of particular pre-
+dictions. Finally, the paper proposes SAT-based approaches for learning
+fair ML models, even when the training data exhibits bias, and reports
+experimental trials.
+
+1 Introduction
+
+Given the forecast widespread use of ML-enabled systems, in settings that can
+have a significant impact in the lives and safety of human beings, a range of con-
+cerns need to be addressed. Robustness of ML models against adversarial exam-
+ples is one such concern [22,37,43,44,50,55,60,61]. Explaining the predictions
+of ML models represents another concern. A related concern is to learn (or syn-
+thesize) interpretable ML models [5,9,30,35,36,41,51,56,65,66]. One additional
+concern is to ensure that ML-enabled systems are fair [4,15,48]. The importance
+
+This work was partially funded by ANITI, funded by the French program “Investing
+
+for the Future — PIA3” under Grant agreement n° ANR-19-PI3A-0004.
+
+© Springer Nature Switzerland AG 2020
+H. Simonis (Ed.): CP 2020, LNCS 12333, pp. 846-867, 2020.
+https: //doi.org/10.1007/978-3-030-58475-7_49
+
+Towards Formal Fairness in Machine Learning 847
+
+of addressing fairness cannot be overstated, as demonstrated by recent exist-
+ing troublesome evidence [6,19] that already deployed ML-enabled systems can
+exhibit very significant bias. Furthermore, recently recommended guidelines at
+the EU level highlight the importance of fairness [23].
+
+We find many definitions of fairness in the literature[7,54,64]. In [64], the
+authors classify these definitions into three categories: statistical measures,
+similarity-based measures, and causal reasoning. Statistical measures, such as
+those presented in [7, 14, 16,20,33,46], can hardly be studied from a formal angle
+due to their nature. Similarity-based measures [20, 27,48], on the other hand, are
+data independent definitions that are well suited for formal investigations. Last,
+causal reasoning measures [45,48,53] are based on the so-called causal graphs
+(ie. graphs capturing relationships between the different features) and are essen-
+tially used to synthesise ML models. We focus in this paper on similarity-based
+measures because they offer an excellent framework for formal analysis compared
+to the other two.
+
+Addressing fairness can be performed at three different levels: data process-
+ing, synthesis, and verification. Current work on the three levels is, to a large
+extent, heuristic in nature [1,2,4,11,25,26,28,34,48,59,64], offering no formal
+guarantees in their analyses. This paper proposes a first step towards endow-
+ing the analysis (i.e. data processing and verification) and the synthesis of fair
+ML models with a rigorous footing. We study one concrete criterion of fair-
+ness, and propose a rigorous test to assess whether or not an ML model is fair
+against that criterion. Moreover, the paper shows how the proposed test can be
+adapted to devise a simple (polynomial-time) algorithm to assess existing bias
+in datasets, even if datasets are inconsistent. More importantly, in the case of
+biased datasets, the paper investigates how to adapt exact methods for learning
+interpretable (logic-based) ML models to synthesize fair ML models.
+
+The paper is organized as follows. Section 2 summarizes the definitions and
+notation used throughout the paper. Section 3 focuses on a criterion of fairness,
+and develops tests for assessing whether an ML model is fair, whether a dataset
+exhibits bias, and whether a particular prediction is fair. Section 4 investigates
+how fair logic-based models can be synthesized with possibly biased datasets.
+Section 5 provides a theoretical justification for adopting the fairness criterion
+used throughout the paper. Finally, Sect.6 presents preliminary experimental
+results and Sect.7 concludes the paper.
+
+ 
+
+ 
+
+   
+
+2 Preliminaries
+
+SAT/SMT-Related Topics. The paper uses definitions standard in Boolean
+Satisfiability (SAT) and Satisfiability Modulo Theories (SMT) [10]. These
+include conjunctive and disjunctive normal forms (resp. CNF and DNF), prime
+implicants and implicates.
+
+Classification Problems. This section adapts the definitions used in earlier
+work [9,41,49]. We consider a set of features F = {Fi,...,F x}, where each
+feature F; takes values from some domain D;. The space of all assignments to
+
+Towards Formal Fairness in Machine Learning 859
+
+(Equivalence for the second constraint is not needed.) If the target accuracy is
+0 <7 <1, then the constraint on accuracy becomes:
+
+YE nd, < (7 x |T~|| (12)
+
+eg€T~
+
+If the model includes DNF’s for other classes, then (12) must be extended accord-
+ingly, both the sum and the right-hand side (e.g. t x (|T~| + |T*])).
+
+These proposed changes to the model introduced in Sect.4 (and taken
+from [41]) enables learning a decision set that is no longer 100% accurate, and
+so one can trade off accuracy for representation size while ensuring fairness.
+
+5 Theoretical Study of Criteria for Dataset Bias
+
+This section provides a theoretical justification for considering FTU in Sect. 3.
+We consider the axioms which a criterion for deciding dataset bias should satisfy.
+A criterion for bias is a boolean function f on datasets T € P(F x C) such that
+f(T) = 1 if T is biased. First, any such criterion should be independent of
+the coding of features and classes: replacing a boolean feature F; by —F; or
+interchanging the positive and negative classes should not alter dataset bias.
+Similarly for merging or splitting features, provided this concerns just protected
+features or just unprotected features: for example, whether we use two boolean
+features or a single feature with values in {0, 1, 2,3} should not have any effect on
+deciding dataset bias. Formally, coding-independence is invariant under bijective
+renaming of feature-values or class-names and merging of any pair of features
+which are either both protected or both non-protected.
+
+A criterion f for bias should always return 0 if all data are identical on the
+protected features. We call this the lack of arbitrariness condition (if Syo s.t.
+V((x,y),¢) € T, y = yo, then f(T) = 0). For example, we cannot decide that
+there is racial bias if all data only concern people of the same race.
+
+Another desirable property of a bias criterion is monotonicity: a dataset
+should not become less biased by eliminating unprotected features (if T’ is
+obtained from T by discarding some unprotected features, then f(T’) > f(T)).
+For example, if salary and age are unprotected features, and race is a protected
+feature, then keeping the same classification but ignoring age should not make
+the dataset less biased, since we are ignoring information which could legiti-
+mately be used to classify the data.
+
+We choose a purely logical approach to learning as opposed to a statistical
+approach. In many applications, and for various possible reasons, the sample
+distribution may not reflect the true distribution on which the learned model is
+to be used. For example, the sample data could have been specifically selected
+by a teacher to cover extreme cases rather than being a random sample. In this
+logical context, we also impose the following simplicity condition: bias can be
+proved by exhibiting just two different decisions (if f(Z) = 1, then 37’ C T
+containing just 2 examples with f(T’) = 1). Simplicity is a restrictive condition
+
+Towards Formal Fairness in Machine Learning 849
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Sunny
+
+Ex. | Sunny | Windy | Classes | Exams | Gender || Hike? 0 1
+
+a] 0 0 0 1 1 Gender
+
+© 0 1 0 0 0 0 0 1 0 Classes
+
+es | 1 1 1 0 0 0 1 0
+
+ea | 0 1 0 1 0 0 9 |
+
+es[ 1 1 0 0 1 1 a t
+
+(a) Dataset (b) Unfair decision tree —_(c) Fair decision tree
+Fig. 1. Running example
+
+and a set of non-protected features N = {Fi,...,Fr}, with |V| = I and
+
+|P| = K —I. Thus, following the notation used earlier, we define N = II/_, D;
+and P = WD: and so F = N x P. Moreover, z € F is split into x € N and
+y €P. The protected features are those with respect to which we intuitively want
+ML models not to be sensitive?. Throughout the paper, we will use the notation
+p(x, y) as a replacement for y(x-y) where z = x- y denotes the concatenation
+of vectors. Moreover, when referring to specific points in feature space (or the
+space of non-protected or protected features), the notation used will be t € F,
+u €N, and v € P (resp. instead of z, x and y). Finally, we use the notation T
+to denote the set {t; | (ti,c:) € T} CF.
+
+Running Example. We use a simple example to illustrate the main points.
+Minor modifications to the original example will be also considered later in the
+paper.
+
+Example 1. We consider the example of Fig. 1, where the protected feature set
+is P = {Gender}. The purpose of the example is to decide the circumstances
+that cause students to enjoy a hike, and we would rather have a classifier that
+is gender-balanced, if possible. (For the purposes of the example, it is irrelevant
+whether the values of 0 and 1 of feature Gender correspond to male and female
+or vice-versa.) By running an off-the-shelf heuristic algorithm for constructing a
+decision tree, one obtains a single branching node with feature Gender. Figure 1b
+shows the heuristic decision tree obtained with well-known ML packages ( scikit-
+learn [58] and Orange [18] gave the same result).
+
+Nevertheless, the evident unfairness of the obtained decision tree results solely
+from the algorithms used for constructing heuristic decision trees. Indeed, as
+shown in later sections, careful analysis of the training data reveals that there
+is no evidence in the data that justifies that feature Gender should play such a
+role in deciding the circumstances under which male/female students enjoy hikes.
+Figure lc shows an example of a fair decision tree for this example corresponding
+to the single-term DNF Sunny A-Class
+
+ 
+
+es.
+
+? For a number of reasons, datasets can contain such protected features, but their
+removal may be undesirable, for example, because this may induce inconsistencies
+in datasets.
+
+864 A. Ignatiev et al.
+
+7 Conclusions and Research Directions
+
+We studied the fairness of ML models, by considering the criterion FTU (31, 48],
+but proposing instead a semantic definition. We also proposed theoretical jus-
+tifications for the use of FTU. Moreover, we developed criteria for assessing
+fairness in ML models and bias in datasets, and related fairness with explana-
+tions and robustness. Finally, we investigated approaches for synthesizing fair
+ML models. Future work will address limitations of the current work, namely
+assessing non-protected features exhibiting discriminatory information and/or
+taking statistical measures into account [12,67].
+
+References
+
+1. Adebayo, J.A.: FairML: ToolBox for diagnosing bias in predictive modeling. Mas-
+ter’s thesis, Massachusetts Institute of Technology (2016)
+
+2. Adebayo, J.A.: FairML: auditing black-box predictive models (2017)
+
+3. Aivodji, U., Arai, H., Fortineau, O., Gambs, S., Hara, S., Tapp, A.: Fairwashing:
+the risk of rationalization. In: ICML, pp. 161-170 (2019)
+
+4. Aivodji, U., Ferry, J., Gambs, S., Huguet, M., Siala, M.: Learning fair rule lists.
+CoRR. abs/1909.03977 (2019). http://arxiv.org/abs/1909.03977
+
+5. Angelino, E., Larus-Stone, N., Alabi, D., Seltzer, M., Rudin, C.: Learning certifi-
+ably optimal rule lists for categorical data. J. Mach. Learn. Res. 18, 234:1-234:78
+(2017)
+
+6. Angwin, J., Larson, J., Mattu, S., Kirchner, L.: Machine bias. propublica.org, May
+2016. http://tiny.cc/a3b3iz
+
+7. Berk, R., Heidari, H., Jabbari, S., Kearns, M., Roth, A.: Fairness in criminal justice
+risk assessments: the state of the art. Sociol. Methods Res. (2017). https://doi.org/
+10.1177/0049124118782533
+
+8. Berkman, N.C., Sandholm, T.W.: What should be minimized in a decision tree: a
+re-examination. Department of Computer Science (1995)
+
+9. Bessiere, C., Hebrard, E., O’Sullivan, B.: Minimising decision tree size as combi-
+natorial optimisation. In: Gent, LP. (ed.) CP 2009. LNCS, vol. 5732, pp. 173-187.
+Springer, Heidelberg (2009). https: //doi.org/10.1007/978-3-642-04244-7_16
+
+10. Biere, A., Heule, M., van Maaren, H., Walsh, T. (eds.): Handbook of Satisfiability,
+Frontiers in Artificial Intelligence and Applications, vol. 185. IOS Press (2009)
+
+11. Bird, S., Hutchinson, B., Kenthapadi, K., Kiciman, E., Mitchell, M.: Fairness-aware
+machine learning: practical challenges and lessons learned. In: KDD, pp. 3205-3206
+(2019)
+
+12. Cardelli, L., Kwiatkowska, M., Laurenti, L., Paoletti, N., Patane, A., Wicker, M.:
+Statistical guarantees for the robustness of Bayesian neural networks. In: Kraus,
+S. (ed.) Proceedings of the Twenty-Eighth International Joint Conference on Arti-
+ficial Intelligence, IJCAI 2019, Macao, China, 10-16 August 2019, pp. 5693-5700.
+ijcai.org (2019). https: //doi.org/10.24963/ijcai.2019/789
+
+13. Chen, T., Guestrin, C.: XGBoost: a scalable tree boosting system. In: KDD, pp.
+785-794 (2016)
+
+14. Chouldechova, A.: Fair prediction with disparate impact: a study of bias in recidi-
+vism prediction instruments. Big Data 5(2), 153-163 (2017)
+
+15. Chouldechova, A., Roth, A.: A snapshot of the frontiers of fairness in machine
+learning. Commun. ACM 63(5), 82-89 (2020)
+
+850 A. Ignatiev et al.
+
+3 Assessing Fairness
+
+We consider in this section an ML classification scenario, with training data T
+where the set of features F is partitioned into a set of protected features P and a
+set of non-protected features VV, and some (interpretable) ML model M trained
+on T
+
+3.1 Fairness Criterion
+
+A number of definitions of fairness have been proposed in recent years [48,64].
+This paper considers fairness through unawareness (FTU), which was originally
+proposed as follows:
+
+Criterion 1 (Fairness Through Unawareness (FTU) [31,48]). An algorithm is
+fair if the protected features P are not explicitly used in the decision-making
+process.
+
+The operational definition above suggests a syntactic test to decide whether
+FTU holds. This section proposes instead a semantic characterization of fairness,
+that respects the syntactic definition of FTU. Besides FTU, a number of addi-
+tional definitions of fairness are studied in [48,64] and in related work. Moreover,
+a possible criticism of FTU is that P may not represent all features capturing
+discriminatory information [48]. Nevertheless, FTU exhibits a number of advan-
+tages over other criteria, and Sect.5 provides a theoretical justification for using
+FTU as a definition of fairness.
+
+Definition 3 (Criterion for FTU). Given an ML model M computing some
+(classification) function p : F > C, we say that M is fair if:
+
+V(x EN) V(y1.y2 € P). [9(x, v1) = (x, y2)] (1)
+
+Next, we investigate how this criterion can be used to analyze both ML
+models and datasets. Note that this criterion can be seen as a hard version of
+the causal discrimination measure presented in [27].
+
+3.2 Assessing Model Fairness and Dataset Bias
+
+Checking Model Fairness. As shown later in the paper, it will be convenient
+to assess instead the negation of the FTU criterion.
+
+Remark 1. An ML model M respects Definition 3, i.e. (1) holds, iff the following
+is false:
+A(x € N) A(yi.y2 € P). [v(x 1) 4 ¥(% y2)] (2)
+
+Clearly, we can now use (2) to assess whether an ML model M is fair or not,
+by searching for satisfying assignments for (2), and this can be achieved with a
+satisfiability test, given a suitable logic representation of the ML model M. From
+a practical perspective, we can refine the previous result as follows.
+
+856 A. Ignatiev et al.
+
+4.1 Unbiased Datasets
+
+This section shows how to synthesize ML models from unbiased datasets. Two
+different settings can be envisioned, namely heuristic and optimal approaches.
+
+Heuristic Approaches. Starting from an unbiased consistent dataset, we can
+use an off-the-shelf ML tool to learn a fair ML model. A simple solution is to
+discard the protected features, since we know from Proposition 1 that inconsis-
+tencies will not be introduced. The resulting ML model will not depend on the
+protected features, and so the model is fair. There are no restrictions on which
+ML model to consider.
+
+Optimal Approaches. Exact approaches for synthesizing DS’s, DT’s and DL’s
+have been studied since the 90s, with a peak of recent interest due to the con-
+cerns of interpretability and explainability [42]. These approaches offer formal
+guarantees, for example in terms of model size and accuracy. As with heuristic
+approaches, a simple solution to synthesize fair ML models is to ensure that
+protected variables are not allowed to be used when constructing the ML model.
+We first briefly recall a formal method for computing minimal size decision sets,
+proposed in [41], namely the so-called MINDS3 model, then we show how it
+can be modified to synthesize fair DS’s. Notice that similar procedures could be
+employed with any other logic-based ML models.
+
+The choice of this model is motivated by simplicity, and others could be
+considered as well. Most methods learn a set of disjunctive normal form (DNF)
+formulas, one for each class. MINDS3 learns one DNF for one class, and uses the
+examples from training data for the other class as the DNF for that class [41].
+Given K features and M examples, we consider the synthesis of N rules associ-
+ated with class c;, where each rule is a term (conjunction) of up to K literals.
+The variables of the model are the following:
+
+— 8jr: Whether for rule j, the feature F;, is skipped.
+
+~— ljp: the literal on feature F;. for rule j, in the case the feature is not skipped.
+
+= dh: whether rule j discriminates feature F,, on value 0 (in the sense that F,.
+occurs as a positive literal in term 7).
+
+- di: whether rule j discriminates feature F,, on value 1 (—F, occurs in term
+
+j)-
+~ erjq: whether rule j covers eg € T* (i.e. eg satisfies term j).
+
+The constraints associated with the SAT encoding are the following:
+
+1. Each term (rule) must have at least one literal:
+
+K
+@ sir) j€ {l,...,N} (6)
+r=1
+2. One must be able to account for which literals are discriminated by which
+rules:
+dy, 2 8 5r A Lip je fl,...,N} Are {1,...,K}
+
+7
+Tj, AS jr A Ujp jEf{l,...,N}Are {l,...,K} (7)
+
+866
+
+37.
+
+38.
+
+39.
+
+40.
+
+Al.
+
+42.
+
+43.
+
+44.
+
+46.
+
+47.
+
+48.
+
+49.
+
+A. Ignatiev et al.
+
+Huang, X., Kwiatkowska, M., Wang, S., Wu, M.: Safety verification of deep neural
+networks. In: Majumdar, R., Kunéak, V. (eds.) CAV 2017. LNCS, vol. 10426, pp.
+3-29. Springer, Cham (2017). https://doi.org/10.1007/978-3-319-63387-9_1
+Ignatiev, A., Morgado, A., Marques-Silva, J.: PySAT: a python toolkit for proto-
+typing with SAT oracles. In: Beyersdorff, O., Wintersteiger, C.M. (eds.) SAT 2018.
+LNCS, vol. 10929, pp. 428-437. Springer, Cham (2018). https://doi.org/10.1007/
+978-3-319-94144-8_26
+
+Ignatiev, A., Narodytska, N., Marques-Silva, J.: Abduction-based explanations for
+machine learning models. In: AAAI, pp. 1511-1519 (2019)
+
+Ignatiev, A., Narodytska, N., Marques-Silva, J.: On validating, repairing and refin-
+ing heuristic ML explanations. CoRR abs/1907.02509 (2019). http://arxiv.org/
+abs/1907.02509
+
+Ignatiev, A., Pereira, F., Narodytska, N., Marques-Silva, J.: A SAT-based approach
+to learn explainable decision sets. In: IJCAR, pp. 627-645 (2018)
+
+Kamath, A.P., Karmarkar, N., Ramakrishnan, K.G., Resende, M.G.C.: A contin-
+uous approach to inductive inference. Math. Program. 57, 215-238 (1992)
+
+Katz, G., Barrett, C., Dill, D.L., Julian, K., Kochenderfer, M.J.: Reluplex: an
+efficient SMT solver for verifying deep neural networks. In: Majumdar, R., Kunéak,
+V. (eds.) CAV 2017. LNCS, vol. 10426, pp. 97-117. Springer, Cham (2017). https://
+doi.org/10.1007/978-3-319-63387-9_5
+
+Katz, G., et al.: The marabou framework for verification and analysis of deep
+neural networks. In: Dillig, I., Tasiran, S. (eds.) CAV 2019. LNCS, vol. 11561, pp.
+443-452. Springer, Cham (2019). https://doi.org/10.1007/978-3-030-25540-4_26
+
+. Kilbertus, N., Rojas-Carulla, M., Parascandolo, G., Hardt, M., Janzing, D.,
+
+Schélkopf, B.: Avoiding discrimination through causal reasoning. In: NeurIPS, pp.
+656-666 (2017)
+
+Kleinberg, J.M., Mullainathan, S., Raghavan, M.: Inherent trade-offs in the fair
+determination of risk scores. In: 8th Innovations in Theoretical Computer Science
+Conference, ITCS 2017, Berkeley, CA, USA, 9-11 January 2017, pp. 43:1-43:23
+(2017)
+
+Kohavi, R.: Scaling up the accuracy of Naive-Bayes classifiers: a decision-tree
+hybrid. In: KDD, pp. 202-207 (1996)
+
+Kusner, M.J., Loftus, J.R., Russell, C., Silva, R.: Counterfactual fairness. In:
+NeurIPS, pp. 4066-4076 (2017)
+
+Lakkaraju, H., Bach, S.H., Leskovec, J.: Interpretable decision sets: a joint frame-
+work for description and prediction. In: KDD, pp. 1675-1684 (2016)
+
+. Leofante, F., Narodytska, N., Pulina, L., Tacchella, A.: Automated verification
+
+of neural networks: advances, challenges and perspectives. CoRR abs/1805.09938
+(2018). http://arxiv.org/abs/1805.09938
+
+. Maliotov, D., Meel, K.S.: MLIC: a MaxSAT-based framework for learning inter-
+
+pretable classification rules. In: Hooker, J. (ed.) CP 2018. LNCS, vol. 11008, pp.
+312-327. Springer, Cham (2018). https: //doi.org/10.1007/978-3-319-98334-9_21
+
+. de Moura, L., Bjgrner, N.: Z3: an efficient SMT solver. In: Ramakrishnan, C.R.,
+
+Rehof, J. (eds.) TACAS 2008. LNCS, vol. 4963, pp. 337-340. Springer, Heidelberg
+(2008). https: //doi.org/10.1007/978-3-540-78800-3_24
+
+53. Nabi, R., Shpitser, I.: Fair inference on outcomes. In: AAAI, pp. 1931-1940 (2018)
+
+a
+a
+
+Narayanan, A.: Translation tutorial: 21 fairness definitions and their politics. In:
+FAT (2018)
+
+Narodytska, N.: Formal analysis of deep binarized neural networks. In: IJCAI, pp.
+5692-5696 (2018)
+
+Towards Formal Fairness in Machine Learning 861
+
+Proposition 7. There is no discerning criterion for dataset bias which satis-
+fies the coding-independence, lack of arbitrariness, monotonicity, simplicity and
+irrelevant-features conditions.
+
+Proof. By Proposition6 FTU is the only possible candidate criterion for bias
+satisfying all these conditions. Consider a dataset which is categorized as biased
+by the FTU. However, by adding sufficient irrelevant features we can ensure that
+all data are distinct on the unprotected features and hence the FTU would con-
+sider the extended dataset to be unbiased, thus contradicting invariance under
+addition of irrelevant features. Qo
+
+For example, when a bank decides whether to grant a loan to one of its clients
+it has information stored such as their bank account number. If this number is
+considered as an unprotected feature, any model will satisfy the FTU criterion
+(we are assuming there are no two clients with the same account number). The
+automatic detection of irrelevant features is an interesting problem for future
+research.
+
+6 Preliminary Experimental Results
+
+This section assesses empirically the proposed ideas on a selection of well-known
+datasets. The aim of the experiments is to (1) illustrate that datasets can be
+practically checked for bias using Algorithm 1, (2) show that ML models can be
+tested for fairness using condition (2), and (3) make an attempt to synthesize
+fair decision sets [41,49] as discussed in Sect. 4.
+
+Experimental Setup. For the experiments, several Python scripts were imple-
+mented, instrumenting SAT and SMT oracle calls. Whenever needed, Min-
+iSat 2.2 [21] was used as a SAT oracle while Z3 [52] was employed as an SMT
+solver. The solvers were accessed through the well-known Python APIs, namely
+PySAT [38] and PySMT [29].
+
+The experiments were performed on a Macbook Pro with an Intel
+Core i7 2.6GHz CPU and 16GB of memory and focused on a few publicly
+available datasets studied in the context of algorithmic fairness. These include
+Compas, Adult, German, and Ricci. The datasets are binarized using the stan-
+dard one-hot encoding method [58]. Their sizes is detailed in Fig. 2a. Compas is
+a popular dataset known [6] for exhibiting racial bias of the COMPAS algorithm
+used for scoring a criminal defendant’s likelihood of reoffending; the dataset
+includes a few protected features, namely, race-related parameters African Amer-
+ican, Asian, Hispanic, Native American, and Other but also Female. Adult [47] is
+originally taken from the Census bureau and targets predicting whether or not a
+given adult person earns more than $50K a year depending on various features,
+among which the protected ones are Race and Sex. German credit data (e.g.
+see [24]), given a list of people’s features, classifies them as good or bad credit
+risks; the protected features are Sex and Age. The Ricci dataset [26] comes from
+the case of Ricci vs. DeStefano [63], “a case before the U.S. Supreme Court in
+which the question at issue was an exam given to determine if firefighters would
+receive a promotion”; the protected feature is Race.

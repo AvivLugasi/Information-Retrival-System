@@ -1,0 +1,1498 @@
+1308.6149v1 [cs.SI] 28 Aug 2013
+
+arXiv
+
+The Extreme Right Filter Bubble
+
+Derek O’Callaghan
+University College Dublin
+Dublin 4, Ireland .
+derek.ocallaghan@ucd.ie
+
+Joe Carthy
+University College Dublin
+_ Dublin 4, Ireland |
+joe.carthy@ucd.ie
+
+ABSTRACT
+
+Due to its status as the most popular video sharing platform,
+YouTube plays an important role in the online strategy of
+extreme right groups, where it is often used to host associ-
+ated content such as music and other propaganda. In this
+paper, we develop a categorization suitable for the analysis
+of extreme right channels found on YouTube. By combining
+this with an NMF-based topic modelling method, we catego-
+rize channels originating from links propagated by extreme
+right Twitter accounts. This method is also used to cate-
+gorize related channels, which are determined using results
+returned by YouTube’s related video service. We identify
+the existence of a “filter bubble”, whereby users who access
+an extreme right YouTube video are highly likely to be rec-
+ommended further extreme right content.
+
+Keywords
+
+extreme right; YouTube; filter bubble; matrix factorization.
+
+Categories and Subject Descriptors
+H.3.3 [Information Search and Retrieval]: Clustering;
+H.3.5 [Online Information Services]: Web-based services
+
+1. INTRODUCTION
+
+Social media platforms have become a key component in the
+online strategy of extremist political groups, as they provide
+direct access to audiences, particularly youth, for radicaliza-
+tion and recruitment purposes [1, 12]. YouTube’s status as
+the most popular video sharing platform means that it is es-
+pecially useful to these groups. Extreme right content such
+as music and other associated propaganda, some of which
+is deemed illegal in certain countries, is made freely avail-
+able there, often for long periods of time [4]. In addition to
+hosting user-generated video content, YouTube also provides
+
+Derek Greene
+University College Dublin
+
+Dublin 4, Ireland
+derek.greene@ucd.ie
+
+Maura Conway
+Dublin City University
+Dublin 9, Ireland
+maura.conway@dcu.ie
+
+Padraig Cunningham
+University College Dublin
+Dublin 4, Ireland ;
+pacraig.cunningham@ucd.ie
+
+recommendation services, where sets of related and recom-
+mended videos are presented to users, based on factors such
+as co-visitation count and prior viewing history [13].
+
+In 2011, Pariser proposed the filter bubble concept, which
+stated that recommendation services may limit the types of
+content to which a user is exposed [27]. Recommendation in
+social media can therefore have the undesirable consequence
+of a user being excluded from information that is not aligned
+with their existing perspective, potentially leading to im-
+mersion within an ideological bubble. In this paper we show
+that this can happen when a user accesses an extreme right
+(ER) video or channel on YouTube. In studies on English
+and German ER. content, we show that users are likely to be
+recommended further ER content within the same category,
+or related ER content from a different category. They are
+unlikely to be presented with non-ER content (Figure 7).
+
+Our previous work found that Twitter is used by extreme
+right groups to propagate links to content hosted on third-
+party sites, including YouTube [26]. These links enabled
+us to retrieve video and uploader channel information from
+YouTube, where subsequent analysis is focused upon chan-
+nels (synonymous with uploaders or accounts [29]), rather
+than individual videos. We use a topic modelling strategy
+to characterize these channels (see Section 4), where content
+linked to these channels is then characterized in the same
+fashion. Our proposed scheme includes categories identified
+in the academic literature on the extreme right, which are
+suited to the videos and channels found on YouTube. We
+find evidence that an extreme right filter bubble does indeed
+exist, as shown by the results discussed in Section 5.
+
+In Section 2, we provide a description of prior work on You-
+Tube categorization and recommendation, along with re-
+search that involved the categorization of online extreme
+right content. The retrieval of YouTube data based on links
+originating from extreme right Twitter accounts is then dis-
+cussed in Section 3. Next, in Section 4, we describe the
+methodology used for related channel ranking, topic iden-
+tification, and channel categorization. Our investigation
+into the extreme right filter bubble can be found in Sec-
+tion 5, where we focus on two data sets consisting primarily
+of English and German language channels respectively. An
+overview of the entire process can be found in Figure 1.
+2. RELATED WORK
+
+2.1 Video Recommendation
+
+Video recommendation on YouTube has been the focus of a
+number of studies. For example, Baluja et al. suggested that
+standard approaches used in text domains were not easily
+applicable due to the difficulty of reliable video labelling
+[2]. They proposed a graph-based approach that utilised
+the viewing patterns of YouTube users, which did not rely
+on the analysis of the underlying videos. The recommen-
+dation system in use at YouTube at the time was discussed
+by Davidson et al., where sets of personalized videos were
+generated with a combination of prior user activity (videos
+watched, favorited, liked) and the traversal of a co-visitation
+graph [13]. In this process, recommendation diversity was
+obtained by means of a limited transitive closure over the
+generated related video graph. Zhou et al. performed a mea-
+surement study on YouTube videos to determine the sources
+responsible for video views, and found that related video
+recommendation was the main source outside of the search
+function for the majority of videos [33]. They also found
+that the click through rate to related videos was high, where
+the position of a video in a related video list played a critical
+role. A similar finding was made by Figueiredo et al. , where
+they demonstrated the importance of key mechanisms such
+as related videos in the attraction of users to videos [14].
+
+Turning to the task of YouTube video categorization, Filip-
+pova et al. presented a text-based method that relied upon
+metadata such as video title, description, tags and com-
+ments, in conjunction with a pre-defined set of 75 categories
+[15]. Using a bag-of-words model, they found that all of the
+text sources contributed to successful category prediction.
+More recently, a framework for the categorization of video
+channels was proposed by Simonet, involving the use of se-
+mantic entities identified within the corresponding video and
+channel profile text metadata, [29]. Following the judgement
+that existing taxonomies were not well-suited to this partic-
+ular problem, a new category taxonomy was developed for
+YouTube content. Roy et al. investigated both video recom-
+mendation and categorization in tandem, where videos were
+categorized according to topics built from Twitter activity,
+leading to the enrichment of related video recommendation
+[28]. Video text metadata was used for this process, and the
+topics were based on the categories proposed by Filippova
+et al. , in addition to the standard YouTube categories at the
+time. Separately, they also analyzed diversity among related
+videos, where they found that there was a 25% probability
+on average of a related video being from a different category.
+
+2.2 Extreme Right Categorization
+
+In the various studies that have analyzed online extreme
+right activity, certain differences can be observed among re-
+searchers in relation to their categorization of this activity
+and associated organizations [5]. Burris et al. proposed a
+set of eight primarily US-centric categories in their analy-
+sis of a white supremacist website network; Holocaust Re-
+visionists, Christian Identity Theology, Neo-Nazis, White
+Supremacists, Foreign (non-US) Nationalists, Racist Skin-
+heads, Music, Books/Merchandise [9]. A similar schema
+was used by Gerstenfeld et al., which also included Ku Klux
+Klan and Militia categories [16]. They also discussed the dif-
+ficulty involved in the categorization of certain sub-groups,
+where a general category (Other) was applied in such cases.
+
+These categories were adapted in separate studies of Italian
+and German extreme right groups, where new additions in-
+cluded Political Parties and Conspiracy Theorists, while oth-
+ers such as Music and Skinheads were merged into a Young
+category (Tateo [32], Caiani et al. [10]). Rather than focus-
+ing on ideological factors, Goodwin proposed four organiza-
+tional types found within the European extreme right milieu;
+political parties, grassroots social movements, independent
+smaller groups, and individual ‘lone wolves’. Other notable
+categories include the Autonomous Nationalists identified
+within Germany in recent years. These groups focus specif
+ically on attracting a younger audience, where social media
+is often a critical component in this process [1].
+
+The popularity of YouTube has led to its usage by extreme
+right groups for the purpose of content dissemination. Its
+related video recommendation service provides a motivation
+for the current work to analyze the extent to which a viewer
+may be exposed to such content. Separately, disagreements
+over the categorization of online extreme right activity sug-
+gests that a specific set of categories may be required for the
+analysis of this domain.
+
+3. DATA
+
+In our previous work, we investigated the potential for Twit-
+ter to act as one possible gateway to communities within
+the wider online network of the extreme right [26]. Two
+data sets associated with extreme right English language
+and German language Twitter accounts were generated, by
+retrieving profile data over an extended period of time. We
+gathered all tweeted links to external websites, and used
+these to construct an extended network representation. In
+the current work, we are solely interested in tweeted You-
+Tube URIs. Data for the Twitter accounts were retrieved
+between June 2012 and May 2013, as limited by the Twit-
+ter API restrictions effective at the time. YouTube URIs
+found in tweets were analyzed to determine a set of chan-
+nel (account) identifiers that were directly (channel profile
+page URD or indirectly (URI of video uploaded by channel)
+tweeted. All identified channels were included, regardless of
+the number of tweets in which they featured. Throughout
+this work, we refer to these as seed channels; 26,460 and
+3,046 were identified for the English and German data sets
+respectively.
+
+In order to explore the filter bubble hypothesis we must
+first categorize YouTube channels. To do this, we use text
+metadata associated with the videos uploaded by a particu-
+lar channel, namely their titles, descriptions and associated
+keywords. Although user comments have been employed
+in other work [15], they were excluded here. This decision
+followed an initial manual analysis of a sample of tweeted
+videos, which found that comments were often not present,
+or had been explicitly disabled by the uploader. We also
+excluded the YouTube “category” field as it was considered
+too broad to be useful in the extreme right domain. Using
+the YouTube API, we initially retrieved the available text
+metadata for up to 1,000 of the videos uploaded by each seed
+channel, where the API returns videos in reverse chronologi-
+cal order according to their upload time. In cases where seed
+channels and their videos were no longer available (e.g. the
+channel had been suspended or deleted since appearing in a
+tweet), these channels were simply ignored.
+(a) Data
+
+ 
+
+Related Channel
+
+(b) Methodology
+
+(c) Experiments
+
+ 
+
+ 
+
+Ranking
+
+ 
+
+ 
+
+YouTube
+Data Retrieval
+
+>
+>
+
+Filter Bubble
+Investigation
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Topic Identification
+
+ 
+
+ 
+
+ 
+
+Channel
+Categorization
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+pty
+I
+|
+|
+
+Figure 1: Overview of the process used to investigate the extreme right filter bubble on YouTube.
+
+In order to address the variance in the number of uploaded
+videos per channel, and to reduce the volume of subsequent
+data retrieval, we randomly sampled up to 50 videos for each
+seed. For each video in this sample, metadata values were
+retrieved for the top ten related videos returned by the API.
+Using the default parameter settings, these videos appear to
+be returned in order of “relevance”, as defined internally by
+YouTube, similar to the default behaviour of video search re-
+sults feeds described in the API documentation (June 2013).
+We refer to the corresponding uploaders as related channels;
+1,451,189 and 195,146 were identified for the English and
+German data sets respectively. As before, we then retrieved
+the available text metadata for up to 1,000 videos uploaded
+by each unseen related channel, from which a random sam-
+ple of up to 50 videos was generated.
+
+For both seed and related channels, the corresponding up-
+loaded video sample is used for categorization; this is de-
+scribed in Section 4.2. Separately, we also note that the
+videos in question may have been uploaded at any time prior
+to retrieval, where these times are not necessarily restricted
+to the period of either Twitter or YouTube data retrieval.
+
+4. METHODOLOGY
+
+Having retrieved the channel and video data from YouTube,
+the next steps involved ranking the related channels for each
+seed channel, identifying latent topics associated with the
+uploaded videos, and using these to categorize both seed
+and related channels. This section corresponds to part (b)
+of the process overview diagram found in Figure 1.
+
+4.1 Related Channel Ranking
+
+For our analysis, it was first necessary to generate a set of
+related channel rankings for each seed channel, according
+to the related rankings returned by the YouTube API for
+the sample of videos uploaded by the seed. We applied the
+SVD rank aggregation method proposed by Greene et al. to
+combine the rankings for each uploaded video into a single
+ranked set across all videos for the seed in question, from
+which we select the top ranked related channels [19]. We
+restrict our focus to the top 10, given the impact of related
+video position on click through rate [33]. The aggregation
+process for each seed channel s; and its n; uploaded videos
+is as follows:
+
+1. For each uploaded video vw; (7 € [1,ni]), generate
+a rank vector rvi; between the seed s; and its re-
+
+lated channels using the retrieved YouTube API re-
+lated video ranking. For channels related to seed videos
+other than w%;, a rank of (m;+ 1) is applied, where m;
+is the total number of channels related to s;.
+
+2. Stack all rv; rank vectors as columns, to form the m; x
+m rank matrix R;, and normalise the columns of this
+matrix to unit length.
+
+3. Compute the SVD of Ri, and extract the first left sin-
+gular vector. Arrange the entries in this vector in de-
+scending order to produce a ranking of all channels
+related to this seed.
+
+From the ranking generated above, we then select the top 10
+ranked related channels for each seed. These channels are
+used for our filter bubble investigation in Section 5.
+
+4.2 Topic Identification
+
+For the purpose of channel categorization, we initially iden-
+tified latent topics associated with the channels in both data
+sets, based on their uploaded videos. Following the ap-
+proach of Hannon et al. [20], we generated a “profile doc-
+ument” for each seed and related channel, consisting of an
+aggregation of the text metadata from their corresponding
+uploaded video sample, from which a tokenized representa-
+tion was produced. All available terms in the channel doc-
+uments were used, where the tokenization process involved
+the exclusion of URIs and normalization of diacritics. We
+excluded a custom set of stopwords, such as official YouTube
+category terms, additional YouTube-specific terms such as
+“video” and “view”, and terms from multiple language stop-
+word lists. Due to the frequent presence of names in the
+data, we also excluded all identified first names. As sug-
+gested by Fillipova et al. [15], terms were not stemmed due
+to the expectation of both noisy terms and those of multiple
+languages. Low-frequency terms appearing in < 20 channel
+documents were excluded at this point.
+
+These channel documents were transformed to log-based
+TF-IDF vectors, and subsequently normalized to unit length.
+However, in an attempt to reduce the term dimensionality
+found in the combination of seed and related channel docu-
+ments, we generated the TF-IDF vectors in two stages. The
+first stage constructed vectors for the seed documents, from
+which a reduced seed term vocabulary was derived. In the
+second stage, vectors for the related documents were then
+Table 1: Categories of extreme right YouTube content, based on common categorizations found in academic literature on
+extreme right ideology.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Category Description Source
+Anti-Islam Can include political parties (e.g. Dutch PVV) or groups such as the English | [1, 17]
+Defence League (EDL), which often describe themselves as “counter-Jihad”.
+Anti-Semitic All types of anti-Semitism, regardless of association (existing literature tends | [9, 32]
+to discuss this in relation to other categories).
+Conspiracy Theory | ‘Themes include New World Order (NWQ), Hluminati etc. Not exclusively | [1, 30, 32]
+ER, but often related to Patriot in this context.
+Music Includes any ER. music such as Oi!, Rock Against Communism (RAC) etc. 1, 9, 32
+Neo-Nazi Nazi references, such as to Hitler, WWIL, SS etc. 1, 9, 16
+Patriot US-centric, including groups such as “Birthers”, militia, anti-government, | [30]
+anti-immigration, opposition to financial system. Some of these themes are
+not exclusive to ER.
+Political Party Primarily European parties such as the BNP, FPO, Jobbik, NPD, PVV, | [1, 10, 18]
+Swedish Democrats, UKIP etc. Many of these parties are also categorized
+as Populist.
+Populist Broader category that includes various themes such as anti-EU, anti- | [3, 24]
+establishment, anti-state/government, anti-immigration (as with Patriot,
+some of these are not exclusive to ER). Although some disagreement about
+this category exists [23], we have used it as it has proved convenient for
+categorizing certain groups that span multiple themes.
+Revisionist References to Holocaust/W WII denial. Closely associated with Neo-Nazi. 9, 16, 32]
+Street Movement Groups such as the EDL, Autonome Nationalisten, Spreelichter, Anti-Antifa | [1, 18]
+etc.
+White Nationalist | References to white nationalism and supremacism, also used to characterize | [9, 16, 32]
+political parties such as the BNP or Jobbik.
+
+ 
+
+ 
+
+ 
+
+constructed using the seed vocabulary. In both stages, short
+documents containing < 10 terms were excluded. We use m,
+and m, to refer to the number of seed and related channel
+document vectors in a particular data set.
+
+Topic modelling is concerned with the discovery of latent
+semantic structure or topics within a text corpus, which
+can be derived from co-occurrences of words and documents
+[31]. Popular methods include probabilistic models such as
+latent Dirichlet allocation (LDA) [6], or matrix factoriza-
+tion techniques such as Non-negative matrix factorization
+(NMF) [21]. We initially evaluated both LDA and NMF-
+based methods with the seed channel document representa-
+tions described above (the former was applied to TF vec-
+tors). However, as in our previous work, NMF was found
+to produce the most readily-interpretable results, which ap-
+peared to be due to the tendency of LDA to discover topics
+that over-generalized [11, 25]. We were aware of the pres-
+ence of smaller groups of channels associated with multiple
+languages in both data sets, and opted for specificity rather
+than generality by applying NMF to the TF-IDF channel
+vectors. As we found previously, the IDF component en-
+sured a lower ranking for less discriminating terms, thus
+leading to the discovery of more specific topics.
+
+To allow the seed channel vectors to determine the topic ba-
+sis vectors, we undertook the process in two stages. Firstly,
+we generate topics for the seeds:
+
+1. Construct an n x m, term-document matrix V,, where
+each column contains a seed channel TF-IDF vector.
+
+2. NMF is applied to V, to produce two factors; W;, an
+n x T matrix containing topic basis vectors and H,,
+aT x ms matrix containing the topic assignments or
+weights for each seed channel document.
+
+For both data sets, this results in a set of basis vectors con-
+sisting of both ER and non-ER topics. The second stage
+involves producing topic assignments for the related chan-
+nel vectors:
+
+1. Construct an n x m, term-document matrix V, con-
+taining the related channel TF-IDF vectors.
+
+2. Generate a corresponding T' x m, topic weights matrix
+H, by transforming V, according to the W; model.
+
+The latter step was achieved with a single outer iteration
+of the H non-negative least squares sub-problem from the
+approach by Lin et al. [22]. As the basis vectors matrix Ws
+was fixed, only one outer iteration was necessary in order to
+generate an approximation of a converged H,., thus permit-
+ting large related channel matrices to be factorized given the
+initial NMF operation on a far smaller seed matrix. In both
+cases, to address the instability introduced by random ini-
+tialization in standard NMF, we employed the deterministic
+NNDSVD initialization method [7].
+
+4.3 Topic and Channel Categorization
+
+As discussed earlier in Section 2.1, some prior work has pro-
+posed generic categories for use with YouTube videos and
+channels. However, as these studies have focused on the
+categorization of mainstream videos, they are not sufficient
+for the present analysis where categories specifically associ-
+ated with the extreme right are required. In Section 2.2, we
+discuss prior work that characterized online extreme right
+activity using a number of proposed categories, but as indi-
+cated earlier, no definitive set of categories is agreed upon
+in this domain [5]. Therefore, we propose a categorization
+based on various schema found in a selection of academic lit-
+erature on the extreme right, where this category selection
+is particularly suited to the ER videos and channels we have
+found on YouTube. Some categories are clearly delineated
+while others are less distinct, reflecting the complicated ide-
+ological make-up and thus fragmented nature of groups and
+sub-groups within the extreme right [16]. In such cases,
+we have proposed categories that are as specific as possible
+while also accommodating a number of disparate themes and
+
+groups. Details of the categories employed can be found in
+Table 1.
+
+As both data sets contained various non-ER channels, we
+also created a corresponding set of non-ER. categories con-
+sisting of a selection of the general YouTube categories as of
+June 2013, in addition to other categories that we deemed
+appropriate following an inspection of these channels and
+associated topics. These non-ER categories were:
+
+e Entertainment e Politics
+¢ Gaming e Religion
+° Military e Science & Education
+e Music
+e Sport
+e News & Current Af
+fairs e Television
+
+Having produced a set of T topics for a data set, we then
+proceeded to categorize them. For each topic, we manually
+inspected the high-ranking topic terms from the correspond-
+ing vector in W,, in addition to profiles and uploaded videos
+for a selection of seed channels most closely assigned to the
+topic, according to their weights in H;. Multiple categories
+were assigned to topics where necessary, as using a single
+category per topic would have been too restrictive while also
+not reflecting the often multi-faceted nature of most topics
+that were identified. In many cases, categories for topics
+were clearly identifiable, with a separation between ER and
+non-ER. categories. For example, an English Defence League
+(EDL) topic was categorized as Anti-Islam and Street. Move-
+ment, while a topic having high-ranking terms such as “gui-
+tar” and “band” was categorized as Music. For certain topics,
+this separation was more ambiguous, where the channels as-
+signed to a particular topic consisted of a mixture of both
+ER and non-ER channels. A combination of both ER and
+non-ER, categories were assigned in such cases.
+
+The set of categorized topics was then used to label both
+seed and related channels, using the channel topic assign-
+ment weights found in the H matrices. This supports the
+potential assignment of multiple categories to a single chan-
+nel. To achieve this, it was first necessary to determine a
+weight threshold w for selecting discriminating topics to be
+used in the categorization of a particular channel. Using a
+
+Topics
+
+Categories
+
+  
+ 
+ 
+
+Neo-Nazi
+
+   
+    
+ 
+  
+
+hitler, adolf,
+reich
+
+Revisionist
+
+cover, guitar,
+
+acoustic
+
+ 
+
+(a) Categories assigned to topics.
+
+Channels
+
+Channel 1
+Channel 2
+
+(b} Channel H weights for topics.
+
+Topics
+
+     
+
+hitler, adolf,
+reich
+
+ 
+        
+
+cover, guitar,
+acoustic
+
+Channels
+
+Channel 1
+Channel 2
+
+(c) Channels categorized using topics where H > w (in this
+example, w = 0.05).
+
+Categories
+
+       
+
+Neo-Nazi
+
+ 
+
+Figure 2: Topic and Channel categorization process.
+
+range of values for w, we calculated yp, the mean number
+of topics per channel with H weight > w, and selected the
+value for w where p =~ 1; the minimum number of topics
+required for categorization. As we performed NMF in two
+stages to produce H, and H,. for seed and related channels
+respectively, two corresponding ws; and w, thresholds were
+generated due to the dependency of the H weights’ upper
+bound on the input matrices V. Using these thresholds, each
+channel was categorized as follows:
+
+1. Select all topics where the channel’s corresponding row
+weights in H are > w.
+
+2. Add each selected topic weight to the totals maintained
+for the topic’s corresponding categories.
+
+3. Rank these categories in descending order based on
+their totals across all selected topics, and assign the
+highest ranked category to the channel. Multiple cat-
+egories are assigned in the event of a tie.
+
+A simple example illustrating the complete process of map-
+ping of channels to categories is shown in Figure 2. We
+found that a certain number of channels, both seed and re-
+lated, had a flat profile with relatively low weights (< w) for
+all topics; these could be considered as grey sheep. Further
+analysis found this to be due to factors such as the original
+documents being short or containing few unique terms. As
+we were unable to reliably categorize such channels, they
+were excluded from all subsequent analysis. Separately, al-
+though the NMF process often identified topics with high-
+ranking discriminating terms in languages other than that
+of the data set, a small number of topics with less discrimi-
+nating general language terms were also found. As it would
+have been difficult to distinguish between ER and non-ER.
+channels closely associated with these topics, these were also
+excluded. Further details on the w thresholds and numbers
+of excluded channels are provided in Section 5.
+
+5. THE ER FILTER BUBBLE
+
+In this section, we discuss the filter bubble analysis of the
+English and German language YouTube data sets. The ex-
+perimental methodology is as follows:
+
+1. Generate an aggregated ranking of related channels for
+each seed channel.
+
+2. Generate TF-IDF channel document vectors, and iden-
+tify topics using NMF.
+
+3. Categorize the identified topics according to the set
+defined in Table 1.
+
+4. Categorize the channels based on their topic weights
+in H.
+
+5. Investigate whether an extreme right filter bubble is
+present.
+
+For Step 5 above, we define an extreme right filter bubble in
+terms of the extent to which the related channels for a par-
+ticular extreme right seed channel also feature extreme right
+content. It has been shown that the position of a video in a
+related video list plays a critical role in the click through rate
+[33]. Therefore, we investigate the presence of a filter bub-
+ble using the top & ranked related channels, with increasing
+values of k € [1,3,5,7, 10], as follows.
+
+For each ER. seed channel:
+
+1. Select the top & ranked related channels, filtering any
+excluded channels as defined in Section 4.3. Seed chan-
+nels with no remaining related channels following fil-
+tering are not considered for rank k.
+
+2. Calculate the total proportion of each category as-
+signed to the < & related channels.
+
+Then, for each ER. category:
+
+1. Select all seed channels to which the category has been
+assigned.
+
+2. Calculate the mean proportion of each related category
+associated with these seed channels.
+
+We consider a filter bubble to exist for a particular ER. cat-
+egory when its highest ranking related categories, in terms
+of their mean proportions, are also ER categories.
+
+5.1 English language categories
+
+From the total number of channels in the English language
+data set, we generated 24,611 seed and 1,376,924 related
+channel documents, using a corresponding seed-based vo-
+cabulary of 39,492 terms. The TF-IDF matrices V; and
+V, were then generated for seed and related documents re-
+spectively, and topics were identified by applying NMF to
+V;. To determine the number of topics T', we experimented
+with values of T in [10,100] to produce topics that were
+as specific as possible, given prior knowledge of the pres-
+ence of smaller groups of channels associated with multiple
+languages within both data sets. This led to the selection
+of T' = 80, as larger values resulted in topic splits rather
+than the emergence of unseen topics. Of these, 27 ER. top-
+ics (33.75%), 39 non-ER topics (48.75%), 8 topics that were
+a combination of ER. and non-ER categories (10%), and 6
+topics based on general terms of a separate language (7.5%)
+were found.
+
+ 
+
+   
+  
+ 
+
+—— Seed
+—— Related
+
+Mean topics
+
+Topics =~ 1
+
+ 
+
+ 
+
+ 
+
+0.01 0.02 0.03 0.04 0.05 0.06 007 0.08 0.09
+w
+Figure 3: English mean topics per channel at ws, w, in
+(0.01, 0.09]. ws; and w, were set to 0.03 and 0.08 respectively.
+
+These 80 topics were then categorized according to the set
+defined in Table 1, which permitted the subsequent catego-
+rization of the seed and related channels using their corre-
+sponding H, and H, topic weights. As described in Section
+4.3, we first generated the weights thresholds ws; and wr.
+Figure 3 contains the mean number of topics per channel
+p with H weight > w, for values of w in [0.01, 0.09]. Us-
+ing 4: =~ 1 as the selection criterion resulted in values of
+0.03 and 0.08 for ws and w, respectively. Using these, we
+excluded 8,225 (33.42%) seed and 482,226 (35.66%) related
+grey sheep channels that could not be categorized. Related
+channels ranked at & > 10 were also excluded, and all non-
+ER. seed channels were removed from the candidate seed
+set. The remaining 6,573 ER seed and their 22,980 related
+ 
+
+ER-Anti-Islam
+im ER-Conspiracy Theory
+
+0.65 __ER-Street Movement
+5 NER-Entertainment
+eS NER-Religion
+8
+oO 04>
+2
+Qa
+c
+oO
+oD
+= 0.27
+
+| he A Wt ad
+
+ 
+
+ 
+
+ 
+
+(a) Anti-Islam
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ER-Music
+| ER-White Nationalist
+0.65 NER-Entertainment
+Ss PY NER-Music
+2
+8
+o 0.45
+2
+Q
+Cc
+o
+®
+= 0.27
+| ol al il u
+t t 1 1 i
+1 3 5 7 10
+k
+(b) Music
+|| ER-Conspiracy Theory
+(I ER-Patriot
+0.65 HB ER—Political Party
+Ss | ER-Populist
+2 | ER-White Nationalist
+g NER-Entertainment
+oO 0.44 | NER-News & Current Affairs
+Q
+Cc
+o
+®
+7 | i |
+oo. | I | hoa
+t t 1 1 i
+1 3 5 7 10
+
+k
+(c) Populist
+
+Figure 4: English mean category proportions of top & ranked
+related channels (& € [1,3,5,7,10]), for selected seed ER
+categories.
+
+channels were used to calculate the mean related category
+proportions for each ER. category.
+
+Figure 4 contains plots for three ER categories that we have
+selected for more detailed analysis, where ER and non-ER.
+categories have been prefixed with ER- and NER- respec-
+tively. To assist visual interpretation, we have omitted any
+weakly related categories whose mean proportion < 0.06 for
+a particular & ranking. From inspecting these plots, two
+initial observations can be made; (1) the seed category is
+the dominant related category for all values of k, and (2) al-
+though related category diversity increases at lower & rank-
+
+ings with the introduction of certain non-ER. categories, ER.
+categories consistently have the strongest presence. In the
+case of Anti-Islam seed channels, it appears that the top
+ranked related channels (k = 1) are mostly affiliated with
+various groups from the UK and USA. Street Movement re-
+lated channels at this rank are associated with the English
+Defence League (EDL), a movement opposed to the alleged
+spread of radical Islamism within the UK [18]. Channels
+from various international individuals and groups that often
+describe themselves as “counter-Jihad” can also be observed
+[17]. The Conspiracy Theory and non-ER Religion cate-
+gories appear to be associated with channels based in the
+USA, where the dominance of these categories at lower rank-
+ings (excluding the seed category) suggests that the channels
+become progressively more US-centric.
+
+The ER Music seed channels usually upload video and audio
+recordings of high-profile groups associated with the extreme
+right. For example, content from bands such as Skrewdriver
+(UK) or Landser (Germany) can be found, along with other
+groups from genres such as Oi!, RAC (Rock Against Com-
+munism) and NSBM (National Socialist Black Metal) [1, 8].
+Given this, the consistent presence of the White Nationalist
+related category would appear logical. At the same time, we
+also observe that non-ER. Music becomes more evident as k
+increases, perhaps reflecting the overlap between music gen-
+res. For example, someone who is a fan of NSBM is often
+a fan of other metal music that would not be categorized
+as ER. For Populist seed categories, the related categories
+generally appear more diverse. Channels affiliated with po-
+litical parties can be observed, including the Eurosceptic
+United Kingdom Independence Party (UKIP) or the British
+National Party (BNP), where the latter is also considered
+as White Nationalist [3, 24]. Opposition to establishment
+organizations such as the EU may be a link to similar op-
+position within the Patriot and Conspiracy Theory related
+categories that are also present [30], while also explaining the
+presence of the non-ER News & Current Affairs category. It
+should also be mentioned that our definition of Populist is
+broad and spans multiple themes (Table 1), where a certain
+amount of disagreement about this category exists [23].
+
+5.2 German language categories
+
+A total of 2,766 seed and 177,868 related channel documents
+were generated from the German language data set. Topics
+were then identified by applying NMF to the corresponding
+TF-IDF matrices. As before, we experimented with values
+of T in [10,100], and selected T = 60 given a similar ob-
+servation of redundant topic splits for larger values of T.
+Of these, 33 ER topics (55%), 20 non-ER topics (33.33%), 2
+topics that were a combination of ER. and non-ER categories
+(3.33%), and 5 topics based on general terms of a separate
+language (8.33%) were found. Having categorized these top-
+ics, we calculated the mean number of topics per channel jz
+with H weight > w, for values of w in [0.01, 0.09], as seen in
+Figure 5. Values of 0.06 and 0.087 were found for w; and w,
+respectively at jz =~ 1. We excluded 785 (28.38%) seed and
+56,565 (31.8%) related grey sheep channels that could not be
+categorized, in addition to related channels ranked at k > 10
+and non-ER seed channels. The remaining 1,123 ER seed
+and 4,973 related (ER and non-ER, k < 10) channels were
+used to calculate the mean related category proportions for
+each ER. category.
+Figure 6 contains plots for three ER categories that we have
+selected for in-depth analysis. As seen in Figure 4, the seed
+category is the dominant related category for all values of k,
+and the ER related category presence is consistently stronger
+than that of the non-ER categories, notwithstanding the in-
+crease in diversity. The Populist and Political Party related
+categories are prominent for Anti-Islam, given the inclu-
+sion of channels affiliated with parties such as the National
+Democratic Party of Germany (NPD), the Pro-Bewegung
+collective, and the Freedom Party of Austria (FPO); all
+strong opponents of immigration, particularly by Muslims
+(1, 3, 17).
+
+ 
+
+ 
+   
+ 
+ 
+
+64
+—— Seed
+—— Related
+
+B44
+
+a
+
+9
+
+£
+
+<
+
+oS
+
+oO
+
+=
+
+24
+Topics =~ 1
+
+ 
+
+ 
+
+ 
+
+Figure 5: German mean topics per channel at ws, wr in
+(0.01, 0.09]. ws and wy were set to 0.06 and 0.087 respec-
+tively.
+
+This data set also features many ER Music seed channels
+that upload recordings of high-profile groups, with the main
+difference being the prominence of the Neo-Nazi related cat-
+egory for all rankings. These recordings and videos, along
+with other non-music videos uploaded by these channels,
+often feature recognizable Nazi imagery. Separately, chan-
+nels that upload videos associated with groups that have
+alleged ER ties, for example, Béhse Onkelz or Frei. Wild [1],
+may explain in part the presence of the non-ER Music cat-
+egory, given the mainstream success of these groups. This
+may also be explained by material associated with hip-hop
+groups such as “n’Socialist Soundsystem”, which provide an
+alternative to traditional ER. music based on rock and folk.
+The close relationship with Music is also present for the
+Neo-Nazi seed category, although further related diversity
+can be observed. Seed channels featuring footage of German
+participation in WWII, including speeches by high-ranking
+members of the Nazi party, are likely to be the source of the
+White Nationalist and Revisionist related categories. We
+can safely assume that the prominence of Music is responsi-
+ble for the appearance of its non-ER, counterpart here.
+
+5.3. Discussion
+
+We conclude our filter bubble analysis by measuring the
+mean proportions for the seed ER categories as a whole,
+where the possible aggregated related categories were (1)
+the same ER category as that of the seed, (2) a different
+ER category, or (3) a non-ER category. The results for both
+data sets can be found in Figure 7. As with the individual
+seed categories, an ER filter bubble is also clearly identi-
+fiable at the aggregate level. Although the increase in di-
+versity for lower & rankings introduces a certain proportion
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ER-Anti-Islam
+HB ER-Political Party
+0.65 | ER-Populist
+5 NER-Entertainment
+eS __NER-News & Current Affairs
+°°
+S 0.44
+2
+a
+Cc
+wo
+a
+= 0.24
+0.0 i
+1 1 1 1 1
+1 3 5 7 10
+k
+(a) Anti-Islam
+ER-Music
+| ER-Neo-Nazi
+0.65 |__ ER-White Nationalist
+Ss | NER-Music
+g
+8
+© 0.4-
+2
+Qa
+Cc
+wo
+a
+= 0.24
+0.04 qt i i l
+1 3 5 7 10
+k
+(b} Music
+ER-Music
+| ER-Neo-Nazi
+0.65 | _ ER-Populist
+5 __ER-Revisionist
+2 | ER-White Nationalist
+g | NER-Music
+© 0.4-
+2
+Qa
+Cc
+wo
+a
+= 0.24 | | |
+0.0 |
+1 3 5 7 10
+k
+
+(c} Neo-Nazi
+
+Figure 6: German mean category proportions of top k
+ranked related channels (k € [1,3,5, 7, 10]), for selected seed
+ER. categories.
+
+of non-ER. categories, this is always outweighed by ER cate-
+gories, where the seed ER category remains dominant for all
+values of k. These findings would appear to contrast those
+of certain prior work where greater related video diversity
+was observed [28, 33]. Although we have analyzed related
+channels rather than individual videos, we might have ex-
+pected to also find this behaviour at both levels. However,
+it would appear this is not always true, at the very least in
+the case of ER channels.
+ 
+
+1.00 =
+
+0.504 | | |
+0.00 = | l
+i 3 5
+
+k
+
+Millsame ER Category
+Other ER Category
+___Non-ER Category
+
+7 10
+
+Mean proportion
+Q
+Ny
+or
+
+°O
+
+iy
+
+a
+1
+
+ 
+
+ 
+
+ 
+
+(a) English
+
+ 
+
+ 
+
+ 
+
+ 
+
+1.00 =
+Ml same ER Category
+Other ER Category
+© 0.754 |_Non-ER Category
+2
+3
+Q
+2 0.504
+Q
+c
+ow
+®
+= 0.255
+0.00 5 = ll i |
+1 3 5 ; i
+k
+(b) German
+
+Figure 7: Aggregated mean category proportions of top & ranked related channels (& € [1,3,5,7, 10]), for seed ER categories.
+
+The data retrieval process described in Section 3 involved
+following related video links for only one step removed from
+the corresponding seed video; no further related retrieval
+was performed for related videos themselves. Of the ER
+seed channels used in the filter bubble analysis in Sections
+5.1 and 5.2, we identified those that appeared in top k re-
+lated rankings of other ER seed channels, for k < 10; 6,186
+(94%) and 1,056 (94%) such channels respectively for the
+English and German language data sets. These high per-
+centages allude to the presence of cycles within the related
+channel graph, where retrieving additional data by following
+related videos for multiple steps may have been somewhat
+redundant. They also further emphasize the existence of the
+filter bubble.
+
+Separately, it might be argued that our findings merely con-
+firm that YouTube’s related video recommendation process
+is working correctly. However, this is precisely what we were
+trying to quantify, in terms of the categories of extreme right
+content to which a user may be exposed following a short
+series of clicks. As a consequence, users viewing this content
+may rarely be presented with an alternative perspective.
+
+6. CONCLUSIONS AND FUTURE WORK
+
+YouTube’s position as the most popular video sharing plat-
+form has resulted in it playing an important role in the online
+strategy of the extreme right, where it is used to host as-
+sociated content such as music and other propaganda. We
+have proposed a set of categories that may be applied to
+this YouTube content, based on a review of those found in
+existing academic studies of the extreme right’s ideological
+make-up. Using an NMF-based topic modelling approach,
+we have categorized channels according to this proposed set,
+permitting the assignment of multiple categories per chan-
+nel where necessary. This categorization has helped us to
+identify the existence of an extreme right filter bubble, in
+terms of the extent to which related channels, determined
+by the videos recommended by YouTube, also belong to ex-
+treme right categories. Despite the increased diversity ob-
+served for lower related rankings, this filter bubble maintains
+a constant presence. The influence of related rankings on
+click through rate [33], coupled with the fact that the You-
+Tube channels in this analysis originated from links posted
+
+by extreme right Twitter accounts, would suggest that it is
+possible for a user to be immersed in this content following
+a short series of clicks.
+
+In future work, we would like to experiment with alternative
+channel representations that address the existence of noise
+found with certain channels and associated topics at lower
+related rankings. We would also like to perform a longer
+temporal analysis in an attempt to investigate any correla-
+tion between changes in this filter bubble and extreme right
+activity across multiple social media platforms. Separately,
+although we have used the methodology presented in this
+paper to study extreme right channels, it may be interest-
+ing to investigate its application to other types of extremist
+political content found on YouTube.
+
+7. ACKNOWLEDGMENTS
+
+This research was supported by 2CENTRE, the EU funded
+Cybercrime Centres of Excellence Network and Science Foun-
+dation Ireland (SFI) under Grant Number SFI/12/RC/2289.
+
+8. REFERENCES
+[1] Baldauf, J., Grof, A., Rafael, S., and Wolf, J.
+
+Zwischen Propaganda und Mimikry.
+
+Neonazi-Strategien in Sozialen Netzwerken. Amadeu
+
+Antonio Stiftung (2011).
+
+Baluja, $., Seth, R., Sivakumar, D., Jing, Y., Yagnik,
+
+J., Kumar, S., Ravichandran, D., and Aly, M. Video
+
+suggestion and discovery for youtube: taking random
+
+walks through the view graph. In Proc. 17th
+
+international conference on World Wide Web, WWW
+
+08, ACM (2008), 895-904.
+
+[3] Bartlett, J., Birdwell, J., and Littler, M. The New
+Face of Digital Populism. Demos (2011).
+
+[4] Bell, M. Frei verfiigbarer Nazi-Rock: YouTube und die
+braunen Musikanten. Der Spiegel (03 2013).
+
+[5] Blee, K. M., and Creasap, K. A. Conservative and
+
+Right-Wing Movements. Annual Review of Sociology
+
+86 (2010), 269-286.
+
+Blei, D. M., Ng, A. Y., and Jordan, M. I. Latent
+
+dirichlet allocation. J. Mach. Learn. Res. 3 (Mar.
+
+2003), 993-1022.
+
+N
+
+&
+[7] Boutsidis, C., and Gallopoulos, E. SVD based
+
+[12
+
+[13
+
+[14
+
+[15
+
+[16
+
+[17
+
+[18
+
+[19
+
+initialization: A head start for nonnegative matrix
+factorization. Pattern Recogn. 41, 4 (Apr. 2008),
+1350-1362.
+
+Brown, T. 8. Subcultures, Pop Music and Politics:
+Skinheads and ”Nazi Rock” in England and Germany.
+Journal of Social History 38, 1 (2004), 157-178.
+Burris, V., Smith, E., and Strahm, A. White
+Supremacist Networks on the Internet. Sociological
+Focus 33, 2 (2000), 215-235.
+
+Caiani, M., and Wagemann, C. Online Networks of
+the Italian and German Extreme Right. Information,
+Communication & Society 12, 1 (2009), 66-109.
+Chemudugunta, C., Smyth, P., and Steyvers, M.
+Modeling General and Specific Aspects of Documents
+with a Probabilistic Topic Model. In Advances in
+Neural Information Processing Systems (2006),
+241-248.
+
+Conway, M., and McInerney, L. Jihadi Video and
+Auto-radicalisation: Evidence from an Exploratory
+YouTube Study. In Proc. 1st European Conference on
+Intelligence and Security Informatics, EurolISI ’08,
+Springer-Verlag (2008), 108-118.
+
+Davidson, J., Liebald, B., Liu, J., Nandy, P.,
+
+Van Vleet, T., Gargi, U., Gupta, S., He, Y., Lambert,
+M., Livingston, B., and Sampath, D. The YouTube
+video recommendation system. In Proc. 4th ACM
+conference on Recommender Systems, RecSys ’10
+(2010), 293-296.
+
+Figueiredo, F., Benevenuto, F., and Almeida, J. M.
+The Tube over Time: Characterizing Popularity
+Growth of YouTube Videos. In Proc. 4th ACM
+international conference on Web search and data
+mining, WSDM ’11 (2011), 745-754.
+
+Filippova, K., and Hall, K. B. Improved video
+categorization from text metadata and user comments.
+In Proc. 34th Int. ACM SIGIR Conference on
+Research and development in Information Retrieval,
+SIGIR ’11 (2011), 835-842.
+
+Gerstenfeld, P. B., Grant, D. R., and Chiang, C.-P.
+Hate Online: A Content Analysis of Extremist
+Internet Sites. Analyses of Social Issues and Public
+Policy 3, 1 (2003), 29-44.
+
+Goodwin, M. The Roots of Extremism: The English
+Defence League and the Counter-Jihad Challenge.
+Chatham House (2013).
+
+Goodwin, M., and Ramalingam, V. The New Radical
+Right: Violent and Non-Violent Movements in
+Europe. Institute for Strategic Dialogue (2012).
+Greene, D., and Cunningham, P. Producing a Unified
+Graph Representation from Multiple Social Network
+Views. In Proc. 5th Annual ACM Web Science
+
+10
+
+[20
+
+[22
+
+[23
+
+[24]
+
+[25
+
+[26
+
+[27
+
+[28]
+
+[33]
+
+Conference, WebSci ’13, ACM (2013), 118-121.
+Hannon, J., Bennett, M., and Smyth, B.
+Recommending Twitter users to follow using content
+and collaborative filtering approaches. In Proc. 4th
+ACM Conference on Recommender Systems
+(RecSys’10) (2010), 199-206.
+
+Lee, D. D., and Seung, H. 8. Learning the parts of
+objects by non-negative matrix factorization. Nature
+401 (1999), 788-791.
+
+Lin, C.-J. Projected Gradient Methods for
+Nonnegative Matrix Factorization. Neural Comput.
+
+19, 10 (Oct. 2007), 2756-2779.
+
+Marliére, P. Populism and the enchanted world of
+*moderate politics’. openDemocracy (2013).
+
+Mudde, C. Populist Radical Right Parties in Europe.
+Cambridge University Press, 2007.
+
+O’Callaghan, D., Greene, D., Conway, M., Carthy, J.,
+and Cunningham, P. An Analysis of Interactions
+Within and Between Extreme Right Communities in
+Social Media. In To Appear: MSM 2012 and MUSE
+2012 Postproceedings (2013).
+
+O’Callaghan, D., Greene, D., Conway, M., Carthy, J.,
+and Cunningham, P. Uncovering the Wider Structure
+of Extreme Right Communities Spanning Popular
+Online Networks. In Proc. 5th Annual ACM Web
+Science Conference, WebSci 713 (2013), 276-285.
+Pariser, E. The Filter Bubble: What the Internet Is
+Hiding from You. Penguin Group USA, 2011.
+
+Roy, 8S. D., Mei, T., Zeng, W., and Li, S.
+SocialTransfer: cross-domain transfer learning from
+social streams for media applications. In Proc. 20th
+ACM international conference on Multimedia, MM
+12, ACM (2012), 649-658.
+
+Simonet, V. Classifying YouTube Channels: a
+Practical System. In Proc. 2nd International
+Workshop on Web of Linked Entities (WoLE 2013),
+ACM (2013), 1295-1304.
+
+SPLC. Ideology. Southern Poverty Law Center (2013).
+Steyvers, M., and Griffiths, T. Probabilistic Topic
+Models. In Latent Semantic Analysis: A Road to
+Meaning., T. Landauer, D. Mcnamara, 5. Dennis, and
+W. Kintsch, Eds. Laurence Erlbaum, 2006.
+
+Tateo, L. The Italian Extreme Right On-line Network:
+An Exploratory Study Using an Integrated Social
+Network Analysis and Content Analysis Approach.
+Journal of Computer-Mediated Communication 10, 2
+(2005).
+
+Zhou, R., Khemmarat, S., and Gao, L. The impact of
+YouTube recommendation system on video views. In
+Proc. 10th ACM SIGCOMM conference on Internet
+measurement (2010), 404-410.
+

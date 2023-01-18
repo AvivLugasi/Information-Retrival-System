@@ -1,0 +1,400 @@
+                                                       Reducing Gender Bias in Abusive Language Detection
+
+                                                                 Ji Ho Park, Jamin Shin, Pascale Fung
+                                                            Centre for Artificial Intelligence Research (CAiRE)
+                                                            Hong Kong University of Science and Technology
+                                                   {jhpark, jmshinaa}@connect.ust.hk, pascale@ece.ust.hk
+
+
+
+
+                                                             Abstract                          classifiers can have unfair biases toward certain
+arXiv:1808.07231v1 [cs.CL] 22 Aug 2018
+
+
+
+
+                                                                                               groups of people.
+                                            Abusive language detection models tend to              We focus on the fact that the representations of
+                                            have a problem of being biased toward iden-
+                                                                                               abusive language learned in only supervised learn-
+                                            tity words of a certain group of people be-
+                                            cause of imbalanced training datasets. For         ing setting may not be able to generalize well
+                                            example, “You are a good woman” was con-           enough for practical use since they tend to over-
+                                            sidered “sexist” when trained on an existing       fit to certain words that are neutral but occur fre-
+                                            dataset. Such model bias is an obstacle for        quently in the training samples. To such classi-
+                                            models to be robust enough for practical use.      fiers, sentences like “You are a good woman” are
+                                            In this work, we measure gender biases on          considered “sexist” probably because of the word
+                                            models trained with different abusive language
+                                                                                               “woman.”
+                                            datasets, while analyzing the effect of differ-
+                                            ent pre-trained word embeddings and model              This phenomenon, called false positive bias,
+                                            architectures. We also experiment with three       has been reported by Dixon et al. (2017). They
+                                            bias mitigation methods: (1) debiased word         further defined this model bias as unintended, “a
+                                            embeddings, (2) gender swap data augmenta-         model contains unintended bias if it performs bet-
+                                            tion, and (3) fine-tuning with a larger corpus.    ter for comments containing some particular iden-
+                                            These methods can effectively reduce gender        tity terms than for comments containing others.”
+                                            bias by 90-98% and can be extended to correct
+                                            model bias in other scenarios.                         Such model bias is important but often unmea-
+                                                                                               surable in the usual experiment settings since the
+                                         1 Introduction                                        validation/test sets we use for evaluation are al-
+                                                                                               ready biased. For this reason, we tackle the is-
+                                         Automatic detection of abusive language is an im-     sue of measuring and mitigating unintended bias.
+                                         portant task since such language in online space      Without achieving certain level of generalization
+                                         can lead to personal trauma, cyber-bullying, hate     ability, abusive language detection models may
+                                         crime, and discrimination. As more and more peo-      not be suitable for real-life situations.
+                                         ple freely express their opinions in social media,        In this work, we address model biases specific
+                                         the amount of textual contents produced every day     to gender identities (gender bias) existing in abu-
+                                         grows almost exponentially, rendering it difficult    sive language datasets by measuring them with a
+                                         to effectively moderate user content. For this rea-   generated unbiased test set and propose three re-
+                                         son, using machine learning and natural language      duction methods: (1) debiased word embedding,
+                                         processing (NLP) systems to automatically detect      (2) gender swap data augmentation, (3) fine-tuning
+                                         abusive language is useful for many websites or       with a larger corpus. Moreover, we compare the
+                                         social media services.                                effects of different pre-trained word embeddings
+                                            Although many works already tackled on train-      and model architectures on gender bias.
+                                         ing machine learning models to automatically de-
+                                         tect abusive language, recent works have raised       2 Related Work
+                                         concerns about the robustness of those systems.
+                                         Hosseini et al. (2017) have shown how to easily       So far, many efforts were put into defining
+                                         cause false predictions with adversarial examples     and constructing abusive language datasets
+                                         in Google’s API, and Dixon et al. (2017) show that    from different sources and labeling them
+through crowd-sourcing or user moderation                 Name      Size   Positives (%)    µ     σ     max
+(Waseem and Hovy, 2016; Waseem, 2016;                         st    18K        33%         15.6   6.8   39
+Founta et al., 2018; Wulczyn et al., 2017). Many              abt   60K       18.5%        17.9   4.6   65
+deep learning approaches have been explored to
+train a classifier with those datasets to develop      Table 1: Dataset statistics. µ, σ, max are mean,
+an automatic abusive language detection system         std.dev, and maximum of sentence lengths
+(Badjatiya et al., 2017; Park and Fung, 2017;
+Pavlopoulos et al., 2017). However, these works        3.2 Abusive Tweets (abt)
+do not explicitly address any model bias in their
+models.                                                Recently, Founta et al. (2018) has published a
+                                                       large scale crowdsourced abusive tweet dataset
+   Addressing biases in NLP models/systems have
+                                                       with 60K tweets. Their work incrementally and
+recently started to gain more interest in the re-
+                                                       iteratively investigated methods such as boosted
+search community, not only because fairness in
+                                                       sampling and exploratory rounds, to effectively
+AI is important but also because bias correc-
+                                                       annotate tweets through crowdsourcing. Through
+tion can improve the robustness of the models.
+                                                       such systematic processes, they identify the most
+Bolukbasi et al. (2016) is one of the first works to
+                                                       relevant label set in identifying abusive behaviors
+point out the gender stereotypes inside word2vec
+                                                       in Twitter as {N one, Spam, Abusive, Hatef ul}
+(Mikolov et al., 2013) and propose an algorithm
+                                                       resulting in 11% as ’Abusive,’ 7.5% as ’Hateful’,
+to correct them. Caliskan et al. (2017) also pro-
+                                                       22.5% as ’Spam’, and 59% as ’None’. We trans-
+pose a method called Word Embedding Associa-
+                                                       form this dataset for a binary classification prob-
+tion Test (WEAT) to measure model bias inside
+                                                       lem by concatenating ’None’/’Spam’ together, and
+word embeddings and finds that many of those
+                                                       ’Abusive’/’Hateful’ together.
+pretrained embeddings contain problematic bias
+toward gender or race. Dixon et al. (2017) is one      4 Measuring Gender Biases
+of the first works that point out existing “unin-
+tended” bias in abusive language detection mod-        4.1 Methodology
+els. Kiritchenko and Mohammad (2018) compare           Gender bias cannot be measured when evaluated
+219 sentiment analysis systems participating in        on the original dataset as the test sets will follow
+SemEval competition with their proposed dataset,       the same biased distribution, so normal evaluation
+which can be used for evaluating racial and gender     set will not suffice. Therefore, we generate a sep-
+bias of those systems. Zhao et al. (2018) shows        arate unbiased test set for each gender, male and
+the effectiveness of measuring and correcting gen-     female, using the identity term template method
+der biases in co-reference resolution tasks. We        proposed in Dixon et al. (2017).
+later show how we extend a few of these works             The intuition of this template method is that
+into ours.                                             given a pair of sentences with only the identity
+                                                       terms different (ex. “He is happy” & “She is
+3 Datasets                                             happy”), the model should be able to generalize
+                                                       well and output same prediction for abusive lan-
+3.1   Sexist Tweets (st)                               guage. This kind of evaluation has also been per-
+                                                       formed in SemEval 2018: Task 1 Affect In Tweets
+This dataset consists of tweets with sexist tweets
+                                                       (Kiritchenko and Mohammad, 2018) to measure
+collected from Twitter by searching for tweets that
+                                                       the gender and race bias among the competing sys-
+contain common terms pertaining to sexism such
+                                                       tems for sentiment/emotion analysis.
+as “feminazi.” The tweets were then annotated by
+                                                          Using the released code1 of Dixon et al. (2017),
+experts based on criteria founded in critical race
+                                                       we generated 1,152 samples (576 pairs) by filling
+theory. The original dataset also contained a rel-
+                                                       the templates with common gender identity pairs
+atively small number of “racist” label tweets, but
+                                                       (ex. male/female, man/woman, etc.). We created
+we only retain “sexist” samples to focus on gen-
+                                                       templates (Table 2) that contained both neutral and
+der biases. Waseem and Hovy (2016); Waseem
+                                                       offensive nouns and adjectives inside the vocabu-
+(2016), the creators of the dataset, describe “sex-
+                                                       lary (See Table 3) to retain balance in neutral and
+ist” and “racist” languages as specific subsets of
+                                                          1
+abusive language.                                             https://github.com/conversationai/unintended-ml-bia
+                    Example Templates                                                   Orig.   Gen.
+             You are a (adjective) (identity term).                  Model   Embed.                    FNED   FPED
+                                                                                        AUC     AUC
+                    (verb) (identity term).                                  random     .881    .572   .261   .249
+              Being (identity term) is (adjective)                   CNN     fasttext   .906    .620   .323   .327
+                      I am (identity term)                                   word2vec   .906    .635   .305   .263
+                     I hate (identity term)                                  random     .854    .536   .132   .136
+                                                                     GRU     fasttext   .887    .661   .312   .284
+                                                                             word2vec   .887    .633   .301   .254
+Table 2: Example of templates used to generated                              random     .868    .586   .236   .219
+                                                                     α-GRU   fasttext   .891    .639   .324   .365
+an unbiased test set.                                                        word2vec   .890    .631   .315   .306
+
+ Type                             Example Words
+ Offensive                        disgusting, filthy, nasty,      Table 4: Results on st. False negative/positive
+                                  rude, horrible, terrible, aw-   equality differences are larger when pre-trained
+                                  ful, worst, idiotic, stupid,    embedding is used and CNN or α-RNN is trained
+                                  dumb, ugly, etc.
+ Non-offensive                    help, love, respect, believe,
+                                  congrats, hi, like, great,
+                                  fun, nice, neat, happy,         (Park and Fung, 2017), Gated Recurrent Unit
+                                  good, best, etc.                (GRU) (Cho et al., 2014), and Bidirectional GRU
+                                                                  with self-attention (α-GRU) (Pavlopoulos et al.,
+Table 3: Example of offensive and non-offensive                   2017), but with a simpler mechanism used in
+verbs & adjectives used for generating the unbi-                  Felbo et al. (2017). Hyperparameters are found
+ased test set.                                                    using the validation set by finding the best per-
+                                                                  forming ones in terms of original AUC scores.
+                                                                  These are the used hyperparameters:
+abusive samples.
+   For the evaluation metric, we use 1) AUC scores                 1. CNN: Convolution layers with 3 filters
+on the original test set (Orig. AUC), 2) AUC                          with the size of [3,4,5], feature map
+scores on the unbiased generated test set (Gen.                       size=100, Embedding Size=300, Max-
+AUC), and 3) the false positive/negative equal-                       pooling, Dropout=0.5
+ity differences proposed in Dixon et al. (2017)
+which aggregates the difference between the over-                  2. GRU: hidden dimension=512, Maximum Se-
+all false positive/negative rate and gender-specific                  quence Length=100, Embedding Size=300,
+false positive/negative rate. False Positive Equal-                   Dropout=0.3
+ity Difference (FPED) and False Negative Equal-                    3. α-GRU: hidden dimension=256 (bidirec-
+ity Difference (FNED) are defined as below, where                     tional, so 512 in total), Maximum Sequence
+T = {male, f emale}.                                                  Length=100, Attention Size=512, Embed-
+                         X                                            ding Size=300, Dropout=0.3
+         F P ED =               |F P R − F P Rt |
+                          t∈T                                        We also compare different pre-trained em-
+                         X
+        F N ED =                |F N R − F N Rt |                 beddings, word2vec (Mikolov et al., 2013)
+                         t∈T                                      trained on Google News corpus, FastText
+                                                                  (Bojanowski et al., 2017)) trained on Wikipedia
+Since the classifiers output probabilities, equal er-             corpus, and randomly initialized embeddings
+ror rate thresholds are used for prediction decision.             (random) to analyze their effects on the biases.
+   While the two AUC scores show the perfor-                      Experiments were run 10 times and averaged.
+mances of the models in terms of accuracy, the
+equality difference scores show them in terms of                  4.3 Results & Discussions
+fairness, which we believe is another dimension                   Tables 4 and 5 show the bias measurement exper-
+for evaluating the model’s generalization ability.                iment results for st and abt, respectively. As
+                                                                  expected, pre-trained embeddings improved task
+4.2   Experimental Setup                                          performance. The score on the unbiased generated
+We first measure gender biases in st and abt                      test set (Gen. ROC) also improved since word em-
+datasets. We explore three neural models used                     beddings can provide prior knowledge of words.
+in previous works on abusive language classi-                        However, the equality difference scores tended
+fication: Convolutional Neural Network (CNN)                      to be larger when pre-trained embeddings were
+                       Orig.   Gen.                                               Orig.   Gen.
+   Model    Embed.                    FNED   FPED         Model    DE   GS   FT                  FNED   FPED
+                       AUC     AUC                                                AUC     AUC
+            random     .926    .893   .013   .045                  .    .    .    .906    .635   .305   .263
+   CNN      fasttext   .955    .995   .004   .001                  O    .    .    .902    .627   .333   .337
+            word2vec   .956    .999   .002   .021                  .    O    .    .898    .676   .164   .104
+                                                          CNN
+            random     .919    .850   .036   .010                  O    O    .    .895    .647   .157   .096
+                                                                   .    .    O    .896    .650   .302   .240
+   GRU      fasttext   .951    .997   .014   .018
+                                                                   .    O    O    .889    .671   .163   .122
+            word2vec   .952    .997   .017   .037                  O    O    O    .884    .703   .135   .095
+            random     .927    .914   .008   .039                  .    .    .    .887    .633   .301   .254
+   α-GRU    fasttext   .956    .998   .014   .005                  O    .    .    .882    .658   .274   .270
+            word2vec   .955    .999   .012   .026                  .    O    .    .879    .657   .044   .040
+                                                           GRU
+                                                                   O    O    .    .873    .667   .006   .027
+                                                                   .    .    O    .874    .761   .241   .181
+Table 5:     Results on abt. The false nega-                       .    O    O    .862    .768   .141   .095
+                                                                   O    O    O    .854    .854   .081   .059
+tive/positive equality difference is significantly                 .    .    .    .890    .631   .315   .306
+smaller than the st                                                O    .    .    .885    .656   .291   .330
+                                                                   .    O    .    .879    .667   .114   .098
+                                                          α-GRU
+                                                                   O    O    .    .877    .689   .067   .059
+                                                                   .    .    O    .874    .756   .310   .212
+                                                                   .    O    O    .866    .814   .185   .065
+used, especially in the st dataset. This confirms                  O    O    O    .855    .912   .055   .030
+
+the result of Bolukbasi et al. (2016). In all ex-
+periments, direction of the gender bias was to-         Table 6:  Results of bias mitigation methods on
+wards female identity words. We can infer that          st dataset. ‘O’ indicates that the corresponding
+this is due to the more frequent appearances of fe-     method is applied. See Section 5.3 for more anal-
+male identities in “sexist” tweets and lack of nega-    ysis.
+tive samples, similar to the reports of Dixon et al.
+(2017). This is problematic since not many NLP
+datasets are large enough to reflect the true data      5.1 Methodology
+distribution, more prominent in tasks like abusive
+language where data collection and annotation are       Debiased       Word       Embeddings       (DE)
+difficult.                                              (Bolukbasi et al., 2016) proposed an algo-
+   On the other hand, abt dataset showed sig-           rithm to correct word embeddings by removing
+nificantly better results on the two equality dif-      gender stereotypical information. All the other
+ference scores, of at most 0.04. Performance in         experiments used pretrained word2vec to ini-
+the generated test set was better because the mod-      tialized the embedding layer but we substitute
+els successfully classify abusive samples regard-       the pretrained word2vec with their published
+less of the gender identity terms used. Hence, we       embeddings to verify their effectiveness in our
+can assume that abt dataset is less gender-biased       task.
+than the st dataset, presumably due to its larger       Gender Swap (GS) We augment the training data
+size, balance in classes, and systematic collection     by identifying male entities and swapping them
+method.                                                 with equivalent female entities and vice-versa.
+   Interestingly, the architecture of the models also   This simple method removes correlation between
+influenced the biases. Models that “attend” to          gender and classification decision and has proven
+certain words, such as CNN’s max-pooling or α-          to be effective for correcting gender biases in co-
+GRU’s self-attention, tended to result in higher        reference resolution task (Zhao et al., 2018).
+false positive equality difference scores in st         Bias fine-tuning (FT) We propose a method to use
+dataset. These models show effectiveness in catch-      transfer learning from a less biased corpus to re-
+ing not only the discriminative features for clas-      duce the bias. A model is initially trained with a
+sification, but also the “unintended” ones causing      larger, less-biased source corpus with a same or
+the model biases.                                       similar task, and fine-tuned with a target corpus
+                                                        with a larger bias. This method is inspired by the
+                                                        fact that model bias mainly rises from the imbal-
+5 Reducing Gender Biases                                ance of labels and the limited size of data samples.
+                                                        Training the model with a larger and less biased
+We experiment and discuss various methods to re-        dataset may regularize and prevent the model from
+duce gender biases identified in Section 4.3.           over-fitting to the small, biased dataset.
+5.2   Experimental Setup                                sexist). However, the decrease was marginal (less
+Debiased word2vec Bolukbasi et al. (2016)               than 4%), while the drop in bias was significant.
+is compared with the original word2vec                  We assume the performance loss happens because
+(Mikolov et al., 2013) for evaluation.           For    mitigation methods modify the data or the model
+gender swapping data augmentation, we use pairs         in a way that sometimes deters the models from
+identified through crowd-sourcing by Zhao et al.        discriminating important “unbiased” features.
+(2018).                                                 6 Conclusion & Future Work
+   After identifying the degree of gender bias of
+each dataset, we select a source with less bias and     We discussed model biases, especially toward gen-
+a target with more bias. Vocabulary is extracted        der identity terms, in abusive language detection.
+from training split of both sets. The model is first    We found out that pre-trained word embeddings,
+trained by the source dataset. We then remove fi-       model architecture, and different datasets all can
+nal softmax layer and attach a new one initialized      have influence. Also, we found our proposed
+for training the target. The target is trained with a   methods can reduce gender biases up to 90-98%,
+slower learning rate. Early stopping is decided by      improving the robustness of the models.
+the valid set of the respective dataset.                   As shown in Section 4.3, some classification
+   Based on this criterion and results from Section     performance drop happens when mitigation meth-
+4.3, we choose the abt dataset as source and st         ods. We believe that a meaningful extension of
+dataset as target for bias fine-tuning experiments.     our work can be developing bias mitigation meth-
+                                                        ods that maintain (or even increase) the classi-
+5.3   Results & Discussion                              fication performance and reduce the bias at the
+                                                        same time. Some previous works (Beutel et al.;
+Table 6 shows the results of experiments using the
+                                                        Zhang et al., 2018) employ adversarial training
+three methods proposed. The first rows are the
+                                                        methods to make the classifiers unbiased toward
+baselines without any method applied. We can see
+                                                        certain variables. However, those works do not
+from the second rows of each section that debiased
+                                                        deal with natural language where features like
+word embeddings alone do not effectively correct
+                                                        gender and race are latent variables inside the lan-
+the bias of the whole system that well, while gen-
+                                                        guage. Although those approaches are not directly
+der swapping significantly reduced both the equal-
+                                                        comparable to our methods, it would be interesting
+ity difference scores. Meanwhile, fine-tuning bias
+                                                        to explore adversarial training to tackle this prob-
+with a larger, less biased source dataset helped to
+                                                        lem in the future.
+decrease the equality difference scores and greatly
+                                                           Although our work is preliminary, we hope that
+improve the AUC scores from the generated unbi-
+                                                        our work can further develop the discussion of
+ased test set. The latter improvement shows that
+                                                        evaluating NLP systems in different directions, not
+the model significantly reduced errors on the un-
+                                                        merely focusing on performance metrics like ac-
+biased set in general.
+                                                        curacy or AUC. The idea of improving models by
+   To our surprise, the most effective method was
+                                                        measuring and correcting gender bias is still un-
+applying both debiased embedding and gender
+                                                        familiar but we argue that they can be crucial in
+swap to GRU, which reduced the equality differ-
+                                                        building systems that are not only ethical but also
+ences by 98% & 89% while losing only 1.5% of
+                                                        practical. Although this work focuses on gender
+the original performance. We assume that this may
+                                                        terms, the methods we proposed can easily be ex-
+be related to the influence of “attending” model ar-
+                                                        tended to other identity problems like racial and to
+chitectures on biases as discussed in Section 4.3.
+                                                        different tasks like sentiment analysis by follow-
+On the other hand, using the three methods to-
+                                                        ing similar steps, and we hope to work on this in
+gether improved both generated unbiased set per-
+                                                        the future.
+formance and equality differences, but had the
+largest decrease in the original performance.
+   All methods involved some performance loss
+when gender biases were reduced. Especially,
+fine-tuning had the largest decrease in original test
+set performance. This could be attributed to the
+difference in the source and target tasks (abusive &
+Acknowledgments                                          Hossein Hosseini, Sreeram Kannan, Baosen Zhang,
+                                                           and Radha Poovendran. 2017. Deceiving google’s
+This work is partially funded by ITS/319/16FP              perspective api built for detecting toxic comments.
+of Innovation Technology Commission, HKUST,                arXiv preprint arXiv:1702.08138.
+and 16248016 of Hong Kong Research Grants                Svetlana Kiritchenko and Saif M Mohammad. 2018.
+Council.                                                   Examining gender and race bias in two hundred sen-
+                                                           timent analysis systems. Proceedings of the 7th
+                                                           Joint Conference on Lexical and Computational Se-
+References                                                 mantics(*SEM), New Orleans, USA.
+
+Pinkesh Badjatiya, Shashank Gupta, Manish Gupta,         Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg S Cor-
+   and Vasudeva Varma. 2017. Deep learning for hate        rado, and Jeff Dean. 2013. Distributed representa-
+   speech detection in tweets. In Proceedings of the       tions of words and phrases and their compositional-
+   26th International Conference on World Wide Web         ity. In NIPS, pages 3111–3119.
+   Companion, pages 759–760. International World         Ji Ho Park and Pascale Fung. 2017. One-step and two-
+   Wide Web Conferences Steering Committee.                 step classification for abusive language detection on
+                                                            twitter. ALW1: 1st Workshop on Abusive Language
+Alex Beutel, Jilin Chen, Zhe Zhao, and Ed H Chi.            Online to be held at the annual meeting of the Asso-
+  Data decisions and theoretical implications when ad-      ciation of Computational Linguistics (ACL) 2017.
+  versarially learning fair representations. FAT/ML
+  2018: 5th Workshop on Fairness, Accountability,        John Pavlopoulos, Prodromos Malakasiotis, and Ion
+  and Transparency in Machine Learning.                    Androutsopoulos. 2017. Deeper attention to abu-
+                                                           sive user content moderation. In Proceedings of the
+Piotr Bojanowski, Edouard Grave, Armand Joulin, and        2017 Conference on Empirical Methods in Natural
+   Tomas Mikolov. 2017. Enriching word vectors with        Language Processing, pages 1125–1135.
+   subword information. Transactions of the Associa-
+   tion for Computational Linguistics Volume 5, Issue    Zeerak Waseem. 2016. Are you a racist or am i seeing
+   1.                                                      things? annotator influence on hate speech detection
+                                                           on twitter. In Proceedings of the first workshop on
+Tolga Bolukbasi, Kai-Wei Chang, James Y Zou,               NLP and computational social science, pages 138–
+  Venkatesh Saligrama, and Adam T Kalai. 2016.             142.
+  Man is to computer programmer as woman is to
+  homemaker? debiasing word embeddings. In Ad-           Zeerak Waseem and Dirk Hovy. 2016. Hateful sym-
+  vances in Neural Information Processing Systems,         bols or hateful people? predictive features for hate
+  pages 4349–4357.                                         speech detection on twitter. In Proceedings of the
+                                                           NAACL student research workshop, pages 88–93.
+Aylin Caliskan, Joanna J Bryson, and Arvind
+  Narayanan. 2017. Semantics derived automatically       Ellery Wulczyn, Nithum Thain, and Lucas Dixon.
+  from language corpora contain human-like biases.          2017. Ex machina: Personal attacks seen at scale.
+  Science, 356(6334):183–186.                               In Proceedings of the 26th International Conference
+                                                            on World Wide Web, pages 1391–1399. International
+Kyunghyun Cho, Bart Van Merriënboer, Caglar Gul-           World Wide Web Conferences Steering Committee.
+  cehre, Dzmitry Bahdanau, Fethi Bougares, Holger
+  Schwenk, and Yoshua Bengio. 2014. Learning             Brian Hu Zhang, Blake Lemoine, and Margaret
+  phrase representations using rnn encoder-decoder         Mitchell. 2018. Mitigating unwanted biases with ad-
+  for statistical machine translation. EMNLP2014.          versarial learning. Proceedings of AAAI/ACM Con-
+                                                           ference on Ethics and Society(AIES) 2018.
+Lucas Dixon, John Li, Jeffrey Sorensen, Nithum Thain,    Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+  and Lucy Vasserman. 2017. Measuring and mitigat-          donez, and Kai-Wei Chang. 2018. Gender bias in
+  ing unintended bias in text classification. In AAAI.      coreference resolution: Evaluation and debiasing
+                                                            methods. NAACL 2018.
+Bjarke Felbo, Alan Mislove, Anders Søgaard, Iyad
+  Rahwan, and Sune Lehmann. 2017. Using millions
+  of emoji occurrences to learn any-domain represen-
+  tations for detecting sentiment, emotion and sar-
+  casm. EMNLP2017.
+
+Antigoni-Maria Founta, Constantinos Djouvas, De-
+  spoina Chatzakou, Ilias Leontiadis, Jeremy Black-
+  burn, Gianluca Stringhini, Athena Vakali, Michael
+  Sirivianos, and Nicolas Kourtellis. 2018. Large
+  scale crowdsourcing and characterization of twitter
+  abusive behavior. AAAI.
+

@@ -1,0 +1,1388 @@
+See discussions, stats, and author profiles for this publication at: https://www.researchgate.net/pu blication/33537 6707
+
+ResearchGate
+
+Counteracting the filter bubble in recommender systems: Novelty-aware
+
+matrix factorization
+
+Article - August 2019
+
+DOL: 10.3233/1A-190017
+
+CITATIONS
+6
+
+3 authors:
+
+a Panagiotis Symeonidis
+s . we ae
+ea Aristotle University of Thessaloniki
+
+111 PUBLICATIONS 2,632 CITATIONS
+
+SEE PROFILE
+
+Markus Zanker
+; Free University of Bozen-Bolzano
+228 PUBLICATIONS 5,107 CITATIONS
+
+SEE PROFILE
+
+Some of the authors of this publication are also working on these related projects:
+
+Project © DSSApple View project
+
+Proect ‘Seller View project
+
+All content following this page was uploaded by Ludovik Coba on 27 August 2019.
+
+The user has requested enhancement of the downloaded file.
+
+READS
+393
+
+Ludovik Coba
+of Free University of Bozen-Bolzano
+
+19 PUBLICATIONS 146 CITATIONS
+
+SEE PROFILE
+Undefined 1 (2014) 1-5 1
+IOS Press
+
+Counteracting the Filter Bubble in
+Recommender Systems: Novelty-aware
+Matrix Factorization
+
+Panagiotis Symeonidis, Ludovik Coba* and Markus Zanker
+
+Free University of Bozen-Bolzano, 39100, Bozen-Bolzano,
+Ttaly
+E-mail: {psymeonidis, mzanker} @ unibz.it
+
+Abstract. The search for unfamiliar experiences and novelty is one of the main drivers behind all human activities, equally im-
+portant with harm avoidance and reward dependence. A recommender system personalizes suggestions to individuals to support
+and guide them in their exploration tasks. Personalization mechanisms and recommender systems limit serendipitous encounters
+by selectively guessing the next item to show to users and potentially leading them into so-called filter bubbles. In the ideal
+case, these recommendations, except of being accurate, should be also novel. However, up to now most platforms fail to provide
+both novel and accurate recommendations. For example, a well-known recommendation algorithm, such as matrix factorization
+(MP), tries to optimize only the accuracy criterion, while disregarding the novelty of recommended items. In order to counteract
+the filter bubble, we propose two models, denoted as popularity-based and distance-based NMF, that allow to trade-off the MF
+performance with respect to the criteria of novelty, while only minimally compromising on accuracy. Our experimental results
+
+demonstrate that we attain high accuracy by recommending also novel items.
+
+Keywords: Recommendation algorithms, Evaluation, Novelty, Collaborative Filtering, Matrix Factorization
+
+1. Introduction
+
+The filter bubble is the unique universe of informa-
+tion created around the users by prediction engines or
+recommendation algorithms [26]. Based on the princi-
+ple that users consume media of their interest, the filter
+bubble creates a tinted view of the world around the
+users by recommending items from the catalogues. A
+concrete example of the filter bubble is when a user
+buys a book on an e-commerce platform and repeat-
+edly receives recommendations only about books dis-
+cussing the same topic. This kind of recommendation
+engine are based on incomplete evidence of interest
+and neglect the inherent need of users for non-obvious
+recommendations [31].
+
+ 
+
+“Corresponding author. E-mail: lucoba @unibz.it
+
+0000-0000/14/$00.00 © 2014 — Pre-print
+
+Recommender systems research aims primarily at
+providing accurate item recommendations [19] while
+ignoring many times additional quality criteria such
+as the novelty of a recommended item [3]. There are
+many definitions of item novelty [3]. For example, the
+popularity-based novelty focuses on discovering non-
+popular products that match the crowd’s interest. In
+terms of MF for providing novel item recommenda-
+tions, related work [9,32] observed that by raising the
+dimensionality of the MF model (i.e., by increasing
+the number of latent factors), we can recommend items
+coming from the long tail (i.e. more novel items), but
+with big losses in terms of accuracy. In addition, an in-
+creased number of latent factors directly affects the ef-
+ficiency of MF models. Generating novel recommen-
+dations lead to the following benefits:
+
+— Provide non-trivial recommendations.
+2 P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+— Discover items that could not have been found by
+the users themselves and increasing the array of
+choices (avoids the filter bubble).
+
+— The business can leverage revenues from market
+niches (sales diversity).
+
+In this paper, we extend our previous work on gen-
+erating novel item recommendations based on matrix
+factorization [7]. We propose a MF method that si-
+multaneously recommends accurate and novel items.
+Our proposed method, denoted as NMF, has the advan-
+tage of controlling through a regularization term how
+novel items will be recommended, without increasing
+the number of latent factors of MF [9,32]. Moreover,
+we introduce an integrated way to evaluate novelty, de-
+noted as Novelty-nDCG, which is based on the well-
+known nDCG [4], but adjusted for our case-scenario in
+recommender systems, and distinguishes a more novel
+item from a less novel item. N-nDCG also can be used
+with different definitions [3,30] of item novelty, as will
+be described later. However, item novelty should not
+be considered equal to the diversity of a recommenda-
+tion list.
+
+In the remainder of this paper, Section 2 discusses
+the related work. In Section 3.1, we define item nov-
+elty, and the evaluation of a recommendation list of
+items. Then, we propose a framework for novel MF.
+Section 4 presents our experimental results on two
+well-known datasets. Finally, Section 5 concludes and
+describes future work.
+
+2. Related Work
+
+Recommender systems’ effectiveness cannot be
+measured by considering only the accuracy of recom-
+mendations. Jannach et al. [18], outline that the re-
+search community is becoming increasingly aware of
+this problem, and that aspects related to the users’ ex-
+perience like explanations, novelty and serendipity are
+starting to receive more attention.
+
+Furnas et al. [13] proposed Singular Value Decom-
+position (SVD) to factor a matrix into three matrices.
+An instance of SVD, known as classic matrix factor-
+ization (MF), searches for two matrices (U and V),
+whose multiplication gives an approximation of the
+original matrix A. That is, if we have a matrix A with
+n rows and m columns, we can find two matrices, one
+U with n rows and k columns and one V with m rows
+and k columns, such that UV! produces A with the
+blank entries filled and a small deflection of the initial
+
+values. Another MF method is known as CUR Matrix
+Decomposition[23], because the initial matrix is fac-
+torized to 3 matrices (C, U and R). One quick observa-
+tion about CUR decomposition is that row and column
+that are used to construct matrices C' and F are ran-
+domly selected from matrix A. It is obvious that this
+selection will affect CUR-approximation.
+
+Several methods have been proposed to compute
+matrices U and V. For example, Lee and Seung [21]
+proposed the definition of a cost function (ie., ||A —
+UV ||?), which can be minimized either by using mul-
+tiplicative update rules or by using additive update
+rules of the well-known gradient descent method. In
+addition, Dhillon and Sra [11] proposed multiplica-
+tive update rules that incorporate weights for the im-
+portance of each element of the approximation pre-
+dicted matrix A. Please notice that the objective func-
+tion ||A — UV||? is convex either in U only or V only.
+However, since it is not convex in both variables to-
+gether, we can only guarantee finding a local mini-
+mum solution, rather than a global minimum of the
+cost function. Thus, since in general the problem has
+not an exact solution, the computation of U and V
+is commonly approximated numerically with methods,
+such as gradient descent or alternating least squares
+(ALS). Recently, Lin [22] proposed an algorithm to re-
+solve the convergence issues of the optimization pro-
+cedure. His algorithm guarantees the convergence to
+a stationary point. However, Lin’s algorithm requires
+even more execution time per iteration than the slow in
+execution time of Lee and Seung [21] MF algorithm.
+
+As far as item novelty is concerned, Jannach et al.
+[17] mention in their research that recommender sys-
+tems aim at boosting recommendations from the long
+tail of the item popularity distribution, as it increases
+sales of novel items. There are several works that try to
+provide both accurate and novel [3,4,30] or diversified
+item recommendations [4,5], where a diversified item
+recommendation list tries to capture more aspects of
+the user’s interest. In terms of MF, related work [9,32]
+has claimed that by increasing the number of latent
+factors of the basic MF model [20], we can more ac-
+curately recommend novel items. A different research
+direction in MF formulates the item recommendation
+problem not as a classification problem, but as a rank-
+ing problem using pairs of positive items (in the train
+set) and negative items (not in the train set) as pair-
+wise input. For example, Bayesian Personalized Rank-
+ing (BPR) [27] optimizes a simple ranking loss such as
+AUC (the area under the ROC-curve) and uses matrix
+factorization as the ranking function, that can be di-
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems 3
+
+rectly optimized using a stochastic gradient algorithm.
+Similarly to BPR, Ning and Karypis [24,25] proposed
+a set of Sparse LInear Methods (SSLIM), which in-
+volve an optimization process to learn a sparse ag-
+gregation coefficient matrix based on both a user-item
+purchase matrix and side information on items.
+
+In contrast to the aforementioned work of Cre-
+monesi et al. [9], and Yin et al. [32], our proposed
+method incorporates an additional constraint term for
+novelty into the basic MF formula. Note, that this is
+in analogy to [6] where an additional constraint term
+models the perceived utility of users of the different
+parameters of the rating summary statistics like the av-
+erage rating value or the total number of rating. In con-
+trast, here the information on the novelty of an item is
+taken from an external resource of a user-item novelty
+matrix, which will be defined in the next section. While
+novelty and accuracy of recommended items are seen
+as a key feature of the recommendation utility in real
+scenarios, to our knowledge, there is not much work
+relating them and systematically measuring trade-offs.
+
+It is useful to make a clear distinction between nov-
+elty, diversity and serendipity. Vargas et al. [30] ex-
+plain that the novelty of an item refers to how differ-
+ent an item is with respect to what has already been
+experienced by a user or the community. While diver-
+sity refers to a set of items, and it is related to how
+different items are with each other. While serendipity
+[10] refers to how surprising and interesting is an item
+for a user. Tomeo et al. [28] extended the regression
+tree to generate diversified recommendations lists in a
+multi-attribute setting. In the same direction, Di Noia
+et al. [12] proposed a method for diversified recom-
+mendations by introducing an adaptive multi-attribute
+diversification method according to the hypothesis that
+a user who selected many diverse items in the past
+could be more willing to receive diverse recommen-
+dations. Wasilewski and Hurley [16] have proposed a
+matrix factorization framework to trade-off between
+the accuracy of item recommendations and the diver-
+sity of the items in the recommendation list. In the fol-
+lowing, we argue why there is very small overlap be-
+tween their and our work, by identifying two impor-
+tant differences. The first is that similar to the previ-
+ous approaches, their MF model computes the pair-
+wise ranking loss of the objective function (not the
+element-wise square loss like our methodology). In
+other words, our MF model is element-wise and pre-
+dicts the missing values of the user-item rating matrix,
+whereas their model tries to optimize items’ pairwise
+ranking. The second difference is that we are explor-
+
+ing the trade-off between item recommendation accu-
+racy and item novelty, whereas they explored the trade
+off between item recommendation accuracy and item
+diversity. This difference is discussed further in the
+discussion section. De Gemmis et al. [10] proposed
+a methodology to propose non-obvious items and to
+measure their serendipity by measuring via web-cam
+the facial expressions of users.
+
+3. Novelty
+
+In this section, we will define the novelty of an item
+for a target user. We want to be able to measure if an al-
+gorithm will recommend more novel items to the users.
+Table 1 summarizes the symbols used in the following
+sections.
+
+The premise of recommender systems is to suggest
+to users non-trivial items that match their interest, i.e.
+to make novel item recommendations. By doing this,
+businesses can increase their profits, since these novel
+items usually might have higher profit margins. More-
+over, users will not get bored and disappointed by just
+getting trivial recommendations of popular items. In
+the following, we will define the novelty of a recom-
+mended item and how to measure the novelty of a rec-
+ommendation list.
+
+ 
+
+Symbol Definition
+
+ 
+
+k number of nearest neighbors
+Da recommendation list for user 2
+Top—N _ size of recommendation list
+NN(u) nearest neighbors of user w
+
+ 
+
+P, threshold for positive ratings
+
+I domain of all items
+
+U domain of all users
+
+R domain of the rating scale
+U,V some users
+
+a9 some items
+
+Lu set of items rated by user wu
+U; set of users rated item z
+Pui the rating of user u on item 7
+|Z] size of the test set
+
+Ni novelty of item ¢
+
+Table 1
+
+Symbols and definitions.
+4 P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+ 
+
+3000
+
+ings
+
+2000
+
+1000
+
+¢t of ra
+
+ 
+
+0 i
+
+ 
+
+ 
+
+ 
+
+Oo 1000 2000 3000
+Items by descending popularity
+
+Fig. 1. Popularity distribution of items.
+3.1. Popularity-based Item Novelty
+
+Figure 1 depicts the item popularity distribution of
+a well-known dataset, MovieLens 1ML [14], where
+items are ranked depending on how frequently they
+have been rated by users. As it is shown in Figure 1,
+the ratings of items follow a long-tailed distribution
+and the novel items correspond to the long-tail items of
+this item popularity distribution, where few users have
+rated or interacted with, whereas items of low novelty
+correspond to popular items.
+
+Related work [3] in recommender systems has pro-
+posed a lot of definitions of item novelty. However,
+for a recommender system that consists only of a
+user-item rating matrix (without any other informa-
+tion about categories of items, domains of users’ inter-
+ests, etc.), the simple popularity-based novelty defini-
+tion [3] is more suitable, also known as global long-
+tail novelty, which focuses on discovering relatively
+unknown items (coming from the long-tail of the item
+popularity distribution).
+
+Based on the aforementioned arguments, novelty
+can be defined as the opposite of popularity, which
+means that an item is more novel if fewer people are
+aware of it. Thus, we adopt the notion of user inverse
+frequency [3,30] to measure the novelty N; of a rec-
+ommended item 7, by taking the inverse of its popular-
+ity, as can be shown by Equation 2:
+
+Novelty(t) = —Popularity({i) (1)
+
+where Popularity(i) corresponds to the probability
+that an item is rated or observed or had any other type
+of an interaction with a user.
+
+Novelty(t) = N; = — (2)
+
+ 
+
+where U; is the set of users that rated item 7, and U
+is the set of all users.
+
+Based on Equation 2, an item can be considered
+as more novel, if the users have interacted less with
+it (i.e., it received less ratings, or it is not enough
+purchased or it is less observed/viewed). In order to
+highlight the existence of highly novel items (favoring
+few very novel items and penalizing many less novel
+items), we can consider the logarithm of the novelty,
+as it is shown in Equation 3 [3]:
+
+[Ui
+|V|
+
+ 
+
+N; = —log2 (3)
+
+The maximal novelty achieved on an items will be
+considered as:
+
+1
+Nmae = —logza—, (4)
+|
+
+where U is the set of users, |U;|, from Equation 3,
+the number of times item 7 was rated is considered to
+be null.
+
+3.2. Distance-Based Item Novelty
+
+There are recommender systems which possess in-
+formation - except the user-item rating matrix - about
+the categories that the items’ belong to, or the focus
+of users’ interests. For example, in news articles rec-
+ommendation, we know the category that each article
+belongs to (i.e., politics, sports, etc.). Thus, when we
+recommend a news article about sports to a user that
+has seen a lot of articles about sports, this recommen-
+dation cannot be considered to be the same degree of
+novelty than in case we provide the same article to a
+person that has never seen an article about sports be-
+fore. That is, for every user the same item may be dif-
+ferently novel. In the following section, we will define
+how we can capture this notion of novelty of an item
+for a user.
+
+Differently to the case of popularity-based item nov-
+elty, in the distance-based model [3], also known as
+unexpectedness, for capturing an item’s novelty we de-
+fine a distance function between the target item i from
+the set of items J and the set of items J, that a user has
+already interacted with (the user’s past experience). We
+can formulate this novelty as shown in Equation 5:
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems 5
+
+d> dG,3)
+Vjelu
+
+5
+Ful ©)
+
+Nui =
+
+Please notice that the distance between two items
+can be also considered as the complement (i.e. d(i, 7) =
+1—sim({i, j)) of any similarity measure (cosine-based,
+Jaccard coefficient, etc.) in terms of the item features
+(i.e., the category that an item belongs to, the features
+of an item, etc.) or the user’s item categories profile !
+(i.e. the item categories that a user prefers). To capture
+how novel a topic category is for a user, we can use
+Equation 6, which is based on the well-known subtopic
+recall metric (S-recall) [3], but adjusted to our case
+scenario:
+
+1
+Nuc ===> (6
+re |{i € I, : i belongs to category C}| (©)
+
+where 7 is an item and C is the set of all topic cate-
+gories. Thus, when a user wu has interacted with many
+items that belong in the same category C, then this
+category will be not so novel for her. In the results
+we show measurements considering the topic coverage
+notion of novelty.
+
+An item will be novel if it belongs to a category that
+has never been seen before, thus, Nmaz = 1 ?.
+
+3.3. Novelty of recommendation list
+
+For a user u who is recommended N different items,
+we define as novelty of the L,, recommendation list of
+items, as follows:
+
+1
+Ni= Hy » Nuvi (7)
+VWiebu
+
+where N,,,; is the novelty as explained in Section 3.1
+if using the popularity-based notion, or Section 3.2 if
+using the distance-based notion. We have to mention
+that the aforementioned definitions of Novelty cannot
+
+ 
+
+'To capture the interaction between users and the item categories
+they have interacted with, we can build a user-category profile, com-
+posed of the user-item rating profile and the item-category profile
+(e.g., their dot product).
+
+?Please notice that every item in our datasets belongs to at least 1
+category.
+
+penalize the fact that an item that is less novel is ranked
+in the recommendation list L,,, above another item that
+is more novel. To do this, we will define in the follow-
+ing the N-nDCG.
+
+Thus, to obtain a more fine-grained level of granu-
+larity we adopt the notion of Novel - normalized Dis-
+counted Cumulative Gain (N—DCG.,) [4], which also
+takes under consideration the relative position of the
+recommended items inside L,,.
+
+The first step in the computation of N — DCG, is
+the creation of the gain vector. In our case, the gain
+vector for each item | in Lu, consists of its Novelty
+(N)) (i.e. as defined in Equation 3 or Equation 6).
+
+The second step in the computation of N — DCG,
+applies the Discounted Cumulative Gain to the afore-
+mentioned gain vector, as shown in Equation 8.
+
+N
+
+N
+N-DCG,=™M, +50
+i=2
+
+logs (8)
+ogat
+
+Based on Equation 8, we discount the gain at each
+rank inside L,, to penalize items, which are recom-
+mended lower in the ranking, reflecting the additional
+user effort in order to reach them and take the corre-
+sponding explanation [30].
+
+The third step is to normalize the N — DCG,
+against the “ideal” gain vector. In our case, the “ideal”
+gain vector considers all recommended items in L,,
+as having maximum Novelty, Ning« (i.e. as defined in
+Equation 3 or Equation 6). That is, all recommended
+items in L,, are considered as never seen by any user.
+Thus, the ideal N-IDCG is calculated as:
+
+“VN,
+N-IDOG = Ninax +) 7 (9)
+jag 092"
+
+Finally, the N-n DCG, is the ratio between N-DCG,
+to N-IDCG:
+
+N-DCOGu
+
+N1DOCGu = SHG
+
+(10)
+
+3.4. Other novelty metrics
+
+In this section, we adopt two additional metrics for
+evaluating the novelty. From the work of Vargas et al.
+[31] we use Expected Popularity Complement (EPC)
+to measure the popularity based novelty and the Ex-
+6 P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+pected Profile Distance (EPD) to measure the distance
+based novelty, as follows:
+
+EPC =C)- dise(k)p(rellix, u)Ni) da)
+ieL
+
+EPD=C' S- dise(k)p (rellix, u) p(rell|j, u)d (tn, J)
+
+iE€L, jeu
+(12)
+
+Where C is a constant, k is the position of an item in
+the recommendation list L, and p (rel|i,,u) = 1 if the
+item is in the test set else it is 0, and disc = ——+—.
+
+toga (k+2)
+
+3.5. Matrix Factorization
+
+Matrix factorization methods are used in recom-
+mender systems to derive a set of latent factors, from
+the user x item rating matrix, to characterize both
+users and items by this factor vector. The user-item in-
+teractions are modeled as the inner product of the la-
+tent factors space [20]. Accordingly, each item j will
+be associated with a vector of factors v;, and each user
+zis associated with a vector of factors u;. An approx-
+imation of the rating of a user 7 on an item 7 can be
+derived as the inner product of their factor vectors:
+
+Pag = UV, (13)
+
+The u(user) and v(item) factor matrices are cropped
+to k features and initialized at small values. Each fea-
+ture is trained until convergence (where convergence
+specifying the number of updates to be computed on
+a feature before considering it converged, it can be ei-
+ther chosen by the user or calculated automatically by
+the package). On each loop the algorithm predicts 7;,;,
+calculates the error and the factors are updated as fol-
+lows:
+
+Ujk < Ujn+A* (riz — Ui; ) * Wik —Y*Ujk) (14)
+Uik — Win FAx (riz — Ui; ) *Ujk —Y*UjR) (15)
+
+The attribute A represents the learning rate, while y
+corresponds to the regularization term.
+
+3.6. Novel Matrix Factorization
+
+In this section, we propose an algorithmic frame-
+work to trade-off between accuracy and novelty in ma-
+trix factorization.
+
+For popularity-based novelty, to provide more novel
+item recommendations, we add an additional soft con-
+straint for novelty into the classic regularized matrix
+factorization formula as shown in Equation 16:
+
+Grovet = >. (rig — Uiv7 P+
+
+LjER
+B ugll? + loyl2) + dllen — vjlIMiy, 16
+(tall + lleyll) + Slur — vy |/Miz, 16)
+
+where 4 controls the novelty vector and Nj; holds
+the information of how novel item 7 is for user 2, and 8
+weights the effect of the L1 regularization term. Please
+notice that ||u; — v,;|| constrains the representations of
+the user/item vectors in the latent space, such that they
+are close to each other (i.e., their difference is close
+to zero), in order to minimize the objective function.
+In other words, we want to bring the user closer to
+the novel items in the latent space. To do this, we use
+the Manhattan distance, which overcomes the problem
+of Euclidean distance’s metric over high dimensional
+spaces, since it does not place more emphasis on out-
+liers, which may dominate other smaller weights com-
+puted for other normal data points [1]. Then, to min-
+imize the objective function Grover, we Compute the
+error of the difference among the real and the predicted
+rating values of items by using a numerical method,
+such as Gradient Descent, and by applying the follow-
+ing update rules:
+
+wou tn: (2+ (riz — ua:
+B- uj, —A- sgn(uz — v;)
+
+vy) Uy —
+
+- Niz)
+
+vy 0p + (2+ (rig — Fs —
+B-v; —A- sgn{u; — v;)-Niz)
+
+Henceforth, we call this method Novel Matrix Fac-
+torization (NMF). Please notice that MF is just a sim-
+plified special case of NMF and can be easily derived
+from it.
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems 7
+
+ 
+
+ 
+
+Table 2
+
+Dataset
+Characteristic ML-100K ML-1M ML-20M Yelp - L.V.
+# of ratings 100,000 1,000,209 = 20,000,263 215,318
+# of users 943 6,040 138,493 5,180
+# of items 1,682 3,952 27,278 4,111
+# of genres 19 18 19 130
+Average # of genres per item 1.67 1.99 1.99 2.02
+Rating’s domain [1,5] [1,5] [1,5] [1,5]
+
+ 
+
+4. Experimental Results
+
+In this section, we compare experimentally our ap-
+proach NMF with the Matrix Factorization [20] al-
+gorithm (MF). Moreover, we will use the Maximal
+Marginal Relevance re-ranker (MMR) [2] combined
+with the MF algorithm, such that we have in our ex-
+periments also a variation of MF, which focuses on
+providing novel item recommendations. In particular,
+for re-ranking the item recommendation list provided
+from classic MF algorithm with MMR, we adapt the
+following greedy objective function of Satil Vargas
+[29], as shown by Equation 17:
+
+argmaz|(1 — A) * Frorm{u, i)+
+A * avgjet,,(1 — sim(i,j))], (7)
+
+where ?,orm({u, 1) is the normalised predicted rating
+of user u over item 7. It is normalised on the [0,1] scale,
+such that it can be combined with Jaccard similarity?
+(see the second term of Equation 17), which measures
+the dissimilarity of items. In particular, it measures the
+average similarity of an item with all other items which
+have already taken a position inside the L,, recommen-
+dation list, which is to be re-constructed for user u. As
+can be shown by the » parameter of Equation 17, there
+is a trade-off between how relevant an item is being
+considered by a user, and how much this item differs
+from the items, which have been already included in-
+side the currently constructed recommendation list. In
+our experiment we kept the trade-off \ = 0.5.
+
+We implemented the experiment using the func-
+tionalities of rrecsys[8] and proxy*. To ensure repro-
+
+ 
+
+3Jaccard similarity is particularly adequate for binary data. In this
+case we are considering the similarity in the context of the topic
+coverage.
+
+“https://cran.r-project.org/package=proxy
+
+ducibility of experimental results we share our imple-
+mentation®.
+
+4.1. Data Sets
+
+Our experiments are performed with four datasets,
+
+MovieLens 100K (ML100K), MovieLens 1ML (ML1M),
+
+MovieLens 20 ML (ML20ML)[15], and Yelp © (see
+Table 2).
+
+ML100K consists of 100,000 ratings assigned by 943
+users on 1,682 movies. ML1M contains 1,000,209
+anonymous ratings of approximately 3,900 movies
+made by 6,040 users. ML20ML consists of 20 mil-
+lion plus ratings, consisting of 27,278 items rated by
+138,493 users. All the MovieLens datasets have at least
+20 ratings per user (Vu € U : |I,,| > 20).
+
+The Yelp dataset consists of a large collection of rat-
+ings on businesses. We took a sub-dataset of the dataset
+consisting only of restaurants, where the novelty hy-
+pothesis is more plausible (e.g. if a user eats pizza one
+day, the next time she might want to try something
+else). In addition, we limited the recommendations to
+Las Vegas since the dataset contains more businesses
+from this city. Still, the dataset displays large spar-
+sity, thus we took a sub-sample of 40 ratings per user
+(Vu EU: |I,,| > 40).
+
+4.2. Experimental Protocol and Evaluation
+
+Our evaluation considers the division of items of
+each target user into two sets: (i) the training set E? is
+treated as known information and, (ii) the test set EB?
+is used for testing and no information from the test set
+is allowed for learning for computing predictions. It is
+obvious that, F = BE? UEP and EP NEP = ©.
+Therefore, for a target user we generate the recommen-
+dations based only on the items in E*.
+
+ 
+
+Shttps://github.com/ludovikcoba/NMF
+Shttps://www.yelp.com/dataset
+8 P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+In addition to the N-nDCG metric introduced in Sec-
+tion 3.3 we use classic precision and nDCG metrics for
+measuring the accuracy performance of recommenda-
+tions. We perform all experiments with 4-fold double-
+cross validation, with a training-test split percentage,
+75%-25%. The default size of the recommendation list
+N is set to 10, except to the cases where written dif-
+ferently. All algorithms predict the items of the target
+users’ in the test set.
+
+For ML100K, ML1M and ML20M the number of
+latent factors, update cycles, the regularization term £,
+the learning rate 7 to 80, 100, 0.001 and 0.001, respec-
+tively. For Yelp-L.V. we set the number of latent fac-
+tors, update cycles, the regularization term 3 and the
+learning rate 7 is set to 80, 50, 0.0001 and 0.001, re-
+spectively.
+
+For MMR we keep the trade-off at 0.5, while for the
+NMF we variate the Novelty-regTerm.
+
+4.3. Sensitivity analysis of NMF
+
+In this section, we want to explore how the per-
+formance of both popularity-based and distance-based
+NMF in terms of providing novel and accurate rec-
+ommendations is affected, as we increase the impact
+of the regularization term 6, which controls novelty
+in Equation 16. Figures 2a, 2b, 2c and 2d show the
+Popularity-based NMF as we increase 5. As shown, N-
+nDCG and nDCG are negatively correlated, which sig-
+nifies that as we increase N-nDCG the nDCG drops.
+
+In Figures 3a, 3b, 3d and 3c we depict the distance-
+based NMF as we increase 6. For the first three
+datasets, the trend that we noticed with the popularity-
+based NMF can be also noticed with the distance-
+based NMF. That is, as N-nDCG increases, accuracy
+drops and vice versa. While on the Yelp dataset, Figure
+3c, we notice that novelty (both in terms of N-nDCG
+and EPD) and precision increase together. Given the
+scenario, this could relate to the users’ inherent need
+for novelty and the notion of discovery [31]. Although,
+this first experimental result requires further and inten-
+sive investigation.
+
+Please notice that the difference in terms of N-
+nDCG between distance-based and popularity-based
+NMF is related to the different notions of novelty (see
+Section 3.1 and 3.2).
+
+In summary, for all Movielens datasets, as we in-
+crease 6, NMF recommends more novel items but the
+recommendation accuracy drops drastically, while for
+the Yelp dataset on the distance-based NMF novelty
+and precision seem correlated.
+
+4.4. Comparison with other algorithms
+
+Table 3 shows the performance results for popularity-
+based novelty (ie., pop-NMEF) and MF on four datasets,
+respectively, when we provide top-10 item recommen-
+dations. As it is shown in Table 3, our pop-NMF out-
+performs MF in terms of a more balanced performance
+between accuracy and novelty in all four data sets.
+The reason is that we put in the objective function
+of the classic matrix factorization and additional soft
+constraint, which pushes the more novel items to be
+recommended to the target user. These recommended
+items are those items which have not been seen by the
+users in the database (not the popular ones).
+
+While compared to MMR, for ML100K, ML1M and
+Yelp, our proposed approach displayed again a bal-
+anced trade-off between novelty (N-nDCG and EPC)
+and precision (precision and nDCG).
+
+Lastly, for the distance-based NMF as shown in Ta-
+ble 4, our Cat-NMF method provides in both data sets
+(ie., ML and Yelp) more novel item recommendations,
+when it is compared with MF + MMR, with minimum
+losses in terms of precision/nDCG.
+
+We were not able to get results on ML20M with
+MMR due to size of the dataset, it either required too
+much time (> 5 days) or incurred in memory starva-
+tion.
+
+5. Conclusions and Future Work
+
+In this paper, we proposed a new framework for
+novel matrix factorization, denoted as NMF, that pro-
+vides both novel and accurate item recommendations.
+In particular, this article introduced the distance-based
+item novelty, which extends the simple popularity-
+based item novelty model. Our empirical results have
+revealed the trade-off relationships between algorith-
+mic item accuracy and novelty, and our proposed
+distance-based NMF effectively deals with both of
+these two aspects. In future work we also want to con-
+sider the diversity of recommendation lists. Finally, we
+want to perform more offline experiments with addi-
+tional datasets, but also online evaluations of our NMF
+algorithm with real users to assess if and how users
+notice the increased novelty according to our proposed
+measure.
+
+References
+
+[1] Aggarwal, C.C., Hinneburg, A., Keim, D.A.: On the surpris-
+ing behavior of distance metrics in high dimensional space.
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+Table 3
+
+Algorithms’ comparison performance with top-10 recommended items on 4 data sets.
+
+ 
+
+ 
+
+Dataset Algorithm RegTerm (6) Prec. nDCG N-nDCG EPC
+MF - 12.3% 13.6% 28.7% 19.2%
+MF + MMR * - 3.7% 6.6% 62.8% 18.5%
+ML100K
+Pop-NMF 0.2 7.3% 7.7% 30.9% 25.8%
+Pop-NMF 0.5 4.6% 4.7% 32.3% 30.8%
+MF - 11.6% 12.6% 17.6% 11.3%
+MF + MMR * - 3.2% 6.0% 56.8% 10.0%
+MLIM
+Pop-NMF 0.2 5.1% 5.0% 20.6% 14.4%
+Pop-NMF 1 0.8% 0.8% 38.3% 35.4%
+MF - 6.5% 7.0% 18.2% 10.4%
+MF + MMRt - - - - -
+ML20M
+Pop-NMF 0.02 3.7% 3.7% 19.4% 14.8%
+Pop-NMF 0.08 2.8% 3.3% 32.8% 9.8%
+MF - 4.7% 4.9% 13.5% 12.6%
+MF + MMR * - 3.2% 3.7% 17.2% 16.6%
+Yelp-L.V.
+Pop-NMF 0.50 4.5% 4.8% 13.9% 13.1%
+Pop-NMF 1 4.3% 4.5% 14.6% 14.8%
+
+ 
+
+* Trade-off set at 0.5.
+
+} Server terminated the process due to resource starvation.
+
+Table 4
+
+Algorithms’ comparison performance with top-10 recommended items on 4 data sets.
+
+ 
+
+ 
+
+Dataset Algorithm RegTerm (6) Prec. nDCG = N-nDCG EPD
+MF - 12.0% 12.7% 6.9% 3.0%
+MF + MMR * - 10.4% 12.1% 10.6% 4.2%
+ML100K
+Cat-NMF 0.5 11.2% 11.5% 16.1% 4.5%
+Cat-NMF 0.9 10.7% 11.0% 21.8% 6.2%
+MF - 11.5% 12.4% 9.9% 4.0%
+MF + MMR * - 11.0% 12.1% 10.4% 6.8%
+MLIM
+Cat-NMF 0.4 9.7% 9.5% 40.6% 7.5%
+Cat-NMF 0.7 7.8% 74% 52.1% 9.7%
+MF - 6.5% 7.1% 6.1% 2.6%
+MF +MMRt - - - - -
+ML20M
+Cat-NMF 0.06 5.9% 5.6% 37.9% 6.1%
+Cat-NMF 0.1 5.2% 4.8% 50.3% 7.7%
+MF - 4.5% 4.5% 26.1% 27.2%
+MF + MMR * - 4.3% 4.7% 21.8% 18.7%
+Yelp-L.V.
+Cat-NMF 0.5 4.9% 4.9% 30.8% 32.7%
+Cat-NMF 1 5.1% 5.2% 34.2% 33.7%
+
+ 
+
+* Trade-off set at 0.5.
+
+} Server terminated the process due to resource starvation.
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+= N-nDCG = nDCG
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+14.0
+40.0
+12.0
+~ z
+10.0 30.04
+=~ a
+g 8
+2 80 3
+£
+20.0
+6.0
+4.0)
+0.00 0.25 0.50 0.75 1.00
+RegTerm
+(a)
+— N-nDCG — nDCG
+8.0
+30.0
+7.0
+=> 25.07
+$
+X60 3
+g 8
+a =
+= 5.0 20.0538
+40
+15.0
+3.0
+0.00 0.02 0.04 0.06 0.08
+RegTerm
+(c)
+
+= N-nDCG = nDCG
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+40.0
+
+12.5
+
+10.0 30.0
+s T
+rg
+£75 a
+8 20.063
+a =
+= 50 ss
+
+10.0
+25
+0.00 0.25 0.50 0.75 1.00
+RegTerm
+(b)
+— N-nDCG — nDCG
+
+49 14.7
+
+48 14.4
+_~ z
+x 4
+— a
+B47 1419
+a =
+© se
+
+46 13.8
+
+45 13.5
+
+0.00 0.25 0.50 0.75 1.00
+RegTerm
+(d)
+
+Fig. 2. Sensitivity Analysis of Popularity-based NMF for (a) the ML100K, (b) the ML1M, (c) the ML20M and (d) Yelp - Las Vegas data sets.
+
+[2
+
+BB
+
+[4
+
+[5]
+
+[6]
+
+In: International conference on database theory. pp. 420-434.
+Springer
+
+Carbonell, J., Goldstein, J.: The use of MMR, diversity-based
+reranking for reordering documents and producing summaries.
+In: Proceedings of the 21st annual international ACM SIGIR
+conference on Research and development in information re-
+trieval - SIGIR 98. ACM
+
+Castells, P., Hurley, N.J., Vargas, S.: Novelty and diversity in
+recommender systems. In: Ricci, F., Rokach, L., Shapira, B.
+(eds.) Recommender Systems Handbook, 2nd edition. pp. 881—
+918
+
+Charles, C., Kolla, M., Cormack, G., Vechtomova, O., Ashkan,
+A., Buttcher, $., MacKinnon, 1: Novelty and diversity in in-
+formation retrieval evaluation. In: SIGIR Conference. pp. 659—
+666. SIGIR 2008. ACM
+
+Cheng, P., Wang, S., Ma, J., Sun, J., Xiong, H.: Learning to
+recommend accurate and diverse items. In: Proceedings of the
+26th International Conference on World Wide Web. pp. 183-
+192. WWW °17
+
+Coba, L., Rook, L., Zanker, M., Symeonidis, P.: Decision mak-
+ing strategies differ in the presence of collaborative explana-
+tions: Two conjoint studies. In: Proceedings of the 24th Inter-
+national Conference on Intelligent User Interfaces. pp. 291—
+302. TUL’ 19, ACM, New York, NY, USA
+
+7]
+
+[8]
+
+19]
+
+[10]
+
+fi)
+
+[12]
+
+[13]
+
+Coba, L., Symeonidis, P., Zanker, M.: Novelty-aware matrix
+factorization based on items’ popularity. In: International Con-
+ference of the Italian Association for Artificial Intelligence
+(2018). pp. 516-527. Springer
+
+Coba, L., Zanker, M.: Replication and Reproduction in Rec-
+ommender Systems Research - Evidence from a Case-Study
+with the rrecsys Library. In: 30th International Conference on
+Industrial Engineering and Other Applications of Applied In-
+telligent Systems, IEA/AIE 2017, Arras, France, June, 2017,
+Proceedings. Springer International Publishing, Cham (2017)
+Cremonesi, P., Koren, Y., Turrin, R.: Performance of recom-
+mender algorithms on top-n recommendation tasks. In: Pro-
+ceedings of the Fourth ACM Conference on Recommender
+Systems. pp. 39-46. RecSys ’10, ACM, New York, NY, USA
+De Gemmis, M., Lops, P., Semeraro, G., Musto, C.: An inves-
+tigation on the serendipity problem in recommender systems.
+Information Processing and Management 51(5), 695-717
+Dhillon, LS., Sra, S.: Generalized nonnegative matrix approxi-
+mations with bregman divergences. In: NIPS. pp. 283-290
+
+Di Noia, T., Rosati, J., Tomeo, P., Di Sciascio, E.: Adaptive
+multi-attribute diversity for recommender systems. Informa-
+tion Sciences 382, 234-253
+
+Furnas, G., Deerwester, S., Dumais, S.e.a.: Information re-
+trieval using a singular value decomposition model of latent se-
+mantic structure. In: Proccedings ACM SIGIR Conference. pp.
+P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+= N-nDCG = nDCG
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+20.0 20.0
+~ z
+g 4
+on 15.0 1509
+g 8
+a =
+= &
+
+10.0 10.0
+
+0.00 0.25 0.50 0.75 1.00
+RegTerm
+(a)
+— N-nDCG — nDCG
+50.0
+8.0
+40.0
+
+6.0 z
+x 4
+am 30.09
+8 3
+O40 zs
+© s
+
+20.0"
+
+2.0
+
+10.0
+0.00 0.05 0.10
+RegTerm
+(c)
+
+= N-nDCG = nDCG
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+50.0
+15.0)
+40.0
+z
+1
+3
+8
+10.0 30.05
+&
+20.0
+5.0
+10.0
+0.0 0.2 04 0.6 0.8
+RegTerm
+(b)
+— N-nDCG — nDCG
+5.0 40.0
+45 f
+3
+35.0%
+Q
+a)
+40 zg
+30.0
+3.5
+0.00 0.25 0.50 0.75 1.00
+RegTerm
+(d)
+
+Fig. 3. Sensitivity Analysis of Distance-based NMF for (a) the ML100K, (b) the ML1M, (c) the ML20M and (d) Yelp - Las Vegas data sets.
+
+[14]
+
+[15]
+
+[16]
+
+117)
+
+[18]
+
+[19]
+
+[20]
+[21]
+
+[22]
+
+465-480
+
+Harper, F.M., Konstan, J.A.: The movielens datasets: History
+and context. ACM Trans. Interact. Intell. Syst. 5(4), 19:1-
+19:19
+
+Harper, F.M., Konstan, J.A.: The MovieLens Datasets. ACM
+Transactions on Interactive Intelligent Systems 5(4), 1-19
+Hurley, N.J.: Personalised ranking with diversity. Proceedings
+of the 7th ACM conference on Recommender systems - Rec-
+Sys °13 2(1), 379-382
+
+Jannach, D., Lerche, L., Kamehkhosh, 1, Jugovac, M.: What
+recommenders recommend: An analysis of recommendation
+biases and possible countermeasures. User Modeling and User-
+Adapted Interaction 25(5), 427-491
+
+Jannach, D., Resnick, P., Tuzhilin, A., Zanker, M.: Rec-
+ommender systems — beyond matrix completion. Commun.
+ACM 59(11), 94-102
+
+Jannach, D., Zanker, M., Ge, M., Groening, M.: Recommender
+Systems in Computer Science and Information Systems — A
+Landscape of Research 123, 76-87
+
+Koren, Y., Bell, R., Volinsky, C.: Matrix Factorization Tech-
+niques for Recommender Systems. Computer 42(8), 42-49
+Lee, D.D., Seung, H.S.: Learning the parts of objects by non-
+negative matrix factorization. Nature 401, 788-791
+
+Lin, C.J.: On the convergence of multiplicative update algo-
+rithms for nonnegative matrix factorization. IEEE Transactions
+
+[23]
+
+[24]
+
+[25]
+
+[26]
+
+[27]
+
+[28]
+
+[29]
+
+on Neural Networks 18(6), 1589-1596
+
+Mahoney, M.W., Drineas, P.: Cur matrix decompositions for
+improved data analysis. Proceedings of the National Academy
+of Sciences 106(3), 697-702
+
+Ning, X., Karypis, G.: Slim: Sparse linear methods for top-n
+recommender systems. In: 2011 IEEE 11th International Con-
+ference on Data Mining (ICDM), pp. 497-506. IEEE
+
+Ning, X., Karypis, G.: Sparse linear methods with side in-
+formation for top-n recommendations. In: Proceedings of the
+sixth ACM conference on Recommender systems. pp. 155-
+162. ACM
+
+Pariser, E.: The filter bubble : what the Internet is hiding from
+you. 2011, Penguin Press
+
+Rendle, S., Freudenthaler, C., Gantner, Z., Lars, S.T.: BPR:
+Bayesian personalized ranking from implicit feedback. In: Pro-
+ceedings of the Twenty-Fifth Conference on Uncertainty in Ar-
+tificial Intelligence. pp. 452-461. UAI °09, AUAI Press, Ar-
+lington, Virginia, United States
+
+Tomeo, P., Di Noia, T., de Gemmis, M., Lops, P., Semeraro,
+G., Di Sciascio, E.: Exploiting regression trees as user models
+for intent-aware multi-attribute diversity. In: 2nd Workshop on
+New Trends in Content-Based Recommender Systems - 2015
+( CBRecSys co-located with RecSys). pp. 2-9
+
+Vargas, S.: New approaches to diversity and novelty in recom-
+mender systems. In: Fourth BCS-IRSG symposium on future
+12 P. Symeonidis et al. / Counteracting the Filter Bubble in Recommender Systems
+
+directions in information access (FDIA 2011), Koblenz. vol. 31 the fifth ACM conference on Recommender systems - RecSys
+
+[30] Vargas, S., Castells, P.: Rank and relevance in novelty and °11. p. 109. ACM Press, New York, New York, USA
+diversity metrics for recommender systems. In: Proceedings [32] Yin, H., Cui, B., Li, J., Yao, J., Chen, C.: Challenging the long
+of the Fifth ACM Conference on Recommender Systems. pp. tail recommendation. Proceedings of the VLDB Endowment
+109-116. RecSys ’11, ACM, New York, NY, USA 5(9), 896-907
+
+[31] Vargas, S., Castells, P.: Rank and relevance in novelty and di-
+versity metrics for recommender systems. In: Proceedings of
+
