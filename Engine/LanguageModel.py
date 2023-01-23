@@ -43,7 +43,7 @@ class LanguageModel(System):
             # extract terms list
             words_dict = lg.preform_processing(tokens_dict=tokens_dict)
         # count how many terms/token exist in the collection
-        collection_len = len(words_dict)
+        collection_len = sum(words_dict.values())
         # update the values of the dictionary to be probability instead of tf
         words_dict.update((key, self._calc_prob_for_word(val, collection_len)) for key, val in words_dict.items())
 
