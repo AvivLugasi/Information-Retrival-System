@@ -1,0 +1,742 @@
+Association for Information Systems
+
+AIS Electronic Library (AlSeL)
+
+: Al and Semantic Technologies for Intelligent
+AMCIS 2020 Proceedings Information Systems (SIGODIS)
+
+Aug 10th, 12:00 AM
+
+Leveraging Cross Domain Recommendation Models to Alleviate
+Filter Bubble Problems
+
+Jianshan Sun
+Hefei University of Technology, sunjs9413@hfut.edu.cn
+
+Jian Song
+Hefei University of Technology, 775301251 @qq.com
+
+Yuanchun Jiang
+School of Management, Hefei University of Technology, ycjiang@hfut.edu.cn
+
+Yezheng Liu
+School of Management, Hefei University of Technology, liuyezheng@hfut.edu.cn
+
+Mingyue Zhu
+Hefei University of Technology, 3238689883@qq.com
+
+Follow this and additional works at: https://aisel.aisnet.org/amcis2020
+
+Recommended Citation
+
+Sun, Jianshan; Song, Jian; Jiang, Yuanchun; Liu, Yezheng; and Zhu, Mingyue, "Leveraging Cross Domain
+Recommendation Models to Alleviate Filter Bubble Problems" (2020). AMCIS 2020 Proceedings. 11.
+https://aisel.aisnet.org/amcis2020/ai_semantic_for_intelligent_info_systems/
+ai_semantic_for_intelligent_info_systems/11
+
+This material is brought to you by the Americas Conference on Information Systems (AMCIS) at AIS Electronic
+Library (AlSeL). It has been accepted for inclusion in AMCIS 2020 Proceedings by an authorized administrator of
+AIS Electronic Library (AlSeL). For more information, please contact elibrary@aisnet.org.
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+Leveraging Cross Domain Recommendation
+Models to Alleviate Filter Bubble Problems
+
+Completed Research
+Jianshan Sun Jian Song
+School of management, Hefei University of School of management, Hefei University of
+Technology, Hefei, China Technology, Hefei, China
+sunjs9413@hfut.edu.cn 775301251@qq.com
+Yuanchun Jiang Yezheng Liu
+School of management, Hefei University of School of management, Hefei University of
+Technology, Hefei, China Technology, Hefei, China
+ycjiang@hfut.edu.cn liuyezheng @hfut.edu.cn
+Mingyue Zhu
+
+School of management, Hefei University of Technology, Hefei, China
+
+22328689883@qq.com
+
+Abstract
+
+With the development of Web-based social networks, reeommender systems have become prevalent and
+integral to how users are interacting with the Internet. They filter out redundant information and
+personalize relevant and interesting items to online users. However, the positive reinforcement effect of
+recommender systems narrows users’ information experiences and cause filter bubble problems. How to
+provide relevant and diversified items for online users are becoming a challenging issue. In this study, we
+develop a novel cross domain matrix factorization model with adaptive diversity regularization to tackle the
+above challenges. We leverage the social tags and adaptive diversity regularization to improve
+recommendation performance. We conducted a comprehensive experiment on a real social media site to
+verify the effectiveness of the proposed method. The results show that the proposed method is able to
+achieve a decent balance between the accuracy and diversity of recommendation.
+
+Keywords
+
+Filter bubbles, cross-domain recommender system, matrix factorization, diversity.
+
+Introduction
+
+With the development of web-based social networks, online users have access to a large number of products
+and services. However, this large number of items can quickly become unmanageable and cause
+‘information overload’ problems for users. Against this background, recommender systems are developed
+to filter out redundant information and personalize relevant and interesting items to each user’s taste
+(Adomavicius and Kwon 2011). Nowadays, recommender systems have become ubiquitous and integral to
+how users are interacting with the Internet.
+
+Recommender systems have provided a personalized web experience and deliver relevant content according
+to users’ perceived interests and the interests of similar people to whom a user is connected. Certainly, they
+can accurately find preferred items for users. At the same time, they also polarize information perspectives
+and reduce novelty and diversity, which have an important influence on user satisfaction. With the positive
+reinforcement effect of recommender systems, online users are becoming to obtain narrowed information
+or content and are trapping in information cocoons. These effects of biased information experiences are
+often called echo chambers in the media communication community (Karlsen et al. 2017). However,
+
+Americas Conference on Information Systems 1
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+information retrieval researchers often refer them to filter bubbles, which are serf-reinforcing systems of
+narrowing information experiences that isolate people from diversified viewpoints, beliefs or content
+(Pariser 2011). Existing recommendation algorithms focus more on how to improve the accuracy of
+recommendations but pay less attention to the diversity of the reeommendation results.
+
+In order to solve the above problems, some researchers have explored a lot of algorithms to improve the
+diversity of recommendations. For example, some basic recommendation models were employed to
+generation recommendation lists and some strategies are designed to reorder the list to improve diversity
+(Cheng et al. 2017; Wu et al. 2018). Furthermore, diversity was considered into the unified recommendation
+models, such as adding diversity constraints (Gogna and Majumdar 2017) and using Determinantal Point
+Processes (DPP) (Borodin 2009). However, existing diverse strategies are not personal but universal to all
+users who often have different needs on diversity. Some people prefer more novel items, while others hope
+to be recommended with content conforming to their personal preferences (Barraza-Urbina et al. 2015).
+Furthermore, most recommendation algorithms only employ single domain knowledge to improve diversity.
+Recently, cross-domain recommendations have begun to emerge rapidly. Since people are often interested
+in many items and participate in many domains, cross-domain recommender systems can transfer
+knowledge from the source domain to the target domain to alleviate data sparsity problems (Hu et al. 2018)
+and to improve the accuracy of recommendations (Shevade and Murty 2019). However, existing cross-
+domain recommendation methods focus more on recommendation accuracy than diversity. How to employ
+cross-domain knowledge to balance accuracy and diversity to alleviate filter bubble problems remains a
+very important issue.
+
+In this paper, we develop a cross domain matrix factorization model with adaptive diversity regularization,
+called AD-CDMF, to address the key challenges highlighted above. Firstly, we joint the rating matrices of
+different domains for decomposition to migrate the rating patterns of the source domain. Secondly, we
+leverage social tags to calculate inter-domain similarity to strengthen the inter-domain knowledge transfer
+and ensure the accuracy of recommendations. Finally, we import the user's need for diversity from the
+source domain and use the designed adaptive diversity regulation to promote diversity adaptively. The
+proposed methods and models are evaluated through comprehensive experiments using the real dataset.
+The results show that the proposed AD-CDMF model outperforms the baseline methods based on a variety
+of recommendation metrics.
+
+Related Work
+
+With the rise of social media, people can share information with others at any time and they have more
+channels to obtain all kinds of information. Although this can enhance the communication between users
+to a certain extent, the possible negative impact has also attracted more and more attention of scholars. In
+recent years, some scholars have proved that social networks may cause problems such as echo chambers
+and filtering bubbles (Chitra and Musco 2020; Su et al. 2016). The recommendation algorithm, as a widely
+used technology in social media, is also being discussed fiercely by scholars.
+
+There is a debate whether recommender systems cause filter bubble problems. Some scholars believe that
+recommendation algorithms can expose users to more diverse and unbiased information (Nguyen et al.
+2014). However, most scholars believe that the use of recommendation systems may produce filter bubbles.
+The term ‘filter bubble’ was coined by (Pariser 2011) and he believed that the recommendation systems
+would connect users with information that was very similar to their existing views, thereby trapping users
+in a constant environment, which would reduce users’ learning ability, creativity, and form filter bubbles.
+And when a filtering algorithm is used, the polarization phenomenon became more serious. Through the
+analysis and modeling of the recommendation system, (Fleder and Hosanagar 2009) proved that some
+well-known recommendation algorithms would lead to a decrease in sales diversity, while making popular
+products more popular. This actually reflects that the recommendation system may cause filter bubbles,
+and users are trapped in a lack of diversity.
+
+At present, to alleviate the ‘filter bubble’ dilemma, some researchers aim to increase the recommended
+diversity. (Wu et al. 2018) proposed a greedy re-ranking method based on personality traits to improve the
+diversity of recommendations. The method mainly includes two steps. The first step is to generate a
+candidate item set based on the user's preferences. The second step is to integrate personality into a greedy
+re-ranking process to generate the final diverse recommendation list. (Di Noia et al. 2017) also proposed a
+
+Americas Conference on Information Systems 2
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+recommendation method based on re-ranking. They first generated the recommendation list based on the
+existing recommendation algorithms, and then used the newly proposed re-ranking method to modify the
+recommendation list. Some other scholars make a diverse recommendation through a single-stage
+approach. (Gogna and Majumdar 2017) proposed a single-stage optimization method by adding diversity
+enhancing constraints to the matrix factorization model. Different from the traditional matrix factorization
+method, they recovered the latent factor matrix of dense user and sparse item. Finally, the experimental
+results on real world dataset showed that the method has a high diversity of results. (Wu et al. 2019)
+proposed a recommendation method based on generative adversarial networks. A generator based on the
+Determinantal Point Process (DPP) model was built to capture the diversity and relevance of items, while a
+discriminator is used to distinguish the recommended items from the real items obtained from user
+observation data.
+
+Although there have been many studies on the improvement of the diversity of reeommendation results,
+most of these studies have caused a slight loss in accuracy (Gogna and Majumdar 2017; Man et al. 2017),
+and the recommendation of diversity is not enhanced adaptively according to users’ demand for diversity.
+Moreover, most of these studies are recommendation diversity algorithms in a single domain, without
+taking advantage of user interactions in other domains. In this paper, cross domain recommendation is
+used to solve the problem of data sparsity, which can not only obtain high accuracy, but also improve the
+diversity adaptively.
+
+Cross Domain Recommendation Model with Adaptive Diversity
+Regularization
+
+In the previous works, diversity-oriented recommended systems were often designed to improve
+recommendation diversity in a single domain. Compared with algorithms aiming to promoting diversity in
+a single domain, cross-domain recommendation algorithms have been proposed to improve the diversity
+of recommendations by providing better coverage of the range of user preferences (Winoto and Tang 2008).
+
+In this study, we propose a cross domain matrix factorization model with adaptive diversity regularization
+(AD-CDMF), our method adds two regularization terms to the traditional collective matrix factorization
+model (i.e. the similarity regularization between the domain of source and target domain, and the adaptive
+diversity regularization). We attempt to connect the learning process of matrix factorization both in the
+source domain and target domain by adding the two regularization terms, and then improve the
+recommendation diversity under the premise of not significantly reducing the recommendation accuracy.
+Our proposed cross-domain recommendation model includes three main modules: collective matrix
+factorization module, inter-domain similarity regularization module, and target domain adaptive diversity
+regularization module.
+
+Collective Matrix Factorization Module
+
+Collective matrix factorization module aims to enrich the knowledge from relational domains through
+collective matrix factorization of two correlation matrices (Singh and Gordon 2008). Given users are
+overlap in the two different domains but the items are not, the objective function of CMF can be expressed
+as:
+
+2 2
+LP,Qs@r) = > Y Ciy—< Pwd >) +>, >, Giy< Pw dy >) + AWCUPIP + QI? +1?) a)
+
+ueu iEjs ueU jejT
+
+Where U = US U UT is the set of all users, which we assume overlaps between the domains, /S is the source
+domain items, JT is the target domain items, ||-|| is the Euclidean norm of a matrix, <-> represents dot
+product of two vectors, Q; and Q; are matrices containing the item latent vectors in the source and target
+domains respectively, P is the matrix containing the user latent vectors, R is the rating matrix ,and 4, is used
+to prevent model overfitting. CMF model is leveraged to learn a latent vector P, € R* for each user u € U and
+separately models source and target domain items q; and q,, with i € JS, and j € JT,and it always imports
+additional user preference information from the source domain.
+
+Americas Conference on Information Systems 3
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+Inter-domain Similarity Regularization Module
+
+The second module of our model is based on that latent vectors of related items should explain the semantic
+similarities between them, in addition to the users’ preferences 7, ; ~< p,,, q; >. That is, we not only seek to
+predict the users’ preferences, but also require that the item latent vectors of the target domain and the
+source domain satisfy the inter-domain similarity constraint. To link different domains by importing the
+inter-domain similarity regularization, we adopt the inter-domain similarity regularization proposed by
+(Fernndez-Tobas et al. 2019), which is showed as follows:
+
+mind, ». ». (Sj-< ana) >) (2)
+
+ie js jejT
+
+Where, q; and q; are the latent factor of the item i and the item j respectively, A, > 0 is the cross-domain
+regularization parameter , controlling the contribution of the inter-domain similarity regularization, and
+S,; is the inter-domain similarity matrix calculated by social tags of items from different domains, which is
+demonstrated as follows:
+
+<ViPVjT >
+
+*o TTX"
+
+(3)
+
+Where ||-|| is the Euclidean norm of a matrix, <-> represents dot product of two vectors, V;/* is the semantic
+vector of item i in the set of source domain items /S, v,/ T is the semantic vector of the item j in the set of
+target domain items JT. V,/* and V;’" are calculated by using the co-occurrence relationship (Wartena et al.
+2009) between self-carrying tags and several common tags related to genres between two domains. The
+calculation process of V,/* and Vv, T is based on two assumptions, the first is that the more times two tags co-
+occur, the closer the relationship becomes, the second is that users may have similar preferences for item
+genres in different domains (Fernndez-Tobas et al. 2019), for example, people who like mystery novels
+may like science fiction movies.
+
+The inter-domain similarity regularization is used to regularize the item latent factors in the different
+domains to satisfy the similarities between them and to improve the accuracy of recommendations. In the
+following of the section, we propose an adaptive diversity regularization term to promote the
+recommendation diversity adaptively.
+
+Adaptive Diversity Regularization Module
+
+The third module of our model is based on the assumption that latent vectors of related items in the target
+domain should explain semantic distance between them and the strength of users’ demand for diversity, in
+addition to the users’ preferences and inter-domain similarity. That is, we not only seek to predict the
+preferences r,; ~< Dy, q; > and S;; ~< qi,q; >, but also require that the item latent vectors of the target
+domain and the user latent vectors satisfy the adaptive diversity constraint.
+
+In this section, we introduce the target domain adaptive diversity regularization term designed by us, which
+is able to adjust the difference of users’ ratings for different styles of items in the target domain according
+to the strength of users' demand for diversity. Specifically, if the distance between two items is bigger (i.e.
+d,, ;, is bigger), and the demand for diversity of useruis bigger (i.e. N,,is bigger), the user latent vector p,, and
+the item latent vectors q,, ,q;, will be regularized to decrease the difference of u’s ratings of these two items,
+
+as follows:
+2
+minds > Nu) Aria, ~ Vi.) (a)
+u JujoeJT
+Where p,, is the userulatent vector, q,, is the item j, latent vector, q,, is the item j, latent vector, and Ag >
+
+0 is the target-domain adaptive diversity regularization parameter, controlling the contribution of the
+adaptive diversity regularization term, d(j,, j.) is the semantic distance between the item j, and the item j,
+
+in the target domain, which is defined as follows:
+
+Americas Conference on Information Systems 4
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+dU, J2) = |¥j,7" ~ yj,7" || (5)
+
+Where ||-|| is the Euclidean norm of a matrix, V;, J¥and Vi, J? are the semantic vector of the item j, and item
+jz in the target domain respectively, which calculated by social tags as descripted in (Inter-domain
+
+similarity regularization module).
+
+And we adopt the idea of information entropy (Shannon 1948) to measure the degree of user demand for
+diversity. N,, represents the demand for diversity of user u, which is shown as follows:
+
+Nee
+Ui
+
+Mu, M.
+MCD, Eri? °
+
+Where M,, is the semantic vector of user u, calculated by the co-occurrence relationship between self-tagged
+social tags and some common tags related to styles between two domains, which is similar to the calculation
+process of V,/°and V;/". M,,, is the i element of vector M,,, and n,, is the number of common tags related
+to styles between different domains. The larger N,, is, the more dispersed of the u-tagged items in style are,
+indicating user u greater demand for diversity, and vice versa.
+
+Learning Process of Proposed Model
+
+The matrix factorization model with adaptive diversity regularization for cross-domain recommendation
+proposed by us integrates above three modules. Let U = US U UT be the set of all users, which we assume
+overlaps between the domains, and let ] = JS UJT be the set of all items, which we assume do not overlap.
+Our model learns a latent vector p, € R* for each user u € U and separately models the item latent
+vectors q; and q;, with i € JS, andj € JT. Our model’s loss function is as follows:
+
+L(P,O5.0,)= >, =< PG >)
+
+uel ie JS
+
++) Ss: 1, — < Purdy sy
+
+uecUje JT
+
++A, Ss: Ss: (S,j- <9.) >y (7)
+ie Bje JT
+
+tN, YD Mi hMP.G,- 9,
+
+ue Ip ieJT
+
++4, (IPI +|e,P +2,
+
+Where all model parameters were explained as described above.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+As in standard matrix factorization, we train our model using Alternating Least Squares (Bell and Koren
+2007). Firstly, we fix Q,; and Q,, and solve analytically for each p,, by setting the gradient to zero:
+
+Du = (2QEQs + 2QFQr + AaNu QPL Qr + 2A,E) "(ZOE + 2QFT uy) (8)
+
+Where D is the semantic distance matrix between items in the target domain, Ly = D’ — D is the Laplacian
+matrix of D, and D’ is the diagonal matrix with i‘” diagonal entry equal to ¥;, d(i, /), the vector 7, contains
+the ratings of user u for all items in the source domain, and the vector 7,,, contains the ratings of user u for
+all items in the target domain.
+
+Secondly, we fix P and Q,, and compute the optimal values for q;. Again, by setting the corresponding
+gradient to zero and solving analytically, we obtain:
+
+qi = (PTD + AsQPQr + A,E) + x (PTH +A;,QTSi) (9)
+
+As previously, the vector r; contains the ratings assigned to item i and s, is the i row of the inter-domain
+semantic similarity matrix S.
+
+Americas Conference on Information Systems 5
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+Finally, we fix P and Q, to compute and optimal values ordinally for q;:
+
+nT
+
+Gj = (PTD + AsQEQs + AYE + AgH Ly (i) "(PTH + ASQES; — AH ». Ly, )4;’) (10)
+
+fouy'si
+
+Where H = P'N’P and N' € R@** is the diagonal matrix, where only the main diagonal has values
+and N’;; = N;, Lp, (k) is the k‘* element of the k'” row of the matrix Lp, n; is the number of items in the
+target domain, as previously, the vector 7; contains the ratings assigned to item j and s; is the j* column of
+the inter-domain semantic similarity matrix S.
+
+Experimental Design
+Datasets
+
+In our work, we adopt a widely used dataset from Douban (Zhong et al. 2014) - a Chinese online social
+networking platform, which includes 3191,620 ratings from 33,559 users in the book domain, 5115,162
+ratings from 33,417 users in the movie domain, and 2528,925 ratings from 26,962 users in the music
+domain. It also includes rich metadata of items, such as abstract, language, and social tags on items. In
+order to train and validate our proposed cross-domain recommendation model, we choose the book domain
+and the movie domain with a large number of common users as the research objects. We consider the book
+domain with sparser ratings as the target domain and treat the movie domain with denser ratings as the
+source domain. We adopt the following preprocessing similar to the one done in (Gao et al. 2013). Statistics
+of the preprocessed datasets are given in Table 1.
+
+ 
+
+Domain | # users | # items | # ratings | density | # social tags | role
+
+ 
+
+Movie(M) | 4212 13362 1825147 3.22% 124250 source
+
+ 
+
+Book(B) 4212 8329 627963 1.79% 117692 target
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 1. Statistics of the Douban Dataset
+
+Evaluation Metrics
+
+In order to evaluate recommendation accuracy, we apply Mean Absolute Error (MAE) for performance
+analysis (Cantador et al. 2015). Its definition is shown below:
+
+1
+MAE = |arest| ». bray ~ | (11)
+
+(ufeatest
+
+Where, 7 is the test set and smaller values of MAE indicate better recommendation performance. For
+item recommendation, we reckon it as a content retrieval system to recommend to users the most diverse
+and relevant top-K items. The evaluation metrics, CC@K and a — NDCG,,@K are applied to assess the
+recommendation diversity of different methods.
+
+The CC@K is measured by the quantity of categories covered by top-K items divided by the total number of
+categories available in the dataset (Ashkan et al. 2015). A higher category coverage demonstrates the top-K
+items are more diverse in topic, as follows:
+
+CC@K = (12)
+
+ 
+
+Where, C,, is the quantity of categories covered by top-K items, and C;,; is the total number of categories.
+
+The @ — NDCG,,@K is a high-authority diversity evaluation approach, which is used to reward newly
+discovered themes and punish superfluous ones (Chandar and Carterette 2013):
+
+Americas Conference on Information Systems 6
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+K
+
+G,@i
+
+a —NDCG,@K =z, ) ——
+A log(1 +i)
+
+(43)
+
+Where G,,@k is the gain at the i“ position with respect to the given user u. In particular, G,,@k is defined
+as follows:
+
+Cei-1
+
+G@k = ) (=a) (14)
+VteT
+Where c,,; is the quantity of times that topic t has presented in the ranking of the recommendation list up
+to the i position.
+
+Experimental Procedure
+
+In order to reduce the impact of variations in the training set, we adopt the N-fold cross validation. The
+ratings of target domain are divided into three subsets with similar distributions and sizes. And then the
+union of two subsets is taken as the training set, while the remaining subset is reckoned as the test set. We
+performed the process three times and record the result of average test as the result of the 3-fold cross
+validation. Furthermore, for comparison, we tested eight methods: MF, PMF, CUNE-MF, SVD, SVD++,
+CMF and two models proposed by us, one without adaptive diversity regularization and the other with
+adaptive diversity regularization.
+
+(1) MF: MF is the basic and popular model of recommender systems.
+
+(2) PMF (Mnih and Salakhutdinov 2008): PMF is the probabilistic version of MF and we user the standard
+probabilistic matrix factorization model.
+
+(3) CUNE_MF: The CUNE_MF model proposed by (Zhao et al. 2011) extends MF by identifying the top-K
+semantic friends of each user by network embedding technology.
+
+(4) SVD (Golub and Reinsch 1971): SVD could make matrix decomposed into singular vectors and singular
+values and is one of the matrix factorization algorithms.
+
+(5) SVD++: SVD+-+ is one of matrix factorization algorithms proposed by (Koren 2008) that simultaneously
+considers user bias, item bias and user implicit feedback information.
+
+(6) CMF: CMF proposed by (Singh and Gordon 2008), couples rating matrices for all domains on the item
+or user dimension so as to transfer information through the common item-factor matrix or user-factor
+matrix.
+
+(7) CDMF: Cross-domain matrix factorization model without adaptive diversity regularization.
+(8) AD_CDMF: Cross-domain matrix factorization model without adaptive diversity regularization.
+
+Henceforth, concerning these eight approaches, the first five demonstrate single-domain recommended
+approaches while the remainder show cross-domain recommended approaches.
+
+Results and Discussions
+
+The recommender system techniques were implemented and the results were compared in the RecQ
+recommender system library Platform (Tang et al. 2012). We tuned properly the parameters of all methods,
+and the performance of the eight recommendation methods is reported in the following subsections.
+
+Recommendation Accuracy
+The recommendation accuracy of recommendation models is given in Table2, and the performance of CDCF
+is better than any other comparison models. Since CDCF leverages social tags to transfer knowledge
+
+between domains, and utilizes inter-domain similarity regularization to control the intensity of knowledge
+transfer between domains, which may import considerable knowledge with consistency of user preferences.
+
+Americas Conference on Information Systems 7
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+ 
+
+ 
+
+Methods MAE MAE improvements over baseline MF
+Single-domain method MF 0.58927 __
+PMF 0.57773 —
+
+CUNE_MF 0.57598
+SVD 0.56984
+SVD++ 0.58156
+
+Cross-domain method CMF 0.59723 __
+CDMF 0.55581 5.7%
+AD_CDMF 0.58126 1.4%
+
+ 
+
+Table 2. Recommendation Accuracy of the Eight Methods*
+
+Furthermore, we note that SVD is the best performing algorithm between single-domain methods. Perhaps
+it’s because SVD factorize the matrix into singular vectors and singular values, and the target domain
+information could be better utilized than other methods. CMF's recommendation accuracy is the worst,
+probably because jointing the matrices of the two domains for factorization increases the score sparsity.
+Besides, the performance of AD_CDMF in accuracy is moderate, but not far behind the best algorithms. It’s
+probably because the adaptive diversity regularization causes the loss of recommendation accuracy. And
+compared with other algorithms, AD_CDMF aims to enhance more coverage of user preferences instead of
+consistency of user preferences by importing the adaptive diversity regularization.
+
+In summary, the proposed CDCF model is able to improve recommendation accuracy effectively, while the
+proposed AD_CDMF model could promise certain recommendation accuracy.
+
+Recommendation Diversity
+
+To evaluate the recommended diversity of these methods, we consider the top-10 recommended scenario,
+where a list of top-10 rated items is recommended for each user. It is because that each book has almost 3
+styles, but the total number of styles is less than 15. If the recommendation list contains a large or a too
+small number of items, it is easy to make the diversity metric lose its significance (Cheng et al. 2017).
+
+ 
+
+Sy cc@10
+Bes) o-NDCG@10
+
+ 
+
+wie ca i SS St Lor art™ OS ove
+
+Figure 1. Diversity Performance of the Eight Recommendation Methods
+
+Figure 1 demonstrates the performance of all recommendation methods in diversity. We observe that the
+proposed AD_CDMF model is clearly the best performing approach, both in CC@10 and a — NDCG,,@10.
+Since our approach leverages the underlying CMF framework to introduce additional user preference
+information, and further adjusts diversity with adaptive diversity regularization. What’s more, we notice
+CUNE_MF gets the worst diversity performance, since recommendation diversity suffers with the import
+of semantic friend information for users. CMF model has the worst performance of diversity between cross-
+
+ 
+
+* Best values for each single-domain and cross-domain methods are shown in bold, and overall best values
+are underlined.
+
+Americas Conference on Information Systems 8
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+domain methods, probably because the rating pattern introduced from the source domain is less conducive
+to the improvement of diversity than the social tags.
+
+Furthermore, by comparing these results with Table 2, we observe that although it is commonly said that
+diversification by its nature results in deterioration in accuracy as a cost of introducing diversity
+(Wasilewski and Hurley 2018). The single-domain model SVD and the cross-domain model AD-CDMF are
+able to provide a good trade-off of decent diversity and the most accurate recommendations compared to
+other algorithms.
+
+Conclusion and Future Work
+
+Recommender systems bring benefits and convenience for our life and also may cause filter bubble issues.
+In this paper, we proposed a cross domain matrix factorization model with adaptive diversity regularization.
+The proposed model leveraged social tags as bridge to link the target and source domain to promise decent
+recommendation accuracy and utilized adaptive diversity regularization to improve recommendation
+diversity. Comprehensive experiments were conducted on a real social media website to evaluate the
+effectiveness of the proposed model. Through the analysis of the results, we draw the following conclusions.
+Firstly, the use of social tags is very effective in overcoming the low recommendation accuracy caused by
+the sparsity of the target domain. Secondly, the addition of adaptive regularization designed by us can
+effectively improve the individual diversity of reeommendations. Thirdly, our proposed model can achieve
+a good balance between the accuracy and diversity of recommendations.
+
+Several future research directions also exist for this study. Firstly, only one type of social media site (the
+Douban dataset) to validate the proposed approach in this paper. We will extend our approach to other sites
+(such as Amazon) to improve its applicability and generalizability. Secondly, we will explore user’s need for
+diversity in more advanced ways, such as leveraging more user history interaction data, or treating it as
+parameters that require implicit learning.
+
+Acknowledgement
+
+This work is supported by the National Natural Science Foundation of China (71872060, 91846201,
+71490725, 71722010, 91546114, and 91746302), partially Sponsored by Zhejiang Lab (No. 2019KEOABo4).
+
+REFERENCES
+
+Adomavicius, G., and Kwon, Y. 2011. "Improving aggregate recommendation diversity using ranking-based
+techniques,” IEEE Transactions on Knowledge and Data Engineering (24:5), pp 896-911.
+
+Ashkan, A., Kveton, B., Berkovsky, S., and Wen, Z. 2015. "Optimal greedy diversity for reeommendation,"”
+Twenty-Fourth International Joint Conference on Artificial Intelligence.
+
+Barraza-Urbina, A., Heitmann, B., Hayes, C., and Carrillo-Ramos, A. 2015. "XPLODIV: An exploitation-
+exploration aware diversification approach for recommender systems," The Twenty-Eighth
+International Flairs Conference.
+
+Bell, R.M., and Koren, Y. 2007. "Scalable collaborative filtering with jointly derived neighborhood
+interpolation weights," Seventh IEEE International Conference on Data Mining (CDM 2007), IEEE,
+Pp. 43-52.
+
+Borodin, A. 2009. "Determinantal point processes," arXiv preprint arXiv:0911.1153).
+
+Cantador, I., Fernndez-Tobas, I., Berkovsky, S., and Cremonesi, P. "Cross-domain recommender systems,"
+in: Recommender systems handbook, Springer, 2015, pp. 919-959.
+
+Chandar, P., and Carterette, B. 2013. "Preference based evaluation measures for novelty and diversity,”
+Proceedings of the 36th international ACM SIGIR conference on Research and development in
+information retrieval, pp. 413-422.
+
+Cheng, P., Wang, S., Ma, J., Sun, J., and Xiong, H. 2017. "Learning to recommend accurate and diverse
+items,” Proceedings of the 26th international conference on World Wide Web, pp. 183-192.
+
+Chitra, U., and Musco, C. 2020. "Analyzing the Impact of Filter Bubbles on Social Network Polarization,"
+Proceedings of the 13th International Conference on Web Search and Data Mining, pp. 115-123.
+
+Di Noia, T., Rosati, J.. Tomeo, P., and Di Sciascio, E. 2017. "Adaptive multi-attribute diversity for
+recommender systems,” Information Sciences (382), pp 234-253.
+
+Americas Conference on Information Systems 9
+Cross Domain Recommendation Models to Alleviate Filter Bubble
+
+Fernndez-Tobas, I., Cantador, I., Tomeo, P., Anelli, V.W., and Di Noia, T. 2019. "Addressing the user cold
+start with cross-domain collaborative filtering: exploiting item metadata in matrix factorization," User
+Modeling and User-Adapted Interaction (29:2), pp 443-486.
+
+Fleder, D., and Hosanagar, K. 2009. "Blockbuster culture's next rise or fall: The impact of recommender
+systems on sales diversity," Management science (55:5), pp 697-712.
+
+Gao, S., Luo, H., Chen, D., Li, S., Gallinari, P., and Guo, J. 2013. "Cross-domain recommendation via
+cluster-level latent factor model,” Joint European conference on machine learning and knowledge
+discovery in databases, Springer, pp. 161-176.
+
+Gogna, A., and Majumdar, A. 2017. "DiABIlO: Optimization based design for improving diversity in
+recommender system,” Information Sciences (378), pp 59-74.
+
+Golub, G.H., and Reinsch, C. "Singular value decomposition and least squares solutions," in: Linear
+Algebra, Springer, 1971, pp. 134-151.
+
+Hu, G., Zhang, Y., and Yang, Q. 2018. "Conet: Collaborative cross networks for cross-domain
+recommendation,” Proceedings of the 27th ACM International Conference on Information and
+Knowledge Management, pp. 667-676.
+
+Karlsen, R., Steen-Johnsen, K., Wollebk, D., and Enjolras, B. 2017. "Echo chamber and trench warfare
+dynamics in online debates,” European Journal of Communication (32:3), pp 257-273.
+
+Koren, Y. 2008. "Factorization meets the neighborhood: a multifaceted collaborative filtering model,”
+Proceedings of the 14th ACM SIGKDD international conference on Knowledge discovery and data
+mining, pp. 426-434.
+
+Man, T., Shen, H., Jin, X., and Cheng, X. 2017. "Cross-Domain Recommendation: An Embedding and
+Mapping Approach.,” IJCAI, pp. 2464-2470.
+
+Mnih, A., and Salakhutdinov, R.R. 2008. "Probabilistic matrix factorization," Advances in neural
+information processing systems, pp. 1257-1264.
+
+Nguyen, T.T., Hui, P., Harper, F.M., Terveen, L., and Konstan, J.A. 2014. "Exploring the filter bubble: the
+effect of using recommender systems on content diversity,” Proceedings of the 23rd international
+conference on World wide web, pp. 677-686.
+
+Pariser, E. 2011. The filter bubble: What the Internet is hiding from you Penguin UK.
+
+Shannon, C.E. 1948. "A mathematical theory of communication," Bell system technical journal (27:3), pp
+379-423.
+
+Shevade, S., and Murty, M.N. 2019. "Neural Cross-Domain Collaborative Filtering with Shared Entities,”
+arXiv preprint arXiv:1907.08440).
+
+Singh, A.P., and Gordon, G.J. 2008. "Relational learning via collective matrix factorization,” Proceedings
+of the 14th ACM SIGKDD international conference on Knowledge discovery and data mining, pp. 650-
+658.
+
+Su, J., Sharma, A., and Goel, S. 2016. "The effect of recommendations on network structure," Proceedings
+of the 25th international conference on World Wide Web, pp. 1157-1167.
+
+Tang, J., Gao, H., and Liu, H. 2012. "mTrust: discerning multi-faceted trust in a connected world,”
+Proceedings of the fifth ACM international conference on Web search and data mining, pp. 93-102.
+
+Wartena, C., Brussee, R., and Wibbels, M. 2009. "Using tag co-occurrence for recommendation,” 2009
+Ninth International Conference on Intelligent Systems Design and Applications, IEEE, pp. 273-278.
+
+Wasilewski, J., and Hurley, N. 2018. "Intent-aware item-based collaborative filtering for personalised
+diversification,” Proceedings of the 26th Conference on User Modeling, Adaptation and
+Personalization, pp. 81-89.
+
+Winoto, P., and Tang, T. 2008. "If you like the devil wears prada the book, will you also enjoy the devil
+wears prada the movie? a study of cross-domain recommendations,” New Generation Computing
+(26:3), pp 209-225.
+
+Wu, Q., Liu, Y., Miao, C., Zhao, Y., Guan, L., and Tang, H. 2019. "Recent advances in diversified
+recommendation,” arXiv preprint arXiv:1905.06589).
+
+Wu, W., Chen, L., and Zhao, Y. 2018. "Personalizing recommendation diversity based on user personality,"
+User Modeling and User-Adapted Interaction (28:3), pp 237-270.
+
+Zhao, J., Lui, J.C., Towsley, D., Guan, X., and Zhou, Y. 2011. "Empirical analysis of the evolution of follower
+network: A case study on Douban,” 2011 IEEE Conference on Computer Communications Workshops
+(INFOCOM WKSHPS), IEEE, pp. 924-929.
+
+Zhong, E., Fan, W., and Yang, Q. 2014. "User behavior learning and transfer in composite social networks,"
+ACM Transactions on Knowledge Discovery from Data (TKDD) (8:1), pp 1-32.
+
+Americas Conference on Information Systems 10
+

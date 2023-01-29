@@ -1,0 +1,842 @@
+A Study of Top-K Measures for Discrimination Discovery
+
+Dino Pedreschi
+Dipartimento di Informatica
+Universita di Pisa, Italy
+pedre@di.unipi.it
+
+ABSTRACT
+
+Data mining approaches for discrimination discovery unveil
+contexts of possible discrimination against protected-by-law
+groups by extracting classification rules from a dataset of
+historical decision records. Rules are ranked according to
+some legally-grounded contrast measure defined over a 4-
+fold contingency table, including risk difference, risk ratio,
+odds ratio, and a few others. Due to time and cost con-
+straints, however, only the top-& ranked rules are taken into
+further consideration by an anti-discrimination analyst. In
+this paper, we study to what extent the sets of top-& ranked
+rules with respect to any two pairs of measures agree.
+
+Categories and Subject Descriptors
+H.2.8 [Database Applications]: Data Mining
+
+General Terms
+Algorithms, Legal Aspects
+
+Keywords
+
+Discrimination discovery, classification rules
+
+1. INTRODUCTION
+
+Human right laws [1, 10, 11] prohibit discrimination against
+protected groups on the grounds of race, color, religion, na-
+tionality, sex, gender, marital status, age and pregnancy;
+and in a number of settings, including credit and insurance;
+sale, rental, and financing of housing; personnel selection
+and wages; access to public accommodations, education,
+nursing homes, adoptions, and health care. Recently, the
+issue of discrimination analysis has been considered from
+a data mining perspective [5, 6]. Discrimination discovery
+from data consists in the actual discovery of discriminatory
+situations and practices hidden in a large amount of histor-
+ical decision records. The aim is to unveil contexts of possi-
+ble discrimination on the basis of legally-grounded measures
+
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+
+SAC’I2 March 25-29, 2012, Riva del Garda, Italy.
+
+Copyright 2011 ACM 978-1-4503-0857- 1/12/03 ...$10.00.
+
+Salvatore Ruggieri
+Dipartimento di Informatica
+Universita di Pisa, Italy
+ruggieri@di.unipi.it
+
+126
+
+Franco Turini
+Dipartimento di Informatica
+Universita di Pisa, Italy
+turini@di.unipi.it
+
+of the degree of discrimination suffered by protected-by-law
+groups in such contexts. Reasoning on the extracted con-
+texts can support all the actors in an argument about pos-
+sible discriminatory behaviors. A complainant in a case can
+use them to find specific situations in which there is a prima
+facie evidence of discrimination against groups she belongs
+to. A decision maker can use them to prevent incurring
+in discriminatory decisions. Finally, control authorities can
+base the fight against discrimination on a formalized process
+of intelligent data analysis.
+
+However, the actual discovery of discriminatory situations
+and practices may reveal an extremely difficult task. The
+reason is twofold. First, a huge number of possible con-
+texts may, or may not, be the theater for discrimination. To
+see this point, consider the case of gender discrimination in
+credit approval: although an analyst may observe that no
+discrimination occurs in general, i.e., when considering the
+whole available decision records, it may turn out that it is ex-
+tremely difficult for aged women to obtain car loans. Many
+small or large niches may exist that conceal discrimination,
+and therefore all possible specific situations should be con-
+sidered as candidates, consisting of all possible combinations
+of variables and variable values: personal data, demograph-
+ics, social, economic and cultural indicators, etc. Second,
+the interpretation of existing legislations lead to different
+quantitative measures of discrimination and, a fortiori, to
+different rankings of the possibly discriminatory contexts to
+be considered by an anti-discrimination analyst.
+
+The first problem, i.e., extracting contexts of possible dis-
+crimination, has been considered in [5, 6] by resorting to the
+extraction of classification rules maximizing some discrim-
+ination measure defined over the 4-fold contingency table
+of the rule. In this paper, we focus on the second problem
+by studying how the rankings induced by different discrim-
+ination measures affect the results of the analysis. Due to
+time and cost constraints, an anti-discrimination analyst can
+afford to (manually) investigate a limited number of possi-
+ble contexts/rules, hence typically she will extract the top-k
+rules with respect to a given discrimination measure. We
+intend to investigate whether such a set of rules differs sig-
+nificantly from one measure to another, or, if their rankings
+differs significantly.
+
+This paper is organized as follows. In Sect. 2, we sur-
+vey the various discrimination measures and recall the ap-
+proach based on classification rule extraction and ranking.
+In Sect. 3-5, we study the distributions of values of pairs
+of measures on a reference dataset of credit applications.
+Finally, Sect. 6 summarizes the contributions of the paper.
+benefit
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+group denied granted
+protected a 6 nL
+unprotected c d ng
+m1 m2 n
+pi=a/ny p2=e/ng p=mi/n
+1
+RD=m-p2 RR=— Rros—E
+p2 1—pe2
+RR b
+or = BR _ a/b
+RC c/d
+1-
+ED=m-p ER=2) pos?)
+Pp l-p
+
+Figure 1: Discrimination measures.
+
+2. BACKGROUND
+
+Discrimination Measures. Consider a dataset of his-
+torical decisions about granting or not a benefit (e.g., a loan,
+a job, a wage increase, a school admission). A common tool
+for statistical analysis is provided by a 2 x 2, or 4-fold, con-
+tingency table, as shown in Fig. 1. Different outcomes be-
+tween two groups are measured in terms of the proportion
+of people in each group with a specific outcome. Consider a
+subset of the decisions, which we call a context. The propor-
+tions of benefit denied for the protected-by-law group (p1),
+the unprotected-by-law group (pz) and the overall subset (p)
+are considered. A general principle is then to consider group
+under-representation in obtaining a benefit as a quantita-
+tive measure of discrimination against a protected-by-law
+(briefly, protected) group.
+
+Group under-representation can be measured as differ-
+ences and rates of these proportions, including:
+
+e risk difference (RD = pi — p2), also known as absolute
+risk reduction,
+
+e risk ratio or relative risk (RR = pi/p2),
+
+relative chance (RC = (1 — p1)/(1 — p2)), also known
+as selection rate,
+
+odds ratio (OR = pi(1 — p2)/(pe(1 — pi))),
+
+and the versions of RD, RR, and RC when the protected
+group is compared to the average proportion p, rather than
+to the proportion of the unprotected group: extended dif-
+ference (ED = pi — p); extended ratio or extended lift (ER.
+=p./p); extended chance (EC = (1 — p1)/(1 —p)).
+
+Level curves of RD, RR, RC, and OR over the 2-D risk
+plane [3] are shown in Fig. 2. The degree of observed dis-
+proportionate burden over the protected group is monotonic
+increasing for RD, RR, and OR (resp., ED, and ER), and
+monotonic decreasing for RC (resp., ED). Since one is in-
+terested in contexts of higher benefit denial (resp., lower
+benefit granting) for the protected group compared to the
+unprotected group or to the average, the values of interest
+for RR, OR, and ER are those greater than 1; for RD and
+ED are those greater than 0; and for RC and EC are those
+lower than 1. [5] showed that RR > 1 iff OR > 1 iff ER > 1.
+It is readily checked that this is the case also iff RD > 0 iff
+ED > 0 iff RC < 1 iff EC < 1. Summarizing, all the mea-
+sures agree on the contexts to be considered as potentially
+
+p2
+
+p2
+
+127
+
+0.4
+pl
+
+0.6 08
+
+ 
+
+Figure 2: Level curves over the 2-D risk plane.
+
+discriminatory. Our objective is to study whether this holds
+also when restricting to the top-& contexts.
+
+From a legal point of view, several measures are adopted
+worldwide. UK law [9](a) mentions risk difference, EU Court
+of Justice has given more emphasis on the risk ratio (see
+[8, Section 3.5]), and US laws and courts mainly refer to
+the selection rate. Notice that the risk ratio is the ratio
+of the proportions of benefit denial between the protected
+and unprotected groups, while selection rate is the ratio of
+the proportions of benefit granting. Also, the odds ratio has
+been widely considered in legal research studies.
+
+Discrimination Discovery by Rule Mining. The
+legal principle of under-representation has inspired exist-
+ing approaches for discrimination discovery based on pat-
+tern mining. Starting from a dataset of historical deci-
+sion records, [5, 6] propose to extract classification rules of
+the form A,B —- C, called potentially discriminatory (PD)
+rules, to unveil contexts B of the dataset where the protected
+group A suffered from under-representation with respect to
+the decision C. A is a non-empty itemset, whose elements
+denote a fixed set of protected groups. C is a class item
+denoting the negative decision, e.g., credit denying, applica-
+tion rejection, job firing, and so on. Finally, B is an itemset
+denoting a context of possible discrimination. The degree of
+under-representation is measured by a measure from Fig. 1,
+where the contingency table refers to only those records sat-
+isfying B. As an example, RACE=BLACK, PURPOSE=NEW_CAR
+— CREDIT=No is a PD rule about denying credit (the de-
+cision C) to blacks (the protected group A) among those
+applying for the purpose of buying a new car (the context
+B). PD rules are ranked by their value of the discrimination
+measure. The approach has been implemented in [7].
+
+The German Credit Dataset. As a running exam-
+ple of our study, we consider the public domain German
+credit dataset [4], which consists of 1000 records over bank
+account holders. It includes attributes on personal proper-
+ties, past/current credits, employment status, and on per-
+sonal status. The decision attribute represents the good/bad
+creditor decision assigned to the bank account holder. The
+protected groups considered in the analyses include female
+non-single, foreign workers, and senior people. When not
+otherwise specified, classification rules are extracted with a
+minimum support of 2%.
+ 
+
+ 
+
+ 
+
+top bottom
+Mi M2 1°? M2 k*® M2 missed included
+OR | RR 9.515 2.100 | 2.477 1.517
+RR | OR 17.24 2.867 | 4.600 2.385
+RD | RR 9.515 2.100 | 6.262 1.400
+RR | RD 0.589 0.199 | 0.364 0.099
+RC | RR 9.515 2.100 | 7.765 1.240
+RR | RC 0.215 0.746 | 0.429 0.892
+RD | OR 17.24 2.867 | 7.851 2.286
+OR | RD 0.589 0.199 | 0.255 0.104
+RC | OR 17.24 2.867 | 10.36 1.687
+OR | RC 0.215 0.746 | 0.524 0.891
+RC | RD 0.589 0.199 | 0.242 0.127
+RD | RC 0.215 0.746 | 0.632 0.790
+ED | ER T.808 1.234 | 1.360 1.131
+ER | ED 0.254 0.076 | 0.128 0.043
+EC | ER 1.808 1.234 | 1.448 1.062
+ER | EC 0.477 0.883 | 0.706 0.949
+EC | ED 0.254 0.076 | 0.088 0.041
+ED | EC 0.477 0.883 | 0.706 0.905
+ER | RR 9.515 2.100 | 9.515 1.309
+RR | ER 1.808 1.234 | 1.636 1.011
+ED | RD 0.589 0.199 | 0.589 0.102
+RD | ED 0.254 0.076 | 0.142 0.005
+EC | RC 0.215 0.746 | 0.406 0.842
+RC | EC 0.477 0.883 | 0.804 0.992
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 1: 1° and &” ranked M2 value of classifica-
+tion rules extracted from the German credit dataset,
+with k = 1000. Top M2 value missed by and bottom
+M2 value included in the top-& rules w.r.t. M1.
+
+3. MEASURES OVER p, AND P;
+
+Let us start by comparing the measures defined over pro-
+portions pi and pz, namely RR, OR, RD, and RC.
+
+RR vs OR. Fig. 3 (left) shows the 2-D risk plane for the
+top-é classification rules, with & = 1000, extracted from the
+German credit dataset and ranked w.r.t. RR and OR. More
+in detail, in such a plot (and in the other similar 2-D plots)
+we show:
+
+e as red points those rules (denoted as RRM OR) be-
+longing to the top-& set of both measures;
+
+e as green points those rules (denoted as RR \ OR) be-
+longing to the top-k set of RR only;
+
+e as blue points those rules (denoted as OR \ RR) be-
+longing to the top-k set of OR only;
+
+e the level curve corresponding to the RR of the k*”
+ranked rule (in the plot, RR = 2.10), ie., such that all
+top-k rules w.r.t. RR lie below it;
+
+e the level curve corresponding to the OR of the k*”
+ranked rule (in the plot, OR = 2.87), ie., such that all
+top-k rules w.r.t. OR. lie below it.
+
+OR has been often regarded as a good approximation of RR,
+due to the fact that for p; = 0, it turns out 1 — p; = 1, and
+1 — p2 © 1 (since we assume p; > p2), which in turn imply
+RC 1, and then OR = RR/RC = RR.
+
+In Fig. 3 (left), it is readily checked that for p; < 0.4,
+the level curve of OR is very close to the one of RR. In
+other terms, the top-& rules w.r.t. RR missed by the top-k
+tules w.r.t. OR (ie., the green points in the plot) lie very
+close to the lowest ranked rule w.r.t RR. Hence, the most
+relevant rules w.r.t. RR are not missed by looking at the
+
+128
+
+most relevant rules w.r.t. OR. The highest RR value of a
+missed rule is 2.477, which is close to the RR = 2.10 of the
+k* yanked rule and well below to the RR = 9.515 of the
+1** ranked rule. However, the blue points in Fig. 3 (left)
+highlight a number of rules in the top-k set w.r.t. OR that
+do not belong to the top-k set w.r.t. RR. Those rules are
+ranked as interesting w.r.t. OR. but they are not w.r.t. RR.
+As an example, the top-k set w.r.t. OR contains a rule with
+a RR of only 1.52.
+
+Table 1 details these statistics for all pairs of measures.
+It answers the question: “How interesting M2 values are
+missed and how irrelevant M2 values are considered when
+using a measure M1 in place of M2?”. If missed and included
+values are close to the k*” ranked M2 value, then M1 can be
+considered a good proxy for M2, covering all its top-ranked
+rules while not covering low-ranked ones.
+
+Finally, it is worth noting that, in general, the level curves
+of RR. vs OR have the form as in Fig. 3 (left). In fact,
+the level curve of RR is pi/v, for v being the RR of the
+k* yanked rule w.r.t. RR, and the level curve of OR is
+pi/(pitv'(1—p1)), for v’ being the RR of the k*” ranked rule
+w.r.t. OR. By basic algebra, they intersect only at p; = 0
+and at pi = (v’ — v)/(v’ - 1).
+
+RR vs RD, RC. Since the level curves of RR and RD
+(resp., RC) are straight lines, they intersect in one point
+only, as shown in Fig. 3 (center) (resp., right). The number
+of rules belonging to the top-k set of only RR or of only RD
+(resp., RC) is now considerably higher.
+
+Approximating RR. by means of RD (resp., RC) in top-k
+rule extraction leads to miss the green points, with a theo-
+retically upper unbounded RR. In our example, a rule with
+RR = 6.262 (resp., RR = 7.765) would be missed. Also,
+rules with RR much lower than the &*” ranked rule would
+be considered. In our example, again, a rule with RR = 1.4
+(resp., RR. = 1.24) would be considered.
+
+Consider now approximating RD (resp., RC) by means of
+RR. The rules missed by RR. (the blue points) have a RD as
+high as 0.364 (resp., RC as low as 0.429). Conversely, the
+rules considered by RR, but not by RD (resp., RC), have a
+minimum RD of 0.099 (resp., RC of 0.892).
+
+OR vs RD vs RC. Fig. 4 shows the 2-D plots for OR,
+RD, and RC. Curves of OR and RD intersect in two points’,
+while curves of OR and RC and of RD and RC intersect in
+one point only. The number of rules belonging to the top-&
+set of only OR (resp., RD) or of only RD (resp., RC) appears
+moderate, in the same order as in the case RR vs OR. We
+refer the reader to Table 1 for details of using one of the
+three measures as an approximation for another.
+
+Intersection and Order Correlation. Starting from
+the sample & = 1000 considered so far, it is now legitimate
+to ask ourselves how many rules are shared, for generic k’s,
+between the top-& sets of any two measures. The answer
+also solves the question of how many rules in one of the two
+top-& sets belong to it only, namely & minus the number of
+rules that belong to both. Intuitively, for increasing k, the
+top-& sets tend to converge to the set of all rules. We expect
+then that the fraction of shared rules is a monotonically in-
+creasing function over k. This is confirmed in Fig. 5 (left,
+center). RD vs RC and RR vs OR. show the largest. over-
+
+lhe intersection points occur at the solutions of a quadratic equation
+in p1 obtained by equating the level curve of OR (p2 = pi/(pitv(1—
+pi)), for v being the OR of the k*” ranked rule w.r.t. OR) and RD
+(po = pi —v’, for v’ being the RD of the k*® ranked rule w.r.t. OR).
+dataset=credit, k = 1000
+
+RRAOR
+RR\OR
+OR\RR
+RR=2.1
+OR = 2.867
+
+RR” RD
+RR\RD
+
+p2
+
+0.2 0.4
+
+pl
+
+06 08 1 0.2
+
+Figure 3: Classification rules over the 2-D risk plane: RR vs OR (left), RR vs
+
+dataset=credit, k = 1000
+
+OR RD
+OR\RD
+RD\OR
+
+OR = 2.867
+RD =0.199 »
+
+OR Nn RC
+OR\ RC
+RC\OR
+
+OR = 2.867
+RC = 0.746
+
+pe
+pe
+
+0.2
+
+ 
+
+Figure 4: Classification rules over the 2-D risk plane
+
+lapping set of rules. RR vs RC has the smallest overlapping
+set. This is rather relevant from a practical (legal) point
+of view: EU laws (RR) and US laws (RC) do not lead the
+anti-discrimination analyst to reason on a significantly over-
+lapping set of potentially discriminatory classification rules.
+
+Another intuitive question is whether the rankings of two
+measures are correlated on the set of overlapping rules, i.e.,
+whether the two measures impose the same order on the
+rules shared by their top-& sets. Kendall’s correlation co-
+efficient 7 represents the difference between the probability
+that in the observed data two variables are in the same order
+versus the probability that the two variables are in different
+orders. It ranges from -1 (negative correlation, i.e., inverse
+ordering) to +1 (positive correlation, i.e., same ordering).
+Fig. 5 (right) shows the Kendall’s 7 by varying k for three
+pairs of measures, the top two and the bottom one with re-
+spect to the overlapping fraction. Unfortunately, 7 appears
+to be rather unstable, apart for RR vs OR. for which it is
+almost over 0.5. Since the top-é rules are only a prima facie
+evidence of discrimination, they are (manually) screened by
+the anti-discrimination analyst to validate their legal rele-
+vance. The negative conclusion from Fig. 5 (right) is that,
+using a discrimination measure to rank the rules to be val-
+idated does not help in covering earlier the most relevant
+rules with respect to a different measure.
+
+4. MEASURES OVER Pp, AND P
+
+We turn now the attention on measures defined over pro-
+portions p; and p, namely ER, ED, and EC. The 2-D risk
+planes in Fig. 6 are defined over p; as the x-axis, and p as
+the y-axis. Compared to their respective (i.e., RD for ED,
+RR for ER, and RC for EC) plots from Fig. 3 and Fig. 5, it
+is readily checked that the points:
+
+dataset=credit, k = 1000
+
+}
+x
+
+ 
+
+04
+
+pl
+
+dataset=credit, k = 1000
+
+i
+x
+*
+
+04
+
+pl
+
+dataset=credit, k = 1000
+
+RRARG +
+RR\RC x
+
+RR= 2.14
+RC = 0.746
+
+a
+
+0.6 08 1 02 0.4
+
+pl
+
+0.6 08 1
+
+RD (center), RR vs RC (right).
+
+dataset=credit, k = 1000
+
+RDmMRG +
+RD\RC x
+RC\RD *
+
+RD = 0.199 —»—
+RC = 0.746 =»
+
+ 
+
+0.6 08 1 02 0.4
+
+pl
+
+0.6 08 1
+
+: OR vs RD (left), OR vs RC (center), RD vs RC (right).
+
+129
+
+e are more flattened around the level curve of the k’”-
+ranked rule. This is explained by a smaller variability
+range of the measures, as shown in Table 1. As an
+example, ER. ranges from 1.808 to 1.234, whilst RR
+ranges from 9.515 to 2.1;
+
+are more centered in the 2-D risk plane. Since, in
+general, p > min{p1, po}, any rule plotted in the p;-p2
+risk plane would be plotted on a higher (if pi > po,
+otherwise in a lower) y-point in the pi-p risk plane.
+
+The fraction of overlapping rules between any pair of the
+ER, ED, and EC measures appears considerably high. This
+is confirmed in Fig. 7 (left), showing that ED and EC almost
+yield the same top-& set of rules, even for reasonably low k.
+Table 1 also shows that the rules missed by ED (resp., EC)
+would not rank high w.r.t. EC (resp., ED). Nevertheless,
+we should not draw a general conclusion. So far, we have
+considered classification rules with a minimum support of
+2%. The assumption of extracting rules with a minimum
+support threshold is natural in discrimination analysis: it
+amounts at extracting contexts where a minimum number
+of persons of the protected group are treated unfavourably.
+Do the trends of Fig. 5 (left, center) and Fig. 7 (left) hold in
+general? Unfortunately, this is not the case. For lower min-
+imum support thresholds, the fraction of overlapping rules
+tends to decrease rapidly, as shown in Fig. 7 (center) for
+EDN EC. As an example, for a 0.5% minimum support,
+to reach an overlapping fraction of 50%, we must consider
+at least 500 rules. Intuitively, this fact can be explained by
+the exponential growth of the number of classification rules
+extracted, and, a fortiori, of the number of possible contexts
+where the ED and EC rankings significantly differ.
+
+Finally, Fig. 7 (right) shows that a similar trend occurs
+for the adult dataset [4] as well. Strictly speaking, adult is
+dataset=credit dataset=crecit dataset=credit
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+TT
+g 08 s 05 f-4 eX
+5 5 i" \ as
+£ 06 £ } ie
+5 5 RB of¥
+Boo 8 d i
+2 2
+a a
+= 02 aoR —— = 0.5
+RRA RD 0
+0 RRA RG tpn 1
+0 500 1000 1500 2000 2500 3000 0 500 1000 1500 2000 2500 3000 0 50
+k k k
+
+Figure 5: Number of rules in both the top-k sets of two measures over k (left, center). Kendall’s 7 (right).
+
+dataset=credit, k = 1000 dataset=credit, k = 1000 dataset=credit, k = 1000
+
+ER AED ERREC + EDA EC
+ER\ED ER\EG  *
+ED\ER 4 EC\ER *
+
+ER = 1.234 ER = 1.234 —=—
+
+ED = 0.076 . EG = 0.883
+
+ 
+
+0 02 0.4 06 0.8 1 0 02 04 0.6 0.8 1 0 02 0.4 0.6 0.8 1
+pi pi pi
+
+Figure 6: Classification rules over the pi-p risk plane: ER vs ED (left), ER vs EC (center), ED vs EC (right).
+
+not concerned with decisions, but rather with 48,842 census p/p. < v/v’ Therefore, the line p/p2 = v/v’ separates the
+records related to people income (low/high). The objec- two sets. Notice, however, that this is a necessary condition
+tive of discrimination analysis on this dataset is to discover only, not a sufficient one. Rules shared between the two
+forms of statistical discrimination [2], namely patterns of top-& sets lie around such a line.
+
+lower performances, skills or capacities of protected groups Fig. 8 (center) considers the RD and ED measures. We
+in order to prevent their use in future (possibly, automated) reason as before. Let v be the RD value for the k*"-ranked
+decisions. While a support of 2% is reasonable for the Ger- rule w.r.t. RD (for & = 1000, v = 0.199), and v’ be the ED
+man credit dataset, amounting at 20 records, it becomes too value for the k‘"-ranked rule w.r.t. ED (for k = 1000, v’ =
+high for adult, amounting at 976 records. Niche contexts 0.076). The separation of the rules occurring only in one
+of possible discrimination are likely to occur for much less top-& set is obtained by the system of equalities p; —p2 = v,
+than 976 persons. Unfortunately, as shown in Fig. 7 (right), pi — p = v', which has solution p — pp = v — v’ (in our
+for lower minimum support thresholds, the top ranked rules example, v — v’ = 0.199 — 0.076 = 0.123).
+
+w.r.t. ED and EC considerably differ for a reasonably low k. Fig. 8 (right) plots the RC and EC measures. Once again,
+
+let v be the RC value for the &*”-ranked rule w.r.t. RC (for
+5. COMPARING GROUPS OF MEASURES k = 1000, v = 0.746), and v' be the EC value for the k’’-
+ranked rule w.r.t. EC (for k = 1000, v’ = 0.883). The
+
+After having looked separately at the measures over pi-p2 . . . .
+separation of the rules occurring only in one top-& set is now
+
+and over pi-p, we now compare the related pairs of mea- . ws
+sures RR and ER, RD and ED, RC and EC. Intuitively, ER timed by the system of equalities (1 — pi)/(1 — po) = »,
+is defined as RR apart from using p (the proportion over (1 —Pi)P—P2 =»; which has solution (1 —p)/(1—pa) = v/v
+the whole context) as the comparator against p; instead of (in our example, v/v = 0.746/0.883 = 0.845). .
+
+using p» (the proportion over the unprotected group). ‘The / In all three previous cases, the number of overlapping rules
+same holds for ED vs RD, and for EC vs EC. Therefore, by is very low. Most of the points in Fig. 5 are either green or
+
+comparing RR and ER we are actually studying the effects blue, very few are red. Tn terms of the discrimination anal
+of a critical choice from a legal point of view. ysis, this means that taking as a reference proportion in the
+
+: der-representation principle the set of all people in a con-
+Fig. 8 (left) plots the top-é rules w.r.t. the RR and ER un P prnerP peop
+
+ig. 8 (left) plots the top-k rules w.r e RR and ER text or only the set of the unprotected people significantly
+affects the top-& set of rules to be looked at by the anti-
+discrimination analyst.
+
+measures. In order to separate the rules that occur only in
+one top-& set, the 2-D risk plane is now defined along the
+axis p and ps. Let v be the RR value for the &*’-ranked rule
+
+w.r.t. RR (for k = 1000, v = 2.1), and v’ be the ER value
+for the k**-ranked rule w.r.t. ER (for k = 1000, v’ = 1.234). 6. CONCLUSIONS
+
+A rule belongs to the top-k set of only RR iff pi/p2 > v Classification rules have been adopted for discrimination
+and pi/p < vu’. By elementary algebra, this occurs only if discovery by interpreting legal measures of under-representa-
+p/p. > v/v’ (in our example, v/v’ = 2.1/1.234 = 1.702). tion as interestingness measures over a 4-fold contingency
+Similarly, a rule belongs to the top-k set of only ER only if table. Extracted classification rules are ranked according to
+
+130
+dataset=credit
+
+ 
+
+dataset=credit, ED 7 EC
+
+ 
+
+dataset=adult, ED m7 EC
+
+ 
+
+s s s
+2 2 2
+G G G
+£ £ £
+Ss Ss Ss
+2 2 2
+6 6 6
+o o o
+2 2 2
+£ £ £
+= = minsupp = 2% —— & minsupp = 2.0%
+minsupp = 1% «=== minsupp = 1.0%
+a = 0.5%
+0 500 1000 1500 2000 2500 3000 0 500. «1000 1500 2000 2500 3000 0 500 1000 1500 2000
+k k k
+Figure 7: Number of rules in both the top-& sets of two measures over k.
+dataset=credit, k = 1000 dataset=credit, k = 1000 dataset=credit, k = 1000
+EC
+P-p2=0.123 —»— (1-p)/(1-p2)=0.845
+
+nN
+a
+
+ 
+
+Figure 8: Classification rules over the p-p2 risk plane: RR vs ER (left), RD vs ED (center), RC vs EC (right).
+
+a measure, and only the top-é rules are taken into (manual)
+consideration by the anti-discrimination analyst for further
+investigation. However, which measure has to be consid-
+ered is not always known in advance, e.g., as in a legal case
+before a court. This gives raise to the problem of under-
+standing at which extent any two measures yield the same
+set of top-& rules. We studied such a problem on a reference
+dataset of credit applications, with some theoretical analy-
+ses applicable in general. We can summarize the following
+specific conclusions of this study: (1) among all the pairs of
+measures, RR and OR, RD and RC, and ED and EC, show
+the largest overlapping set of top-& rules; (2) among all
+pairs of measures, RR (mainly adopted in the US legal sys-
+tem) and RC (mainly adopted in the EU legal system) have
+the smallest overlapping set of top-& rules; (3) in all cases,
+however, the set of overlapping rules rapidly degrades as the
+minimum support threshold of the extracted rules decreases;
+(4) for none of the pairs of measures there is a stable and
+relevant correlation between the rankings imposed by the
+two measures over the set of overlapping rules; (5) pairs of
+measures that differ only in the comparator proportion (RR
+vs ER, RD vs ED, RC vs EC) lead to top-k sets with a small
+percentage of overlapping rules. We believe that the above
+conclusions represent a relevant contribution of data mining
+to the legal debate on anti-discrimination, consisting in ana-
+lytical means to support the choice, e.g., at legislative level,
+of a quantitative measure of the qualitative legal principle
+of under-representation.
+
+7. REFERENCES
+
+[1] European Union Legislation. (a) Racial Equality
+Directive, 2000; (b) Employment Equality Directive,
+2000; (c) Gender Employment Directive, 2006; (d)
+Equal Treatment Directive (proposal), 2008.
+
+131
+
+[2] H. Fang and A. Moro. Theories of statistical
+discrimination and affirmative action: A survey. In
+Handbook of Social Economics, Vol 1B.
+North-Holland, 2010.
+
+[3] J. Li and Q. Yang. Strong compound-risk factors:
+Efficient discovery through emerging patterns and
+contrast sets. [IEEE Trans. on Information Technology
+in Biomedicine, 11(5):544-552, 2007.
+
+[4] D.J. Newman, S. Hettich, C.L. Blake, and C.J. Merz.
+UCI repository of machine learning databases, 1998.
+http://archive.ics.uci.edu/ml.
+
+[5] D. Pedreschi, 8. Ruggieri, and F. Turini. Measuring
+discrimination in socially-sensitive decision records. In
+Proc. of SDM 2009, pages 581-592. SIAM, 2009.
+
+[6] S. Ruggieri, D. Pedreschi, and F. Turini. Data mining
+for discrimination discovery. ACM Trans. on
+Knowledge Discovery from Data, 4(2):Article 9, 2010.
+
+[7] S. Ruggieri, D. Pedreschi, and F. Turini. DCUBE:
+Discrimination discovery in databases. In Proc. of
+SIGMOD 2010, pages 1127-1130. ACM, 2010.
+
+[8] D. Schiek, L. Waddington, and M. Bell, editors.
+Cases, Materials and Text on National, Supranational
+and Int. Non-Discrimination Law. Hart Publ., 2007.
+
+[9] U.K. Legislation. (a) Sex Discrimination Act, 1975,
+(b) Race Relation Act, 1976.
+
+[10] United Nations Legislation. (a) Universal Declaration
+of Human Rights, 1948, (c) Convention on the
+Elimination of All forms of Racial Discrimination,
+1966, (d) Convention on the Elimination of All forms
+of Discrimination Against Women, 1979.
+
+[11] U.S. Federal Legislation. (a) Equal Credit
+Opportunity Act, 1974; (b) Fair Housing Act, 1968;
+(c) Employment Act, 1967; (d) Equal Pay Act, 1963.
+

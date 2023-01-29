@@ -1,0 +1,967 @@
+Discrimination Prevention in Data Mining for
+Intrusion and Crime Detection
+
+Sara Hajian, Josep Domingo-Ferrer and Antoni Martinez-Ballesté
+Universitat Rovira i Virgili
+Dept. of Computer Engineering and Maths, UNESCO Chair in Data Privacy
+Av. Paisos Catalans 26 - E-43007 Tarragona, Catalonia
+Email {sara.hajian,josep.domingo,antoni.martinez} @urv.cat
+
+Abstract—Automated data collection has fostered the use
+of data mining for intrusion and crime detection. Indeed,
+banks, large corporations, insurance companies, casinos,
+etc. are increasingly mining data about their customers
+or employees in view of detecting potential intrusion,
+fraud or even crime. Mining algorithms are trained from
+datasets which may be biased in what regards gender,
+race, religion or other attributes. Furthermore, mining is
+often outsourced or carried out in cooperation by several
+entities. For those reasons, discrimination concerns arise.
+Potential intrusion, fraud or crime should be inferred
+from objective misbehavior, rather than from sensitive
+attributes like gender, race or religion. This paper discusses
+how to clean training datasets and outsourced datasets
+in such a way that legitimate classification rules can still
+be extracted but discriminating rules based on sensitive
+attributes cannot.
+
+I. INTRODUCTION
+
+Discrimination can be viewed as the act of unfairly
+treating people on the basis of their belonging to a
+specific group. For instance, individuals may be dis-
+criminated because of their race, ideology, gender, etc.
+In economics and social sciences, discrimination has
+been studied for over half a century. There are several
+decision-making tasks which lend themselves to discrim-
+ination, e.g. loan granting and staff selection. In the
+last decades, anti-discrimination laws have been adopted
+by many democratic governments. Some examples are
+the US Equal Pay Act [1], the UK Sex Discrimination
+Act [2], the UK Race Relations Act [3] and the EU
+Directive 2000/43/EC on Anti-discrimination [4].
+
+Surprisingly, discrimination discovery in information
+processing did not receive much attention until 2008 [5],
+even if the use of information systems in decision
+making is widely deployed. Indeed, decision models
+are created from real data (training data) in order to
+facilitate decisions in a variety of environments, such as
+medicine, banking or network security. In these cases, if
+
+978-1-4244-9906-9/1 1/$26.00 ©2011 IEEE
+
+the training data are biased for or against a particular
+community (e.g. foreigners), the learned model may
+show unlawfully prejudiced behavior. Discovering such
+potential biases and sanitizing the training data without
+harming their decision-making utility is therefore highly
+desirable. Information technologies could play an impor-
+tant role in discrimination discovery and prevention (i.e.
+anti-discrimination [5], [6]). In this respect, several data
+mining techniques have been adapted with the purpose
+of detecting discriminatory decisions.
+
+Anti-discrimination also plays an important role in
+cyber security where computational intelligence tech-
+nologies such as data mining may be used for different
+decision making scenarios. To the best of our knowledge,
+this is the first work that considers anti-discrimination
+for cyber security. Clearly, here the challenge is to avoid
+discrimination while maintaining data usefulness for
+cyber security applications relying on data mining, e.g.
+intrusion detection systems (IDS) or crime predictors.
+
+The main contributions of this paper are as follows: (1)
+introducing anti-discrimination in the context of cyber
+security; (2) proposing a new discrimination prevention
+method based on data transformation that can consider
+several discriminatory attributes and their combinations;
+(3) proposing some measures for evaluating the proposed
+method in terms of its success in discrimination preven-
+tion and its impact on data quality.
+
+In this paper, Section II discusses related work; Sec-
+tion III introduces anti-discrimination for cyber security
+applications based on data mining; Section IV reviews
+discrimination discovery; Section V presents the method
+for discrimination prevention and its evaluation; a dis-
+cussion is given in Section VI; conclusions are drawn in
+Section VII.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+TABLE I
+TOY EXAMPLE: SUBSCRIBER INFORMATION COLLECTED BY A TELECOMMUNICATIONS OPERATOR
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+SubsNum | Gender | Race Age Zip DownProf | P2P | PortScan | Intruder
+1 Female | White | Young | 43799 Low Yes Yes NO
+2 Male Black | Young | 43700 High No Yes YES
+2 Male White | Aged | 84341 Normal Yes No NO
+2 Male Black | Young | 72424 Low No Yes YES
+1 Female | White | Aged | 43743 High Yes Yes YES
+3 Female | White | Young | 43251 High No No No
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Il. RELATED WORK
+
+The existing literature on anti-discrimination in com-
+puter science mainly elaborates on data mining models
+and related techniques. Some proposals are oriented to
+the discovery and measure of discrimination. Others deal
+with the prevention of discrimination.
+
+e Discrimination discovery is based on formalizing
+legal definitions of discrimination! and proposing
+quantitative measures for it. These measures were
+proposed by Pedreschi in 2008 [5], [7]. This ap-
+proach has been extended to encompass statistical
+significance of the extracted patterns of discrim-
+ination in [8], and it has been implemented as
+reported in [9]. Data mining is a powerful aid for
+discrimination analysis, capable of discovering the
+patterns of discrimination that emerge from the data.
+
+e Discrimination prevention consists of inducing pat-
+terns that do not lead to discriminatory decisions
+even if trained from a dataset containing them.
+Three approaches are conceivable: (i) adapting the
+preprocessing approaches of data transformation
+and hierarchy-based generalization from the pri-
+vacy preservation literature [6], [10]; Gi) changing
+the data mining algorithms (in-processing) by in-
+tegrating discrimination measure evaluations within
+them [11]; and Gii) post-processing the data mining
+model to reduce the possibility of discriminatory
+decisions [8]. Although some methods have been
+proposed, discrimination prevention stays a largely
+unexplored research avenue.
+
+Clearly, a straightforward way to handle discrimi-
+nation prevention would consist of removing discrim-
+inatory attributes from the dataset. However, as stated
+in [5], [6] there may be other attributes that are highly
+correlated with the sensitive one. Hence, one might
+
+'For instance, the U.S. Equal Pay Act [1] states that: “a selection
+rate for any race, sex, or ethnic group which is less than four-fifths of
+the rate for the group with the highest rate will generally be regarded
+as evidence of adverse impact”.
+
+decide to remove also those highly correlated attributes
+as well. Although this would solve the discrimination
+problem, in this process much useful information would
+be lost. Hence, another challenge regarding discrimina-
+tion prevention is to find an optimal trade-off between
+anti-discrimination and usefulness of the training data.
+
+III. ANTI-DISCRIMINATION AND CYBER SECURITY
+
+In this paper, we use as a running example the training
+dataset shown in Table I. It corresponds to the data
+collected by an Internet provider to detect subscribers
+possibly acting as intruders. The dataset consists of nine
+attributes, the last one (Intruder) being the class attribute.
+Each record corresponds to a subscriber of a telecom-
+munication company determined by SubsNum attribute.
+Other than personal attributes (Gender, Age, Zip, Race),
+the dataset also includes the following attributes:
+
+e DownProf: stands for downloading profile and mea-
+sures the average quantity of data the subscriber
+downloads monthly. Its possible values are High,
+Normal, Low, Very low.
+
+e P2P: indicates whether the subscriber makes use of
+peer-to-peer software, such as eMule.
+
+e PortScan: indicates whether the subscriber makes
+use of a port scanning utility, such as Nmap.
+
+Anti-discrimination techniques should be used in the
+above example. If the training data are biased towards a
+certain group of users (e.g. young people), the learned
+model will show discriminatory behavior towards that
+group and most requests from young people will be
+incorrectly classified as intruders.
+
+Additionally, anti-discrimination techniques could also
+be useful in the context of data sharing between IDS.
+Assume that various IDS share their IDS reports (that
+contain intruder information) in order to improve their
+respective intruder detection models. Before an IDS
+shares its report, this report should be sanitized to avoid
+inducing biased discriminatory decisions in other IDS.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+ 
+
+ 
+
+Original Dataset
+(0B)
+
+tule extraction
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+   
+  
+
+Compare the
+computed
+
+ 
+
+a-discriminatory
+
+Rules (MR,) discriminatory
+A,BoC threshold
+
+  
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+4
+
+Discriminatory Threshold (a)
+
+Classification > eae
+Classification
+
+value with ——
+
+Predetermined discriminatory and
+non-discriminatory itams in DB
+
+‘
+
+ 
+
+  
+   
+   
+    
+
+  
+
+Categorize
+frequent rules to
+PD and PND mules
+
+Frequent
+
+Rules (FR,)
+A.BoC
+BBs
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+   
+   
+     
+   
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Compute elift
+for each PD PD and PND
+classitication Classification
+rule Rules (PR)
+A, BC (PD)
+
+ 
+
+D, B > C(PND)
+
+Fig. 1. Discrimination discovery process
+
+IV. DISCOVERING DISCRIMINATION
+
+Discrimination discovery is about finding out discrimi-
+natory decisions hidden in a dataset of historical decision
+records. The basic problem in the analysis of discrimi-
+nation, given a dataset of historical decision records, is
+to quantify the degree of discrimination suffered by a
+given group (e.g. an ethnic group) in a given context
+with respect to the classification decision (e.g. intruder
+yes or no). Figure 1 shows the process of discrimination
+discovery, based on approaches and measures described
+in this section.
+
+A. Basic Definitions
+
+An item is an attribute along with its value,
+e.g.{Gender=Female}.
+
+Association/classification rule mining attempts,
+given a set of transactions (records), to predict the
+occurrence of an item based on the occurrences of
+other items in the transaction.
+
+An itemset is a collection of one or more items, e.g.
+{Gender=Male, Zip=54341}.
+
+A. classification rule is an expression X —
+C, where X is an itemset, containing no
+class items, and C is a class item, eg.
+{Gender=Female, Zip=54341} —> Intruder=YES.
+X is called the premise (or the body) of the rule.
+The support of an itemset, supp(X), is the fraction
+of records that contain the itemset X. We say that
+a rule X — C is completely supported by a record
+if both X and C appear in the record.
+
+The confidence of a classification rule, conf (X —>
+
+C’), measures how often the class item C appears
+in records that contain X. Hence, if supp(X) > 0
+
+supp(X, C)
+supp(X)
+
+Support and confidence range over [0,1]. In addi-
+tion, the notation also extends to negated itemsets,
+ie. AX.
+
+e A frequent classification rule is a classification rule
+with a support or confidence greater than a specified
+lower bound. Let DB be a database of original
+data records and FR, be the database of frequent
+classification rules.
+
+conf(X > C)=
+
+B. Potentially Discriminatory and Non-Discriminatory
+Classification Rules
+
+With the assumption that discriminatory items in DB
+are predetermined (e.g. Race=Black, Age = Young), rules
+fall into one of the following two classes with respect to
+discriminatory and non-discriminatory items in DB.
+
+1) A classification rule X —- C is  poten-
+tially discriminatory (PD) when X = A,B
+with A a non-empty discriminatory itemset and
+B a non-discriminatory itemset. For example
+{Race=Black, Zip=43700} — Intruder=Yes.
+
+2) A classification rule X — C is potentially
+non-discriminatory (PND) when X is a
+non-discriminatory itemset. For example
+{PortScan=Yes, Zip=43700} — Intruder=YES.
+
+The word “potentially” means that a PD rule could
+
+probably lead to discriminatory decisions, so some mea-
+sures are needed to quantify the discrimination potential.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+Also, a PND rule could lead to discriminatory decisions
+if combined with some background knowledge, e.g. if in
+the above example one knows that zip 43700 is mostly
+inhabited by black people (indirect discrimination).
+
+C. Discrimination Measures
+
+Pedreschi et al.[5], [8] translated the qualitative state-
+ments in existing laws, regulations and legal cases into
+quantitative formal counterparts over classification rules
+and they introduced a family of measures of the degree
+of discrimination of a PD rule. In our contribution we
+use their extended lift measure (eli ft), which is recalled
+next.
+
+Definition I: Let A,B — C be a classification rule
+with conf(B — C) > 0. The extended lift of the rule is
+
+. conf(A,B—>C)
+elift(A, B md C) = “con f(B > C)
+
+The idea here is to evaluate the discrimination of a
+tule by the gain of confidence due to the presence of the
+discriminatory items (i.e. A) in the premise of the rule.
+Indeed, eli ft is defined as the ratio of the confidence of
+the two rules: with and without the discriminatory items.
+Whether the rule is to be considered discriminatory can
+be assessed by thresholding? elift as follows [8].
+
+Definition 2: Let a © R be a fixed threshold. A PD
+classification rule c = A,B — C is a-protective w.rt.
+elift if elifi(c) < a. Otherwise, c is a-discriminatory.
+
+Consider rule
+
+c = {Race=Black, Zip=43700} — Intruder=YES
+
+from Table L If a = 1.4 and elift(c) = 1.46, rule c is
+1.4-discriminatory.
+
+In terms of indirect discrimination, the combination
+of PND rules with background knowledge probably
+could generate a-discriminatory rules. If a PND rule c
+with respect to background knowledge generates an a-
+discriminatory rule, ¢ is an a-discriminatory PND rule
+and, if not, c is an a-protective PND rule. However, in
+our proposal we concentrate on direct discrimination and
+thus consider only a-discriminatory rules and assume
+that all the PND rules in PR, are a-protective PND.
+According to Figure 1, let MR, be the database of a-
+discriminatory rules extracted from database DB.
+
+Note that a is a fixed threshold stating an acceptable level of
+discrimination according to laws and regulations.
+
+V. A PROPOSAL FOR DISCRIMINATION PREVENTION
+
+In this section we present a new discrimination preven-
+tion method which follows the preprocessing approach
+mentioned in Section I above. The method transforms the
+source data by removing discriminatory biases so that no
+unfair decision rule can be mined from the transformed
+data. The proposed solution is based on the fact that the
+dataset of decision rules would be free of discriminatory
+accusation if for each a-discriminatory rule r’ there
+would be at least one PND rule r leading to the same
+classification result as r’.
+
+Our method makes use of the p-instance concept,
+formalized in [12] in the following way.
+
+Definition 3: Let p € [0,1]. A classification rule r’ :
+A,B — C is a p-instance of r: D,B > C if
+
+1) conf(r) > p-conf(r’) and
+
+2) conf(r”: A,B D)>p.
+
+If each r’ in MR, was a p-instance (where p is
+1 or a value near 1) of a PND rule r in PR,, the
+dataset of decision rules would be free of discriminatory
+accusation.
+
+Consider rules r and r’ extracted from the dataset in
+Table I:
+
+r’ = {Race=Black, Zip=43700} — Intruder=YES
+r = {PortScan= Yes, Zip=43700} — Intruder=YES
+
+With p = 0.8, rule r’ is 0.8-instance of rule r if:
+1) conf (r) > 0.8- conf (r’)
+2) conf(r”) > 0.8
+
+where rule r” is:
+
+r= {Race=Black, Zip=43700} — PortScan=Yes
+
+Although r’ is a-discriminatory based on the eli ft
+measure, the existence of a PND rule r that leads to the
+same result as rule r’ and satisfies both Conditions (1)
+and (2) of Definition 3 demonstrates that the subscriber
+is classified as intruder not because of race but because
+of using port scanning. Hence, rule r’ is free of discrim-
+inatory accusation, because the IDS could argue that r’
+is an instance of a more general non-discriminatory rule
+r. Clearly, r is legitimate, because port scanning can be
+considered an unbiased indicator of a suspect intruder.
+
+Our solution for discrimination prevention is based
+on the above idea. We transform data by removing
+all evidence of discrimination appeared in form of a-
+discriminatory rules. These a-discriminatory rules are
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+divided into two groups: a-discriminatory rules such that
+there is at least one PND rule leading to same result and
+a-discriminatory rules such that there is no such PND
+tule. For the first group a suitable data transformation
+with minimum information loss should be applied for
+ensuring Conditions (1) or (2) of Definition 3 in case
+they are not satisfied. For the second group, also a
+suitable data transformation with minimum information
+loss should be applied in such a way that those a-
+discriminatory rules are converted to a-protective rules
+based on the definition of the discriminatory measure
+(i.e. elift). The detailed process of our solution is
+described by means of the following phases:
+
+e Phase I. Use Pedreschi’s measures on each rule
+to discover the patterns of discrimination emerged
+from the available data. Figure 1 details the steps
+of this phase.
+
+e Phase 2. Based on Definition 3, find the rela-
+tionship between a-discriminatory rules and PND
+rules extracted in the first phase and determine the
+transformation requirement for each rule.
+
+e Phase 3. Transform the original data to provide the
+transformation requirement for each respective a-
+discriminatory rule without seriously affecting the
+data or other rules.
+
+e Phase 4. Evaluate the transformed dataset with
+the discrimination prevention and information loss
+measures of Section V-B below, to check whether
+they are free of discrimination and useful enough.
+
+The first phase, depicted in Figure 1, consists of the
+following steps. In the first step, frequent classification
+rules are extracted from DB by well-known frequent rule
+extraction algorithms such as Apriori [17]. In the second
+step, with respect to the predetermined discriminatory
+items in the dataset, the extracted rules are divided into
+two categories: PD and PND rules. In the third step,
+for each PD rule, the eli ft measure is computed to
+determine the collection of a-discriminatory rules saved
+in MR.
+
+The second phase is summarized next. In the first step
+of this phase, for each a-discriminatory rule in MR, of
+type vr’: A, B > C, a collection of PND rules in PR,
+of type r : D,B — C is found. Call D,, the set of
+these PND rules. Then the conditions of Definition 3,
+for a value of p at least 0.8, are checked for each rule in
+Dpyn. Three cases arise depending on whether Conditions
+(1) and (2) hold:
+
+1) There is at least one rule in Dp, such that both
+Conditions (1) and (2) of Definition 3 hold;
+
+2) There is no rule in Dz, satisfying both Conditions
+(1) and (2) of Definition 3, but there is at least one
+tule satisfying one of those two conditions;
+
+3) No rule in Dp, satisfies any of Conditions (1) or
+
+(2).
+
+In the first case, it is obvious that currently there is
+at least one rule r in Dy, such that r’ is p-instance
+of r for p > 0.8. In this case no transformation is
+required. In the second case, the PND rule rp in Dyn
+should be selected which requires the minimum data
+transformation to fulfill both Conditions (1) and (2). A
+smaller difference between the values of the two sides
+of Conditions (1) or (2) for each r in Dy, indicates
+a smaller required data transformation. In this case,
+Conditions (1) and (2) in rz, determine the transformation
+requirement of r’. The third case happens when there
+is no r rule in Dp, satisfying any of Conditions (1)
+or (2). In this case, the transformation requirement of
+r’ determines that this a-discriminatory rule should be
+converted to an a-protective rule based on the definition
+of the respective discriminatory measure (i.e. eli ft). The
+output of the second phase is a database TR, with all
+r’ € MR,g, their respective transformed rule r, and their
+respective transformation requirements (see below).
+
+The following list shows the first, second and third
+transformation requirements that can be generated for
+each r’ © MR, according to the above cases:
+
+1) conf(r’: A,B > C) < conf(r: D,B > C)/p
+
+2) conf(r?: A,B D)>p
+3) If fQ = elift, conf(r’ : A,B > C) <a.
+conf(B—>C)
+
+For the a-discriminatory rules with the first and sec-
+ond transformation requirements, it is possible that the
+cost of satisfying these requirements would be more
+than the cost of the third transformation requirement.
+In other words, satisfying the third transformation re-
+quirement could lead to a smaller data transformation
+than satisfying the first or second requirements. So for
+these rules the method should also do this comparison
+and select the transformation requirement with minimum
+cost. We consider all possible cases to achieve minimum
+data transformation.
+
+Finally, we have a database of a-discriminatory rules
+with their respective transformation requirements. An
+appropriate data transformation method (Phase 3) should
+be run to satisfy these requirements with minimum
+degree of information loss and maximum degree of
+discrimination removal.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+A. Data Transformation Method
+
+As mentioned above, an appropriate data transforma-
+tion method is required to modify original data in such
+a way that the transformation requirement for each a-
+discriminatory rule is satisfied without seriously affecting
+the data or the non a-discriminatory rules. Based on
+these objectives, the data transformation method should
+increase or decrease the confidence of the rules to the
+target values with minimum impact on data quality, that
+is, maximize the disclosure prevention measures and
+minimize the information loss measures of Section V-B
+below. It is worth mentioning that decreasing the confi-
+dence of special rules (sensitive rules) by data transfor-
+mation was previously used for knowledge hiding [13],
+[14], [15] in privacy-preserving data mining (PPDM).
+
+We assume that the class item C' is a binary attribute.
+The details of our proposed data transformation method
+are summarized as follows:
+
+1) For the a-discriminatory rules with the first trans-
+
+formation requirement (inequality con f(A,B —>
+C) < conf(D,B — C)/p), the values of both
+sides of the inequality are independent, so the
+value of the left-hand side could be decreased
+without any impact on the value of the right-hand
+side. A possible solution for decreasing
+
+supp(A, B,C)
+supp(A, B)
+
+to any target value is to perturb the class item from
+C to —C in the subset D6, of all records in the
+original dataset which completely support the rule
+A,B — C and have minimum impact on other
+rules to decrease the numerator of Expression (1)
+while keeping the denominator fixed. (Removing
+the records of the original dataset which com-
+pletely support the rule A, B — C would not help
+because it would decrease both the numerator and
+the denominator of Expression (1).)
+
+2) For the a-discriminatory rules with the
+second transformation requirement (inequality
+conf(A,B — D) > p), the value of the
+right-hand side of the inequality is fixed so the
+value of the left-hand side could be increased
+independently. A possible solution for increasing
+
+supp(A, B, D)
+
+supp(A, B)
+
+above p is to perturb item D from —D to D
+
+in the subset DB, of all records in the original
+
+dataset which completely support the rule A, B >
+
+conf(A,B>C)= (1)
+
+conf(A,B > D) = (2)
+
+=D and have minimum impact on other rules to
+increase the numerator of Expression (2) while
+keeping the denominator fixed.
+
+3) For the a-discriminatory rules with the third trans-
+formation requirement (inequality conf(A,B —>
+C) < a-conf(B — C)), unlike the above
+cases, both inequality sides are dependent; hence,
+a transformation is required that decreases the left-
+hand side of the inequality without any impact
+on the right-hand side. A possible solution for
+decreasing
+
+supp(A, B,C)
+
+supp(A, B)
+
+is to perturb item A from —A to A in the subset
+DB, of all records of the original dataset which
+completely support the rule —A,B — —=C and
+have minimum impact on other rules to increase
+the denominator of Expression (3) while keeping
+the numerator and conf(B — C) fixed. (Re-
+moving the records of the original dataset which
+completely support the rule A, B — C would not
+help because it would decrease both the numer-
+ator and the denominator of Expression (3) and
+also conf(B — C). Changing the class item C
+would not help either because it would impact on
+conf (B—> C).)
+
+Records in DB, should be changed until the trans-
+formation requirement is met for each a-discriminatory
+rule. Among the records of DB,, one should change
+those with lowest impact on the other rules. Hence, for
+each record db. € DB,, the number of rules whose
+premise is supported by db, is taken as the impact of
+dbe, that is impact(db,.); the rationale is that changing
+db, impacts on the confidence of those rules. Then the
+records db, with minimum impact(db,) are selected for
+change, with the aim of scoring well in terms of the four
+utility measures proposed below. It means that transform-
+ing db. with minimum impact(db,) could reduce the
+impact of this transformation on turning the a-protective
+rules to a-discriminatory rules and on generating the
+extractable rules from original dataset in the transformed
+dataset.
+
+conf(A,BoC)= (3)
+
+B. Utility measures
+
+The proposed solution should be evaluated based on
+two aspects:
+e The success of the proposed solution in removing
+all evidence of discrimination from the original
+dataset (degree of discrimination prevention).
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+e The impact of the proposed solution on data quality
+(degree of information loss).
+
+A discrimination prevention method should provide a
+good trade-off between both aspects above. The follow-
+ing measures are proposed for evaluating our solution:
+
+e Discrimination Prevention Degree (DPD).
+This measure quantifies the percentage of
+a-discriminatory rules that are no longer a-
+discriminatory in the transformed dataset.
+
+e Discrimination Protection Preservation (DPP). This
+measure quantifies the percentage of the a-
+protective rules in the original dataset that remain
+a-protective rules in the transformed dataset (DPP
+may not be 100% as a side-effect of the transfor-
+mation process).
+
+e Misses Cost (MC). This measure quantifies the
+percentage of rules among those extractable from
+the original dataset that cannot be extracted from
+the transformed dataset (side-effect of the transfor-
+mation process).
+
+e Ghost Cost (GC). This measure quantifies the per-
+centage of the rules among those extractable from
+the transformed dataset that could not be extracted
+from the original dataset (side-effect of the trans-
+formation process).
+
+The DPD and DPP measures are used to evaluate
+the success of proposed method in discrimination pre-
+vention; ideally they should be 100%. The MC and
+GC measures are used for evaluating the degree of
+information loss (impact on data quality); ideally they
+should be 0%. MC and GC were previously proposed
+as information loss measures for knowledge hiding in
+PPDM [16].
+
+VI. DISCUSSION
+
+Although there are some works about anti-
+discrimination in the literature, in this paper we
+introduced anti-discrimination for cyber security
+applications based on data mining. Pedreschi et al. in
+[5], [7], [8], [9], [12] concentrated on discrimination
+discovery, by considering each rule individually for
+measuring discrimination without considering other
+rules or the relation between them. However in this
+work, we also take into account the PND rules and their
+relation with a-discriminatory rules in discrimination
+discovery. Then we propose a new preprocessing
+discrimination prevention method. Kamiran et al. in
+[6], [10] also proposed a preprocessing discrimination
+prevention method. However, their works try to
+detect discrimination in the original data for only one
+
+discriminatory item based on a simple measure and
+then they transform data to remove discrimination.
+Their approach cannot guarantee that the transformed
+dataset is really discrimination-free, because it is known
+that discriminatory behaviors can often be hidden
+behind several items, and even behind combinations of
+them. Our discrimination prevention method takes into
+account several items and their combinations; moreover,
+we propose some measures to evaluate the transformed
+data in degree of discrimination and information loss.
+
+VII. CONCLUSIONS
+
+We have examined how discrimination could impact
+on cyber security applications, especially IDSs. IDSs
+use computational intelligence technologies such as data
+mining. It is obvious that the training data of these
+systems could be discriminatory, which would cause
+them to make discriminatory decisions when predicting
+intrusion or, more generally, crime. Our contribution
+concentrates on producing training data which are free
+or nearly free from discrimination while preserving their
+usefulness to detect real intrusion or crime. In order to
+control discrimination in a dataset, a first step consists
+in discovering whether there exists discrimination. If any
+discrimination is found, the dataset will be modified until
+discrimination is brought below a certain threshold or
+is entirely eliminated. In the future, we want to run
+our method on real datasets, improve our methods and
+also consider background knowledge (indirect discrimi-
+nation).
+
+DISCLAIMER AND ACKNOWLEDGMENTS
+
+The authors are with the UNESCO Chair in Data
+Privacy, but they are solely responsible for the views
+expressed in this paper, which do not necessarily reflect
+the position of UNESCO nor commit that organization.
+This work was partly supported by the Spanish Gov-
+ernment through projects TSI2007-65406-C03-01 “E-
+AEGIS”, CONSOLIDER INGENIO 2010 CSD2007-
+00004 “ARES” and TSI-020100-2009-720 “everifica-
+tion”, by the Government of Catalonia under grant
+2009 SGR 01135, and by the European Commission
+under FP7 project “DwB”. The second author is partly
+supported as an ICREA Académia Researcher by the
+Government of Catalonia.
+
+REFERENCES
+
+[1] United States Congress, US' Equal Pay Act, 1963. http://archive.
+eeoc.gov/epa/anniversary/epa-40. html
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+[2] Parliament of the United Kingdom, Sex Discrimination
+Act, 1975. http://vww.opsi.gov.uk/acts/acts1975/PDF/ukpga_
+19750065_en.pdf
+
+[3] Parliament of the United Kingdom, Race Relations Act, 1976.
+http://www.statutelaw.gov.uk/content.aspx ?activeTextDocld=
+2059995
+
+[4] European Commission, EU Directive 2000/43/EC on Anti-
+discrimination, 2000. _ http://eur-lex.europa.eu/LexUriServ/
+LexUriServ.do?uri=OJ:L:2000:180:0022:0026:EN:PDF
+
+[5] D. Pedreschi, S. Ruggieri and F. Turini, “Discrimination-aware
+data mining”. Proc. of the 14th ACM International Conference
+on Knowledge Discovery and Data Mining (KDD 2008), pp. 560-
+568. ACM, 2008.
+
+{6] F Kamiran and T. Calders, “Classification without discrimi-
+nation”. Proc. of the 2nd IEEE International Conference on
+Computer, Control and Communication (IC4 2009). TEEE, 2009.
+
+[7] S. Ruggieri, D. Pedreschi and F. Turini, “Data mining for
+discrimination discovery”. ACM Transactions on Knowledge
+Discovery from Data, 4(2) Article 9, ACM, 2010.
+
+[8] D. Pedreschi, S$. Ruggieri and F. Turini, “Measuring discrimina-
+tion in socially-sensitive decision records”. Proc. of the 9th SIAM
+Data Mining Conference (SDM 2009), pp. 581-592. SIAM, 2009.
+
+[9] S. Ruggieri, D. Pedreschi and F. Turini, “DCUBE: Discrimina-
+tion Discovery in Databases”. Proc. of the ACM International
+Conference on Management of Data (SIGMOD 2010), pp. 1127-
+1130. ACM, 2010.
+
+[10] F Kamiran and T. Calders, “Classification with No Discrim-
+ination by Preferential Sampling”. Proc. of the 19th Machine
+Learning conference of Belgium and The Netherlands, 2010.
+
+[11] T. Calders and S. Verwer, “Three naive Bayes approaches for
+discrimination-free classification”, Data Mining and Knowledge
+Discovery, 21(2):277-292. 2010
+
+[12] D. Pedreschi, S. Ruggieri and F. Turini, “Integrating induction
+and deduction for finding evidence of discrimination”. Proc. of
+the 12th ACM International Conference on Artificial Intelligence
+and Law (ICAIL 2009), pp. 157-166. ACM, 2009.
+
+[13] V. Verykios, A. Elmagarmid, E. Bertino, Y. Saygin and E.
+Dasseni, “Association rule hiding”. IEEE Trans. on Knowledge
+and Data Engineering,16(4):434-447, 2004.
+
+[14] Y. Saygin, V. Verykios and C. Clifton, “Using unknowns to
+prevent discovery of association rules”. ACM SIGMOD Record,
+30(4):45-54, 2001.
+
+[15] J. Natwichai, M. E. Orlowska and X. Sun, “Hiding sensitive
+associative classification rule by data reduction”. Advanced
+Data Mining and Applications (ADMA 2007), LNCS 4632, pp:
+310-322. 2007.
+
+[16] S. R. M. Oliveira and O. R. Zaiane. “A unified framework for
+protecting sensitive association rules in business collaboration”.
+International Journal of Business Intelligence and Data Mining,
+1(3):247287, 2006.
+
+[17] R. Agrawal and R. Srikant, “Fast algorithms for mining as-
+sociation rules in large databases”. Proceedings of the 20th
+International Conference on Very Large Data Bases, pp. 487-
+499. VLDB, 1994.
+
+Authorized licensed use limited to: University Haifa. Downloaded on November 15,2022 at 15:12:55 UTC from IEEE Xplore. Restrictions apply.
+

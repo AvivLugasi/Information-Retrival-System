@@ -1,0 +1,407 @@
+SCHWERPUNKT
+
+Bernhard Waltl, Roland Vogl
+
+Increasing Transparency in AlgorithmicDecision-Making with Explainable AI
+Systems that can autonomously make decisions based on artiﬁcial intelligence are
+becoming ubiquitous. These decisions can aﬀect sensitive areas in our daily life. For
+example, the price of goods in e-commerce transactions (e.g., via dynamic pricing),
+or the credit rating of customers (e.g., via automatic credit scoring). The need for
+more transparency of algorithmic-decision-making (ADM) is not only moving into
+the focus of lawmakers, but it is also desirable from an engineering perspective. This
+brief paper investigates diﬀerent levels of transparency in ADM, and discusses how
+and to which degree auditing and testing can increase transparency of ADM.
+1 Introduction
+Recent advances in computer science drive the ever-increasing
+digitalization of systems that support and automate human tasks.
+This also includes automation of decision-making processes. Artificially intelligent systems and systems that can decide without
+or only with very little human interaction are in high demand
+due to their seemingly objective, rational, fast, and cheap decision-making capabilities. From an economic perspective these
+properties are desirable.
+However, ADM (algorithmic-decision-making) systems can also decide in ways that are problematic. For example, their decisions could be wrong or discriminating. In most modern societies equal treatment is a desirable goal. In Germany, for example, the General Act on Equal Treatment provides that discrimination of humans based on their race or ethnical background,
+
+Bernhard Waltl
+ist wissenschaftlicher Mitarbeiter an
+der Fakultät für Informatik
+der Technischen Universität München.
+
+E-Mail: bernhard.waltl@outlook.com
+
+Roland Vogl
+is Executive Director of CodeX – The
+Stanford
+Center for Legal Informatics and
+Lecturer in Law at Stanford Law
+School.
+E-Mail: rvogl@law.stanford.edu
+
+DuD • Datenschutz und Datensicherheit
+
+10 | 2018
+
+sex, religion, disability, age, or sexual orientation is strictly forbidden. In the U.S. similar laws exist for specific domains, such
+as the Fair Housing Act (FHA) or the Equal Credit Opportunity
+Act (ECOA). Both acts “protect consumers by prohibiting unfair
+and discriminating practices.” [1]
+Current research focusses on making ADM systems more efficient and accurate. This is, however, not sufficient to prevent
+undesirable or prohibited actions. It is necessary to increase the
+transparency of these systems and the underlying decision structures, which frequently are considered as so called “black-boxes”
+that cannot be understood by humans. This article is a contribution to the emerging field of explainable artificial intelligence
+(XAI), which focuses on providing concepts, methods, tools to
+open, to understand, and to regulate these black-box algorithms.
+The article is structure as follows: Section 2 introduces a general
+framework of ADM systems and introduces different dimensions
+that need to be considered to fully understand ADM systems and
+their behavior. Section 3 discusses the opportunities and challenges
+of auditing ADM systems. Section 4 describes two methods of testing ADM systems independently of the used method that is implemented in the ADM system. Finally, Section 5 offers closing considerations and emphasizes the importance of making automated decision structures more transparent and understandable by humans.
+
+2 Levels of Transparency for ADM
+Software systems, including artificially intelligent systems, can
+be very complex. When we analyze how they operate we need to
+differentiate the following three different dimensions that can be
+found in every ADM system [2]: process, model, and classification
+(instance). An integrated overview is shown in Figure 1.
+
+2.1 Process Level
+For a system to make decisions autonomously, it has to go through
+different steps. These steps can be different depending on the par613
+
+SCHWERPUNKT
+
+Figure 1 | Integrative model of the three diﬀerent levels of ADM systems: process,
+model, and classiﬁcation.
+
+ticular process. A generic process is shown in Figure 1. The iterative process consists of six phases and usually starts with a data
+acquisition phase followed by pre-processing for the cleansing of
+data and a transformation phase to prepare the data for algorithmic processing. In step four, the data is provided to an AI model, which is trained. Finally, the post-processing step improve and
+revise the output of the AI model, e.g., categorization of numeric
+output. The input from an evaluation phase serves as feedback for
+iterative improvement of the whole system. During each of these
+steps the behavior and decision structure could significantly impact, therefore it is important to consider them all to increase the
+transparency and to comprehensively understand the behavior
+of an ADM system.
+For example, if the data collected in the “Data acquisition”
+phase is strongly biased this bias most probably occurs in ADM
+system unless no other counter-measures are taken. To explain
+the bias, it is not sufficient to inspect the trained machine learning model but to inspect the “Data acquisition” phase.
+
+2.2 Model Level
+A central part of each ADM system is the predictive mode, which
+can either be created manually or automatically. As illustrated in
+Figure 1, the model level represents the decision structures that
+are used for decision making. A wide range of different model
+types can be used from deductive and rule-based systems (such as
+decision trees) to statistical probabilistic models (such as Bayesian
+networks), and artificial neural networks (such as so-called “multi-layer perceptrons”). The models differ in terms of functionality
+and underlying principles and their interpretability by humans is
+heavily influenced by the model used. Models can be counter-intuitive in their internal representation, which can make it almost
+impossible for humans to understand the trained model. For example, a trained neural network can have a complex topology
+with many layers, where the neurons have complex dependencies. However, these dependencies have weights, that are automatically calculated. Humans can hardly understand and interpret a
+neural network by inspecting the internal structure of the model.
+Other model types, such as a decision trees, which could also be
+614
+
+created automatically, are more suitable to be interpreted by humans. Each
+node is a decision with regard to an attribute and the path to the leaf can be
+viewed as the explanation for a concrete decision.
+The model level describes the level
+to which a model can be subject to interpretation and communication. In
+order to interpret ADM systems (e.g.,
+for credit scoring) that use neural networks it might not be possible to analyze the trained model, whereas systems that use other model types can
+be explained. There might be cases in
+which it is not necessary to explain the
+trained model with its characteristics
+but it is sufficient to explain the behavior and the decision with regard to a
+particular instance (see classification
+level below).
+
+2.3 Classiﬁcation Level
+The final level is the so-called “classification level”, in which the
+behavior and decisions for concrete in-stances that are classified
+can be analyzed (e.g., an ADM system that has been created and
+gets data for classification). Figure 1 shows two persons that are
+represented with three attributes, i.e., sex, age, salary. The vector with the attributes is submitted to the model, which takes the
+vector as parameter and returns a result, i.e., yes or no. In order
+to justify the classification, it is not necessary to fully inspect the
+process of how the model was trained or how the model operates.
+In order to get more clarity on a particular algorithmic decision,
+it can be sufficient if the classification function also provides information on the weight that is given to each attribute. That in itself can serve as an explanation for the behavior of the classifier.
+For the interpretation and transparency of an ADM system, the
+last classification level has to be separated from the other two levels. This differentiation is important to have a constructive analysis of ADM systems, and to structure the future discussion of
+transparency of ADM, and of explainable artificial intelligence
+more generally.
+The next section will discuss concrete methods from the auditing world as applied to ADM systems.
+
+3 Auditing of ADM Systems
+Auditing is a common quality assurance method in engineering
+disciplines. Different methods of auditing algorithms exist are
+established in the field, also with the focus on determining discrimination [3]. Sandvig et al. [4] summarize five different auditing methods for algorithms:
+1. Code Audit
+2. Noninvasive User Audit
+3. Scraping Audit
+4. Sock Puppet Audit
+5. Crowdsourced / Collaborative Audit
+
+DuD • Datenschutz und Datensicherheit
+
+10 | 2018
+
+SCHWERPUNKT
+
+During an audit the state or the behavior of an algorithm is inspected and analyzed. Thereby, the auditing methods differ in
+the way they describe the structure and behavior of an ADM. The
+main question from a regulatory, or in other words, from a normative perspective remains: How do we define the desired and
+undesired behaviors of an algorithm?
+For example, to determine whether a credit scoring ADM system is discriminating against certain groups or not requires a
+well-crafted definition of “discrimination”. We need objective criteria suitable to decide whether a decision structure is discriminative in a legally forbidden way. The specification of those criteria in a way that is specific enough to determine illegal discrimination, but that allows for systems to use the attributes of humans
+as effective and efficient means to support important decisions is
+challenging. It is difficult to determine what attributes of a person can be used by an ADM system, e.g., age or sex, in order not
+to be discriminating. In the context of the GDPR, the Article 29
+Working Party provides guidance that stresses that, in many circumstances, Data Protection Impact Assessments are not merely
+recommended as a matter of best practices but are compulsory.
+In determining whether a DPIA is or is not compulsory, Article
+35(1) of the GDPR relies, primarily, on the heuristic of so-called
+“high risk” data processing operations. According to the Regulation, DPIAs are mandatory “[w]here a type of processing [,] taking into account the nature, scope, context and purposes of the
+processing, is likely to result in a high risk to the rights and freedoms of natural persons.”
+Since attributes can also correlate with each other, e.g., salary
+and age, there are explicit and implicit relationships among the attributes that can be used during ADM. An audit can increase the
+transparency of a system, making the underlying decision structure interpretable. The following two sections introduce two of
+the mentioned audit techniques and discuss their role and limitations for in-creasing transparency in ADM systems.
+
+3.1 Code Audit
+The code-audit is a straight-forward method of inspecting the behavior of an ADM system. Here, the code base, which either is executed in order to create the ADM system or represents the ADM
+system will be made accessible to humans, i.e., auditors. The auditors can then analyze each line of the software code and reconstruct the ADM system and its behavior. This inspection does
+not only include the analysis of the software code but also of relevant resources, such as data sets, which are used for training and
+evaluating an ADM system. During the code audit the focus can
+be twofold: the code audit could look at i) static properties of the
+software, such as procedures, e.g., libraries and parameters that
+are used. In addition, the ii) dynamic behavior of the software can
+be audited. The dynamic behavior refers to the states that a software system reaches during its execution. This includes the concrete values of variables and function calls. A company or institution that grants access of its software code to a third party for
+a code-audit exposes large parts of potentially proprietary information (see Figure 2). The code may contain sensitive information about the business and its strategy. This requires the third
+party to be trustworthy. While the third-party auditor of ADM
+might try to prevent undesired decisions of an ADM system, disclosing the information of the ADM’s modes of operation to the
+public could cause severe damage to the enterprise running the
+DuD • Datenschutz und Datensicherheit
+
+10 | 2018
+
+ADM. Potentially harmful disclosure of information could for example include the sharing of factors that the ADM system is taking into account to produce a specific output. If the public learns
+about how certain factors impact an ADM output, this might lead
+people to withhold specific personal information. For example, if
+they knew that their sex has an impact on their credit score, they
+choose to not share this information if know that it negatively impacts the likelihood of a desired output by the ADM.
+Figure 2 | Code audit principle according to [4]
+
+3.2 Scraping Audit
+During the scraping audit the code of an ADM system is not made
+transparent and no trusted third party gets access to the software
+code or gets insights on how the creation process of the system
+looks like. Instead, the trained algorithm can be accessed via an
+interface and handles repeated queries. These queries can be formulated manually, i.e. by humans, or automatically, i.e. by scripts.
+Consequently, the scraping audit can also be considered as a testing method. The main advantage of the scraping audit, compared
+to the code audit, is twofold: i) there is no need to disclose the code
+base, the training data, or the process of how a particular ADM
+system is created, and ii) the scraping can be – at least to a certain
+degree – be automated, which allows the efficient execution of the
+audit. Figure 3 shows the basic principle of the scraping audit and
+indicates that the automated requests use a different interface than
+users of the ADM system do. This interface may provide additional
+information of the decision to the script, e.g., confidence, that are
+not offered to the user of a platform and allows for a higher query
+rate, which makes it suitable for automated requesting.
+Figure 3 | Scraping audit principle according to [4]
+
+The problem is, that even if the software code is not enclosed, intelligent scraping strategies can determine the decision structure,
+e.g., the used attributes and their weight, quite good. Ultimately,
+this allows to reconstruct an ADM system with its behavior, al615
+
+SCHWERPUNKT
+
+though it is treated as a black-box and the internal structure cannot be directly accessed.
+
+Equation 1 | An example to determine the creditworthiness
+of three diﬀerent persons.
+
+3.3 Challenge in Auditing ADM Systems
+Although auditing is a well-suited measure to understand the behavior of an ADM system, the main challenge from a regulatory
+perspective remains: defining the desired and undesired behavior of an ADM system, i.e. the normative perspective. Where does
+discrimination start and where does it end?
+To determine whether a credit scoring ADM system is discriminating or not requires a well-operationalized definition of discrimination. There have to be inter-subjective criteria suitable to
+decide whether a decision structure is discriminative in a legally
+forbidden way. The specification of those criteria, such that they
+are precise enough to determine forbidden discrimination but allow for systems to use the attributes of humans to be an effective
+and efficient decision-support systems is challenging. It is difficult to determine to which degree an attribute (or a combination
+of attributes) of a person can be used by an ADM system, e.g.,
+age or sex, in order not to be discriminating. Since attributes can
+also correlate with each other, e.g., salary and age, there are explicit and implicit relationships among the attributes that can be
+used during ADM.
+
+4 Testing of ADM Systems
+In addition to auditing, testing is another method the behavior of
+software systems. A main advantage of testing is that the behavior of an ADM system can be observed during its execution, i.e.,
+runtime, whereas code audits focus on static aspects of the software, testing is an established method to systematically explore
+the behavior of a software system. It can be used to detect the presence or absence of failures and also to increase the transparency
+of an ADM system. Consequently, testing is similar to scraping
+audits but focuses on more the analysis of technical aspects, such
+as test coverage. Test coverage is used to efficiently cover all input
+scenarios, e.g., every combination of datasets, of an ADM system.
+This article will explore two advanced testing methods that focus on increasing the transparency of ADM systems: (i) metamorphic testing and (ii) testing to create model-agnostic explanations.
+
+4.1 Metamorphic Testing
+Common testing procedures require the specification of test data and an expected outcome. However, the definition of an outcome can be very difficult and might not be possible for complex
+machine learning systems. Metamorphic testing can help mitigate this problem. It does not require the definition of the expected outcome a priori but relies on the relationships between input
+data and the outcome.
+For example, credit scoring algorithms produce a score, which
+reflects the creditworthiness of a person. A common measure in
+the U.S., the FICO score, ranges between 300 (poor) to 850 (exceptional). A fictitious example of a possible credit scoring algorithm is shown in Equation 1. Here, a person is represented by
+three attributes: sex, age, and salary. For each person a score is
+calculated, which ranges between 550 and 700. In this example,
+a 50-year old man gets the highest score. The main problem with
+common test procedures is defining the score a priori. The score
+616
+
+P :
+
+sex
+age
+salary
+
+P1 
+
+male
+50 year
+
+f Score  P1  700
+
+50k
+female
+P11 
+
+50 year
+
+f Score  P11  650
+
+50k
+
+P111 
+
+male
+25year
+
+f Score  P111  550
+
+50k
+
+has to be defined at the same time as the test case is created. The
+test case would be the datapoints . As it is very difficult to reliably
+predict the creditworthiness of a person the metamorphic testing relies on so-called metamorphic relations. Here, the concrete
+result (credit score) of a test case will not weigh too much, but the
+comparison to other results is weighed heavily (see Equation 2).
+Equation 2 | Comparison of the credit scores for each
+person.
+P1
+
+P11
+
+1
+0
+0
+
+f Score  P1
+
+f Score  P11  50
+
+P1
+
+P111
+
+0
+1
+0
+
+f Score  P1
+
+f Score  P111  150
+
+Clearly, the credit scores of the three persons can be compared
+and has the highest score among them. Based on this result it is
+possible to compare the input data and find causes for the differences (see Equation 3).
+Equation 3 | Indication for attributes causing a
+discrimination.
+f Score  P1  f Score  P11  f Score  P111
+
+Equation 3 shows the differences in the three datapoints , where
+the differences are only in one attribute, which is either sex or age.
+The relation of the output that is calculated for the datasets , however, can be viewed as a sign that a particular attribute (or a set of
+attributes) has an impact on the overall score.
+The focus on the delta of the different outcomes represents the
+basic idea of metamorphic testing. It is not necessary to look at
+the concrete scores, e.g., 700, 650, or 550, but the differences and
+changes that a system creates. Another advantage of metamorphic testing is that it is suitable for automatization. Once the relationships, such as , are defined by humans, the dataset can auDuD • Datenschutz und Datensicherheit
+
+10 | 2018
+
+SCHWERPUNKT
+
+tomatically be analyzed to efficiently determine the impact of the
+attributes and the decision structure.
+
+4.2 Model-agnostic Explanations
+In order to explain individual decisions of a classifier, different
+techniques exist that allow a detailed inspection of a potentially very complex decision structure. Recently, Ribeiro published a
+new approach that allows to create model-agnostic explanations
+based on a given classification [5]. The main idea is illustrated in
+Figure 4. The area is divided into two different classes, ‘yes’ (blue)
+and ‘no’ (red). This represents the decision structure and might be
+the outcome of a training phase. The attributes of each instance
+that is classified (e.g., a person) can be located at a particular point
+on the area, which also decides what the outcome of a classification should be. If the instance finds its place on the blue area it is
+classified ‘yes’, otherwise ‘no’.
+Figure 4 | Perturbating the attributes of an instance (circles)
+to be classiﬁed (star) to create a local-linear approximation
+(dashed line) to measure the attributes weight [5].
+
+linear approximation, it is now possible to quantify the impact of
+attributes to the overall classification. One the one hand this is
+valuable information to assess the trustworthiness of a classifier,
+and on the other hand this information could also be used to determine whether a classifier is discriminating on problematic attributes, such as sex, age, race, etc. As the method also quantifies
+the weight of the attributes, this is a valuable source of information as it provides more information than just the qualitative information on which attributes are used. An example can be seen
+in the lower part of Figure 1 where the attributes are highlighted (green or red) and concrete values of their impact to the classification are given.
+
+5 Conclusion
+Algorithmic-decision-making (ADM) is becoming more ubiquitous. This affects many important and sensitive areas of our daily lives, including, for example, credit scoring, dynamic pricing,
+or autonomous driving. As a consequence of this increased use of
+ADM systems, we urgently need ways to ensure that these ADM
+systems are fair, reliable and transparent, and lawmakers in Europe, the U.S. and elsewhere have begun to work on legal frameworks governing ADM systems. Auditing and testing are suitable
+methods to assess ADM systems but require careful implementation and execution. Both approaches have similarities and complement each other, such as the scraping audit and testing. We
+have shown that ADM systems do not per se have to be viewed
+as black-boxes but we can shine a light into their inner workings.
+Based on our findings it becomes evident that discrimination
+by ADM systems can be detected but requires auditing, testing,
+and a definition of discrimination that can be quantitatively evaluated, e.g., impact of attributes, or statistical significance.
+
+Literature
+Figure 4 shows one instance (star) that represents a person, which
+would be classified as ‘yes’. The decision is made based on the attributes provided for the person. In order to determine the (at
+least approximate) impact of the attributes, the attributes are now
+permuted, i.e. slightly but randomly changed, and repeatedly classified by the ADM system. These are represented as circles surrounding the original instance. Finally, a local linear approximation is calculated (dashed line) on a mathematical optimization
+procedure that takes into account the perturbated instances. This
+does not generally explain the behavior of the decision structure
+but approximates the small region representing the class of instances in the proximity of the original instance. Using this local
+
+DuD • Datenschutz und Datensicherheit
+
+10 | 2018
+
+1. https://www.occ.treas.gov/topics/consumer-protection/fair-lending/index-fair-lending.html, accessed 05/29/2018
+2. Waltl, B., and Vogl, R.: ‘Explainable Artiﬁcial Intelligence – the New Frontier
+in Legal Informatics’, Jusletter IT, 2018
+3. Kim, P.: ‘Auditing Algorithms for Discrimination’, 2017
+4. Sandvig, C., Hamilton, K., Karahalios, K., and Langbort, C.: ‘Auditing algorithms: Research methods for detecting discrimination on internet platforms’, Data and discrimination: converting critical concerns into productive inquiry, 2014, pp. 1-23
+5. Ribeiro, M.T., Singh, S., and Guestrin, C.: ‘Why should i trust you?: Explaining the predictions of any classiﬁer’, in Editor (Ed.)^(Eds.): ‘Book Why should
+i trust you?: Explaining the predictions of any classiﬁer’ (ACM, 2016, edn.),
+pp. 1135-1144
+
+617
+
+

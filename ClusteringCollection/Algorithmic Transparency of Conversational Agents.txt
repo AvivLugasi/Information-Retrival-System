@@ -1,0 +1,1065 @@
+Algorithmic Transparency of Conversational Agents
+Sam Hepenstal
+
+Middlesex University
+London
+SH1966@live.mdx.ac.uk
+
+Neesha Kodagoda
+
+Middlesex University
+London
+N.Kodagoda@mdx.ac.uk
+
+Pragya Paudyal
+
+B.L. William Wong
+
+Middlesex University
+London
+P.Paudyal@mdx.ac.uk
+
+ABSTRACT
+A lack of algorithmic transparency is a major barrier to the adoption
+of artificial intelligence technologies within contexts which require
+high risk and high consequence decision making. In this paper we
+present a framework for providing transparency of algorithmic
+processes. We include important considerations not identified in
+research to date for the high risk and high consequence context
+of defence intelligence analysis. To demonstrate the core concepts
+of our framework we explore an example application (a conversational agent for knowledge exploration) which demonstrates shared
+human-machine reasoning in a critical decision making scenario.
+We include new findings from interviews with a small number of
+analysts and recommendations for future research.
+
+CCS CONCEPTS
+• Information systems → Information systems applications;
+Decision support systems; • Human-centered computing →
+Human computer interaction (HCI).
+
+KEYWORDS
+Explainable AI; Graph Analysis; Conversational Agents
+ACM Reference Format:
+Sam Hepenstal, Neesha Kodagoda, Leishi Zhang, Pragya Paudyal, and B.L.
+William Wong. 2019. Algorithmic Transparency of Conversational Agents.
+In Joint Proceedings of the ACM IUI 2019 Workshops, Los Angeles, USA, March
+20, 2019 , 11 pages.
+
+1
+
+INTRODUCTION
+
+With advances in artificial intelligence (AI) technologies, reasoning
+like cognitive processes are no longer restricted to the human mind.
+In cases this has led to shared human-machine reasoning, where
+both parties are able to explore information by interpreting, inferring, and learning, before reaching a common understanding. One
+example of shared reasoning can be found in conversational agent
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+© 2019 Copyright 2019 for the individual papers by the papers’ authors. Copying
+permitted for private and academic purposes. This volume is published and copyrighted
+by its editors.
+© Crown copyright 2019 Defence Science and Technology Laboratory UK. Approval
+for wider use or release must be sought from: Intellectual Property Group, Defence
+Science and Technology Laboratory, Porton Down, Salisbury, Wiltshire SP4 0JQ.
+© Crown copyright 2019 Middlesex University. Middlesex University, The Burroughs,
+Hendon, London NW4 4BT.
+
+Leishi Zhang
+
+Middlesex University
+London
+L.X.Zhang@mdx.ac.uk
+
+Middlesex University
+London
+W.Wong@mdx.ac.uk
+
+applications which reason from semantic knowledge graphs. These
+applications are the focus for this paper, however, the principles
+identified within the framework presented also apply to other types
+of application which exhibit shared human-machine reasoning for
+critical decision making.
+
+1.1
+
+Focus Study: Conversational agents to
+explore semantic knowledge graphs
+
+Conversational agents, namely applications which allow users to
+communicate with machines through natural language, are becoming commonplace in many business and home environments.
+Technologies such as Google Home, Siri and Amazon Alexa present
+us with an easy way to access music, films, or plan our day. Many
+services, for example banking, have incorporated chatbots into existing processes to manage interactions with customers, including
+to direct them to the right information or department. This saves
+companies money and can save customers time waiting in a queue.
+Typical applications for conversational agents tackle concise user
+tasks for mundane processes which can be translated to a finite
+set of user intentions. Here the risks of an incorrect or misleading
+response are low and the resulting consequences limited, particularly given the ease with which a user can validate results against
+an expected and desired conclusion to their interaction. Take the
+example of a user wishing to listen to a playlist of a specific music
+genre. They can task the conversational agent with finding and
+playing such a playlist. It does not necessarily matter to the user
+exactly how the agent has reasoned what music should be played in
+the playlist, what the track order should be, or many other aspects.
+The users intention is straightforward and the consequences of an
+unwanted track are limited i.e. the user will make an assessment of
+the track as soon as they hear it, at which point they may decide
+to skip the track, or ask for a different playlist. The result of the
+interaction therefore provides some information to the user which
+they can easily interpret, validate and make an appropriate, timely,
+response. If the user were repeatedly presented with the wrong
+genre of music, however, their need to understand the underlying
+algorithmic process and constraints will become more important.
+We believe there is desire and benefit to using conversational
+agents for natural and shared human-machine reasoning in applications for which the interpretation of responses are high risk and
+high consequence, such as critical decision making environments.
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+
+S. Hepenstal, N. Kodagoda, L. Zhang, P. Paudyal and B.L. W. Wong
+
+However, there are significant differences between the requirements for this and typical conversational agents, which must be
+considered in design.
+Consider the example where a user wishes to perform analysis
+of a certain entity and explore it’s associations with another entity
+through a conversational agent. The agent can provide responses
+and a simple explanation. This interaction can be an example of
+shared reasoning, where the user is directing the conversation based
+upon their own thoughts and the agent is interpreting the user’s intentions and objects of interest, before making inferences to extract
+data to include in it’s response. There are dangers present where
+actions which are informed by shared reasoning are high risk and
+high consequence. For example, if through shared reasoning the
+user incorrectly confirms their hypothesis and directs a subsequent
+action, such as arresting an innocent person or launching an unnecessary offensive operation. Some specific risks include; the way the
+agent interprets subtleties in the intention of the user request, the
+introduction of bias, the way the agent explains a complex series of
+connections, the way it translates the uncertainty involved in those
+connections and exposes missing data, and the propagation of uncertainty along the conclusion pathway. Additionally, the algorithm
+selected by the agent to explore data influences which pathway is
+described, this needs explaining to a user. Errors in mitigating any
+of these risks could lead to a mistaken, or deliberately manipulated,
+action with adverse effects. Unlike typical conversational agent applications, the user does not necessarily have an expectation or an
+easy way to validate results. They also need to access, understand
+and interpret the evidence underpinning any response. A simple
+chat with summarised text responses cannot fully address the risks
+noted above and therefore lacks transparency and a mechanism that
+supports situation awareness, rigour, visible reasoning, and sense
+making. Wong et al. [41] present the ‘Fluidity and Rigour Model’
+which helps explain the design requirements for applications which
+aim to mitigate these risks and aid the reasoning of intelligence
+analysts.
+To date, research into conversational agents has looked to improve the agent itself, by making it human-like or its responses
+more contextual. This paper however considers the vulnerabilities
+of shared human-machine reasoning and the requirements for visibility of interactions, identifying key considerations. A framework
+is presented, with input from experienced military intelligence analysts, of foundational research areas for developing shared humanmachine reasoning applications, such as conversational agents, for
+evidence based critical decision making environments.
+In situations where a user aims to retrieve information or data,
+particularly if they do not already know how to access it or what
+they are looking for, a conversation can be the prefered way to
+reach their desired outcome. The conversational agent provides a
+gateway to the information they seek, extracting the users intentions through a two way dialogue, then translating these intentions
+into query language and describing the results back. For many users
+this is a far more intuitive approach to retrieve information [3] than
+a complex query, particularly if the query language is uncommon to
+them. We propose that a more intuitive interaction with data could
+also benefit the areas of sense making and intelligence analysis.
+Intelligence analysts require the ability to explore large volumes
+of multidimensional data in a way which feels natural given their
+
+skills and training. Current approaches to allow exploration of multidimensional data, however, are complex and inflexible, requiring
+chart or graph interactions which can feel unnatural and inconsistent to non-technical users. This inhibits the analyst’s ability to
+derive underlying narratives and test their hypotheses. Additionally, common data visualisations such as chart dashboards do not
+clearly translate to some analysis methodologies which require the
+interpretation of conflicting hypotheses alongside uncertainty. As
+described by Wong et. al [41] “analysts need a kind of user interface that allows them to easily explore different ways to organise
+and sequence existing data into plausible stories or explanations
+that can eventually evolve into narratives that bind the data together into a formal explanation.” Such exploration can be defined
+as ‘storyboarding’ where an analyst will attempt to draw together a
+plausible narrative, involving missing and uncertain data, where an
+analysts hypothesised connections also need representation. When
+conducting this type of analysis an audited, flexible, conversation
+with an agent could be beneficial.
+There are a variety of approaches to developing conversational
+agents, however the neural models which power most of the commercially available smart assistants lack a sense of context and
+grounding which their human interlocutors possess [16]. Instead
+knowledge augmented models which make use of ‘semantic knowledge graphs’ may be the answer to provide more contextual, and
+meaningful, interactions. Semantic knowledge graphs are developing as an important approach to manage and store information and
+observations for use in intelligence analysis. An example of such an
+observation is a connection between a person and organisation i.e.
+“Person A works for Organisation C”. By using knowledge graphs
+we are able to describe any type of information, with many properties and classes which algorithms can call upon when performing
+queries. This provides an analyst with the ability to ask powerful
+queries, such as semantic search, if they have a necessary understanding of the query syntax [11]. Semantic knowledge graphs
+allow for some automated reasoning to be performed and thus applications which use them can demonstrate shared human-machine
+reasoning.
+Studies to date have focused upon the development of methods
+and technologies for conversational agents to deliver believable and
+contextual conversations. While potentially extremely helpful, this
+paper proposes that the use of conversational agents to interpret
+intelligence observations through semantic knowledge graphs can
+introduce risks due to a loss of situational awareness (SA). SA plays
+a vital role in dynamic decision making environments [43] such as
+intelligence analysis. For military or police commanders to make
+the best possible decisions in complex and uncertain environments
+they need to maximise their SA by making optimum use of available knowledge. By introducing a conversational agent to parse
+queries, traverse the graph with an appropriate algorithm or set
+of algorithms and describe results, all as decided by the agent, a
+layer of abstraction is introduced which masks true SA. The process
+which interprets a users query before returning a response can be
+described in this way as a ‘black box’, as identified as a key issue in
+research in the area of machine learning and neural networks [4].
+While it is theoretically possible to explain the algorithm which
+is chosen, and each of the steps according to semantic reasoning,
+
+Algorithmic Transparency of Conversational Agents
+this process is not visible to a user through a conversational interface. To allow for evidence based sense making, conversational
+interfaces must, therefore, be designed to provide visibility of large
+and complex reasoning paths and the surrounding contexts. It must
+also be possible for analysts who are not expert statisticians or
+data scientists to understand interactions, perhaps making use of
+accompanying visual aids.
+
+1.2
+
+Research Contribution
+
+We propose that there are some critical vulnerabilities in the field
+of intelligence analysis and other evidence based decision making
+environments. These are magnified by the use of applications which
+share reasoning ability between both human and machine, such as
+conversational agents.
+Research is required to reach an understanding of how machine
+reasoning can be introduced alongside human reasoning in a way
+which mitigates vulnerabilities, whilst still exploiting the significant benefits of more natural and powerful interactions between
+humans and data. This paper delivers a framework for providing
+algorithmic transparency, with associated research areas which are
+the foundation to exploring how applications can be designed to
+deliver shared human-machine reasoning. We examine the example
+of conversational agents used in conjunction with semantic knowledge graphs. The research is specifically tailored to an evidence
+based decision making scenario (intelligence analysis) informed
+by semi-structured interviews with analysts who have experience
+working in intelligence environments. The framework helps segment key considerations and vulnerabilities for agent design and
+identifies challenges and areas for further research.
+
+2
+
+RELATED WORK
+
+The framework proposed in this paper links various research topics
+which are each significant in their own right. We take a broad look
+at previous work on one example of an application technology
+which provides shared human-machine reasoning, that of conversational agents for querying semantic knowledge graphs. There are
+important aspects of our framework which have not received attention in research to date, specifically an understanding of how to
+make machine reasoning more visible to a user when intertwined
+with human reasoning. This is crucial when agents are used in
+decision making environments and is a central question for our
+research.
+
+2.1
+
+Development of Conversational Agents
+
+The desire for humans to be able to speak with machines through
+human-like language has been around for some time, with relevant
+research published as early as the 1950’s [33]. Important advances in
+technology over the past few decades, in particular the development
+of the internet as a source for knowledge, have led to rapid increases
+in conversational agent capabilities [6] with accompanying research
+publications. The focus of research to date has been on improving
+an agents conversational abilities including their understanding of
+a user’s meaning and the flow of the conversation.
+Early chat interfaces, notably ELIZA [37] and ALICE (Artificial
+Linguistic Internet Computer Entity), were built with the aim of
+deceiving humans into believing they were interacting with another
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+human by providing human-like responses. While work towards
+these early bots focused on the ability of a machine to be able to
+imitate a human, for the purposes of this paper we are interested
+in conversational agents which can be used to aid intelligence
+analysts to perform reasoning, and we will therefore apply the
+definition of ‘spoken dialogue systems’ given by McTear [18] to
+describe the type of conversational agents relevant to our research.
+These are defined as computer systems that use spoken language
+to interact with users to accomplish a task. The potential uses for
+task based conversational agents is extremely broad. Examples
+include ‘Anna’, who was introduced by IKEA in the mid 2000’s
+and developed with personification, and CHARLIE. In Anna’s case,
+the task was to direct IKEA customers towards products they may
+be interested in buying. CHARLIE is a chat bot to assist students,
+for example by allowing them to find information about tests [19].
+Students can ask CHARLIE for a complete test, for a personalised
+test (choosing the number of questions), and ask ‘free questions’
+which are not part of any particular test. These two examples of
+task based conversational agents have commonality in that they are
+low risk; other than annoying the user, an incorrect response does
+not lead to catastrophe. Additionally, errors are quickly identifiable
+with little uncertainty. An IKEA customer has a clearly defined goal
+for their task when they communicate with Anna, and they will
+know when their task has been completed. Likewise, a student will
+recognise if CHARLIE is asking questions which are not on their
+syllabus. The consequences to incorrect or misleading responses
+from either Anna or CHARLIE will therefore be limited.
+One area where conversational agents have been applied to
+higher risk and more uncertain environments is in health care. It
+is dangerous in decision making environments if a conversational
+agent is able to bias a decision, or influence the decision maker.
+Robertson et al. [26] evaluate a chat application, built in their case
+as an aid for diagnosing prostate cancer, and found that using the
+app helped to “take fear out of decision making”. Without complete
+visibility of how an application had guided a user to the decision,
+including the background processes beneath the thinking, conversational agents demonstrate serious risk of manipulating a decision
+maker. Another example where this is potentially a problem is in
+chat interfaces which provide news stories, such as the NBC Politics
+Bot which was launched prior to the 2016 US Presidential election.
+How can we be sure the bot is not biased, particularly if it has been
+trained using selected data and machine learning approaches [17],
+or that the bot is not choosing an adverse path or filter to access and
+describe information to a user? To date, to the knowledge of the authors of this paper, there has not been research to understand how
+and when we should shed light on the thinking of a conversational
+agent alongside agent responses. Laranjo et al. [14] find that the use
+of conversational agents in health care includes a mixture of finitestate (where there are predetermined steps), frame-based (where
+questions are based upon a template), and agent-based (where communication depends on the reasoning of human and agent). We are
+interested in agent-based conversational agents as these demonstrate shared human-machine reasoning. Agent-based applications
+include Siri, Allo, Alexa and Cortana, referenced by Mathur and
+Singh [16]. Significant concerns have been identified with these
+types of agent, for example by Miner et al. [20] that “when asked
+simple questions about mental health, interpersonal violence, and
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+physical health, Siri, Google Now, Cortana, and S Voice responded
+inconsistently and incompletely.” To be used in high risk and high
+consequence decision making environments where responses cannot be easily verified, conversational agents must provide visibility
+of their thinking and justifications through the underlying data
+or evidence. Laranjo et al. [14] recognise the risk that comes with
+applying conversational agents in high risk scenarios, including
+“privacy breaches, technical problems, problematic responses, or
+patient harm.”
+The issues of capturing context, managing inconsistency in responses, providing trust and confidence, and removing bias informed by training data, can be mitigated if we provide the agent
+with a foundation for knowledge from which it can extract meaning and content deterministically. This is the case if we allow the
+conversational agent to interact with a semantic knowledge graph
+to perform specific search and reasoning tasks.
+
+2.2
+
+Making inferences with semantic
+knowledge graphs
+
+Hoppe et al. [11] do not define an application as semantic due
+to a particular technology used, rather they consider a “semantic
+application as one where semantics (i. e., the meaning of domain
+terminology) are explicitly or implicitly utilized in order to improve
+the usability of the application.” We apply this same definition. Semantic knowledge graphs provide a user with the power to perform
+queries and retrieve data which incorporates a level of inferencing
+about the users query. Hoppe et al. [11] provide a classic example of “semantic search”, compared to a simple keyword search.
+Instead of searching for information which matches the keyword
+we can search based upon a concept, or class, of an instance in the
+knowledge graph. If I use a conversational agent underpinned by a
+knowledge graph I can ask more complex queries related both to
+classes and instances, for example, ‘what “organisations” (semantic class) is the person “Poppy” (instance) linked to?’ Due to the
+semantic nature of the graph I can identify all instances of organisation and find connections across the graph to the target. The agent
+can infer relevant entities, and any other sub-classes of entity or
+contextual information, through the semantic class I have provided.
+Additionally rule based reasoning can be applied. In this way a
+conversational agent using a knowledge graph can be defined as
+an agent-based model, where reasoning is shared between human
+and machine in a conversation.
+Semantic knowledge graphs can be complex to query, particularly with more advanced graph traversal and query methods. To
+query an RDF graph, for example, we can use the SPARQL query
+language [23]. Additionally we can use SPARQL Inferencing Notation (SPIN), for example to work out the value of a property based
+on other properties in a graph. Figure 1 shows an example SPARQL
+query [23]. This syntax, even for a relatively simple query, can appear complex to novice users. A conversational interface provides a
+route to explore large knowledge graphs through natural language
+without the need to write any query syntax.
+The power of semantic knowledge graphs has led them to become crucial to supporting many AI applications, including question and answer systems [29, 35]. Willemsen presents the use of
+knowledge graphs as the foundation to a conversational agent [39]
+
+S. Hepenstal, N. Kodagoda, L. Zhang, P. Paudyal and B.L. W. Wong
+
+Figure 1: Example SPARQL Query Syntax
+
+and also provides good reasons for doing so. Using a knowledge
+graph to explore entities extracted in a users input text allows for a
+more contextual understanding of what the user requires, as well
+as the opportunity to provide added value to their request. The
+architecture of conversational agents described by Willemsen [40]
+includes aspects such as a domain model (ontology), a text understanding layer (natural language processing), a knowledge graph
+layer which is built from the previous two layers, and a user context
+layer. The user context layer is focused on conversational abilities
+such as staying in context, keeping track of the conversation flow,
+and relating the conversation to entry points in the knowledge
+graph. Willemsen [40] demonstrates a simple search for a specific
+type of directed relationship for a single entity. A user is unlikely to
+require significant additional explanation in this scenario, however
+if we consider a decision making environment, such as intelligence
+analysis, it becomes more complicated. Even with a concise and
+clearly articulated search, such as “who does person x work for?”,
+there are additional factors which an analyst would want to understand beyond a simple text response. In intelligence analysis
+the provenance of the information is important, as is the reliability
+or confidence given to it. There are cases where missing links are
+inferred in knowledge graphs [5], machine learning has produced
+edges (observations or connections) within the knowledge graph
+[21], or SPIN rules have inferred links [1, 32], so the explanation
+of these to an analyst also needs consideration. Additionally, more
+complex queries will require some graph traversal for which the
+choice of traversal algorithm is crucial to determine what information is described to an analyst in the agents text response. A
+choice of Dijkstra’s single shortest path, for example, would identify different information to an alternative heuristic method for
+finding multiple paths between two nodes. Sorokin and Gurevych
+[27] describe a method for not only extracting entities and relations
+from a users query, but also the structure of their query and their
+underlying intention. The structure has implications for the results
+which will be returned, particularly when directional relationships
+exist. While it is important that the machine can understand the
+user’s query and intention, it is also critical that the user can verify
+this.
+Conversational interfaces require the ability to identify a users
+intention and intention definition is therefore an important consideration, as these will trigger the relevant action in response to a
+query. Intentions may be domain specific, for example an intelligence analyst may wish to perform particular tasks which do not
+
+Algorithmic Transparency of Conversational Agents
+translate to other environments. To identify possible tasks we may
+look to use existing work, such as the task taxonomy for graph visualisation presented by Lee et al. [15], to understand generic queries
+a user may wish to make. There has been work to provide advice
+and solutions to the visualisation of large scale knowledge graphs
+[28], and to provide situational awareness of graphs for intelligence
+analysis [9], which could be a starting point for visualisating a
+conversational agents thought process. However, to date the use
+of conversational agents for intelligence analysis and the various
+vulnerabilities which are introduced, in addition to potential mitigation’s through user interface design and visualisation, have not
+received attention. We believe that decision making environments
+have additional requirements for visibility beyond traditional applications for conversational agents, which have not been considered
+in existing research. We can understand these requirements better
+with a look to research in the area of intelligence analysis and sense
+making.
+
+2.3
+
+Intelligence Analysis Methods and
+Requirements
+
+Intelligence analysts are crucial to military decision making because they provide situational awareness (SA) to commanders. A
+key method applied by military analysts is situational logic, this
+underpins much of an analysts standard process to achieve an understanding of a situation. Heuer [10] provides a description of the
+situational logic approach, that “starting with the known facts of
+the current situation and an understanding of the unique forces at
+work at that particular time and place, the analyst seeks to identify
+the logical antecedents or consequences of the situation. A scenario
+is developed that hangs together as a plausible narrative. The analyst may work backwards to explain the origins or causes of the
+current situation or forward to estimate the future outcome.” A traditional approach to perform situational logic analysis is ‘Analysis
+of Competing Hypotheses’ (ACH), developed by Heuer almost 50
+years ago. ACH is a matrix approach which provides rigour when
+comparing evidence against different hypotheses, and whilst it may
+not always be applied in it’s entirety by military analysts, aspects
+of ACH are commonly used.
+Looking to ACH allows us to understand critical aspects which
+feature in an analysts thinking. Such as, the evidence which underpins hypotheses and the related strengths and weaknesses, the
+propagation of weaknesses in a fused evidence picture, the ability
+to compare the strength of multiple alternative hypotheses, the relative impact of removing pieces of evidence upon hypotheses, and
+the relative influence of different hypotheses and evidence upon
+possible narratives.
+While the principles of ACH are sound, in practice it is flawed.
+ACH is typically a matrix table approach and the table display itself
+is limited in the amount of information which can be clearly articulated, so the text is summarised and lacking in surrounding context.
+Additionally, it introduces an arbitrary structure to hypotheses and
+evidence. This can produce adverse cognitive effects where the way,
+and order, in which hypotheses are listed can affect how much they
+are considered. Additionally, if analysts rely on their experience
+alone when assessing possible hypotheses they are prone to bias.
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+“Psychological research into how people go about generating hypotheses shows that people are actually rather poor at thinking of
+all the possibilities. If a person does not even generate the correct
+hypothesis for consideration, obviously he or she will not get the
+correct answer.”[10]
+As Wong and Varga [42] explain, performing situational logic
+analysis to identify and test hypotheses is not straightforward. An
+analyst starts with a fairly ill-defined query, likely based upon
+their own experience, then follows an iterative process querying,
+assessing, learning, drawing conclusions, making judgments and
+generating explanations to direct further searches. They will likely
+amend existing hypotheses or come up with new ideas throughout this process. Wong et al. [41] present the ‘Fluidity and Rigour’
+model, this model demonstrates the wide variety of shifting reasoning strategies applied by analysts. These range from ‘leap of
+faith’ observations and storytelling, with unknown and uncertain
+data, to rigourous and systematic evaluations of hypotheses, such
+as applied in ACH. Conversational agents allow for fluidity, where
+they can support wide variability in thinking. They can also support rigour, where results are valid and underpinned by evidence,
+if the underlying thinking and machine reasoning of the agent can
+be demonstrated to an analyst. Conversational agents can therefore be used to aid reasoning, however, whilst in traditional visual
+analytics the focus is on making these processes visible, using a
+conversational agent alone to perform these tasks can mask the
+underlying methods and data. This information needs to be visible
+to satisfy the requirement for rigour.
+In time sensitive scenarios, for example if an analyst is tasked
+to understand a situation prior to an imminent military action
+with little lead time, situational awareness is particularly important. Thomas and Cook [30] identify situational awareness as the
+perception of the elements in the environment within a volume of
+space and time; comprehension of their meaning; the projection of
+their status into the near future; and the prediction of how various
+actions will affect the fulfillment of one’s goals. A thorough situational logic analysis can achieve perception of elements (known
+facts), and can hang them together as a plausible narrative which
+involves comprehension of their meaning and projection of possible future developments. However, we believe that a traditional
+methodology such as ACH is flawed and would typically take too
+long to complete satisfactorily. Instead, we propose that conversational agents and semantic knowledge graphs lend themselves
+well to situational logic analysis, where ‘known’ facts can be captured as observations, along with the confidence, timestamp and
+provenance of those observations. The graph can then be appended
+with hypothesised associations as additional observations. In this
+way storyboards for a scenario can be captured within the graph.
+We can utilise inferencing capabilities and graph algorithms to
+piece together information (which may be outside our own personal awareness and experience) and refute hypotheses. This is an
+example of shared human-machine reasoning, where a human is
+able to deliver more intuitive reasoning, with a focus on abduction
+and induction, including ‘leap of faith’ ideas, while the machine
+can augment human reasoning with deduction and induction by
+formal argument, scientific rigour and evidence.
+While traditional interfaces to provide this are complex and lack
+fluidity, a natural language approach to interactions could be the
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+
+S. Hepenstal, N. Kodagoda, L. Zhang, P. Paudyal and B.L. W. Wong
+
+solution. An analyst can easily interact in natural language with a
+conversational agent, in a timely fashion, to explore the graph before concluding with a plausible narrative and achieving SA much
+more quickly. Crucial to providing true SA, however, is that an
+analyst can easily and visibly understand how and why a conversational agent has provided the responses they have. In a sense, this
+requires visualisation of the agents conclusion pathway. To date,
+as far as we are aware, there has not been research conducted to
+understand the vulnerabilities to introducing conversational agents
+in the field of intelligence analysis, nor design steps which could
+help mitigate risks.
+
+3
+
+FRAMEWORK
+
+We have produced a research framework to identify the design requirements for applications which involve shared human-machine
+reasoning for use in decision making fields, such as intelligence
+analysis. The framework is underpinned by an exploration of existing literature and unstructured interviews with a small selection of
+experienced military intelligence analysts. We provide an example
+aid to help demonstrate the ‘visibility’ aspect of the framework.
+Approaches to date which develop machine reasoning through
+conversational agents, including [27, 29, 40], focus upon data extraction coupled with language processing and contextualisation, to
+provide better understanding of a user’s query and more informed
+responses from an agent. These are important areas of research
+for providing the underpinning technologies which enable shared
+reasoning with conversational agents. However, design aspects
+for agents used for critical decision making have not received significant attention in research. Figure 2 presents a framework for
+designing applications which involve shared human-machine reasoning, such as conversational agents for knowledge exploration.
+The framework diagram presents the relationship between machine reasoning, shown as a ‘black box’, and human reasoning.
+There has been much work and discussion describing machine
+learning methods as a ‘black box’[4], and the associated vulnerabilities of this [22]. In a similar way a conversational agent’s exploration of a complex and large knowledge graph can be a ‘black box’
+if there is too much information to explain clearly. An interface
+needs to provide ‘explainability’ and ‘visibility’ (the ability to inspect and verify) in order to share cognition between machine and
+human, within the context of a given environment, task and user.
+This framework can be used to inform the design requirements for
+such interfaces and to identify critical areas for future research.
+The human user requires explainability of the cognition taking
+place within a ‘black box’ (XAI). XAI has received a large amount of
+attention in recent years, with a focus upon understanding machine
+learning classifications. The meaning of explainability is key to how
+it is designed into interfaces. Current XAI research, as reviewed by
+Gilpin et al. [8], gives the definition that XAI is a combination of
+interpretability and completeness, where interpretability is linked to
+explaining the internals of a system and completeness is to describe
+it as accurately as possible. To date this angle of explainability has
+looked to express the process within the mathematical model, for
+example how to represent important features which are influencing
+a deep neural network. There are numerous tools which have been
+used to explain a classification, for example Lime [25]. For a discrete
+
+Figure 2: Algorithmic Transparency Framework
+
+Algorithmic Transparency Framework: What the user needs from
+black box algorithms: (i) explanations of how results from algorithms
+are arrived at (ii) explanations that are interpretable by the user in a
+manner that makes sense to them (e.g. the internals of the algorithm,
+including important features, an indication of accuracy or confidence,
+and an understanding of the data used and uncertainties, all
+presented in a manner which enables the user to assess if the results
+are sensible), (iii) visibility of the functional relationships mapped
+against the goals and constraints of the system, and (iv) context in
+which to interpret the explanations. NB: by showing goals and
+constraints, we include some key elements of context, e.g. goals
+include some notion of the priorities and therefore some
+understanding of the problem, hence the context.
+
+classification we can use Lime to visibly represent the feature results
+which the machine learning algorithm has picked as particularly
+relevant to a given classification.
+For applications which allow fluidity and rigour in shared humanmachine reasoning, it is not enough to merely provide explainability
+of the internal workings of a system through result metrics. There
+needs to also be visibility of what reasoning the machine is doing
+and why, how it’s reasoning fits within the fluidity and rigour model
+[41], and the ability to examine conclusion pathways and the effects
+of alternative reasoning strategies, within the context of the goals
+and constraints of the system. Visibility requires an appreciation of
+the uncertainties and gaps in available data and must allow a user
+to understand the influence and justifications of machine reasoning
+within their own reasoning and analysis. The concept of visibility
+has not been addressed in previous research in this area.
+This paper presents a simple scenario to demonstrate how the
+visibility of machine reasoning can be designed within an application alongside human reasoning. The example considers a conversational agent query system for a semantic knowledge graph.
+
+3.1
+
+Example: Conversational agents for graph
+exploration
+
+3.1.1 Analyst Interviews. In order to understand what requirements exist for visibility of machine reasoning in conversational
+agent responses, and to map functional relationships against the
+goals and constraints, we first need to understand what visibility
+means in the context of intelligence analysis. Much work has been
+
+Algorithmic Transparency of Conversational Agents
+done to understand the general thought processes applied by analysts, however to date research has not considered the interaction
+between an analyst and conversational agent and the impact of
+shared reasoning. We begin this discussion by conducting interviews with a small number of experienced intelligence analysts, to
+understand for what tasks conversational agents could help, any
+vulnerabilities which exist, and for each task what visibility means
+to an analyst.
+The analysts interviewed for this study identified areas where a
+natural language interaction with data could be extremely beneficial.
+For example, when performing situational logic analysis analysts
+apply a process of hypothesis creation, testing, and comparison,
+related to real world entities. Analysts formulate hypotheses, often
+linked to future strategy, impact, events, and activities i.e. ‘that
+Person X and Person Y are travelling to Location C for Event A,
+which will have impact Z’. A key requirement is to understand the
+connections between these entities and the surrounding context,
+in particular related to the key points of connection. Considerations need to take into account the provenance and certainty of
+observations and the impact of data changes, including unexpected
+observations, upon the analysts hypothesis. For example, if by accounting for uncertain data an alternative hypothesis presents itself
+as most likely, or if additional data is included after an update in
+the situation which changes the overall picture.
+A semantic knowledge graph approach can provide much needed
+persistence of data, with rigour in the capture of contextual information. However, a graph increases in complexity and scale as it
+evolves over time and it becomes increasingly difficult for an analyst to assess their hypotheses against it. The analysts interviewed
+in this study identified that current analytics tools to explore graph
+data are often over-complicated, with significant learning required
+to understand how to perform functional interactions for filtering
+and configuration. Resulting visualisations are then overloaded
+with too much information. Additionally, there is insufficient explanation of the meaning and constraints of functionality where
+analysts are interested in “function rather than mechanics”. This
+leads to a barrier to analysts using tools because they find them
+off-putting and unnatural. A conversational approach could provide
+access to powerful functionality, but with less complication and
+learning required, and greater understanding of methods through
+two way dialogue. This can help an analyst to explain difficult
+concepts, such as their level of risk aversion when considering
+appropriate evidence across a conclusion pathway.
+Analysts identified a number of other benefits to using conversational agents, beyond being more natural to interact with. When
+exploring data they can allow for timely, coherent, and regular
+searches, where an ongoing conversation is maintained and the
+agents memory can be accessed and utilised. This capability would
+be useful for analysts who want to ask questions such as, “have
+there been any more visits to Location X?”. A key feature of conversational agents, identified by the analysts, is the ability to clearly
+articulate an audit trail to explain how information was found in the
+process of an investigation. This trail helps provide ethical accountability. Each interaction with the agent provides a time-stamped
+message, including associated information found and the state of
+the graph data at that point in time. Analysts can be influenced by
+bias and by capturing their line of questioning an agent could aid
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+an analyst to consider alternative possibilities. A conversational
+agent can allow for a deeper explanation of findings, including
+feedback and suggestions for selected alternative inquiries which
+is based upon a knowledge of the underlying and surrounding data.
+To provide a raw picture of all this data to an analyst would be
+too voluminous and complex for them to digest manually. In this
+way an agent can aid an analyst to identify alternative hypotheses
+which are not restricted to their own experiences or assumptions.
+This reasoning aspect of conversational agents goes beyond a
+simple query tool, to incorporate elements of sense making and
+inferencing, and there are vulnerabilities to doing so. Analysts identified several risks when using conversational agents. These represent important problems which require mitigation to confidently
+apply conversational agents in the area of intelligence analysis. If
+an agent is able to guide an analyst by refuting and suggesting
+alternative hypotheses then there is potential for the analyst to be
+mislead. An agent could guide an analyst towards inaccurate conclusions in a way which is difficult for the analyst to refute, given
+the complexity of the underlying graph and the fact that it is not
+visible to the analyst. If an analyst is interested in key connections
+in a path they are vulnerable to the agents choice of path, where
+there is an adverse impact if non-relevant connections are identified
+as key. Within the conversation text itself it is difficult to describe
+the provenance and certainty of information as well as the key
+information, particularly for many connecting observations. This
+leads to textual responses which are either hard to interpret and
+overload the analyst with too much information, or are summarised
+so that important information can be missing.
+To help mitigate some of these issues the analysts interviewed
+described what requirements for visibility in conversational agents
+they have, in association with their goals for a system. Analysts
+felt an understanding of the underlying processes and algorithms
+applied by conversational agents should focus upon the functional
+meaning, in light of the intelligence analysis task, rather than
+any mathematical method. Specifically, analysts were interested in
+‘how’ and ‘where’ a conversational agent was exploring the graph
+and ‘why’ it deemed information to be interesting, including the
+specifics of the sub-graph extracted, such as the provenance, history
+and confidence of observations. Analysts emphasised the need for a
+balance between identifying the ‘key’ underlying data observations
+or entities, while not overwhelming the user, and also providing
+a contextual understanding of what ‘key’ means. Analysts were
+particularly interested in allowing for human reasoning of more
+intangible observations, alongside the deductive rigour of the machine. This would include an understanding of weaknesses, missing
+data, and ability to apply intuition. Additionally, visibility of past
+conversations, the current state of the conversation, and the state
+and evolution of the graph at each stage, is important for auditing
+purposes and ethical accountability.
+
+3.1.2 Example Case: Scenario. A conversational agent’s interpretation of a user’s intention will inform which thought process, or
+algorithm, is applied to deliver a response. For example, a user’s
+query to find relationships between two different entities may invoke a ‘find connections’ intention. This approach to match query
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+to intention is typically performed using machine learning techniques for classification. Accurate conversational responses therefore begin with an assessment of possible intentions and an accurate
+machine learning intention classifier, and later involve the accuracy
+of entity and relationship extraction, the building of knowledge
+graph query syntax, subjectivity in which algorithms meet which
+intentions, variability and constraints of heuristic methods, and the
+reliability and completeness of the knowledge graph itself. There
+are, therefore, uncertainties which need to be addressed within a
+user interface. For example, what is the impact upon an analysts
+decision if an agent interprets a subtly different intention, with
+different goals and constraints, and employs a different algorithm?
+How many intentions should an agent allow? How distinct do they
+need to be to mitigate uncertainties? Fundamentally we need to
+understand how ‘visibility’ of agent thinking can be provided to an
+analyst.
+In intelligence analysis it is crucially important that analysts
+can fully interpret the information and evidence which is guiding
+their decisions. Without visibility of their ‘conclusion pathway’, i.e.
+the pieces of information which are informing their acceptance or
+rejection of hypotheses, they are vulnerable to mistakes, personal
+and experiential bias, and deception. The use of conversational
+agents presents challenges to the visibility of thought processes,
+by handing over some of this processing to an agent. The nature
+of chat bot interfaces, where a user types a message and receives a
+text reply can encourage a narrow focus for investigation. A user
+will typically receive responses based upon their questions, with
+little awareness of data observations which lie on the periphery of
+their line of questioning (reduced SA). The bigger picture is hidden
+and opportunities for deception are increased.
+Potential vulnerabilities are best explained with an example, as
+described in Table 1. All of these queries relate to a straightforward
+‘connections’ intent which finds a path between pairs of entities.
+We are provided with information akin to ‘explainability’ in the Algorithmic Transparency Framework (Figure 2), where the internals
+of the system (the graph connections which are found between our
+entities of interest) are described in natural language.
+Scenario: An information request is received by an analyst to understand the supply of equipment and ingredients to produce a weapon
+(‘X’) to ‘Organisation X’. It is suspected that an individual with access
+to the necessary equipment (a scientist) is supplying the goods.
+
+S. Hepenstal, N. Kodagoda, L. Zhang, P. Paudyal and B.L. W. Wong
+Table 1: Example Conversational Agent Transcript
+Stage Agent
+Text Entry
+1
+Human
+Is there a connection between Organisation X and any
+scientists?
+2
+Machine
+Yes, Person B is a member
+of Organisation X. Person B
+knows Person A. Person A is a
+scientist.
+3
+Human
+Is Person A linked to weapon
+X?
+4
+Machine
+Yes. Equipment A is used to
+produce weapon X, Financial
+Transaction 1 purchased Equipment A, Person A participated
+in Financial Transaction 1.
+The conversational agent has identified that Person A is a scientist. It has also identified that Person A is connected to Organisation
+X, therefore the agent can perform deductive reasoning to find that
+Organisation X is linked to a scientist. Furthermore, Person A appears a good candidate to suspect in supplying Organisation X
+with weapon X. We can see that Person A is connected to both
+organisation and weapon, and we have an explanation for how.
+However, any uncertainty or alternative narratives within the data
+are not presented to us and the response is narrowly framed by our
+line of questioning. There is a lot more information needed by an
+analyst in order to understand these connections. This is because
+the explanation does not take into account the requirements for
+‘visibility’, including how the conversational agent maps it’s reasoning to the analyst’s goal, or an understanding of the constraints
+present in the reasoning approach. In this case, the analyst wishes
+to test their hypothesis and to allow for reasoning about alternative
+possibilities. The system, however, is constrained to apply a single
+shortest path algorithm which traverses the graph and returns data
+to the analyst. Observations which lie on longer paths are ignored
+and an analysts true situational awareness is reduced. Even worse,
+data can be introduced to mislead an algorithm, and thus manipulate the results presented to a user. This vulnerability ties closely
+with confirmation bias, where by understanding how the algorithm
+will look across data points it may be possible to introduce data to
+reinforce bias.
+This is a simplistic example, but it helps demonstrate some of the
+pitfalls with chat bots and data filtering algorithms which reduce
+situational awareness. This is particularly the case in more realistic
+scenarios or if advanced graph traversal algorithms such as probabilistic methods, heuristic approaches to explore multiple paths,
+or pattern matching methods are applied. As a situation becomes
+more complex, for example with observations which arise from
+different sources and demonstrate varying levels of confidence and
+reliability, designing for visibility of machine reasoning becomes
+critical to providing a clear picture which empowers an analyst to
+perform human reasoning. Much research has looked to develop explainability of machine learning algorithms which present the user
+with mathematical representations, for example, of how features
+in the model relate to classification results. Little has been done,
+however, to understand how visibility should be provided for these
+
+Algorithmic Transparency of Conversational Agents
+
+Figure 3: Example Visual Aid for Conversational Agent
+
+models within the context of their use, nor for how knowledge
+graph traversal algorithms are applied and explained to a user in
+tandem with conversational agents. These are key areas requiring
+further work.
+3.1.3 Example Case: Visibility. The example visual aid shown in
+Figure 3 revisits the scenario described earlier in Table 1 and accompanies the textual responses. Figure 3 displays the path found
+by the agent in addition to other nodes which are close by (within
+a single edge from the path). There is a key for the colour of nodes
+provided in the interface which is linked to their semantic class.
+The path found is akin to the agents conclusion pathway as this
+traces the series of observations which connect the two entities of
+interest. The extra relationships which are not on the path provide
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+additional context and better mapping between the algorithm functions and analyst goals for the system. By providing this addition
+to supplement the text in the visual form of a sub-graph network,
+analysts can better understand the conclusion pathway taken by
+the agent and this gives them greater visibility of the context in
+which deductions are made by the agent. For example, the agent
+has deduced that Organisation X is linked to a scientist, Person A,
+through Person B. However, this deduction ignores other possibilities for a relationship between Person A and Person B which do not
+involve Organisation X, for example membership at the same gym.
+Additionally, the agent’s reasoning does not consider other entities
+which have similar access to equipment as scientists, for example
+university students. An analyst, when faced with this graph, could
+perform more intuitive abductive reasoning to question the role of
+the university. The systems constraints are more obvious, where an
+analyst can identify paths which have not been explored and nodes
+which could be relevant but have been missed. Without visibility
+of the machine thought processes, the human cannot interpret,
+critique, nor build upon machine reasoning.
+The additional visual aid is helpful for an analyst to sense check
+the agents thinking, providing some ability to verify findings by
+comparing alternative hypotheses which may arise from the inclusion of close nodes. Take the first query, for example, where the
+agent finds a connection between Organisation X and a scientist
+(Person A). The agent can explain that the most critical node in
+the path is Person B and an analyst therefore must be confident in
+the association between Person A and Person B to be confident in
+the path as a whole. By considering the surrounding context we
+see that both people are members of the same weights gym. There
+is a plausible association which is not related to Organisation X.
+Likewise, if we take a look at the most critical node linking Person
+A to Weapon X, which is Equipment A. Person A has purchased
+Equipment A which is used to produce Weapon X, however it is
+also used to produce Wood Glue and Person A has participated in
+a woodwork training course. Again, they have a plausible reason
+for making this purchase which is not related to Weapon X and the
+conversational agent has ignored this.
+The graph in Figure 3 provides the additional context that Equipment A is also owned by University X. If an analyst explores this
+connection they will see the display shown in Figure 4. Figure 4
+shows just the sub-graph for the agents response to “is there a path
+between University X and Organisation X?”. We find that there
+is indeed and again Person B is the most critical node, Person D
+and Person C (a student at the university) are also important. The
+addition of the visual aid to the conversational responses helps
+to overcome some of the issues identified by analysts, specifically
+by providing visibility of the conclusion pathway, additional context and algorithm constraints, and by highlighting key points of
+connection within the graph. The conversation text itself can also
+pull out key vulnerabilities, for example where a node is particularly important to a path based upon its betweenness centrality
+score [7]. Betweenness centrality finds key bridging nodes between
+sub-graphs. We have therefore deemed these nodes will have the
+largest impact upon the conclusion path if they are removed and
+the analyst needs to be confident in their accuracy and associated
+connections.
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+
+Figure 4: Example Visual Aid with Further Exploration
+
+S. Hepenstal, N. Kodagoda, L. Zhang, P. Paudyal and B.L. W. Wong
+conversational agent could describe important paths to the user
+and demonstrate how removing pieces of information which have
+lower reliability and confidence affects the evidence, grounds, and
+ultimately the claim. The definition of possible intentions which
+can be understood by the conversational agent and the subsequent
+methods they invoke is a key area for future development, as is an
+analysis of graph tasks and methods to visualise large scale data
+within and alongside conversational responses.
+A greater understanding is needed of what ‘visibility’ means
+in the context of intelligence analysis tasks, goals and constraints,
+therefore more detailed studies should look to explore this concept
+with analysts.
+The framework proposed in this paper has wider implications
+for the design of shared human-machine reasoning applications
+beyond the conversational agent example discussed. Future work
+should therefore also look to see how this framework can be applied to the design of other applications which provide shared
+human-machine reasoning, for example applications which include
+reasoning through machine learning.
+
+5
+
+4
+
+FUTURE WORK
+
+The example visual aid is a helpful start, however it is flawed in
+many ways. An important issue facing analysts is information overload. In the simple example provided it is easy for an analyst to
+understand the graph visualisation, however in a more realistic
+scenario the complexity and scale of the graph would present a
+significant challenge. To tackle this problem more advanced traversal algorithms are required in addition to utilising the reasoning
+power of semantic knowledge graphs. Approaches such as concept
+lattice analysis [38] could also be explored to allow for greater complexity in the concepts and associated sub-concepts expressed by a
+conversational agent.
+A more realistic scenario would require a smarter extraction of
+the surrounding graph context beyond that shown here, including
+uncertainties in the data and better definition of what we mean by
+‘close’ to the path. Rather than simply displaying additional connections along a conclusion pathway, we need a method to display the
+important alternative connections which if considered could affect
+our hypotheses. To do this requires an understanding of how analysts make inferences across graphs. Wong and Varga [42] describe
+the concept of ‘brown worms’ to supplement argumentation which
+could be helpful to apply here. If an agent interprets a users query
+for connections as a hypothesis claim i.e. that the two entities are
+connected in a particular way, it can then extract a users grounds
+to the claim then trace through graph observations collecting evidence against those grounds. Using the brown worms concept, the
+
+CONCLUSION
+
+There is a place for conversational agents in the field of intelligence
+analysis and, if designed carefully, they could deliver significant
+advantages to analysts compared to current practices and analytics
+tools. There are, however, risks to using them in a decision making
+environment where visibility of the reasoning, evidence, goals and
+constraints which underpin analysis is crucial, in addition to the
+explainability of a result. We provide a design framework which
+highlights important research areas to explore when looking to
+develop applications for shared human-machine reasoning, in fields
+which require evidence based decision making. Future work should
+look to apply the ‘Algorithmic Transparency Framework’ to the
+design of applications in real world scenarios and to tackle the
+challenges identified in this paper.
+
+6
+
+ACKNOWLEDGEMENTS
+
+This research was assisted by experienced military intelligence
+analysts who work for the Defence Science Technology Laboratory
+(Dstl).
+
+REFERENCES
+[1] [n. d.]. SPIN (SPARQL Inferencing Notation).
+[2] Agnese Augello, Mario Scriminaci, Salvatore Gaglio, and Giovanni Pilato. 2011. A
+Modular Framework for Versatile Conversational Agent Building. , 577-582 pages.
+[3] Francois Bouchet and Jean-Paul Sansonnet. 2009. Subjectivity and Cognitive
+Biases Modeling for a Realistic and Efficient Assisting Conversational Agent. ,
+209-216 pages.
+[4] Davide Castelvecchi. 2016. Can we open the black box of AI? Nature 538, 7623
+(2016), 20.
+[5] Wenhu Chen, Wenhan Xiong, Xifeng Yan, and William Wang. 2018. Variational
+Knowledge Graph Reasoning.
+[6] Robert Epstein. 2009. Parsing the Turing Test Philosophical and Methodological
+Issues in the Quest for the Thinking Computer (1. ed.). Springer Netherlands,
+Dordrecht.
+[7] Linton C. Freeman. 1977. A set of measures of centrality based on betweenness.
+Sociometry (1977), 35–41.
+[8] Leilani H. Gilpin, David Bau, Ben Z. Yuan, Ayesha Bajwa, Michael Specter, and
+Lalana Kagal. 2018. Explaining Explanations: An Approach to Evaluating Interpretability of Machine Learning.
+[9] Geoff Gross, Rakesh Nagi, and Kedar Sambhoos. 2014. A fuzzy graph matching
+approach in intelligence analysis and maintenance of continuous situational
+awareness. Information Fusion 18, 1 (2014), 43–61.
+
+Algorithmic Transparency of Conversational Agents
+[10] Richards J. Heuer. 1999. Psychology of intelligence analysis.
+[11] Thomas Hoppe, Bernhard Humm, Ulrich Schade, Timm Heuss, Matthias Hemmje,
+Tobias Vogel, and Benjamin Gernhardt. 2016. Corporate Semantic Web âĂŞ
+Applications, Technology, Methodology. Informatik-Spektrum 39, 1 (/02/01 2016),
+57–63.
+[12] T. Jankun-Kelly, Tim Dwyer, Danny Holten, Christophe Hurter, Martin Nollenburg, Chris Weaver, and Kai Xu. 2014. Scalability considerations for multivariate
+graph visualization. Springer International Publishing.
+[13] Lorenz Klopfenstein, Saverio Delpriori, Silvia Malatini, and Alessandro Bogliolo.
+2017. The Rise of Bots: A Survey of Conversational Interfaces, Patterns, and
+Paradigms. , 555-565 pages.
+[14] Liliana Laranjo, Adam G. Dunn, Huong Ly Tong, Ahmet Baki Kocaballi, Jessica
+Chen, Rabia Bashir, Didi Surian, Blanca Gallego, Farah Magrabi, Annie Y. S.
+Lau, and Enrico Coiera. 2018. Conversational agents in healthcare: a systematic
+review. Journal of the American Medical Informatics Association 25, 9 (/09/01
+2018), 1248–1258.
+[15] Bongshin Lee, Catherine Plaisant, Cynthia Parr, Jean-Daniel Fekete, and Nathalie
+Henry. May 23, 2006. Task taxonomy for graph visualization (BELIV ’06). ACM,
+1–5.
+[16] Vinayak Mathur and Arpit Singh. 2018. The Rapidly Changing Landscape of
+Conversational Agents. (/03/22 2018).
+[17] Kayla Matthews. 2018. We Need to Talk About Biased AI Algorithms.
+[18] Michael Mctear. 2002. Spoken dialogue technology: enabling the conversational
+user interface. ACM Computing Surveys (CSUR) 34, 1 (2002), 90–169.
+[19] Fernando A. Mikic, Juan C. Burguillo, Martin Llamas, Daniel A. Rodriguez, and
+Eduardo Rodriguez. 2009. CHARLIE: An AIML-based chatterbot which works as
+an interface among INES and humans. , 6 pages.
+[20] Adam S. Miner, Arnold Milstein, Stephen Schueller, Roshini Hegde, Christina
+Mangurian, and Eleni Linos. 2016. Smartphone-based conversational agents and
+responses to questions about mental health, interpersonal violence, and physical
+health. JAMA internal medicine 176, 5 (2016), 619–625.
+[21] Maximilian Nickel, Kevin Murphy, Volker Tresp, and Evgeniy Gabrilovich. 2016.
+A Review of Relational Machine Learning for Knowledge Graphs. Proc. IEEE 104,
+1 (2016), 11–33.
+[22] Nicolas Papernot, Patrick McDaniel, Ian Goodfellow, Somesh Jha, Z. Berkay Celik,
+and Ananthram Swami. 2017. Practical Black-Box Attacks Against Machine
+Learning. ACM, New York, NY, USA, 506âĂŞ519.
+[23] Eric Prud’hommeaux and Andy Seaborne. 2008. SPARQL Query Language for
+RDF.
+[24] Marco Tulio Correia Ribeiro. 2016. Lime.
+[25] Marco Tulio Correia Ribeiro. 2016. Lime: Explaining the predictions of any
+machine learning classifier.
+[26] Scott Robertson, Rob Solomon, Mark Riedl, Theresa Wicklin Gillespie, Toni
+Chociemski, Viraj Master, and Arun Mohan. 2015. The visual design and implementation of an embodied conversational agent in a shared decision-making context
+(eCoach). Springer, 427–437.
+[27] Daniil Sorokin and Iryna Gurevych. 2018. Modeling Semantics with Gated Graph
+Neural Networks for Knowledge Base Question Answering.
+[28] Seema Sundara, Medha Atre, Vladimir Kolovski, Souripriya Das, Zhe Wu, Eugene Inseok Chong, and Jagannathan Srinivasan. 2010. Visualizing large-scale
+RDF data using Subsets, Summaries, and Sampling in Oracle. , 1048-1059 pages.
+[29] Wen tau Yih, Matthew Richardson, Christopher Meek, Ming-Wei Chang, Jina Suh,
+and Microsoft Research Redmond. 2016. The Value of Semantic Parse Labeling
+for Knowledge Base Question Answering.
+[30] J. J. Thomas and K. A. Cook. 2006. A visual analytics agenda. Computer Graphics
+and Applications, IEEE 26, 1 (2006), 10–13.
+[31] (TM) TopQuadrant. [n. d.]. TopBraid Application.
+[32] (TM) TopQuadrant. [n. d.]. TopQuadrant SPIN Inferencing.
+[33] A. M. Turing. [n. d.]. Computing Machinery and Intelligence Author(s): A.
+M. Turing Source: Mind, New Series, Vol. 59, No. 236 (Oct., 1950), pp. 433-460
+Published by: Oxford University Press on behalf of the Mind Association Stable
+URL: http://www.jstor.org/stable/2251299.
+[34] Jane Wakefield. 2016. Would you want to talk to a machine?
+[35] Ruijie Wang, Yuchen Yan, Jialu Wang, Yuting Jia, Ye Zhang, Weinan Zhang, and
+Xinbing Wang. 2018. AceKG: A Large-scale Knowledge Graph for Academic
+Data Mining.
+[36] Chen Wei, Zhichen Yu, and Simon Fong. 2018. How to Build a Chatbot: Chatbot
+Framework and Its Capabilities. ACM, New York, NY, USA, 369âĂŞ373.
+[37] Joseph Weizenbaum. 1983. ELIZA - a computer program for the study of natural
+language communication between man and machine. Commun. ACM 26, 1 (1983),
+23–28.
+[38] Rudolf Wille. 2006/10/30. Formal Concept Analysis as Applied Lattice Theory.
+Springer, Berlin, Heidelberg, 42–67.
+[39] Christophe Willemsen. 2018. 3 reasons why Knowledge Graphs are foundational
+to Chatbots.
+[40] Christophe Willemsen and GraphAware. 2018. Knowledge Graphs and Chatbots
+with Neo4j.
+
+IUI Workshops’19, March 20, 2019, Los Angeles, USA
+[41] B. L. William Wong, Patrick Seidler, Neesha Kodagoda, and Chris Rooney. 2018.
+Supporting variability in criminal intelligence analysis: From expert intuition
+to critical and rigorous analysis. Societal Implications of Community-Oriented
+Policing and Technology (2018), 1–11.
+[42] B. L. W. Wong and Margaret Varga. 2012. Black Holes, Keyholes And Brown
+Worms: Challenges In Sense Making. , 287-291 pages.
+[43] BL William Wong and Ann Blandford. 2004. Describing Situation Awareness
+at an Emergency Medical Dispatch Centre. In Proceedings of the Human Factors
+and Ergonomics Society Annual Meeting, Vol. 48. SAGE Publications Sage CA: Los
+Angeles, CA, 285–289.
+
+

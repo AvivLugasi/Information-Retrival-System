@@ -1,0 +1,540 @@
+                                             On Measuring Gender Bias in Translation of Gender-neutral Pronouns
+
+                                                              Won Ik Cho1 , Ji Won Kim2 , Seok Min Kim1 , and Nam Soo Kim1
+                                                               Department of Electrical and Computer Engineering and INMC1
+                                                                {wicho,smkim}@hi.snu.ac.kr, nkim@snu.ac.kr
+                                                                                 Department of Linguistics2
+                                                                                kimjiwon08@snu.ac.kr
+                                                                                 Seoul National University
+                                                                      1 Gwanak-ro, Gwanak-gu, Seoul, Korea, 08826
+
+
+                                                                    Abstract
+                                                 Ethics regarding social bias has recently
+arXiv:1905.11684v1 [cs.CL] 28 May 2019
+
+
+
+
+                                                 thrown striking issues in natural language pro-
+                                                 cessing. Especially for gender-related topics,
+                                                 the need for a system that reduces the model
+                                                 bias has grown in areas such as image caption-
+                                                 ing, content recommendation, and automated
+                                                 employment. However, detection and evalua-
+                                                 tion of gender bias in the machine translation
+                                                 systems are not yet thoroughly investigated,      Figure 1: Occupation gender bias shown in some KR-
+                                                 for the task being cross-lingual and challeng-    EN (Korean-English) translation systems. Note that un-
+                                                 ing to define. In this paper, we propose a        like this figure, Yale romanization is utilized in the rest
+                                                 scheme for making up a test set that evalu-       of this paper.
+                                                 ates the gender bias in a machine translation
+                                                 system, with Korean, a language with gender-
+                                                 neutral pronouns. Three word/phrase sets are      is, the prejudice within people, e.g., cops are usu-
+                                                 primarily constructed, each incorporating pos-    ally men or nurses are usually women, which is
+                                                 itive/negative expressions or occupations; all    inherent in corpora, assigns bias to the MT models
+                                                 the terms are gender-independent or at least      trained with them.
+                                                 not biased to one side severely. Then, addi-
+                                                 tional sentence lists are constructed concern-       State-of-the-art MT systems or the ones in ser-
+                                                 ing formality of the pronouns and politeness      vice are based on large-scale corpora that incorpo-
+                                                 of the sentences. With the generated sentence     rate various topics and text styles. Usually, sen-
+                                                 set of size 4,236 in total, we evaluate gender    tence pairs for training are fed into the seq2seq
+                                                 bias in conventional machine translation sys-     (Sutskever et al., 2014; Bahdanau et al., 2014) or
+                                                 tems utilizing the proposed measure, which is     Transformer (Vaswani et al., 2017)-based models,
+                                                 termed here as translation gender bias index      where the decoding process refers to thought vec-
+                                                 (TGBI). The corpus and the code for evalua-
+                                                                                                   tor of the source data to infer a plausible transla-
+                                                 tion is available on-line1 .
+                                                                                                   tion (Cho et al., 2014). Under some circumstances,
+                                         1       Introduction                                      this may incur an association of gender-specified
+                                                                                                   pronouns (in the target) and gender-neutral ones
+                                         Gender bias in natural language processing (NLP)          (in the source) for lexicon pairs that frequently col-
+                                         has been an issue of great importance, especially         locate in the corpora. We claim that this kind of
+                                         among the areas including image semantic role la-         phenomenon seriously threatens the fairness of a
+                                         beling (Zhao et al., 2017), language modeling (Lu         translation system, in the sense that it lacks gener-
+                                         et al., 2018), and coreference resolution (Lu et al.,     ality and inserts social bias to the inference. More-
+                                         2018; Webster et al., 2018). Along with these, the        over, the output is not fully correct (considering
+                                         bias in machine translation (MT) was also claimed         gender-neutrality) and might offend the users who
+                                         recently regarding the issue of gender dependency         expect fairer representations.
+                                         in the translation incorporating occupation (Prates          The aforementioned problem exists in Korean
+                                         et al., 2018; Kuczmarski and Johnson, 2018). That         as well (Figure 1). To look more into this, here
+                                             1
+                                                 https://github.com/nolongerprejudice/tgbi         we investigate the issue with the gender-neutral
+pronouns in Korean, using the lexicons regarding         individuality and context, rather than of statistics
+sentiment and occupation. We provide the sen-            and system. The paper poses a question on the fair-
+tences of the template “걔는 [xx]-해 (kyay-nun              ness of fairness utilized in fair machine learning,
+[xx]-hay), S/he is [xx] ”, as in Prates et al. (2018),   and concludes that the fairness issue in algorithmic
+to the translation system, and evaluate the bias ob-     decision-making should be treated in a contextu-
+served from the portion of pronouns being trans-         ally appropriate manner, along with the points that
+lated into female/male/neither. Here, [xx] denotes       may hinge on the factors which are not typically
+either a sentiment word regarding one’s judgment         present in the data available in situ. Although lit-
+towards the third person (polar), or an occupa-          tle study has been undertaken in the field of ethics
+tion word (neutral). Since kyay in Korean, which         in translation, we have plentiful research on the
+refers to s/he, is gender-neutral thus the transla-      call for mitigation of gender bias in NLP models.
+tion output of the sentence becomes either “She             One of them is image semantic role labeling, as
+is [xx]”, “He is [xx]”, or “The person is [xx]”.         suggested in Zhao et al. (2017). It is claimed that
+Although the expressions as used in the last out-        due to the bias in the image/caption pairs that as-
+put are optimal, they are not frequently utilized        sociate specific verb/mood with a specific gender,
+in conventional translation systems. Also, such re-      e.g., warm tone kitchen and cooking with women;
+sult is difficult to be mechanically achieved since      the trained model infers the wrong gender in the
+transforming all the gender-related pronouns to the      captioning of some images. The primary reason is
+neutral ones may cause loss of information, in the       assumed to be a lack of data with cooking males
+circumstances where the context is given (e.g., To       in warm tone kitchen. However, since data aug-
+tell you one thing about her, [she] is [xx]).            mentation for all the imbalance is costly and not
+   In this study, we collect a lexicon set of the size   promising, the paper proposes giving a constraint
+of 1,059 for the construction of an equity evalua-       in the training phase in the way of disassociating
+tion corpus (EEC) (Kiritchenko and Mohammad,             verbs and gender information.
+2018), specifically 324 sentiment-related phrases           Other areas where gender bias is observed are
+and 735 occupation words. For each sentence of           classification and recommendation, as represented
+the above template containing a lexicon, along           in a recent article2 ; in Amazon AI recruiting, the
+with an alternative pronoun (formal version) and         system came out to recommend the applicants who
+a politeness suffix (on/off), we eventually obtain       had sufficient work experience in the field, in most
+4,236 utterances to make up the EEC. We claim            cases male. This incident does not merely mean
+the following as contributions of this paper:            that the data concerning female occupies much
+    • Construction of a corpus with template             smaller volume than male; it also conveys that
+      sentences that can check the preservation          so-called “good” applicants were selected in per-
+      of gender-neutrality in KR-EN translation          spective of choosing experienced and industrious
+      (along with a detailed guideline)                  workers who might have been less forced to devote
+    • A measure to evaluate and compare the per-         their time to housework or childcare. However, it
+      formance of translation systems regarding the      is questionable that forcing the dataset to be bal-
+      preservation of gender neutrality of pronouns      anced by making the portion of female employ-
+    • Rigorous contemplation on why the preserva-        ment half is a sound solution. Instead, this is about
+      tion of gender neutrality has to be guaranteed     disentangling the factors that are less directly re-
+      in translation                                     lated to working ability.
+                                                            Above kind of disentanglement is required as
+   In the following sections, after an introduction      well in the area of inference; for instance, a shared
+to the literature, we describe how we made up the        task of GenderBiasNLP3 . For such a task, re-
+corpus, and how it is utilized in evaluating the con-    searchers find how contextual factors can be dis-
+ventional machine translation systems in service.        associated with gender information. In this pa-
+2    Related Work                                        per, a similar problem is discussed in cross-lingual
+                                                         perspective. Along with the articles that pose the
+It is essential to clarify the legitimate ground for
+                                                             2
+the necessity of mitigating gender bias in machine             https://www.reuters.com/article/us-amazon-com-jobs-
+                                                         automation-insight/amazon-scraps-secret-ai-recruiting-tool-
+learning models. For example, Binns (2017) sug-          that-showed-bias-against-women-idUSKCN1MK08G
+                                                             3
+gests that it should be considered as a problem of             https://www.kaggle.com/c/gendered-pronoun-resolution
+problem4 , some studies have been done in an                  pate in the conversation (and who the speakers al-
+empirical viewpoint (as coreference resolution in             together know).
+translation) including Kuczmarski and Johnson                    Note that for a native speaker, kyay indicates
+(2018). In Prates et al. (2018) which is the clos-            someone who is younger than or the same age as
+est to this work, twelve languages are investi-               the speaker, in an informal way. Thus, ‘그 사람
+gated with about 1,000 occupations and 21 adjec-              (ku salam), the person’ was adopted in this study
+tives, with a template sentence, demonstrating a              as well, as a variation of kyay to assign formal-
+strong male dependency within Google translator.              ity to the utterances. For both kyay and ku salam,
+However, albeit its syntax being similar to that of           topic marker ‘은/는 (un/nun), is’ was agglutinated
+Japanese, Korean was omitted due to some techni-              to disambiguate the objectivity. In other words, all
+cal reasons. Here, we make the first known attempt            the sentiment words or the occupations introduced
+to create a concrete scheme for evaluating the gen-           in the following paragraphs denote the property re-
+der bias of KR-EN translation systems regarding               garding the topic (the pronoun) of the sentence.
+sentiment words and occupations, and propose a
+                                                              3.1.2 Sentiment words
+measure for an inter-system comparison. Also, we
+state that mitigated male dependency does not nec-            Sentiment words in category of positive and neg-
+essarily mean that the system bias has reduced,               ative polarity lexicons were collected from the
+rather it can imply that another social bias has been         Korean Sentiment Word Dictionary published by
+involved.                                                     Kunsan National University6 . The corpus is re-
+                                                              ported to be constructed by majority voting of
+3     Proposed Method                                         at least three people. Among the total of 14,843
+                                                              items including single words and phrases, we
+In this section, we describe how the EEC is created           only took roots into account, finally obtaining 124
+and how it is utilized in evaluating gender bias in           and 200 items for positive and negative polarity
+the MT models.                                                words. We selected not only single words such as
+                                                              ‘상냥한 (sangnyanghan), kind, positive’, but also
+3.1     Corpus generation                                     phrases such as ‘됨됨이가 뛰어난 (toymtoymika
+The corpus generation scheme can be compared                  ttwienan), be good in manner, positive’, some-
+with Burlot and Yvon (2017) in the sense that var-            times including verb phrases such as ‘함부로 말하
+ious morpho-syntactic/semantic features are taken             는 (hampwulo malhanun), bombard rough words,
+into account. However, here we focus more on                  negative’. Additional adverbs were not utilized in
+making the template sentences help discern the                the sentence generation.
+gender bias regarding the translation of gender-                 In investigating the appropriateness of the sen-
+neutral pronouns.                                             timent words, two factors were considered: first,
+                                                              does the sentiment word belong to the category of
+3.1.1    Gender-neutral pronouns                              the positive or negative lexicon? And second, does
+The first thing to be clarified is the distinction of         it incorporate any prejudice if categorized into
+gender-neutral words in Korean. Unlike some lan-              positive or negative? For the first question, three
+guages such as German, the Korean language does               Korean native speakers examined the EEC and left
+not incorporate grammatical gender. However, for              only the lexicons with the complete consensus.
+the third person pronouns, there exist ‘그녀 (ku-               For the second question, we removed the words
+nye), she’ and ‘그 (ku), he’, which are clearly                regarding appearance (e.g., pretty, tall), richness
+gender-specific. Therefore, in some cases, to avoid           (e.g., rich, poor), sexual orientation (e.g., ho-
+specifying a gender (e.g., in case the speaker asks           mosexual), disability (e.g., challenged), academic
+the addressee about a person whose gender is not              background (e.g., uneducated), occupation or sta-
+identified), the speakers use gender-neutral pro-             tus (e.g., doctor, unemployed), etc. This was also
+nouns such as ‘걔 (kyay), s/he’5 , which is widely             thoroughly checked.
+used to indicate somebody that does not partici-              3.1.3 Occupations
+    4
+      https://qz.com/1141122/google-translates-gender-bias-   Occupation, which was not incorporated in the
+pairs-he-with-hardworking-and-she-with-lazy-and-other-        previous section since assigning sentiment polar-
+examples/
+    5                                                            6
+      An abbreviated form of ‘그 애 (ku ay), the child’.               http://dilab.kunsan.ac.kr/knusl.html
+ity to it may not guarantee fairness, was taken into             maximum when pn is 1 and minimum when ei-
+account to form a separate corpus. We searched                   ther pw or pm is 1. This condition matches with
+for the official terms of each job and put them in               the ideal goal of assigning gender-neutrality to
+the template “S/he is [xx].”7 . The occupation list              pronouns in context-free situations, and also with
+of size 735 was collected from an official govern-               the viewpoint that random guess of female/male
+ment web site for employment8 and was checked                    yields the optimum for a fixed pn .
+for redundancy.                                                     For all the sentence sets namely S1 · · · Sn and
+   In choosing the occupations, gender-specificity               the corresponding scores PS1 · · · PSn , we define
+had to be concealed, which is disclosed in words                 the average value P = AV G(PSi ) as a trans-
+like “발레리노 (palleylino), ballerino” or “해녀                       lation gender bias index (TGBI) of a translation
+(haynye), woman diver”. Also, the words that con-                system, which yields 1 if all the predictions incor-
+vey hate against specific groups of people were                  porate gender-neutral terms. Si can be associated
+omitted. By this, we made sure that the occupa-                  with whatever corpus that is utilized. Here, non-
+tion words are free from sentiment polarity, even                weighted arithmetic average is used so that the
+though some may be listed in the sentiment word                  aspects investigated in each sentence set are not
+dictionary.                                                      overlooked for its small volume.
+3.1.4 Politeness suffix                                          3.2.1   A remark on interpretation
+Finally, the suffix “요 (yo)” was considered in as-               At this point, we want to point out that two factors
+signing politeness to the sentences. It is usually at-           should be considered in analyzing the result. The
+tached at the end of the sentence; if a straightfor-             first one is the bias caused by the volume of ap-
+ward attachment is not available, then the last part             pearance in corpora (VBias), and the other is the
+of the sentence is transformed to guarantee the ut-              bias caused by the social prejudice which is pro-
+terance being polite. Overall, the criteria regard-              jected in the lexicons utilized (SBias).
+ing the construction scheme of the test set com-                    We assumed that VBias leans toward males and
+prise three factors; formality, politeness, and po-              that low pw might be obtained overall, which came
+larity (occupation: neutral).                                    out to be generally correct. However, pw being rel-
+3.2   Measure                                                    atively high (among sentence sets) does not nec-
+                                                                 essarily mean that the bias is alleviated; rather
+For any set of sentences S where each sentence                   it can convey the existence of SBias, which as-
+contains a pronoun of which the gender-neutrality                signs female-related translation for some senti-
+should be preserved in translation, let pw be the                ment words or occupations. In other words, we
+portion of the sentences translated as female, pm                cannot guarantee here that the translation sys-
+as male, and pn as gender-neutral9 . Then we have                tem that shows higher pw with a specific sentence
+the following constraints:                                       set substantiates their not being biased, consider-
+                   pw + pm + pn = 1                              ing both volume-related and social bias-related as-
+                                                          (1)    pects.
+                  0 ≤ pw , pm , pn ≤ 1
+                                                                 3.2.2   Why the measure?
+Consequently, by defining
+                    √                                            Despite the limitation of the proposed measure, as
+              Ps = pw pm + pn                             (2)    explained above, we claim that using the measure
+                                                                 may be meaningful for some reasons. First, the
+we might be able to see how the translation is far
+                                                                 measure adopts square root function to reduce the
+from guaranteeing gender neutrality. Note that the
+                                                                 penalty of the result being gender-specific, taking
+measure is between 0 and 1, from constraint (1)10 ;
+                                                                 into account that many conventional translation
+    7
+      Here, we notice that the Korean template differs regard-   systems yield gender-specific pronouns as output.
+ing the role of [xx]; if [xx] is noun phrase then the template
+becomes “걔는 [xx]야 (kay-nun [xx]-ya)”, incorporating -ya
+                                                                 Secondly, we evaluate the test result with the var-
+instead of -hay which fits with the modifiers.                   ious sentence sets that comprise the corpus, not
+    8
+      https://www.work.go.kr                                     just with a single set. This makes it possible for
+    9
+      pw regards words such as she, her, woman, girl, and pm     the whole evaluation process to assess gender bias
+regards he, him, man, guy, boy. Others including the person
+were associated with pn .                                        regarding various topics. Finally, although it is un-
+   10
+      The proof is provided in the appendix A.                   clear if the enhancement of PSi for some Si orig-
+           Sentence set [size]         Google Translator (GT)      Naver Papago (NP)       Kakao Translator (KT)
+          (a) Informal [2,118]         0.4018 (0.2025, 0.0000)   0.3936 (0.1916, 0.0000)   0.1750 (0.0316, 0.0000)
+            (b) Formal[2,118]          0.0574 (0.0000, 0.0033)   0.0485 (0.0014, 0.0009)   0.0217 (0.0000, 0.0004)
+           (c) Impolite[2,118]         0.3115 (0.1062, 0.0023)   0.3582 (0.1506, 0.0004)   0.1257 (0.0155, 0.0004)
+             (d) Polite[2,118]         0.2964 (0.0963, 0.0009)   0.2724 (0.0807, 0.0000)   0.1256 (0.0160, 0.0000)
+            (e) Negative [800]         0.3477 (0.1362, 0.0037)   0.1870 (0.0350, 0.0012)   0.1311 (0.0175, 0.0000)
+             (f) Positive [496]        0.4281 (0.2358, 0.0040)   0.2691 (0.0786, 0.0000)   0.1259 (0.0161, 0.0000)
+         (g) Occupation [2,940]        0.2547 (0.0690, 0.0006)   0.2209 (0.0496, 0.0017)   0.1241 (0.0153, 0.0003)
+                  Average                      0.2992                    0.2499                    0.1184
+
+Table 1: The overall evaluation result for three conventional KR-EN translation systems. Note that the values for
+the sentence sets (a-g) denote Ps (pw , pn ) for each sentence set S. The bold lines denote the sentence set with
+which each translator shows the highest score.
+
+
+inates in relieved VBias or inserted SBias, the av-              female, but the result proves otherwise. Instead, in
+eraged value P is expected to be used as a repre-                GT and NP, (f) the positive case shows relatively
+sentative value for inter-system comparison, espe-               more frequent inference as female compared with
+cially if the gap between the systems is noticeable.             (e) the negative case, although the absolute value
+                                                                 suggests that there exists VBias towards men.
+4        Evaluation                                                 For all the systems, intra-system analysis
+For evaluation we investigate seven sentence sets                demonstrates that the result regarding occupation
+in total, namely (a) informal, (b) formal, (c) impo-             is more biased than the others. Except for NP, the
+lite, (d) polite, (e) negative, (f) positive, and (g) oc-        social bias inserted in the models seems to lower
+cupation. (a-d) contains 2,118 sentences each and                the score regarding (g). This is to be investigated
+(e-g) contains 800, 496, and 2,940 each. The va-                 more rigorously in the qualitative analysis.
+lidity of investigating multiple sentence subsets is
+                                                                 4.1.2   Style-related features
+to be stated briefly in the appendix B.
+   In this study, we evaluate three conventional                 The sentences in the set (b), with formal and
+translation systems in service, namely Google                    gender-neutral pronouns, turned out to be signif-
+translator (GT)11 , Naver Papago12 (NP), and                     icantly biased to male compared with (a) the in-
+Kakao translator (KT)13 . Overall, GT scored the                 formal cases, which was beyond our expectations.
+highest and KT the lowest. We conduct additional                 From this, we could cautiously infer that corpora
+analysis to catch the meaning beyond the numbers.                incorporating relatively formal expressions (such
+                                                                 as news article, technical report, papers, etc.) gen-
+4.1       Quantitative analysis                                  erally associate the sentiment or occupation words
+VBias is primarily assumed to be shown by pm                     with males. With respect to politeness, the systems
+dominating the others (Table 1). However, in some                did not show a significant difference between (c)
+cases, VBias is attenuated if SBias is projected into            and (d). We infer that the politeness factor does
+the translation output in the way of heightening                 not affect the tendency of translation much since
+pw .                                                             it is largely related to the colloquial expressions
+                                                                 which might not have been employed in the train-
+4.1.1       Content-related features                             ing session.
+Considering the result with the sentence sets (e-g)                 The result regarding formality reminds us of the
+which are content-related, the tendency turned out               phenomenon which has been discerned in the chal-
+to be different by the systems; GT and NP show                   lenge on author profiling (Martinc et al., 2017),
+relatively low score with positive sentiment words               that the formal style is known to be predictive for
+and KT with negative sentiment words. We sus-                    identifying male authors. Undoubtedly, the iden-
+pected at first that the negative sentiment words                tity of a writer is not direct evidence of s/he uti-
+would be highly associated with translation into a               lizing the expressions biased to specific gender in
+    11
+       https://translate.google.com/
+                                                                 writing. However, a tendency has been reported
+    12
+       https://papago.naver.com/                                 that the male writers frequently assume or refer to
+    13
+       https://translate.kakao.com/                              male subject and topic, either unconsciously or to
+follow the convention, in the formal writing (Arg-                posed by GT or KT. We assume this phenomenon
+amon et al., 2003). Also, it cannot be ignored that               as a result of technical modification performed by
+the males are more engaged in formal writing in                   NP team to reduce the gender bias in translat-
+the real world14 , accounting for a large portion                 ing pronouns regarding occupations. The modifi-
+of the corpora. Thus, it seems not unreasonable                   cation seems to mitigate both VBias and SBias in
+to claim that, although controversial, the positive               a positive way, although the final goal should be
+correlation between the formal text style and the                 a guaranteed utilization of gender-neutral expres-
+male-related translation might have been affected                 sions rather than a half-half guess.
+by the occupation gender ratio15 .
+   The result regarding sentence style-related fea-               4.3   Comparison with other schemes
+tures shows that in giving constraint to prevent the
+association of gender-related features and contents               Although the scope and aim do not precisely over-
+while training, at least in KR-EN translation, the                lap, we find it beneficial for our argument to com-
+formality of expressions should not be neglected                  pare the previous studies with ours. In Kuczmarski
+since it is largely influenced by the context in the              and Johnson (2018), the paper mainly aims to
+corpora where the expressions and contents be-                    perform post-processing that yields gender non-
+long to, and even real world factors. Politeness                  biased result in pronoun translation for Turkish,
+turned out not to be a severe influence, but the po-              but no specific description of the evaluation was
+liteness suffix can still reflect the relationship be-            accompanied. In Lu et al. (2018), a score function
+tween the speakers, affecting the type of conversa-               on evaluating bias was suggested as a portion of
+tion that takes place.                                            matched pair among masked occupations. How-
+                                                                  ever, the task was not on translation, and we es-
+4.2    Qualitative analysis                                       chew using the suggested type of linear computa-
+In brief, translation into male dominates due to                  tion so as to avoid the arithmetic average (TGBI)
+the bias in volume, and social bias is represented                not revealing the different performance on various
+mainly in the way of informal pronouns being                      sentence sets. Most recently, Prates et al. (2018)
+translated into a female with relative frequency,                 utilized a heat map regarding occupation and ad-
+although the content-related features do not neces-               jectives in 12 languages to evaluate Google trans-
+sarily prove it to be so. However, qualitative evalu-             lator. They computed the p-values relative to the
+ation is indispensable for a comprehensive under-                 null hypothesis that the number of translated male
+standing of the bias since the quantitative result                pronouns is not significantly higher than that of fe-
+only informs us of the number, not the semantics.                 male pronouns, with a significance level of α = .05.
+   The most significant result was that of occupa-                They obtained the outliers in Finnish, Hungarian,
+tions. GT reflects the bias that is usually intimated             and Basque notably, but the study on Korean was
+by people (e.g., experts such as engineers, techni-               omitted, and the work only incorporates a single
+cians, professors are usually men, and art/beauty-                sentence style, probably for simplicity.
+related positions such as fashion designer, hair-                    Note that the aforementioned approaches are
+dresser are mainly held by women), and KT shows                   not aimed to evaluate multiple translation systems
+the volume dominance of male in the corpus (over-                 quantitatively, and omit the portion of gender-
+all score lower than GT and NP in Table 1), with                  neutral pronouns in translation output; which are
+rare female cases related to design or nursing.                   the strong points of utilizing the proposed EEC
+As stated in Section 4.1, we interpreted the re-                  and measure for the evaluation of translation gen-
+sult regarding GT as permeated SBias attenuating                  der bias. Also, we take into account both VBias
+VBias, and KT as VBias not attenuated.                            and SBias in the analysis, of which neither side
+   In analyzing the result for NP, we observed                    should be underestimated. For example, someone
+some unexpected inferences such as researchers                    might assume that occupation gender bias is more
+and engineers significantly being translated into                 severe in NP than GT since the absolute numerics
+female pronoun and cuisine-related occupations                    say so (regarding (g) in Table 1). However, such
+into male, which is different from social prejudice               a conclusion should be hesitantly claimed since it
+  14                                                              is highly probable that GT inherits another kind of
+     E.g., journalists, engineers, researchers; considering the
+gender ratio statistics.                                          bias (from the corpora) that attenuates the VBias
+  15
+     As in https://www.bls.gov/cps/cpsaat11.htm                   on males as demonstrated in Section 4.2. Our ap-
+proach aims to make it possible for the evalua-                      In response to concern on this study being
+tors (of the MT systems) to comprehend how the                    language-specific, we want to note that the pro-
+bias is distributed and to perform an inter- or intra-            posed methodology can be applied to other lan-
+system comparison, by providing the various sen-                  guages with gender-neutral pronouns, especially
+tence sets of which the corresponding scores rep-                 with a high similarity if the source language con-
+resent content- and style-related aspects of trans-               tains both a formality and politeness-related lex-
+lation gender bias.                                               icons (e.g., Japanese). The extensibility regard-
+                                                                  ing the source language has recently been dis-
+4.4    Discussion                                                 played in Prates et al. (2018), and in this paper,
+We do not claim here that the model which yields                  a further and detailed experiment was conducted
+the translation of test utterances being biased to                with a language that had not been investigated.
+one gender is a biased translator, nor that the dis-              For the cases of the target being non-English, we
+tribution of gender-related content in the corpora                assume that the tendency depends on the pres-
+should be half-half. However, since we decided to                 ence of gender-neutral pronouns in the target lan-
+investigate only the gender non-specific pronouns,                guage; in our pilot study utilizing Japanese as a
+sentiment words, and occupations, so that the gen-                target, the gender-neutrality of the Korean pro-
+erated sentences hardly incorporate any context                   nouns were preserved mostly in the translation.
+that determines the pronouns to be one specific                   However, even for the cases where the target lan-
+gender, we claim that the translation is recom-                   guage incorporates gender-neutral pronouns, the
+mended to contain each gender as equally as pos-                  proposed scheme is useful since the measure re-
+sible for the sentence sets that are constructed, or              flects the preservation of the gender-neutrality. De-
+use neutral pronouns if available. This is not about              spite the difficulty of a typological approach re-
+making up a mechanical equality, but about avoid-                 garding generalization, our study is relevant for a
+ing a hasty guess if the inference is not involved                broader audience if the source language being an-
+with a circumstance that requires the resolution of               alyzed fits the condition above.
+coreference.
+   For the user’s sake, Google translator recently                5   Conclusion
+added the service on providing the result contain-
+                                                                  In this paper, we introduced a test corpus and
+ing both genders as answer if the gender ambigu-
+                                                                  measure for the evaluation of multiple KR-EN
+ity is detected16 (Kuczmarski and Johnson, 2018).
+                                                                  translation systems. A criteria set for choosing
+This is the first known approach in service that
+                                                                  the pronouns, lexicons, and markers was stated
+mitigates gender bias in translation. We are en-
+                                                                  in detail, making up a corpus of size 4,236 and
+couraged to face this kind of change, although it
+                                                                  seven sentence subsets regarding (in)formality,
+is tentative. In the long term, we hope the trans-
+                                                                  (im)politeness, sentiment polarity, and occupation.
+lators print random or gender-neutral answers for
+                                                                  The measurement was performed by averaging
+the argued type of (or possibly various other kinds
+                                                                  PS for each sentence subsets where PS denotes
+of) sentences.                                                    √
+                                                                     pw pm + pn for pw , pm and pn each the por-
+   Another important point is that the systems also
+                                                                  tion of the sentences with pronouns translated into
+have to distinguish the circumstances that require
+                                                                  female/male/gender-neutral terms respectively.
+a random guess from the ones that gender should
+                                                                     Among the three candidates, Google Transla-
+be specified. For example, with a sentence “걔
+                                                                  tor scored the highest overall, albeit the qualita-
+는 생리중이야 (kyay-nun sayngli-cwung-iya)17 ”,
+                                                                  tive analysis says that an algorithmic modification
+GT yields “He’s on a period.”, which is physio-
+                                                                  seems to be implemented in Naver Papago consid-
+logically unreasonable. Moreover, the resolution
+                                                                  ering the result regarding occupations. Although
+of coreferences in long-term dependency with the
+                                                                  Kakao Translator scored the lowest, the low score
+specified gender is required for a correct transla-
+                                                                  here does not necessarily mean that the translator
+tion of the sentences with context.
+                                                                  malfunctions. In some sense, a well-biased trans-
+  16
+      https://blog.google/products/translate/reducing-gender-     lator is a well-performing translator that reflects
+bias-google-translate/                                            the inter-cultural difference. However, we believe
+   17
+      생리중 (saynglicwung) denotes to be in one’s menstrual
+period, which matches only if kyay is translated into a female-   that the bias regarding gender should be reduced
+related term.                                                     as much as possible in the circumstances where
+the gender specification is not required.                 Kyunghyun Cho, Bart Van Merriënboer, Caglar Gul-
+   Our future work includes making up a post-               cehre, Dzmitry Bahdanau, Fethi Bougares, Holger
+                                                            Schwenk, and Yoshua Bengio. 2014. Learning
+processing system that detects the presence of con-         phrase representations using rnn encoder-decoder
+text and assigning gender specificity/neutrality to         for statistical machine translation. arXiv preprint
+the pronouns in the translation. Though we hesi-            arXiv:1406.1078.
+tate to claim that it is the best solution, such an
+                                                          Svetlana Kiritchenko and Saif M Mohammad. 2018.
+approach can be another step to alleviating the am-         Examining gender and race bias in two hun-
+plification of gender bias in cross-lingual tasks. Si-      dred sentiment analysis systems. arXiv preprint
+multaneously, we aim to have an in-depth analy-             arXiv:1805.04508.
+sis in the architecture or model behavior regarding
+                                                          James Kuczmarski and Melvin Johnson. 2018.
+training datasets, with an extended test set that en-       Gender-aware natural language translation.
+compasses contextual inference, to find out how
+each MT system performs better than others in             Kaiji Lu, Piotr Mardziel, Fangjing Wu, Preetam Aman-
+some aspects.                                               charla, and Anupam Datta. 2018. Gender bias in
+                                                            neural natural language processing. arXiv preprint
+                                                            arXiv:1807.11714.
+Acknowledgement
+                                                          Matej Martinc, Iza Skrjanec, Katja Zupan, and Senja
+This research was supported by Projects for Re-            Pollak. 2017. Pan 2017: Author profiling-gender
+search and Development of Police science and               and language variety prediction. In CLEF (Working
+Technology under Center for Research and De-               Notes).
+velopment of Police science and Technology and            Marcelo OR Prates, Pedro HC Avelar, and Luis Lamb.
+Korean National Police Agency funded by the                2018. Assessing gender bias in machine translation–
+Ministry of Science, ICT and Future Planning               a case study with google translate. arXiv preprint
+(PA-J000001-2017-101). Also, this work was sup-            arXiv:1809.02208.
+ported by the Technology Innovation Program               Ilya Sutskever, Oriol Vinyals, and Quoc V Le. 2014.
+(10076583, Development of free-running speech                Sequence to sequence learning with neural net-
+recognition technologies for embedded robot sys-             works. In Advances in neural information process-
+tem) funded by the Ministry of Trade, Industry               ing systems, pages 3104–3112.
+& Energy (MOTIE, Korea). The authors appre-               Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob
+ciate helpful comments from Ye Seul Jung and                Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz
+Jeonghwa Cho. After all, the authors send great             Kaiser, and Illia Polosukhin. 2017. Attention is all
+thanks to Seong-hun Kim for providing a rigorous            you need. In Advances in Neural Information Pro-
+                                                            cessing Systems, pages 5998–6008.
+proof for the boundedness of the proposed mea-
+sure.                                                     Kellie Webster, Marta Recasens, Vera Axelrod, and Ja-
+                                                            son Baldridge. 2018. Mind the gap: A balanced
+                                                            corpus of gendered ambiguous pronouns. Transac-
+References                                                  tions of the Association for Computational Linguis-
+                                                            tics, 6:605–617.
+Shlomo Argamon, Moshe Koppel, Jonathan Fine, and
+  Anat Rachel Shimoni. 2003. Gender, genre, and           Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+  writing style in formal written texts. Text-The Hague      donez, and Kai-Wei Chang. 2017.          Men also
+  Then Amsterdam Then Berlin-, 23(3):321–346.                like shopping: Reducing gender bias amplifica-
+                                                             tion using corpus-level constraints. arXiv preprint
+Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Ben-             arXiv:1707.09457.
+  gio. 2014. Neural machine translation by jointly
+  learning to align and translate. arXiv preprint         Appendix
+  arXiv:1409.0473.
+                                                          A    Proof on the boundedness of the
+Reuben Binns. 2017. Fairness in machine learning:              measure
+  Lessons from political philosophy. arXiv preprint
+  arXiv:1712.03586.                                       Let W0 , x, y, z each denote Ps , pw , pm , pn . Then,
+                                                          from eqn.s (1-2) in the paper, we have
+Franck Burlot and François Yvon. 2017. Evaluating
+  the morphological competence of machine transla-
+  tion systems. In Proceedings of the Second Confer-                         x+y+z =1
+                                                                                                            (3)
+  ence on Machine Translation, pages 43–55.                                 0 ≤ x, y, z ≤ 1
+and                       √
+                   W0 =       xy + z                (4)
+Here, note that we have to show the bound for the
+following:
+                W (x, y, z) = xy + z                (5)
+                                                           Figure 2: A brief illustration on why equal distribution
+Let                                                        is difficult to obtain for various subset pairs in deter-
+          D = {(x, y, z)|x + y + z = 1,                    ministic system. Best viewed in color.
+                                                    (6)
+                          0 ≤ x, y, z ≤ 1}
+which is a compact, convex set, and let a La-              B    A brief demonstration on the utility of
+grangian L of W be                                              adopting multiple sentence subsets
+         L = xy + z + λ(x + y + z − 1)                     We want to recall that the conventional translation
+                                                    (7)
+                        −µx x − µy y − µz z                services provide a determined answer to an input
+Then, the KKT conditions for optimizing L are              sentence. This can happen to prevent the systems
+given by                                                   from achieving a high score with the proposed
+                                                           measure and EEC.
+               ∂L                                             Let the emerald (top) and magenta (bottom)
+                   = y + λ ± µx = 0
+               ∂x                                          discs in Figure 2 denote the gender-neutral pro-
+               ∂L                                          nouns translated into female and male, respec-
+                   = x + λ ± µy = 0                  (8)
+               ∂y                                          tively. Note that for Si and Sj that comprise the
+               ∂L                                          whole corpus, PSi and PSj are both high, whereas
+                   = 1 + λ ± µz = 0
+               ∂z                                          for another sentence subset pair Sk and Sl , there
+where µx , µy , µz ≥ 0 and µx x∗ = µy y∗ =                 is high chance of PSk and PSl being lower than
+µz z∗ = 0 for an optimal point (x∗, y∗, z∗).               the former ones. Thus, in conventional evaluating
+   If the optimal point lies in the interior of D, then    schemes as in Lu et al. (2018), arithmetic averag-
+µx = µy = µz = 0. Thus, in the optimal point, to           ing may not be effective for displaying the amount
+make ∂L ∂z = 0, we have λ = −1. Thereby, to make
+                                                           of bias.
+∂L      ∂L                                                    This property could have deterred adopting the
+∂x   =   ∂y = 0, we have x = y = 1 which makes
+z = 1 that contradicts eqn. (3).                           proposed measure to multiple sentence subset
+   Consequently, the optimal points lie on the             pairs (or triplets) since a similar mean value is ex-
+boundary of D which can be decomposed into the             pected to be obtained if the number of pairs in-
+following three independent segments:                      creases. However, since the utilization of pn and
+                                                           square root function in the measure prevents the
+               (a){x + y = 1, z = 0}                       average from being converged into a specific value
+               (b){y + z = 1, x = 0}                (9)    in the systems, we keep using all the sentence sets
+               (c){z + x = 1, y = 0}                       that comprise the EEC so that we can observe
+                                                           the tendency regarding various aspects of sociolin-
+At most two of (9) can be satisfied.
+                                                           guistics.
+   For (a), optimizing L1 = xy subject to x + y =
+1 and x, y ≥ 0 yields
+                                   1
+                min = 0, max =                (10)
+                                   4
+For (b) (and possibly (c)), optimizing L2 = z sub-
+ject to y + z = 1 and y, z ≥ 0 yields
+                min = 0, max = 1                   (11)
+From eqn.s (9,10), we have 0 ≤ W ≤ 1 which
+yields the boundedness of the proposed measure
+W0 . Moreover, we obtain that W0 is maximized if
+pn = 1 and minimized if either pw or pm = 1.
+

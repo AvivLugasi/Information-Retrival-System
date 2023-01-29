@@ -1,0 +1,1231 @@
+ACADEMIA
+
+Accelerating the world's research.
+
+Understanding and controlling the
+filter bubble through interactive
+visualization
+
+Sayooran Nagulendra
+
+Proceedings of the 25th ACM conference on Hypertext and social media - HT '14
+
+Cite this paper Downloaded from Academia.edu4
+
+Get the citation in MLA, APA, or Chicago styles
+
+Related papers Download a PDF Pack of the best related papers 7
+Understanding and Controlling the Filter Bubble through
+Interactive Visualization: A User Study
+
+Sayooran Nagulendra and Julita Vassileva
+Department of Computer Science
+University of Saskatchewan,
+Saskatoon, Canada
+
+{sayooran.nagulendra, julita.vassileva}@usask.ca
+
+ABSTRACT
+
+“The filter bubble” is a term popularized by Eli Pariser which
+refers to people getting encapsulated in streams of data such as
+news or social network updates that are personalized to their
+interests. While people need protection from information overload
+and maybe prefer to see content they feel familiar with and
+viewpoint that they agree with, there is the danger that important
+issues that should be of concern for everyone will get filtered
+away and people will live in “echo-chambers”, blissfully unaware
+of reality, and exposure to different views. We have proposed a
+design of an interactive visualization, which provides the user of a
+social networking site with awareness of the personalization
+mechanism (the semantics and the source of the content that is
+filtered away), and with means to control the filtering mechanism.
+The visualization has been implemented in a peer-to-peer social
+network and we present here the results of a qualitative and a
+quantitative evaluation. The quantitative study with 163
+participants demonstrates that the visualization leads to
+increased users’ awareness of the filter bubble, understandability
+of the filtering mechanism and to a feeling of control over the data
+stream they are seeing.
+
+Categories and Subject Descriptors
+D.2.8 [Information Storage and Retrieval]: Information Search
+and Retrieval — information filtering
+
+General Terms
+Design, Experimentation, Human Factors
+
+Keywords
+Visualization, Filter Bubble, Recommender Systems, Online
+Social Networks
+
+1. INTRODUCTION
+
+Today, social networks provide a global platform for people to
+share and collaborate with their friends and families. Facebook,
+Twitter and Google+ are currently the most widely used social
+networks. With the growth of mobile and web technologies, these
+social networks are growing rapidly and millions of users are
+sharing data with their friends and families. As of September
+2013, Facebook has 1.15 billion users and 699 million daily
+active users [28]. Nearly a quarter (24 %) of the content that is
+shared on the internet is shared on Facebook [27] and more than
+
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that
+copies bear this notice and the full citation on the first page. To copy
+otherwise, or republish, to post on servers or to redistribute to lists,
+requires prior specific permission and/or a fee.
+
+Conference’10, Month 1—2, 2010, City, State, Country.
+
+Copyright 2010 ACM 1-58113-000-0/00/0010 ...$15.00.
+
+3.5 billion pieces of content shared each week [26], creating a
+stream of data that can overload any user. The social data
+overload problem is commonly solved by filtering out the
+irrelevant data. Personalized stream filtering mechanisms aim at
+reducing information overload by presenting the user with only
+the content deemed to be the most relevant. Social media sites,
+such as Facebook, Digg and YouTube, have already implemented
+personalized stream filtering.
+
+Paradoxically, the main problem with information filtering is that
+they could be “too good”. The high level of optimization to the
+interest of the user that typical algorithms lead to items that
+remain in the data fit the user’s scope of interest that has been
+inferred by the system from the user’s previous behavior, users
+tend to becoming encapsulated in a “bubble” of their comfort,
+seeing only content related to their interests, and being spared of
+anything else. This is referred as “the filter bubble” problem.
+
+We proposed an approach to make the user aware of the filtering
+mechanism and take control over it. It is based on an interactive
+visualization that shows the filter bubble and some features of the
+hidden filtered data (its semantics and origin). The intention is to
+make the user aware of the user model that the recommender
+system has developed, so that they can consciously decide to
+explore items that are filtered away by changing interactively her.
+But showing what is hidden and filtered away from the stream can
+increase the social data overload problem again. Therefore, the
+main challenge is to find an effective visualization technique that
+can be seamlessly integrated into the activity stream without
+contributing additionally to the social data overload. In addition
+to that the visualization design has to take into account of the
+right amount of detail to expose in the hidden filtered social data
+display the hidden social data stream in an understandable way to
+the user.
+
+In this paper we present a qualitative and a quantitative evaluation
+of an interactive visualization which metaphorically visualizes the
+filter bubble and provides awareness, understanding and control
+of personalized filtering to alleviate the filter bubble problem.
+
+2. RELATED WORK
+
+Recommender Systems (RSs) are software tools and techniques
+which adapt to the needs of an individual user and provide
+personalized suggestions of most relevant information [1]. The
+personalized suggestions help users to make decisions on various
+types of items, such as what news items are interesting, what book
+to read, what movie to watch and so on. Information filtering
+systems can be considered as a type of recommender systems,
+which select from a stream of data (e.g. news, certain events,
+social updates, etc.) those that fit the scope of interest of the user.
+The difference between filtering and recommendation is that in
+filtering the irrelevant data is simply not displayed, i.e. remains
+hidden from the users, while in recommendation the relevant data
+is highlighted in some way (e.g. shown first in a list of search
+results, highlighted in a stream of data, etc.), but the irrelevant
+data is still available for the user to see.
+
+Recommendation techniques have been applied to personalize the
+streams in online social networks such as Facebook, Google+ and
+Twitter [2, 3]. Facebook’s edge rank algorithm is one such
+filtering technique which presents a personalized stream of news
+and friends’ status updates to the user by ranking every interaction
+on the site [4]. While all these social networks are centralized,
+Tandukar & Vassileva [5] have developed an interest-based
+filtering model for a decentralized online social network (OSN),
+which enables each peer to learn the user’s interests and to filter
+away messages received from the user’s friends,.
+
+Many researchers have worked on developing new RSs and
+improving the accuracy of their filtering algorithms. However the
+ultimate measure of success in this area is the user acceptance and
+trust of the recommendations [6]. The way recommendations are
+presented is critical for the user acceptance of recommender
+systems. Visualization techniques can be deployed to provide an
+intuitive “at a glance” explanation for recommendations and can
+also motivate the user to accept the recommendation. Presenting
+the recommendations in a ranked list according to their
+recommendation score is the most simple and commonly used
+visualization technique. Features like colour and font-size can be
+used to emphasize recommended items in a stream or list or items
+
+[7].
+
+iBlogViz is a system to visualize blog archives. It uses many
+visual cues to represent the blog content and social interaction
+history with the blog entry which help to navigate the blog archive
+quickly and easily. Particularly, visual cues about the social
+response (comments) to the news can be used to help users
+navigate stream data quickly to find interesting news [8]. Webster
+& Vassileva [9] proposed an interactive visualization of a
+collaborative filtering that allows the user viewer to see the other
+users in her “neighborhood”, who are similar to her, and also to
+change manually to degree of influence that any of the other users
+can have on the recommendations of the viewer. Rings is a
+visualization of social data stream developed by Shi [10]. It is
+organized around the people who post in the user’s Facebook
+stream and empathizes users who have posted many and
+influential posts recently, without filtering any posts. It helps the
+users of OSN to browse social data efficiently and find out the
+active users and the time pattern of their social updates.
+
+As the activity stream in Online Social Network is personalized
+according to the user’s interests, the user will ultimately only see
+activities related to her interests and will thus have no opportunity
+of discovering items not related to her current interests, or
+developing new interests. “The filter bubble” is a term introduced
+by Eli Pariser [11] to denote a limited scope of information
+defined by the user’s interests and isolated from anything that
+doesn’t belong to this scope.
+
+Isolating the user in a filter bubble has its advantages and
+disadvantages. The main advantage is that it can help users get
+relevant information a lot faster while not causing social data
+overload. On the other hand, there are number of problems
+outlined by Eli Pariser [11]. The first one is the problem of
+distortion of the content posted on the site or by the user’s friends
+
+and the user does not know in what way the way is biased. Users
+become less likely to be recommended information that is
+important, but not “likeable”. The second problem is the
+information equivalent of obesity. Because of the users’ tendency
+to give positive feedback, they will give feedback only to
+information items they are most compulsively attracted to. Using
+an analogy from food, users will be eating candy all the time, and
+the filter bubble leave users locked in a world consisting of
+information junk food. As a result the users are increasingly
+surrounded by the ideas with which they are already familiar and
+agree, while being protected from surprising information, or
+information that challenges their views, the filter bubble threats
+people’s open-mindedness and prevents learning. Psychologist
+Lowenstein mentions that the “curiosity is aroused when we are
+presented with an ‘information gap’” and Pariser suggests that the
+existence of curiosity, is based on the awareness that something
+exists that is hidden or unknown [11]. The third problem is the
+matter of control i.e. the growth of user knowledge will be greatly
+influenced by the algorithms and systems giving excessive power
+to the computer scientists who develop the personalization
+techniques.
+
+The importance of these three problems increases rapidly, as an
+increasing proportion of users are using OSN to get all their
+information and news; and nearly all OSN deploy information
+filtering to personalize their streams to users. Yet, most of the
+personalization systems do not create awareness about what is
+being hidden from the user.
+
+Resnick et al. [12] outline some strategies for promoting diverse
+exposure. They discuss two approaches: the first one is to build
+diversity aware recommender systems and filtering mechanisms.
+As an example of this approach, Tandukar and Vassileva [13]
+developed an interest-based stream filtering technique, which
+allows for diversity exposure by allowing popular items to pass
+through the filter to ensure some serendipity. The second
+approach is to provide tools and techniques that encourage users
+to consider themselves searching for diverse exposure. Munson
+has implemented a browser extension which displays the bias in a
+user’s online news reading over time, which encourages users to
+seek the diverse exposure of news [14].
+
+Though algorithmic personalization approaches can certainly find
+the most relevant content related to what users are already
+interested in a more efficient manner human curators and
+especially the user herself is probably the most appropriate agent
+to take the responsibility for ensuring a diverse exposure, to
+address the third problem outlined by Pariser. This means
+enabling the users to select what they want to see as well as what
+they do not want to see over the personalization presented by the
+algorithms. To enable them to do this, it is necessary first to make
+them aware of their filter bubble, as well as understanding of how
+they got inside it, and how they can control it to let different kind
+of information in and out, enlarge it or make it smaller... To our
+best knowledge there is currently no existing work that aims to
+create this kind of awareness and control in users. This is the aim
+of our work.
+
+3. VISUALIZATION DESIGN
+
+The visualization of filter bubble has been designed and
+implemented based on the personalized stream filtering used in
+MADMICA [15] - an implementation of a privacy-aware
+decentralized (peer-to-peer) OSN using the Friendica open source
+framework [16]. MADMICA implements an approach to filtering
+social data, according to a model of the strength of the user’s
+interests in different semantic categories overlaid over a model of
+their social relationships, which was originally developed and
+evaluated in a simulation [13]. The intuition behind the filtering
+approach is that two people can be friends, but not share the same
+level of interest in different topics or categories and not trust each
+other’s judgment with regard to these categories. In essence, the
+filtering approach is based on a model of the user’s interest in a
+finite set of categories of social data that is overlaid with a model
+of the strength of user interpersonal relationships (over each
+category).
+
+The visualization design is based on a bubble metaphor to make
+the effect of the personalized stream filtering in OSNs more
+understandable for the users (see Figure 1). The main goal of the
+visualization is to creating awareness, understanding, and control
+of personalized stream filtering in an OSN to alleviate the filter
+bubble problem and increase the users’ trust in the system. It
+divides the space of the screen in two parts - outside and inside
+the bubble. The items that are inside the bubble are visible for the
+user, those outside the bubble are those that have been filtered
+away and are invisible in the stream (but they are shown in the
+visualization). The visualization is personalized to the user
+viewing it (let’s say Anna), and provides two alternative points of
+view: one focusing on the user’s (Anna’s) friends (see Figure 2)
+and one focusing on the semantic categories of the social data
+originating from them in the OSN (see Figure 1). We assume that
+there is a finite, enumerable set of sematic categories in which the
+content can be classified. For practical reasons, these are
+categories of higher level of generality, e.g. “news”, “technology”,
+“health”, “sport”, similar to the categorization used by news
+websites, Google, Yahoo, etc.
+
+The category view shown in Figure | represents all the categories
+of posts shared by Charlie during last week that were shown in
+Anna’s newsfeed or filtered out by the system. All the category
+circles inside the bubble represent the categories of posts that are
+shown in Anna’s newsfeed; they represent the common categories
+of interest between Anna and her friend Charlie. But Charlie has
+more interests, which are outside Anna’s filter bubble and are
+therefore being filtered out by the filtering mechanism based on
+the past history of actions that Anna performed on the posts
+shared by Charlie in the category “health”.
+
+The “friends view” of Anna’s bubble visualization is shown in
+Figure 2. It represents all the friends who shared some posts in the
+“health” category during the last week that were shown in Anna’s
+newsfeed or filtered out by the system. The position of each friend
+circle relative to the big bubble is intended to create awareness
+about the filtering i.e. whose posts the user (Anna) can see in her
+newsfeed. Moreover, the filter bubble shape itself metaphorically
+creates the awareness that the user is encapsulated in a bubble and
+that there are friends outside of the bubble who have posted on
+the topic but the user has not seen these posts.
+
+As mentioned earlier, providing some understanding about the
+personalized stream filtering is one of the main goals of this
+visualization. Organizing posts by categories and friends gives
+some understanding about the personalized filtering: that there is
+a relationship between the categories of posts and the post origin
+(the friends who shared them), and the underlying filtering
+mechanism. In addition to that, it visualizes the common interests
+between user and her friends i.e. what is shown inside the big
+
+From Friend(s) On Category(s)[ All [=] Time Period:
+
+Tech
+
+Finance Neve
+Games
+Movies Autos
+Music Politics
+Health Fashion
+Food
+Sports
+Shopping
+
+Travel
+
+Figure 1. Anna’s “category view” of her filter bubble
+related to Charlie’s posts
+
+Jessie
+
+0
+C4
+Gena
+A
+= Cs
+a i Charlie
+Alice A | a
+| So c- | —_
+oe Bob Tim
+Victor a
+Dave
+a a 8
+en -
+an Frank Ann
+o
+ae om
+Glen
+aa
+Mike
+
+Figure 2. Anna’s “friends view” of her filter bubble
+related to a certain category (“health’’) of posts
+
+bubble are common interests between the user and her friends.
+
+Providing control of the personalized stream filtering to the users
+ie. users can manually override the filtering system is another
+main goal of this visualization. This is achieved by allowing users
+to drag and drop the circles in and out of the big bubble. For
+example, if Anna drags and drops the circle representing the
+“games” category (see in Figure 1) from inside the big bubble to
+its outside the user effectively tells the system that she does not
+like to see that category of posts in her newsfeed in the future.
+Similarly, the user could also drag and drop a friend from within
+her “friends-view” bubble to the outside and it signals the system
+to filter out the posts shared by that friend in the future. In the
+reverse situation, when the user realizes that she is interested in
+posts in category “health” shared by a friend (say, Glen), who is
+outside her “friends-view” bubble in Figure 2 and wants to see his
+posts in her newsfeed homepage in the future, she will drag and
+drop that particular friend inside the big bubble. Apparently, this
+action is equivalent of the Anna coming out of her filter bubble
+and explore new interests. If Anna wants to see all posts by Glen
+in any category, she will select the “Friends” view and the generic
+category “All” from the “Categories” menu and drag him in her
+bubble.
+
+Nagulendra and Vassileva presented justification of the
+visualization design decisions and a pilot user study to evaluate
+the usability and user acceptance of the visualization and whether
+it achieves its goals of providing awareness, control and trust in
+the filtering mechanism in MADMICA in [17]. Eleven (11)
+graduate students from the MADMUC research lab used the
+MADMICA system with the filter bubble visualization instead of
+Facebook and shared interesting and research-related links over a
+period of three weeks in March 2013. The results of the study
+showed that the filter bubble visualization makes the users aware
+of the filtering mechanism, engages them in actions to correct and
+change it, and as a result, increases the users’ trust in the system
+[17]. Next we present the results of two more studies: a qualitative
+study with 5 participants and a larger scale quantitative study with
+163 Mechanical Turk participants.
+
+4. EVALUATION
+4.1 Qualitative User Study
+
+A qualitative study was carried out to understand in-depth the user
+perception of the filter bubble visualization ic. what do users
+think about the visualization. Five (5) participants from different
+departments in the university took part in this study.
+
+4.1.1 Experimental Setup
+
+The study was carried out in a lab environment where users were
+given computers to use the MADMICA system and_ the
+visualization. The subjects were 5 university students from
+different fields of study such as public education, public health
+and statistics. They were recruited through a mailing list of
+potential subjects for HCI studies. First, the users were given
+some introduction to MADMICA and then about the filter bubble
+problem. After the introduction, users were given instructions to
+get familiar with the MADMICA newsfeed homepage and the
+filter bubble visualization for 10 minutes. Once they have
+explored the system, an interview was conducted. The interview
+consists of a set of tasks related to with 15 different views that are
+generated using the filter bubble visualization. They were asked to
+interact with the systems and think aloud, the users’ actions were
+observed and recorded and the users’ voice responses were
+recorded. The views in the questionnaire were generated to collect
+the perceptions about the visualization’s main goals: providing
+awareness, understanding and control. Moreover, the views
+included both the category view and friends view.
+
+4.1.2 Methods
+
+The recorded users’ voice responses were imported into NVivo
+software [18] which is a platform for qualitative research analysis.
+Then the voice responses were transcribed into text. With the help
+of the NVivo software, thematic analysis was carried out to
+identify the desirable and undesirable perceptions of the
+visualization.
+
+Thematic analysis categorizes qualitative data into themes. It
+encodes the qualitative information into codes that act as labels
+
+for sections of data [19]. The users’ responses were coded and the
+codes were grouped into three: position of circle, size of circle
+and drag action. While coding, the number of references for each
+code was also recorded ie. the frequency of that code in the
+transcript of users’ responses. Then based on the three criteria, the
+number of desirable references and undesirable references as
+calculated. The three criteria were:
+
+1. Circles inside the big bubble represent content or friends that
+was shown in the user’s newsfeed.
+
+2. Circles outside the big bubble represent content of friends that
+were filtered out by the system
+
+3. The visualization only shows the newsfeed shared by friends
+organized into categories and friends.
+
+4.1.3 Results
+
+The thematic analysis results are summarized in Table 1. The
+desirability percentage for a perception category is calculated as
+the number of references that are desirable in that perception
+category divided by the total number of references for the position
+of circle visual representation multiplied by 100.
+
+Regarding the position of circle visual representation, 108 total
+references were made i.e. users mentioned 108 times in all of their
+responses together that the position of circles relative to the wall
+of the big bubble represents the user’ s interest.
+
+This is the most referred perception category (16.67%) about the
+position of circle that is desirable. Some excerpts from the
+transcript for the user’s interest perception category follow:
+“categories outside the bubble represent the posts that the user
+doesn’t want to see”, “categories inside the bubble represent my
+interests”, “categories inside the bubble represent users main
+interests for the selected duration”, “All the categories outside
+the bubble represent that none of user’s friends posts are
+related”, “categories outside the bubble represent the areas
+outside of my interest for that period”, and “categories inside the
+bubble represent that the user wants to focus on them”. The least
+referred (1.85%) desirable perception category regarding the
+position of circle is relationship. Some excerpts from the
+transcript for the least referred desirable perception follows:
+“friend circle outside the bubble for a category doesn’t mean that
+the user unfriended with that friend”, “having some categories
+inside the bubble for last month for a friend might mean an
+acquaintance relationship”, and “friend relationship is
+maintained regardless of user’s friends are outside the bubble”.
+Some excerpts from the transcript for the least referred desirable
+perception follows: “friend circle outside the bubble for a
+category doesn’t mean that the user unfriended with that friend”,
+“having some categories inside the bubble for last month for a
+friend might mean an acquaintance relationship”, and “friend
+relationship is maintained regardless of user’s friends are outside
+the bubble”. Some excerpts from the transcript for the least
+referred desirable perception follows: “friend circle outside the
+bubble for a category doesn’t mean that the user unfriended with
+that friend”, “having some categories inside the bubble for last
+month for a friend might mean an acquaintance relationship”,
+and “friend relationship is maintained regardless of user’s
+friends are outside the bubble”.
+Table 1. Thematic analysis results
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Feature/Visual Perception Sources References Desirability Undesirability
+Representation Category (number (desirable: percentage (%) percentage (%)
+of users) undesirable)
+
+Position of circle Common interest 4 13 (10:3) 9.26 (10/108) 2.78
+
+(friend/category) Friends’ interest 4 40 (16:24) 14.81 22.22
+Friends’ sharing 5 25 (18:7) 16.67 6.48
+Interaction with 1 3 (3:0) 2.8 0
+newsfeed
+User’s interest 5 23 (19:4) 17.59 3.7
+Relationship 3 A(2:2) 1.85 1.85
+
+Size of circle Number of posts 5 7 (6:1) 37.5(6/16) 6.25
+Frequency of sharing 2 2 (2:0) 12.5 0
+Friends’ interest 2 5 (4:1) 3.7 6.25
+Common interest 1 2 (0:2) 0 12.5
+
+Drag action Common interest 4 5 (4:1) 57.14 (4/7) 14.29
+Relationship 1 2 (0:2) 0 28.57
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+The most referred (22.22%) undesirable perception category is the
+friend’s interest. But here only 4 users have referred this whereas
+in the most desirable perception all the 5 users referred it at some
+point in the transcript. Following are some excerpts from the
+transcript regarding the most undesirable perception: “categories
+inside the bubble represent friend’s interest and outside
+represents not interested” and “friend circle more in the middle
+more interest in the category selected”. Like the least referred
+desirable perception, the least referred undesirable perception is
+relationship and the excerpt follows: “friend circle outside the
+bubble represents unfriending”’.
+
+The number of posts related perception category is the most
+referred (37.5%) desirable perception for the size of the circle.
+Users perceive it as follows: “bigger circle for friend/category
+represents more number of posts and small for less number of
+posts”. As for the least referred (3.7%) desirable perception for
+the size of the circle, users perceive it as friend’s interest ie.
+“larger circle for category means the selected friend has more
+interest on that category’. In case of undesirable perception
+category, the most referred (12.5%) one is common interest
+(“small friend circle means more common interest between the
+user and friends” and “larger circle represents user has less
+interest on that friend”) and the least referred (6.25 %) one is
+number of posts and friends’ interest (“small circle means
+actually posted and big circle means less posted” and “bigger
+circle outside the bubble represents less interest of friend on that
+category’’).
+
+There are two perception categories that emerged by the thematic
+analysis for drag action: common interest and relationship.
+Common interest is the most referred desirable perception
+category (57.14%) and there are no references for relationship on
+desirable perception. The excerpt from the transcript for common
+interest perceptions follows: “dragging a category inside means
+to share more on that category with the friend”, “dragging in
+may represent my future interest”, “drag out because I don’t
+want to have common interest”, “drag out means lost interest in
+that category from that friend”, and “drag all the friends outside
+the bubble means I want to ignore all the news from them”. The
+most and least referred undesirable perception category for the
+drag action are, relationship (28.57%) and common interest
+(14.29%) respectively. Excerpt related to relationship is
+“dragging outside a friend/category means unfriend” and for the
+
+common interest is “drag inside represents forcing the friend to
+take interest on that category”
+
+4.1.4 Discussion
+
+The results of the qualitative data suggests that the subjects had
+both perceptions which are desirable and undesirable. Desirable
+perceptions (62.96%) regarding the position of circle had more
+references than undesirable perceptions (37.04%). This shows that
+most of the time the visualization users were aware of and had a
+good understanding about the filtering. In particular, the emergent
+codes such as common interests, friends’ interest, friends’ sharing,
+interaction with newsfeed, user’s interest and relationship from
+the thematic analysis clearly show that the users have some
+understanding about the filtering. On the other hand the users also
+had undesirable perceptions. This could be due to poor graphical
+language of the visualization and interface as a whole. For
+example, the reason that friends’ interest was perceived as the
+most undesirable perception category, could be the poor label
+texts of the dropdown menus which are used to view the filter
+bubble in different dimensions. During the experiment, the labels
+for the first two dropdown menu were as follows, Friend(s) and
+Category(s). This creates a false perception when “Charlie” was
+selected and the category was selected as “All” ie. Charlie’s
+interests were shown inside the bubble and what lies outside the
+bubble were not the interests of Charlie. As a result the labels
+were later changed into “From Friend(s)” and “On Category(s)”
+(shown in Figure 1 depicting the updated version) before the
+quantitative study.
+
+The size of the circle is another indicator for creating awareness
+about the filtering, i.e. having bigger size of the circle outside the
+filter bubble would let the users know that there are more of posts
+that have been filtered out by the system on that category from
+that friend. Having 75% of desirable perceptions for size of the
+circle shows that it is intuitive enough to create an awareness
+about the filtering. The 25% of undesirable perceptions regarding
+the size of the circle shows that the graphical language needs
+improvement. For example, it would be clearer if there is a
+number shown with the varying size. Moreover, the false
+perceptions of common interest for the size of the circle showed
+that users may have wrong perceptions about the meaning of the
+size of circles. For example, size of the circles represent the
+interests of the friends i.e. smaller circle means that the friend has
+less interest on that category.
+The drag action has 57.14% of desirable perception and 42.86%
+of undesirable percentages. Despite the small difference,
+considering the number of users who referred the perception gives
+some clear indication that the majority of the participants (60%)
+were able to understand the control functionality of the filter
+bubble visualization. Though the perceptions were classified as
+desirable and undesirable, both of them helped to get more insight
+about the users perceptions about the visualization, improve the
+visualization and helped to prepare the questions and answers for
+the questionnaire of the quantitative study, presented in the next
+section.
+
+4.2 Quantitative User Study
+
+A quantitative study was carried out to evaluate the
+understandability of the visualization and whether the users
+understand that the visualization provides awareness,
+understanding and control of filtering and the filter bubble. The
+study was conducted as an online survey and 163 participants
+from different parts of the world participated in the study.
+
+4.2.1 Hypotheses
+The goal of this user study was to find out if the visualization is
+understandable, if it creates awareness and understanding of the
+personalized stream filtering mechanism and ability to control it
+to alleviate the filter bubble. So the evaluation aims at testing the
+following hypotheses.
+
+1. Users understand that the visualization provides
+awareness of the filtering and the filter bubble.
+
+2. Users understand that visualization _ provides
+understanding of the filtering and the filter bubble.
+
+3. Users understand that visualization provides control of
+the filtering and the filter bubble.
+
+4. Users understand the visualization and its functions.
+
+4.2.2. Experimental Setup
+
+The study was carried out as an online survey. Unlike the
+conventional online surveys, this survey had the interactive
+visualization embedded into the survey so that users could explore
+it and get some hands-on experience with it before answering the
+survey. First, the participants were given some introduction about
+the MADMICA social network and the filter bubble problem in
+general. Then a sample newsfeed homepage was displayed in the
+survey so that users could actually browse through the newsfeed
+without leaving the survey page. The sample newsfeed contained
+around 15 newsfeed items on 5 different categories such as
+Health, News, Movies, Music and Sports from five different
+friends named Alice, Bob, Charlie, Dave and Frank. The
+participants were given instructions to assume that the
+aforementioned people are their friends in MADMICA social
+
+network and to browse through the newsfeed homepage as they
+would do in Facebook. In addition to this, the newsfeed did not
+show around 7 posts out of those five categories from different
+friends i.e. the system filtered out some of the posts. Then the
+users were presented with the interactive visualization exactly as
+in the MADMICA system and were instructed to explore the
+visualization. Then they were directed to the questionnaire to
+answer the questions. The link to the online survey is given in the
+appendix section of this paper.
+
+4.2.3 Method
+
+The online survey was conducted using Amazon Mechanical Turk
+(MTurk) which is a popular crowd-sourced participant pool. We
+ensured the data quality by placing attention check questions
+(ACQs) and restricting participation to MTurk workers with
+certain qualifications [20].
+
+The suggested qualification among researchers to ensure data
+quality was to allow participants who have the HIT Approval Rate
+(%) for all Requesters' HITs greater than or equal to 95 [20]. But
+we set even higher qualification to ensure the high data quality as
+follows: HIT Approval Rate (%) for all Requesters' HITs greater
+than or equal to 98% AND Number of HITs Approved greater
+than or equal to 5000. The data collection continued for 1 week
+and reached our target sample of 230. Then we analyzed the data
+and checked the ACQ for validity and as a result, 163 valid
+responses were collected. For each participant with a valid
+response, we paid a compensation of 1$, which is a good rate for
+an approximately 30-45 min. long study on MTurk.
+
+The questionnaire contained 25 questions. The questions were
+grouped according to the metrics which they intend to measure.
+The metrics for understandability of the visualization are adapted
+based on the International Standards for Software Quality
+Evaluation [21]. Table 2 summarizes the metrics chosen for
+measuring the understandability of the visualization [21]. There
+are 3 independent variables: awareness, understanding and control
+to assess the understandability of the visualization. Each of the
+independent variables was evaluated using the metrics given in
+Table 2 i.e. understandability of each independent variable was
+calculated. In addition to that, the overall understandability
+(referred as understandability hereafter) was also calculated using
+the understandability metrics. Six (6) questions (2 Yes/No and 4
+Multiple Choice Questions) were used to evaluate each of the
+independent variables. Altogether, there were 18 questions that
+were used to evaluate the overall understandability with 6
+questions for each metrics. Our original hypotheses mentioned in
+section 4.2.1 were converted into the statistical form with the
+corresponding null hypothesis (see Table 3).
+
+Table 2. Understandability Metrics
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Interpretation
+Metric Name Purpose Formula of measured
+value
+What proportions of functions x a of functions identified b 0<=X<= 1
+Evident Functions users were able to identify by the user y The closer to
+exploring the visualization B =Total number of actual functions 1.0 is the better.
+Function understand-ability What proportions of functions X=A/B 0<=X<= 1
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+users were able to understand
+correctly by exploring the
+visualization
+
+The closer to
+1.0 is the better.
+
+A= Number of functions whose purpose
+is correctly described by the user
+B= Number of functions available
+
+ 
+
+Can users understand what is
+Understandable input and
+
+ 
+
+ 
+
+required as input data and what is
+
+X=A/B
+A= Number of input and output data
+
+items which user successfully O<=X<= 1
+
+The closer to
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+output provided as output by the understands / 1.0 is the better
+visualization? B= Number of input and output data
+items available from the visualization
+Table 3. Statistical Hypotheses Normal -@ Plot of Understandability
+Test HO (null) H1 (alternative) 7
+1 Lt Awareness = 0.5 LL Awareness > 0.5 7
+2 Mt Understanding < 0.5 ML Understanding > 0.5
+3 Lt Control = 0.5 Lt Control > 0.5 E
+4 | Understandability < 0.5 ML Understandability > 0.5 i "|
+i
+
+As shown in Table 3, we considered the mean value of
+understandability for our hypothesis testing. The mean value is
+0.5 according to the scale of metrics used to measure the
+understandability. We set the null hypothesis as the mean value of
+understandability is less than or equal to 0.5 i.e. users do not have
+a clear understanding about the visualization. Our research
+hypothesis is the mean value is greater than 0.5 i.e. users do have
+clear understanding about the visualization. As mentioned in the
+metrics Table 2, the closer this mean value to 1.0 is, the better the
+understanding.
+
+4.2.4 Results
+4.2.4.1 Reliability Test
+
+The internal consistency (reliability) of question items was
+measured using the Cronbach’s alpha. Higher value of a reliability
+coefficient (Cronbach’s alpha) is associated with lower random
+error and greater measurement of the true score of the
+understandability. The acceptable value of Cronbach’s Alpha
+should be the range of 0.70 to 0.95 [22]. The rules of thumb when
+considering Cronbach’s Alpha value explanation are as follows:
+greater than 0.9 means excellent, greater than 0.8 means good,
+greater than 0.7 means acceptable, greater than 0.6 means
+questionable, greater than 0.5 means poor, and less than 0.5 is
+unacceptable [23]. The measured value for the Cronbach’s alpha
+is 0.7 for our questionnaire. This value is in the acceptable range.
+
+4.2.4.2. Normality Test
+
+The assessment of the normality of the data is a prerequisite and
+essential to t-tests. The Normal Q-Q plot for understandability
+was generated using SPSS (see Figure 3). If the data are normally
+distributed, the data points will be close to the diagonal line. If the
+data points move away from the line in a non-linear way then the
+data are not normally distributed [24]. As we can see from the
+Normality Q-Q Plot shown in Figure 3, the data is normally
+distributed because the data points stay close to the diagonal line.
+
+ 
+
+ 
+
+ 
+
+ 
+
+Observed Value
+
+Figure 3. Normality Q-Q Plot of Understandability
+
+4.2.4.3 Hypothesis Test
+
+One-sample t-test was used to determine whether the mean of a
+particular data set is different from the particular value. Before
+doing the t-tests, the following 4 assumptions were met:
+understandability is measured at the ratio level, the collected data
+are independent which means that there is no relationship between
+the observations, there are no significant outliers in the data, and
+the understandability is approximately normally distributed [25].
+Then the t-tests were conducted for the 4 hypothesis tests and the
+results are summarized in the Table 4.
+
+The first t-test was conducted for the hypothesis 1 defined in
+section 4.2.1. The Mean understandability of awareness (M =
+0.7117, SD = 0.2379) was higher than the tested understandability
+value of 0.5, a statistically significant mean difference of 0.21,
+95% CI [0.18 to 0.25], t (162) = 11.358, p < .001. Similarly, the t-
+tests for hypothesis 2, 3, 4 were conducted and the results follow
+respectively, the Mean understandability of understanding the
+filtering (M = 0.6176, SD = 0.2159) was higher than the tested
+understandability value of 0.5, a statistically significant mean
+difference of 0.12, 95% CI [0.08 to 0.15], t (162) = 6.953, p <
+.001, the Mean understandability of control (M = 0.7607, SD =
+0.2246) was higher than the tested understandability value of 0.5,
+a Statistically significant mean difference of 0.26, 95% CI [0.23 to
+0.30], t (162) = 14.824, p < .001 and the Mean understandability
+of visualization (M = 0.6967, SD = 0.1808) was higher than the
+tested understandability value of 0.5, a statistically significant
+mean difference of 0.20, 95% CI [0.17 to 0.23], t (162) = 13.884,
+p < .001. In all four tests, there were a statistically significant
+difference between means (p < .001) and, therefore, we can reject
+the null hypotheses defined in Table 3, and accept the alternative
+hypotheses.
+Table 4. Hypothesis Analysis
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Test | Variable Mean 2- Degree of 1-tailed 1-tailed Means Alternative
+tailed t | freedom Critical t t< are in Hypothesis
+(df) 2-tailed correct Accepted
+t order
+
+1 Awareness -7117 11.358 162 1.6543 YES YES YES
+2 | Understanding 6176 6.953 162 1.6543 YES YES YES
+3 Control -7607 14.824 162 1.6543 YES YES YES
+4 | Understandability 6967 13.884 162 1.6543 YES YES YES
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+4.2.4.4 Additional Test on Graphical Language
+
+The key graphical language constructs of this visualization are,
+
+1. The relative position of user's circles to the bubble (inside /
+outside)
+
+2. The size of the users’ circles (larger - more posts)
+
+3. Dragging user circles in and out (showing / filtering away)
+
+In addition to the above 3 constructs, we identified another
+potential construct from the qualitative study as follows: the
+position of circles inside the bubble (closer to the center or to the
+periphery). All the 3 other constructs were as part of each function
+of the visualization (providing awareness, providing
+understanding, and providing control) and were tested for
+Statistical significance. In order to test whether users interpret this
+fourth construct or not, we included the answers based on this
+construct for two of the questions in the survey. During the
+analysis, we created a score for users based on how many out of
+the 2 questions they did not select this construct as an answer.
+Then the hypotheses were formed as follows: HO: score < 0.5,
+H1: bt score > 0.5. One sample t-test was conducted and the results
+are as follows: the Mean score for not selecting the graphical
+construct (M = 0.9571, SD = 0.1405) was much higher than the
+test score value of 0.5, a statistically significant mean difference
+of 0.46, 95% CI [0.44 to 0.49], t (162) = 41.523, p < .001.There
+were a Statistically significant difference between means (p <
+.001) and, therefore, we can reject the null hypothesis, and accept
+the alternative hypothesis.
+
+4.2.5 Discussion
+
+The results of the quantitative study suggest that overall the new
+users had better understanding about the visualization. By
+comparing the means of variables Awareness, Understanding, and
+Control, we can see that users have a better understanding
+(0.7607) about the control of filtering and the filter bubble
+provided by the visualization. This can be linked with the drag
+and drop feature of the visualization, which is very popular and
+commonly used action in many user interfaces and it is a very user
+friendly user interface construct. On the other side, the users’
+understanding about the visualization providing understanding to
+the filtering and the filter bubble has the lower value (0.6176).
+Though it is higher than 0.5, it clearly shows that the visualization
+has to be improved on this aspect. A possible improvement could
+be to provide some context sensitive help to the visual cues in the
+
+visualization. The overall understandability value of the
+visualization (0.6967) shows that the users had a_ better
+understanding about the visualization after exploring it for the
+first time and it could be considered as an intuitive visualization.
+But it can be envisioned that the users will better understand if
+there is a context sensitive help provided with the visualization.
+
+Analyzing the t-test values gives us more insight into the
+understandability measures. As mentioned earlier, the
+understandability of visualization is calculated using the three
+variables awareness, understanding and control. These three
+variables are understandability variables and are measured using
+the metrics presented in Table 2. The variables awareness,
+understanding and control obtained a high 2-tailed value
+respectively 11.358, 6.953, and 14.824. These values are
+comparatively very high when compared with their relevant one-
+tailed t-test value, which is 1.65. This indicates that these three
+variables are a very good measure for the understandability of this
+visualization.
+
+The additional test on graphical language results suggest that the
+users very rarely interpreted the position of circles inside the
+bubble (closer to the center or to the periphery) ie. very few users
+selected it. A possible reason for this might be the nature of the
+question; the users might have only focused on the first 3
+graphical constructs which are intuitive and obvious. But it seems
+a useful construct and could be added as an improvement to the
+visualization in future.
+
+5. CONCLUSION AND FUTURE WORKS
+
+This paper presented the results of a qualitative and a quantitative
+evaluation of an interactive visualization which metaphorically
+visualizes the filter bubble in a P2P Social Network. The
+qualitative study reveals several user perceptions which provide
+desirable explanation for the awareness, understanding and
+control of the filter bubble provided by the interactive
+visualization. The quantitative study with 163 participants
+demonstrates that the visualization leads to increased users’
+awareness of the filter bubble, understandability of the filtering
+mechanism and to a feeling of control over the data stream they
+are seeing. Future work directions include conducting a study of
+evaluating the intuitiveness of the visualization by comparing it to
+the same interactive visualization provided with guided help.
+6. REFERENCES
+
+[1] Resnick, P., Varian, H-R.: Recommender systems.
+Communications of the ACM. 40, 3, 56-58 (1997)
+
+[2] Kywe, S.M. et al.: A Survey of Recommender Systems in
+Twitter. Proc. 4th International Conference, SocInfo 2012,
+Lausanne, Switzerland, December 5-7, 2012. pp. 420-433
+(2012)
+
+[3] Manish, A. et al.: An Online News Recommender System for
+Social Networks. SIGIR-SSM. (2009)
+
+[4] Kincaid, J.: EdgeRank: The Secret Sauce That Makes
+Facebook’s News Feed Tick | TechCrunch, Available online
+at: http://techcrunch.com/2010/04/22/facebook-edgerank/.
+(accessed 6 July 2013)
+
+[5] Tandukar, U., Vassileva, J.: Selective Propagation of Social
+Data in Decentralized Online Social Network. Proc. UMAP
+2011 Workshops, LNCS 7138. pp. 213-224 Springer-Verlag
+Berlin Heidelberg (2012)
+
+[6] Konstan, J.A., Riedl, J.: Recommender systems: from
+algorithms to user experience. User Modeling and User-
+Adapted Interaction. 22, 1-2, 101-123 (2012)
+
+[7] Webster, A., Vassileva, J.: Visualizing personal relations in
+online communities. Proceedings of the adaptive hypermedia
+and adaptive web-based systems (AH’2006), June 21-23, pp.
+223-233, Springer LNCS 4018, Dublin (2006)
+
+[8] Indratmo, Vassileva, J., Gutwin, C.: Exploring blog archives
+with interactive visualization. In: International conference on
+Advanced Visual Interfaces (2008)
+
+[9] Webster, A., Vassileva, J.: The KeepUP Recommender
+System. Proc. 2007 ACM Conference on Recommender
+Systems RecSys ’07. pp. 173-176 ACM, Minneapolis,
+Minnesota, USA. (2007)
+
+[10] Shi, S.: Keeping Up with the Information Glut by
+Visualizing Patterns of Posting by Friends on Facebook,
+http://hdl_handle.net/10388/ETD-201 1-09-139, (accessed 11
+Feb 2013)
+
+[11] Pariser, E.: The Filter Bubble: What the Internet Is Hiding
+from You. Penguin Press HC (2011)
+
+[12] Resnick, P., A. Munson, S., Garrett, R.K., Stroud, N.J.,
+Kriplean, T.: Bursting Your (Filter) Bubble: Strategies for
+Promoting Diverse Exposure. Proc. Conference on Computer
+supported Cooperative Work CSCW 2013 Companion proc.
+pp. 95-100 ACM (2013)
+
+[13] Tandukar U., Vassileva J.: Ensuring Relevant and
+Serendipitous Information Flow in Decentralized Online
+Social Network. Proc. AIMSA’2012, 15th biennial
+conference on AI Methods Systems, Applications, Springer
+Verlag, LNAI 7557, pp. 79-88. (2012)
+
+[14] Munson, S.A., Resnick, P.: Presenting diverse political
+opinions. Proc. 28th international conference on Human
+factors in computing systems - CHI 10. p. 1457 ACM Press,
+New York, New York, USA (2010)
+
+[15] Nagulendra, S., Vassileva, J.: Minimizing Social Data
+Overload through Interest- Based Stream Filtering in a P2P
+Social Network, Proc. IEEE International Conference on
+Social Computing, SocialCom’2013 (2013)
+
+[16] Macgirvin, M.: DFRN — the Distributed Friends & Relations
+Network, Available online at:
+https://macgirvin.com/spec/dfim2.pdf. (accessed 2 Aug 2012)
+
+[17] Nagulendra, S., Vassileva, J.: Providing Awareness,
+Understanding and Control of Personalized Stream Filtering
+in a P2P Social Network. 19th International Conference,
+CRIWG 2013. pp. 61-76 Springer Berlin Heidelberg (2013).
+
+[18] NVivo 10 for Windows, Available online at:
+http://www.qsrinternational.com/products_nvivo.aspx.
+(accessed 25 Feb 2014)
+
+[19] Boyatzis, R.E.:Transforming qualitative information:
+Thematic analysis and code development. Thousand Oaks,
+London, & New Delhi: SAGE Publications (1998)
+
+[20] Paolacci, G., Chandler, J.: Running experiments on Amazon
+Mechanical Turk. 5, 5, 1-14 (2014).
+
+[21] ISOAEC TR 9126-2:2003 — Product Quality —- External
+Metrics, Available online at:
+http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue
+_ detail htm?csnumber=22750. (accessed 2 Feb 2014)
+
+[22] Bland, J. M., Altman, D. G.: "Statistics notes: Cronbach's
+alpha," pp. 570-572 (1997)
+
+[23] George, D., Mallery, P., SPSS for Windows step by step: A
+simple guide and reference. 11.0 update (4th ed.), Boston:
+Allyn & Bacon (2003)
+
+[24] Testing for Normality using SPSS, Available online at:
+https://statistics.laerd.com/spss-tutorials/testing-for-
+normality-using-spss-statistics_php. (accessed 2 Mar 2014)
+
+[25] One-Sample T-Test using SPSS, Available online at:
+https://statistics.laerd.com/spss-tutorials/one-sample-t-test-
+using-spss-statistics.php. (accessed 2 Mar 2014)
+
+[26] An Infographic: The Biggest Shift since the Industrial
+Revolution | TechnoBuffalo, Available online at:
+http://www.technobuffalo.com/2010/06/01/an-infographic-
+the-biggest-shift-since-the-industrial-revolution/. (accessed 5
+Sept 2013)
+
+[27] Chart of the day: How People Share Content on the Web,
+Available online at: http://www.businessinsider.com/chart-
+of-the-day-social-networking-sites-dominate-sharing-2009-7.
+(accessed 4 Aug 2013)
+
+[28] Facebook Investors, Available online at:
+
+http://investor.fb.com/releasedetail.cfm?ReleaseID=780093.
+(accessed 4 Aug 2013)
+
+APPENDIX
+
+The online survey link used for the quantitative user study:
+http:/sayooran.usask.ca/limesurvey/index.php/985992/lang-en
+

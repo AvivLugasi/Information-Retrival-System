@@ -1,0 +1,3530 @@
+1812.10943v1 [cs.CY] 28 Dec 2018
+
+arXiv
+
+What did you see?
+Personalization, regionalization and the question of the filter
+bubble in Google’s search engine
+
+Tobias D. Krafft
+Algorithm Accountablitiy Lab
+Gottlieb-Daimler-Str. 48
+TU Kaiserslautern
+® 0000-0002-3527-1092
+krafft@cs.uni-kl.de
+
+ABSTRACT
+
+This report analyzes the Google search results from more than 1,500
+volunteer data donors who, in the five weeks leading up to the
+federal election on September 24th, 2017, automatically searched
+Google for 16 predefined names of political parties and politicians
+every four hours. It is based on an adjusted database consisting
+of more than 8,000,000 data records, which were generated in the
+context of the research project °*#Datenspende: Google und die Bun-
+destagswahl 2017” and sent to us for evaluation. The #Datenspende
+project was commissioned by six state media authorities. Spiegel
+Online acted as a media partner. Focal points of the present study
+are i. a. the question of the degree of personalization of search
+results, the proportion of regionalization and the risk of algorithm-
+based filter bubble formation or reinforcement by the leader in the
+search engine market.
+
+ACM Reference format:
+
+Tobias D. Krafft, Michael Gamer, and Katharina A. Zweig. 2016. What did
+you see?
+
+Personalization, regionalization and the question of the filter bubble in
+Google’s search engine. In Proceedings of ACM Conference, Washington, DC,
+USA, July 2017 (Conference’ 17), 23 pages.
+
+DOE: 10.1145/nnnnnnn.nnnnnnn
+
+1 INTRODUCTION: THE FILTER BUBBLE’S
+DANGERS TO SOCIETY
+
+Political formation of opinion as well as general access to informa-
+tion has changed significantly due to digitalization. Information
+sources such as newspapers, TV and radio, where large parts of
+the population read, heard, or saw the same news and interpreta-
+tions of these news stories, are being replaced by more and more
+diverse and personalized media offerings as a result of digital trans-
+formation. Personalization is enabled by algorithm-based systems:
+here, an algorithm - not a human - decides which contents users
+might be interested in, and only these are offered to them in social
+networks. The same is true for personalized search engines like
+Google, Yahoo or Bing, for which, at more than 3,200 billion search
+queries in 2016 (Statista, 2016), it is impossible to have a man-made
+sorting available.
+
+ 
+
+Conference’17, Washington, DC, USA
+2016. 978-X-xXXX-XXXX-x/YY/MM. .. $15.00
+DOI: 10.1145/nnnnnnn.nnnnnnn
+
+Michael Gamer
+Algorithm Accountablitiy Lab
+Gottlieb-Daimler-Str. 48
+TU Kaiserslautern
+® 0000-0003-0261-0921
+gamer@cs.uni-kl.de
+
+Katharina A. Zweig
+Algorithm Accountablitiy Lab
+Gottlieb-Daimler-Str. 48
+TU Kaiserslautern
+(® 0000-0002-4294-9017
+zweig@cs.uni-kl.de
+
+1.1 The model of algorithmically generated
+and amplified filter bubbles
+
+The possibilities and dangers of a so-called algorithmically gener-
+ated filter bubble increase steadily. This term is to be understood
+as a partial concept of the filter bubble theory by Eli Pariser. In his
+2011 book, ”The Filter Bubble: What the Internet Is Hiding from
+You” (Pariser, 2011), the internet activist pointed out the possible
+dangers of so-called filter bubbles. In his TED talk and on the basis
+of two screenshots from 2011, he showed that two of his friends had
+received significantly different results when searching for “Egypt”
+on the online search platform Google!. From this he developed a
+theory according to which personalized algorithms in social media
+tend to present individuals with content that matches the user’s
+previous views, leading to the emergence of different information
+spheres where different contents or opinions prevail.
+
+In short, filtering the information flow individually can result in
+groups or individuals being offered different facts, thus living in
+a unique informational universe*. This is especially worrying if
+the respective content is politically extreme in nature and if a one-
+sided perspective results in impairment or total deterioration of
+citizens’ discursive capabilities. A filter bubble in this sense is
+a selection of news that corresponds to one’s own perspectives,
+which could potentially lead to solidification of one’s own position
+in the political sphere?.
+
+1.1.1 Filtering search results with personalization and regional-
+ization. Since the number of web pages associated with a search
+term is more than 10 for most queries and at the same time the
+first 10 web pages shown receive the greatest attention from users,
+it is essential that search engines filter the possible search results.
+Certainly one of the most important filters is the user’s language,
+while topicality and popularity play an additional role as well as,
+to a lesser extent, embedment in the entire WWW (e.g. measured
+
+‘See EH Pariser’s TED talk “Beware the filter
+https://www.ted.com/talks/eli_pariser-beware_online_filter_-bubbles
+May 12th 2018)
+
+amg unique universe of information for each of us” (Pariser, 2011, p. 9).
+>>Bilter bubbles” can be understood as even more advanced concepts. Selecting websites
+by means of state cencorship can also create filter bubbles by restricting information.
+While this cencorship is supported by algorithms, this does not constitute a filter bubble
+through algorithm-based personalization that is hypothesized in this text. This kind of
+restriction of information and its possible consequences for filter bubble formation
+aren’t examined here. After all, a search engine operator or a social media platform
+could knowingly and intentionally limit the data base in a certain direction, thus
+presenting all users with the same content while only offering a selective extract of
+reality. This option is not examined here.
+
+bubbles”,
+(accessed
+Conference’ 17, July 2017, Washington, DC, USA
+
+by the PageRank).
+
+A particularly important filtering mechanism within the framework
+of Eli Pariser’s filter bubble theory is ”personalization”. Regarding
+the term of (preselected) personalization, we follow the state-
+ments given by Zuidserveen Borgesius et al. (2016), according to
+which personalization allows the selection of content that has not
+yet been clicked by the user, but which is associated with users
+with similar interests. Algorithmically speaking, this is based on
+so-called *recommendation systems”, which determine the inter-
+ests of a currently searching user from other people who have
+shown similar click behavior in the past. It is also also plausible
+that according to their own click behavior and together with known
+categorizations of clicked content a profile is compiled for each
+person, saying, for instance: ’This person prefers news about sports
+and business, reads medium-length text and news that are not older
+than a day.’ (Weare, 2009). Considering the vast number of users,
+both methods can only be achieved algorithmically, using different
+modes of machine learning and thus only form statistical models
+(Zweig et al., 2017). Generally it can be expected that users logged
+into their Google accounts will tend to receive more personalized
+search results.
+
+Websites from the search result list which have previously been
+clicked by a user are delimited from personalization. For outsiders,
+those might not be differentiable from the entries that have been
+personalized by algorithms, but regarding content they don’t con-
+tribute to algorithm-based filter bubble formation or amplification,
+since users have chosen those contents before.
+
+We use the term regionalization for a sample of websites for a
+whole group of persons who currently search from a specific re-
+gion or are known to originate from a specific region, yet don’t
+necessarily mention a region in their search request. For instance,
+the current location can roughly be derived from the searching
+device’s IP address, or more accurately from smartphone location
+information or from the profile known to the search engine (Teevan
+et al., 2011). The delivered websites themselves clearly relate to
+the location of interest specified by Google; which can be the case,
+for example, if a nearby location’s name appears on the website
+repeatedly.
+
+It is important to note that regionalization on a particularly small
+scale can be counted towards personalization - for example, if
+a selection of regional websites is delivered to each person of a
+household while differing from the selection for their neighbors.
+
+1.1.2. When are algorithmically generated and amplified filter
+bubbles dangerous? Eli Pariser’s filter bubble theory, with its unset-
+tling consequences for society, is based on these four basic mecha-
+nisms:
+
+(1) Personalization: An individually customized selection of
+contents, which achieves a new level of granularity and
+previously unknown scalability.
+
+Low overlap of respective news results: A low or non-
+existent overlap of filter bubbles, i. e. news and information
+from one group remain unknown to another.
+
+Contents: The nature of the content, which essentially
+only becomes problematic with politically charged topics
+and drastically different perspectives.
+
+(2
+
+=
+
+GB
+
+=
+
+Krafft, Gamer and Zweig
+
+(4) Isolation from other sources of information: The groups
+of people whose respective news situation displays homo-
+geneous, politically charged and one-sided perspectives,
+rarely use other sources of information or only those which
+place them in extremely similar filter bubbles.
+
+The stronger those four mechanisms manifest themselves, the
+stronger the filter bubble effect grows, including its harmful conse-
+quences for society. The degree of personalization is essential, as
+politically relevant filter bubbles do not emerge if personalization
+of an algorithm responsible for selecting news is low. Higher or
+high personalization and verifiable filter bubbles do not necessarily
+take political effect if either their contents aren’t political in nature
+or users make use of other sources of information as well. For
+instance, information delivered to citizens of different languages
+are free of overlap by definition, if the results are displayed in those
+languages - regardless, content-wise those citizens aren’t in any
+way embedded in filter bubbles.
+
+1.2 Examining Eli Pariser’s filter bubble theory
+
+As algorithms are capable of controlling the flow of information
+directed towards users, they are assigned a gatekeeper role simi-
+lar to journalists in traditional journalism (see Moe & Syvertsen,
+2007). As a result, it is necessary to examine how powerful the
+algorithmically generated and hardened filter bubbles on various
+intermediaries and search engines actually are. The number of
+reliable studies is relatively low: an important German study by the
+Hans Bredow institute offers a positive answer to the question of
+the informational mix: sources of information today are diverse and
+capable of pervading other news and information of algorithmically
+generated and hardened filter bubbles (Schmidt et al., 2017). It is
+pointed out that algorithms offer a possibility to burst open filter
+bubbles if such a functionality is explicitly implemented.
+
+To our knowledge, apart from anecdotal examinations, a quanti-
+tative evaluation of the degree of personalization for a larger user
+base hasn’t been deducted up until 2017: for example, in the context
+of a Slate article Jacob Weisberg asked five persons to search for
+topics and found results to be very similar (Weisberg, 2011).
+
+Vital questions of the degree of personalization and overlap of
+single news flows can only be resolved with a large user base. Ex-
+ecuting such an investigation appears imperative, especially in
+light of the debate regarding influence of filter bubbles in social
+networks, which was sparked in 2016 after Donald Trump’s presi-
+dential election victory - unfortunately, due to insufficient APIs‘,
+this is currently not possible. Given the major political event of the
+federal elections we decided to realize the #Datenspende: project
+in order to find out whether Google already personalizes search
+results, as has often been speculated. Additionally, it is much sim-
+pler to carry out such an examination on search engines, whose
+results are presented on an HTML page that can easily be processed
+further. With this project we have introduced a study design that
+is capable of answering this question automatically for any sample
+of search engine users and for any search request. Owing to its
+design, users were able to comprehend at all times which search
+requests we presented to Google by using their account. As a result,
+
+4An API is an interface which enables automated interaction with a program. For
+example, information can directly be requested from data bases by use of an API.
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+the data collection was trustworthy and the required software was
+downloaded more than 4000 times.
+
+Furthermore, the study design represents a proof of concept, as
+it enables society to permanently monitor search engines’ degree
+of personalization for any desired search terms. The general de-
+sign can also be transferred to intermediaries, if appropriate APIs
+restrict selective access to content relevant to the study in order
+to establish a similar degree of trustworthiness. For example, on
+Facebook this would mean selective access to media messages or
+political advertisements in a respective time-line, while excluding
+access to private messages from friends.
+
+2 STUDY DESIGN
+
+The study design as well as the fundamentals of the survey are
+explained below. This includes the data structure, relevant termi-
+nology and processing of the data basis.
+
+2.1 Software structure and enrollment
+
+Google bundestagswahl
+
+Alle News Bilder Videos. Shopping
+
+ 
+
+Die nachste Suchanfrage
+startet in 3 Sekunden.
+
+Sonntag, 24. Septemh [ soto stan
+Bundestagswahl 2017
+
+Nicht wieder anzeigen.
+
+ 
+
+Schlagzeilen
+
+ot ae.
+
+Figure 1: Browser plug-in, immediately before initiating a
+search for a user whose first result page then was transfered
+(and thus “donated”) to the provided server structure.
+
+The basic tool used for data collection is a plug-in that is easily
+integrated into the web browser and then utilizes the donating
+user’s browser to automatically run search requests and send the
+data to a central server. The plug-in was created in cooperation
+with the company filokaler’ and was available for the web browsers
+Chrome and Firefox in order to achieve a market coverage of more
+than 60% in Germany (Statista, 2018). All necessary insights into
+the plug-in source code were released at the start of the project®.
+At fixed points in time (4:00, 8:00, 12:00, 16:00, 20:00 and 0:00), the
+plug-in searched for 16 search terms, given that the browser was
+open at that time®. The search requests to Google and Google News
+proceeded automatically and the donors’ personal results were au-
+tomatically sent to our data donation servers. Consequently, for
+
+Shttps://github.com/algorithmwatch/datenspende, published June 7th 2017.
+
+ST the browser was turned off at one or multiple times of search, a cycle of search
+requests would be started when turning it on again the next time — which is why
+there are search result lists with different time stamps. Additionally, it was possible to
+manually start a search cycle in one’s own browser.
+
+  
+ 
+
+each user and point in time 16 search terms were requested twice
+and the respective first page of the search results was saved.
+
+The search terms are limited to the seven major political parties and
+their respective leaders (see Table 1). As can be seen in Figure 1, af-
+ter downloading the plug-in users were free to decide whether they
+wanted to be informed about future donations or if those should
+predominantly run in the background.
+
+Information regarding the project and the related call for the data
+donation were distributed via our project partners’ communication
+channels as well as our media partner Spiegel Online (Horchert,
+2017). As a result, 4,384 plug-in installations took place. The result-
+ing search results are freely accessible to the public for analytical
+purposes’.
+
+It should be pointed out that all results that can be seen in the
+final report are not necessarily representative, as the data donors
+were recruited voluntarily and by self-selection. For the most vital
+findings however, especially regarding the degree of personaliza-
+tion, we assume that they do not change much if the user base is
+representative.
+
+Search terms: partys Search terms: persons
+
+ 
+
+AFD Alice Weidel
+
+ 
+
+Buindnis90/Die Griinen Dietmar Bartsch
+
+ 
+
+ 
+
+ 
+
+ 
+
+CDU Alexander Gauland
+csU Katrin Goring-Eckardt
+Die Linke Christian Lindner
+FDP Angela Merkel
+
+SPD Cem Ozdemir
+
+ 
+
+ 
+
+ 
+
+Martin Schulz
+
+ 
+
+Sahra Wagenknecht
+
+ 
+
+Table 1: The plug-in’s search terms for fixed search times.
+
+It should also be noted that an automated search for about an
+
+approximate dozen of search terms can have an influence on the
+search engine algorithm itself. On Google Trends, over the runtime
+of our data collection and for the search terms "Dietmar Bartsch”,
+*Katrin Giiring-Eckardt” and *Biindnis90/Die Griinen” it can clearly
+be seen that the search request volume was hereby increased (see
+Figure 2).
+Since the search requests were performed automatically and none
+of the offered links were actively clicked, we suspect the effects to
+be rather low. However, lacking exact knowledge of the underlying
+algorithm, this can’t be proven and has to remain unevaluated.
+
+2.2 Data structure and relevant terms
+
+For further analysis, the available data was structured as follows.
+On the one hand we differentiated between search results directly
+on Google (www.google.de) or on the search engine provider’s
+
+Thttps://datenspende.algorithmwatch.org/data.html
+
+ 
+Conference’ 17, July 2017, Washington, DC, USA
+
+D Bi ntspn/frands qocgledetrancs/exslere!date= 2017-05-16 2017-09-208iqe0-DE2q-Kavin Gsrng-Eckarct Der mar Batch “Ot
+
+© Katrin Géring-Eckardt
+Suchbegrf
+
+@ (Dietmar Bartsch
+
+suchbegrt + Vergleich hinzufugen
+
+Deutschland + 16951769 20.02.17 ~ Alle Kategorlon + Webcuche +
+
+Interease im zetilchen Verlaut Bog
+
+ 
+
+OG itosi/neragvoy edelerds/cnonedale=201/ 09 1820 WY 2USyLo=DERE= Bin dnnsUIRZ De Sibien ~ On
+
+@ Biindnis90/Die Griinen
+
+Suet + vergleichen
+
+Deutschland ~ 168.17 bie 20 DEAT © Alle Kategorien ~ ——— Websuche ©
+
+Interesce im zeitlichen Veriaut
+
+le
+A
+
+Figure 2: Chronological sequence of the search terms ”Ka-
+trin Géring-Eckardt” and ”Dietmar Bartsch” (above) and the
+search term ”Biindnis 90/Die Griinen” (below). The Google
+Trends diagrams clearly show the increase in search occur-
+rences for the search terms due to the plug-in, which was
+unlocked on July 7th 2017.
+
+news page (news.google.com). The entire database was divided
+into these two categories. While usually 20 results according to the
+search terms were displayed on the news portal, 10 results as well
+as three additional so called top stories are displayed to the user
+using the default search feature (see Figure 3).
+
+While Google searches primarily refer to personal websites, social
+media accounts and aggregate subject/topic pages for the parties
+and persons (cf. Section 3.4), the Google news search only shows
+news from previously registered partners®. As a result, the lifespan
+of news results is limited, ie. that most news are displayed to users
+over a low number of search points in time, while the personal
+websites and social media accounts of parties and politicians are
+almost always shown. Thus, a separate inspection of news search
+and Google search results seems reasonable.
+
+For regular Google search results we drew a distinction between
+the (not always received) top stories and “organic” search results,
+ie. the 8-10 results in the lower left segment of the results page
+(Figure 3 shows two organic search results for the search term
+”Angela Merkel”). At times, Google’s search result pages contain
+information in the right segment as well, e.g. advertisements or info
+
+See Google’s help center, eg. — https://support.google.com/news/publisher-
+center/answer/6016113?hl=en &ref_topic=9010378
+
+Krafft, Gamer and Zweig
+
+boxes regarding individuals or parties. Those were not transferred
+to our servers, but rather potential top stories and the actual search
+result page.
+
+Apart from the search type (’Google”, ”
+following information was saved:
+
+Google news search”) the
+
+e An approximate location based on the user’s transmitted
+IP address.
+
+e The user login status in their Google account. A user can
+be “logged in” or “not logged in”.
+
+e The browser language (not the search language that is
+entered in the Google account).
+
+e The search term and time stamp of the search.
+
+e An ID generated by the plug-in that does not give any
+
+hints regarding the user, but remains unchanged for all
+
+data donations, as long as the plug-in is not re-installed.
+
+If available, a descriptive link text is saved as well (usually
+
+only available for organic search results, but not always).
+
+If it is a top story, the corresponding date (e.g. ”54 minutes
+
+ago”, ”3 hours ago”) is saved as well.
+
+e The search results’ URL.
+
+¢ Most of the time, for top stories and Google news results
+the medium (news source) and the news title are stated
+and saved (e.g. "Dresdner Neueste Nachrichten” with “This
+is what our readers have to say regarding Cem Ozdemit’s
+appearance’).
+
+Additionally, the following terms are used in this report:
+
+Investigation period: This term is used for the time pe-
+riod between August 21st 2017 and September 24th 2017.
+Here, only weekdays and the election weekend specifically
+are taken into account (for further information, see Section
+3.1). Therefore, the investigation period spans 27 days.
+Search time: We define the search time as a day and cor-
+responding time of day within the investigation period,
+which can be 12:00, 16:00 or 20:00. We perform this limita-
+tion because the number of searching users is significantly
+lower for other times of search. The sum of times of search
+thus amounts to 81 (three separate times for each of 27
+days in total).
+
+(Search) result list: We understand a result list as the sum
+of URLs which are delivered to a user for a given search
+term and search time.
+
+Top stories and organic search results: The top stories
+term is used for up to three news items which Google oc-
+casionally displays at the top of a regular Google search
+request (see Section 6.1). Apart from purely textual infor-
+mation, a corresponding image is shown (see Figure 3). The
+remaining search results will hereinafter be referred to as
+organic search results.
+
+Top-level domain: Each URL references a main domain
+(top-level domain) and directories potentially located there.
+The main domain corresponds with the portion between
+the URL protocol specification (http://, https://) and the first
+
+following slash (”/”). The top-level domain of http://www.faz.net/
+
+aktuell/wirtschaft/gruenen-chef-cem-oezdemir-will-
+gelaendewagen-bestrafen-wer-suv-faehrt-soll-die-kosten-
+
+fuer-die-umwelt-tragen-15201893.html consequently is www-faz.net.
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+Angela Merkel 6 Q
+
+Alle News Bild Vide Ma Mehl nstellungen Tk
+
+ 
+
+Schlagzeilen
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+> Mehr zu Angela Merkel
+
+Angela Merkel
+https://www.angela-merkel.de/ »
+Die personliche Internetseite der Vorsitzenden der CDU Deutschlands, Angela Merkel.
+
+ 
+
+Angela Merkel — Wikipedia
+
+htips://de. wikipedia.org/wiki/Angela_Merkel ¥
+
+Angela Dorothea Merkel (* 17. Juli 1954 in Hamburg als Angela Dorothea Kasner) ist eine deutsche
+Politikerin (CDU) und dem 22. November 2005 amtierende Bundeskanzlerin der Bundest
+Deutschland. Am 14. Marz 2018 wurde Merkel vom Bundestag zum vierten Mal zur Bundeskanzlerin
+gewahit. Merkel
+
+Angela Merkel - Merkel-Raute Joachim Sauer Am Kupfergraben
+
+ 
+
+   
+
+ 
+
+Figure 3: Google search for Angela Merkel with three deliv-
+ered top stories.
+
+As is the case with most data collections, corrupt or divergent
+entries occur. The plug-in, too, did not run smoothly from the onset
+and produced partially corrupt data. Therefore, we describe the
+necessary data preparation below.
+
+2.3 Data preparation
+
+The Firefox version’s first plug-in assigned the same ID to all users.
+As we intended to analyze the changes to search result lists over
+time, we decided to generally disregard that data in order to achieve
+a consistent database. As a result, 34% of all donated URLs for the
+Google search and 41% for Google News searches are omitted.
+
+A first analysis of the available data (see Section 3) shows further
+irregularities. Noticeably, the database contained search result lists
+which in length didn’t conform to expected standards (ten entries
+for the common Google search and 20 entries for searches on the
+news portal). For instance, the database contained some datasets
+with 200 entries in the search result lists. This can be traced to the
+possibility of individually adjusting the number of search results
+displayed on the first page. We have shortened these lists to the
+standard 10 plus potentially displayed top stories. Other errors are
+based on imperfect coding of the first Firefox plug-in, resulting in
+search result lists which contained the same URL throughout the
+list. Those lists were not included in our analysis.
+
+The same applies to URLs which only contained a reference to the
+corresponding URL at Google (google.de/url) or displayed a URL
+entry which merely referred to ’google” and didn’t contain a full
+
+link - those entries point to a private search result. Moreover, it was
+noticeable that a series of search result lists contained significant
+numbers of URLs that referred to websites in other languages.
+
+To dispose of foreign results, we manually sorted top-level domains
+of all websites by language. This way, we determined the share
+of German websites and kept those whose share was above 50%.
+As a consequence, our subsequently used database was limited to
+German result lists. With these adjusted measures, the datasets in
+our investigation period for the Google search were reduced by
+19,6%? and by 16,7%" for Google news data. A short list of the
+adjusted datasets can be found in Table 2.
+
+Google search |Google News
+
+data after data after prep-
+preparation aration
+Number of datasets 3.564.583 5.597.480
+Number of users 1.705 1.550
+Number of result lists [302.813 279.874
+
+Table 2: Tabular overview of donated data after data prepa-
+ration.
+
+3 DATA OVERVIEW
+
+In this section we give a first overview of the data.
+
+3.1 Chronological distribution of search
+requests
+
+When looking at the daily distribution of our data donations, a clear
+decrease in donated search result lists during weekends showed.
+In Figure 4 the number of received URLs per day and search term
+are displayed and a wave-like pattern can be seen, while the lowest
+points are located at the weekends. Consequently, significantly
+fewer users had their browsers open on weekends and donated
+data, which can be attributed to a lower computer usage on week-
+ends.
+
+The daily number of data donors were mostly kept stable for
+both Google Search (see Figure 5) and Google News (see Figure 6)
+by limiting our observations to weekdays over the investigation
+period. Thus, between 450 and 550 users were online and donated
+their search results on the respective days. Also, the ratio between
+logged in and not logged in users remained similar over the in-
+vestigation period. The weekend from September 23rd/24th was
+only added due to its proximity to the election and appears slightly
+out of the ordinary due to its 350 users. Statistically speaking, the
+numbers of cases are still sufficiently high to obverse those days as
+well.
+
+"From 4.416.585 to 3.564.583
+10From 6.712.733 to 5.597.480
+Conference’ 17, July 2017, Washington, DC, USA
+
+ 
+
+Figure 4: Number of submitted URLs for Google Search dur-
+ing the last 5 weeks before the 2017 federal election.
+
+Anzahl Nutzer Google Suche, Mittelwert = 506.9
+
+2017-08-21]
+2017-08-22}
+2017-08-23}
+2017-08-24
+2017-08-25}
+2017-08-23}
+2017-08-29}
+2017-08-30}
+2017-08-31]
+2017-09-01]
+2017-09-04
+2017-09-05}
+2017-09-06}
+2017-09-07
+2017-09-03}
+2017-09-11
+2017-09-12}
+2017-09-13}
+2017-09-14}
+2017-09-15
+2017-09-13}
+2017-09-19}
+2017-09-20}
+2017-09-21]
+2017-09-22}
+2017-09-23}
+2017-09-24
+
+ 
+
+Anzahl Nutzer Google Suchen
+
+Eingelogat, Mittelwort:
+
+Nicht cingslogat, Mittawert: 149.4
+
+  
+
+2017-00-25
+2017-00-26
+2017-09-06
+2017-09-07
+
+2017-09-08
+
+ 
+
+Figure 5: Number of users on the respective days of the in-
+vestigation period for Google Search, after data cleansing.
+
+3.2 Geographic distribution of data donors
+
+The distribution of users on the map of Germany in Figure 7 shows
+that we managed to acquire data donors Germany-wide and that
+
+Krafft, Gamer and Zweig
+
+Anzahl Nutzer Google News, Mittelwert = 480.1
+
+2017-08-21
+2017-08-22]
+2017-08-23]
+
+2017-09-11
+2017-09-12]
+2017-0
+2017-0
+2017-09-15}
+2017-09-13]
+
+ 
+
+2017-09-24)
+
+ 
+
+Anzahl Nutzer Google News
+
+Eingelogat, Mittelwert: 338.9 os Nicht eingeloggt. Mitelwert: 141.3,
+
+ 
+
+ 
+
+ 
+
+2017-00-14
+
+   
+
+2017-00-19
+2017-00-24
+2017-09-23
+
+Figure 6: Number of users on the respective days of the in-
+vestigation period for Google News, after data cleansing.
+
+our data preparation (see Section 2.3) does not suggest regional
+effects: Locations that are not included after our data preparation
+are displayed as reds dots. Those are spread all over Germany;
+overall, the West of Germany is represented more strongly.
+
+3.3 Distribution of internet and media
+offerings in the search results
+
+For the remaining data set we first calculated which top-level do-
+mains managed to get onto the first search result page most often
+for every search term. Figure 8 shows the results for the politi-
+cal parties and Figure 9 those for the politicians. For all parties
+except for Die Linke the respective party’s own top-level domain
+ranks first, for Die Linke it ranks 4th, while the parliamentary
+group’s website ranks second. Likewise, the respective Facebook
+account is always the second to fourth most common link, Twitter
+manages an entry into the top 10 for four parties; for all parties
+except for the AfD, this is accompanied by the German Wikipedia
+entry. For the AfD there is a German Wikipedia entry as well, but
+it does not appear as often as the aggregate topic pages of Focus,
+Zeit, Merkur, Spiegel, FAZ and Tagesspiegel. A regular appear-
+ance for parties except for Die Griinen is the top-level domain
+www.bundestagswah!-bw.de, which offers an overview of all par-
+ties. *bundestageswahl-2017.com”, which appears for Die Griinen
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+Figure 7: Distribution of data donors in Germany, where the
+respective positions were determined on the basis of the IP
+address and are therefore only an approximation of the po-
+sition of the individual users. The red dots are coordinates
+that are no longer included in the database after data cleans-
+ing.
+
+and the SPD, is a private collection of information relating to the
+parties and their platforms. It stands out that both Biindnis 90/Die
+Griinen and Die Linke predominantly have their own websites in
+the top 10 results, or those that could be altered by them with some
+degree of effort, e.g. in case of false coverage. This includes Face-
+book and Twitter as well as Wikipedia in general.
+
+For politicians, the personal website is always in the top 10 as well,
+for Alexander Gauland and Alice Weidel those are subpages of the
+top-level domain www.afd.de and thus not specifically visible. The
+corresponding German Wikipedia entry appears for all of them as
+well, besides a changing number of social media accounts, which
+are completely absent for Alexander Gauland. As a matter of fact,
+we could not find any personal social media account of Alexander
+Gauland, his website refers to the respective accounts of the AfD.
+Most big German online news magazines have topic pages, which
+collect news relating to a person or institution and often display
+an introductory, general text about the topic. Such person-related
+
+ 
+
+topic pages can be found for politicians among the top 10 of the
+top-level domains, but news from those and other sources as well.
+
+ 
+
+AfD Biindnis9@/Die Griinen cou
+wow.afd.de
+Wwe
+
+www. gruene..
+com
+~ore
+
+gruene.
+
+Wa. Wa Tom
+
+    
+
+ww. gruene-nrw.
+er Com
+
+Gesamtanzahl an URLS: 169114
+
+ 
+
+www. Faz.
+Gesamtanzahl an URLS: 164374
+
+ 
+
+Www :
+Gesamtanzahl an URLS: 164980
+
+ 
+
+ 
+
+csu Die Linke FDP
+www. csu.de 21.427
+
+er. com
+= Cont
+wwii
+WW
+wil
+va
+
+      
+
+wa
+WwW.
+
+WoW
+
+Wai Tom
+
+Gesamtanzahl an URLS: 152339 Gesamtanzahl an URLS: 152862
+
+wid
+
+ 
+
+Gesamtanzahl an URLS: 152764
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+SPD
+
+Ww
+Www.
+
+www.
+www.
+
+   
+
+wwe, .
+Gesamtanzahl an URLS: 178017
+
+Figure 8: Most common top-level domains for the organic
+Google search for the parties.
+
+Examining the top-level domains for the top stories, a less uni-
+form picture emerges (see Figure 10): While AfD, CDU, CSU, SPD
+and FDP receive most top stories from far-reaching media compa-
+nies, the top 10 sources for Die Griinen and Die Linke are lesser-
+known in some instances. For the searched persons, there are other
+sources to be found besides the most far-reaching, like the Gen-
+eralanzeiger Bonn (for Cem Ozdemir) or www.epochtimes.de (for
+Alexander Gauland and Katrin Giring-Eckhardt) (see Figure 11).
+For the sake of completeness, Figure 12 and 13 also show the top 10
+of top-level domains for the respective searches on Google News.
+A media studies classification of the respective sources can not be
+provided here — the data however is available for future analysis!!.
+
+Overall, the first result page both for Google News and Google’s
+organic search are dominated by renowned media companies, es-
+pecially from the printing sector. Exceptions to this are the on-
+line newspaper Huffington Post and Freemail service provider t-
+online.de, which often appear as news sources. When searching
+for the terms ”Christian Lindner” and ”FDP”, Google provides a
+website as a news result which is being managed by the party’s
+federal branch.
+
+3.4 Owned Content, Social Media and media
+offerings
+
+The search result lists contain different result categories, as Figure
+14 shows for an example of a search for >Cem Ozdemir”. An inter-
+esting question when assessing the diversity of results delivered by
+
+"https://datenspende.algorithmwatch.org/data.html
+Conference’ 17, July 2017, Washington, DC, USA Krafft, Gamer and Zweig
+
+ 
+
+Alexander Gauland Alice Weidel Angela Merkel Alexander Gauland Alice Weidel Angela Merkel
+
+wow. faz-net 21231 de wa.
+: Wil,
+WH
+
+whl
+
+www. faz. net
+
+ 
+ 
+  
+   
+
+   
+   
+   
+
+  
+  
+  
+  
+   
+
+wii
+
+      
+
+ 
+
+www. bild. wn, : wow waz wa. z
+Gesamtanzahl an URLS: 179070 Gesamtanzahl an URLS: 176493 Gesamtanzahl an URLS: 159040 Gesamtanzahl an URLS: 366262 Gesamtanzahl an URLS: 374593 Gesamtanzahl an URLS: 363632
+Cem Ozdemir Christian Lindner Dietmar Bartsch Cem Ozdemir Christian Lindner Dietmar Bartsch
+
+web.de
+er.com
+
+www. christian Lindner. de [23785
+
+ww. dietmar—bartsch.de [19992
+
+Wl
+wid
+
+Ww
+
+de [23854
+
+Wu
+Wu
+Wu
+
+Wil
+vw
+WH
+WW
+WNW. SP!
+Wa
+
+    
+ 
+   
+   
+   
+
+  
+  
+  
+  
+   
+
+Wat.
+
+. Walls
+Gesamtanzahl an URLS: 178748
+
+WwW
+
+   
+
+Wuw.ShZ,
+Gesamtanzahl an URLS: 367973
+
+   
+
+Gesamtanzahl an URLS: 174977 Gesamtanzahl an URLS: 184959 Gesamtanzahl an URLS: 372799 Gesamtanzahl an URLS: 383192
+
+ 
+
+Katrin Géring-Eckardt Martin Schulz Sahra Wagenknecht Katrin Géring-Eckardt Martin Schulz Sahra Wagenknecht
+«de [20933 www. spi de 28.642 www, Faz. net 59881
+wa,
+
+WH
+
+www.stern. 22451 ai9aa
+
+Wa zi
+
+wa
+Wu wn
+
+WwW-PP
+
+WwW. wa
+
+Wo
+
+Was :
+Gesamtanzahl an URLS: 381740
+
+Gesamtanzahl an URLS: 183340 Gesamtanzahl an URLS: 168050 Gesamtanzahl an URLS: 176105
+
+    
+
+Was :
+Gesamtanzahl an URLS: 384376
+
+ 
+
+Gesamtanzahl an URLS: 364193
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 9: Most common top-level domains for the organic Figure 11: Most common top-level domains for the Google
+Google search for the persons. News person searches.
+AFD Biindnis90/Die Grinen cou Alexander Gauland Alice Weidel Angela Merkel
+
+t. 12164
+www welt .de 11543 =
+
+74)
+
+Www. mz. . 3036
+
+net
+
+1715
+
+wow bild.
+Gesamtanzahl an URLS: 55622
+
+   
+
+com Gesamtanzahl an URLS: 56290 Gesamtanzahl an URLS: 52983
+
+com
+
+ 
+
+WW .
+Gesamtanzahl an URLS: 54122 Gesamtanzahl an URLS: 47700
+
+ 
+
+Cem Ozdemir Christian Lindner Dietmar Bartsch
+ww. bild. de
+
+ 
+
++de [3120
+
+ 
+
+  
+
+ 
+
+  
+
+   
+
+cSU Die Linke
+www.
+WWW
+WW
+Www
+won
+wu . wu zi WoW. SVZ +
+Gesamtanzahl an URLS: 55211 Gesamtanzahl an URLS: 54296 Gesamtanzahl an URLS: 45251
+Katrin Géring-Eckardt Martin Schulz Sahra Wagenknecht
+
+ww
+WuN SP:
+
+WW wu.
+
+Gesamtanzahl an URLS: 51113 | Gesamtanzahl an URLS: 53523 | Gesamtanzahl an URLS: 52535
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+SPD
+www.welt .
+WW
+Wi :
+www. zeit. wane,
+
+7 WH
+www. Spiegel. Gesamtanzahl an URLS: 49993
+
+Gesamtanzahl an URLS: 55865 Gesamtanzahl an URLS: 52970
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+WWW.
+
+Figure 12: Most common top-level domains for the top sto-
+ries of the Google search for the persons.
+
+ 
+
+Gesamtanzahl an URLS: 59658
+
+Figure 10: Most common top-level domains for the top sto- end, each individual URL was manually assigned to the database
+
+ries of the Google search for the parties. and one of 7 different categories, according to its top-level domain;
+URLs of the Media category were categorized in a more nuanced
+way'. A detailed description of those individual categories can be
+
+search engines is to look at their distribution on different offering found in Appendix A.
+
+categories and especially in asking the question of the extent to
+
+which persons or parties are able to edit their contents. Websites We thank the Bavarian Regulatory Authority for Commercial Broadcasting (Bay-
+
+of candidates and parties evidently belong to the latter. To that erische Landeszentrale fiir Neue Medien, BLM) for this difficult work.
+
+ 
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+ 
+
+Biindnis9@/Die Griinen cpu
+online.de [36789
+
+wuw.t online.de 1287 wo.
+
+wa : wu
+won : Wale
+Ww 7 Www
+WwW z wan
+wt 7 Wa
+WwW 7 wo
+wo. . wats
+ww
+ww nd. wun zi
+Gesamtanzahl an URLS: 23185 Gesamtanzahl an URLS: 359399
+
+ 
+
+wai, 7
+Gesamtanzahl an URLS: 363612
+
+ 
+
+ 
+
+csu Die Linke FDP
+www.rp online.de [39548
+Wa
+wal
+WwW.
+www
+walt
+Wa
+wi
+wun . 7 zi www i 18403
+Wai wiv ~com
+Gesamtanzahl an URLS: 368838
+
+ 
+
+Gesamtanzahl an URLS: 363838 Gesamtanzahl an URLS: 359884
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+SPD
+www. faz.net 44276
+
+WwW. SP.
+www. stern.
+
+Gesamtanzahl an URLS: 361836
+
+ 
+
+Figure 13: Most common top-level domains for the Google
+News party searches.
+
+ 
+
+ 
+
+ 
+
+Personliche Editierbare Nachrichten
+Webseiten Webseiten
+
+Cem Ozdemir Ozdemirs Bundestagsrede zur AfD:
+rs hw osrcenr ce © Ws hntapespentse Pm
+Miser une UND wi tor Busta a Evi
+WIRTSCHAFT GEHORT KEIN Cem Ozdemir — Wikipedia yergangene Woche viel Boachiung erzie
+
+hitps://de.wikipedia.org'wiki/Cem_Ozdemir ¥ et
+Schwabe - Krokodile und c?
+Kontakt - Cem Ozdemir
+https:/;Wwww o@7demir de/kontakt/ +
+Kontakt. Cem Ozdemir, Migled des O
+cem.oezdemir@bundestag.de. Bunde:
+
+ 
+
+Wegen Bundestagsrede: AfD kandiatt
+ipsa.» Paik» Dochiond
+
+sti
+Bad Urach  Tscherkesson in der Turket -Sakularis
+
+ 
+
+wgon - Die AID will die Bundestagsrede des G
+‘Thema im Allestenat machen, Die Part wehrt sich
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Owned Content 3947
+Media 406
+Publicly funded 303
+Others 71
+Social Media 12
+Wikipedia 10
+Freemail portals 5
+
+ 
+
+Table 3: Distribution of all top-level domains of the Google
+search over the offering categories.
+
+websites of parties and persons and the approximately 400 media
+domains, the relatively high number of publicly funded domains
+stands out (about 300 domains). Those primarily represent cities
+and municipalities; however, the website of the Federal Agency for
+Civic Education and the Bundestag are included here as well.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Party Number of top-level domains as-
+signable to a party
+
+SPD 1043
+CDU 944
+FDP 687
+Biindnis90/Die Griinen 675
+Die Linke 465
+CSU 96
+
+AfD 6
+
+ 
+
+ 
+
+ 
+
+F: (030) 22776069, €: cem oezdemirg
+(0711) 65832900. F: (0711)
+
+kommen dagegen
+
+Griine: AfD kiindigt Beschwerde gegen Bundes
+https:/www.welt.de » Newsticker » News1 (AFP - Journal) *
+vor 2 Tagen - Die AMD wil offziall Beschwerde gegen die Bundest
+Gzdemir einlegen, in der er de AID-Adgeordheten als Rassisten
+Parlamentsgeschaistutrer der AfD-Bundestagstakton, Bemd Be
+die AID werde Ozdemirs
+
+Cem Ozdemir (@cem_oezdemir) | Twitter
+hits /twitter.con/cem_oezdemir?lang=de ¥
+
+107 tweets «515 photosvideos « 96K folwers “Der Kreg
+weitere unvosselbar rausame Dimensionen ereicht. Die #
+unsere Hie jetzt! Heute Abend Mahnmarsch um 18 Ur -c
+kommen mitt
+
+AfD kundigt Beschwerde gegen Bundestagsrede von Cem Ozdemir...
+s/o err de ef ven besctwerde goer bundestaystede- von co»
+
++ Tag - Die AFD will ffziell Beschwerde gegen die Bundestagsrede des Grunen-Poliikers Cem
+Seem eninge, n rer die AM?-Abgoorneton a Rasen boosh hata
+
+Cem Ozdemir - Startseite | Facebook
+https /de-de facebook comiCem/ ¥
+‘Com Ozdemir, Berlin. Gefallt 155 201 Mal, wwwoez
+
+Figure 14: Division of organic search results for the search
+term "Cem Ozdemir” into three possible categories: per-
+sonal websites, which can be further divided into "Owned
+Content” and ”Social Media”, editable websites such as
+Wikipedia and news. Besides, aggregate news services such
+as Freemail portals appear frequently (t-online, web.de), but
+were not among the results of this search.
+
+It is more than astonishing that of the 4754 top-level domains
+of the Google search that were delivered during the investigation
+period a predominant portion of 83% are subject to editability by
+parties or persons (?Owned Content”). The vast majority of Owned
+Content consists of pages of local branches belonging to the re-
+spective parties (see Table 4). Some parties are significantly more
+active than others: While the sum of search results for the AfD
+provides a mere 6 clearly discernible individual top-level domains,
+it is more than 1000 for the SPD and nearly 950 for the CDU. Besides
+
+Table 4: Number of top-level domains which can be assigned
+to a party. They usually represent a local branch, the party
+itself or individual party members.
+
+Figure 15 shows the distribution of organic search results (with-
+out top stories) over the entire investigation period. Here, distinct
+differences can be found regarding the share of URLs in the cate-
+gories Owned Content and Media between individuals and parties.
+The amount of links referencing a Wikipedia page lies above 10%,
+which means slightly above one link, as there are users who re-
+ceived both the German and English Wikipedia entry. Due to this
+categorization it is now possible to differentiate between the entire
+proportion editable by a party or individual and the proportion
+that can not be edited (media, Freemail portals, publicly funded and
+others).
+
+Summarizing the proportion of the respective categories for the
+particular parties (see Table 5), further evidence of a varying media
+presence in the digital space presents itself. While Biindnis 90/Die
+Griinen with 60% and Die Linke as well as the FDP with about 50%
+have achieved a very high proportion of Owned Content (i. e. links
+to own domains of parties, local branches or politicians), the CDU
+and SPD manage a mere 30%. A chicken-and-egg problem arises: A
+
+ 
+Conference’ 17, July 2017, Washington, DC, USA
+
+0.13 @ Owned Content
+
+@ Social Media
+@ Wikipedia
+
+0.00 @ Medien
+
+0.06 a Freemail Portale
+@ Offentlich finanziert
+B Sonstige
+
+0.06
+
+ 
+
+ 
+
+Krafft, Gamer and Zweig
+
+Owned Content
+Social Media
+Wikipedia
+
+Medien
+
+Freemail Portale
+Offentlich finanziert
+Sonstige
+
+Figure 15: Distribution of organic search results among different categories in %, left for individuals, right for parties. The
+9-10 organic search results a user receives when searching for a person thus contained e. g. on average two URLs from the
+
+category ’Social Media” and 4-5 links from the category ”media”.
+
+well-working search engine optimization (SEO) provides good visi-
+bility of contents for all search engines, but good visibility in search
+engines can also lead to high popularity of contents in all search
+engines, which in turn results in good visibility in search engines.
+Therefore, the reason for some parties’ own content being more vis-
+ible to themselves does not seem assessable. After all the conducted
+investigations we consider it most likely that those parties are most
+visible that provide a sufficient amount of timely content both on
+the regionalization as well as the news level. Table 5 shows the
+same analysis for search results that represent individuals. Here it
+is noticeable that especially for Gauland, who does not own social
+media accounts, less directly or in principle editable domains are
+delivered in total - for most other persons approximately two social
+media accounts are delivered. Frequently a publicly funded domain
+is shown for those with a seat in the German Parliament (e. g.
+www.bundestag.de, www.bundeskanzlerin.de), which are missing
+for Gauland, Weidel, Schulz and Lindner.
+
+Finally Figure 16 shows the distribution of categories for the
+delivered top stories in the Google search. No significant differences
+both on the search term level as well as aggregated by parties or
+persons could be observed. The majority of 85% always comes from
+the print media sector with an online presence. Media offerings
+with the internet as their sole path of distribution are displayed
+in the top stories with 9%, while only 3% represent public service
+channels and online branches of classic German private television
+service providers.
+
+4 SCOPE FOR PERSONALIZATION/
+REGIONALIZATION
+
+The #Datenspende project is a proof-of-concept to demonstrate
+that black-box analysis enables society to investigate algorithmic
+decision-making systems such as search engines - but in principle
+others such as product recommendation systems or social media
+as well - for dangerous spots. A much-debated dangerous spot
+
+0.85
+@ Print
+@ Online Only
+0.00 GB ORR
+0.03 O TV
+0.03 & Sonstige
+0.09
+
+ 
+
+Figure 16: Share of media delivered by Google in the top sto-
+ries during the investigation period for Google search of all
+search terms.
+
+in recent years has been the algorithm-based formation and re-
+inforcement of filter bubbles based on personalized search and
+recommendation filters. The question of whether and to what ex-
+tent search engine users receive different news and information
+about important political institutions and persons was therefore
+the focus of the analysis. The fact that we inspected a search engine
+and not the much more vulnerable social media such as Facebook
+was above all a matter of easier access to the results.
+
+Personalization of search results, as stated previously, is understood
+to describe a customized preparation or selection of search results
+that the user has not yet clicked. Suggestions are made based on
+profiles and click behavior of other users perceived as being similar.
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+AFD Buncnis9O/ | py csu Die Linke FDP SPD
+Die Grunen
+
+Owned Content 0,12 0,59 0,32 0,20 0,46 0,41 0,30
+Social Media 0,11 0,16 0,19 0,20 0,21 0,21 0,10
+Wikipedia 0,04 0,11 0,12 0,12 0,15 0,13 0,12
+Media 0,60 0,01 0,25 0,42 0,07 0,19 0,29
+Freemail portals 0,03 0,00 0,02 0,01 0,00 0,01 0,02
+Publicly funded 0,09 0,05 0,09 0,04 0,07 0,06 0,10
+Others 0,01 0,08 0,00 0,00 0,04 0,00 0,07
+Share of (in principle)
+editable websites ~z a q Aa
+(red)/without such ac-
+cess (blue)
+
+Table 5: Distribution of the organic search results on the different categories, for the searches for the parties. The circular
+diagrams represent the proportion of all websites that are (in principle) editable by the person or party in red (Owned Content,
+Social Media and Wikipedia) and the proportion of websites on which such an intervention is not possible (Freemail portals,
+
+media, publicly funded and others), in blue.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Alexander = Alice AngelaMer- Cem Christian
+Gauland Weidel kel Ozdemir Lindner
+Owned Content 0,08 0,11 0,11 0,16 0,14
+Social Media 0,01 0,22 0,15 0,23 0,23
+Wikipedia 0,12 0,12 0,14 0,12 0,12
+Media 0,71 0,52 0,46 0,27 0,47
+Freemail portals 0,08 0,03 0,04 0,13 0,02
+Publicly funded 0,00 0,00 0,13 0,09 0,01
+Others 0,00 0,00 0,00 0,00 0,01
+Share of (in principle) >»
+editable websites
+(red)/without such ac- Ce oO @ oOo o
+cess (blue)
+Katrin Sahra
+Dietmar Goring- Martin Wagen-
+Bartsch Eckardt Schulz knecht
+
+Owned Content 0,16 0,12 0,11 0,16
+
+Social Media 0,22 0,20 0,22 0,17
+
+Wikipedia 0,12 0,12 0,12 0,12
+
+Media 0,29 0,37 0,50 0,46
+
+Freemail portals 0,10 0,08 0,04 0,03
+
+Publicly funded 0,11 0,10 0,00 0,06
+
+Others 0,00 0,01 0,00 0,00
+
+Share of (in principle)
+
+editable websites
+
+="=@ @o@
+
+cess (blue)
+
+ 
+
+ 
+
+ 
+
+Table 6: Distribution of the organic search results on the
+different categories, for the searches for the parties. The
+circular diagrams represent the proportion of all websites
+that are (in principle) editable by the person or party in red
+(Owned Content, social media and Wikipedia) and the pro-
+portion of websites on which such an intervention is not pos-
+sible (Freemail portals , media, publicly funded and others),
+in blue.
+
+The personalization itself can be conveyed in the chosen selection,
+but also in a different order in the presentation of the found results.
+In the explanations for the use of the Google service it says:
+
+other features tailored to how you use our ser-
+vices. And we analyze your content to help us
+detect abuse such as spam, malware and illegal
+content?
+
+So how significant was this personalization for the data donors
+before the 2017 federal election?
+
+4.1 Proportion of similar search results
+
+The book by Eli Pariser noted the many potential dangers of filter
+bubbles and expressed the concern that every person is trapped
+inside their own filter bubble ("being isolated in a web of one” '4),
+which likely contains *information desserts” rather than nutritious
+information '°("information vegetables”). Therefore, a first inter-
+esting question is which share of data donor pairs will be shown
+exactly the same links and in addition, what percentage of them
+will get these links in exactly the same order.
+
+For the results of the Google search (without top stories), the results
+summarized in Table 7 show the percentage of identical result lists
+and identical result lists in the same order. In fact, these percentages
+are essentially in the low single-digit percentage range - apart from
+the AfD, where 16% of data donor pairs contain the same results. It
+is important to emphasize that this does not mean that 16% of the
+result lists are exactly identical. An example: if out of 100 people
+two groups of people with 5 and 6 members each get exactly the
+same results and everyone else does not share the exact same links
+with anyone, then there are 10 pairs of users and 15 pairs of users,
+each seeing the same links, from a total of 4,950 pairs. This corre-
+sponds to 0.51% of all pairs and thus almost to the result for the CDU.
+
+Truly remarkable is the enormously high share of pairs with sim-
+ilar search results for the persons, which is - except for Alexander
+
+Gauland - on average at least a quarter and for some almost 50%.
+
+Shttps://policies.google.com/privacy?g|=de#infouse, (2018, August 12)
+
+“Prom Eli Pariser’s TED Talk: https://www.ted.com/talks/eli_pariser_beware_online-filter_bubbles,
+minute 8.
+
+15 From Eli Pariser’s TED Talk: https://www.ted.com/talks/eli pariser_-beware_online_filter_bubbles,
+minute 5-6.
+
+*We use automated systems that analyze your
+content to provide you with things like cus-
+tomized search results, personalized ads, or
+Conference’ 17, July 2017, Washington, DC, USA
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+partei Anteil gleicher Anteil gleicher Ergebnisse
+artel Ergebnisse mit Sortierung
+
+ATD 16.5001 1.83138
+Biindnis90/Die Griinen 0.57114 6.214303
+
+0.570018 @.149749
+CSU 1,70591 0.353519
+Die Linke 3.46704 1.24836
+FDP 1.34052 0.343161
+SPD 2.88426 ®.599181
+
+Anteil gleicher Anteil gleicher Ergebnisse
+Person
+Ergebnisse mit Sortierung
+
+Alexander Gauland 8.83055 3.22469
+Alice Weidel 29.6601 8.45194
+Angela Merkel 26.6007 9.05307
+Cem Ozdemir 32.0659 6.76066
+Christian Lindner 31.0667 11.2727
+Dietmar Bartsch 34,5123 3.50788
+Katrin Géring-Eckardt 45.0472 10.4351
+Martin Schulz 26.6496 5.50891
+Sahra Wagenknecht 44.7985 21.1722
+
+ 
+
+ 
+
+Table 7: Share (in percent) of identical search results without
+consideration of sorting, separated by keywords for parties
+and persons (2nd column). In column 3, the proportion (in
+percent) of identical search results can be found in the exact
+same order.
+
+In other words, had we asked any two data donors to do a search
+for one of the persons at the same time, the same links would have
+been delivered to a quarter to almost half of those pairs - and for
+about 5-10% in the same order as well. If there were filter bubbles
+here, at least some of them would be quite spacious and would
+affect larger groups of people at the same time.
+
+A manual inspection of the result lists of Alexander Gauland sug-
+gests that notably the missing social media accounts lead to this
+result: These are replaced by messages which apparently are de-
+livered in a more diverse way. Reviewing Figure 9 supports this
+hypothesis. The illustration shows that politicians have different
+numbers of Owned Content and Editable domains among their top
+10 top-level domains. Table 8 compares the percentage of similar
+search result lists to the number of Owned Content and Social
+Media top-level domains in the top 10 of search result top-level
+domains. It becomes apparent that more of these top-level domains
+among the top 10 correlate with a higher conformity of search
+result lists.
+
+ 
+
+Search term Number of “Owned Content” + | Percentage of identical result
+“Social Media” among top 10 lists
+top-level domains in the or-
+
+ganic search
+
+ 
+
+Alexander Gauland 3 9%
+
+ 
+
+Angela Merkel 27%
+
+ 
+
+Martin Schulz 27%
+
+ 
+
+Alice Weidel 29%
+
+ 
+
+Christian Lindner 31%
+
+ 
+
+Cem Ozdemir 32%
+
+ 
+
+Dietmar Bartsch 35%
+
+ 
+
+ufalalajulalas
+
+Sahra Wagenknecht 45%
+
+ 
+
+ 
+
+Katrin Goring-Eckardt 4 45%
+
+Table 8: Comparison of the type of top-level domains of
+politicians among their top 10 top-level domains (Figure 9)
+and the percentage of identical result lists.
+
+In any case, it should be noted that even for people receiving the
+sare links, the order is likely to be different since the proportion
+
+Krafft, Gamer and Zweig
+
+of those with exactly the same order of those with the same results
+is in most cases below 50%.
+
+4.2 Average number of common links
+
+Just because two people do not get exactly the same links does
+not mean that they get completely different links. Therefore, Table
+9 and Table 10 each show the average number of common links
+for all pairs of data donors that look up the same search term at
+the same search time. For persons, the number ranges between
+7.2 and 8.1 common links. This also has to be correlated to the
+average length of the search result lists. Since this is just over 9, on
+average only 1 to almost 2 links per randomly drawn pair of data
+donors are different. This is the *scope for personalization”, which
+means the number of search results that could now be filled with
+links of various political content. In any case, the informational
+situation regarding the persons is - on average! — essentially the
+same. Therefore, on average we observe a very high overlap of the
+received news and information.
+
+ 
+
+Person gemeinsame Links |mittlere Lange Raum fir
+der Suchergebnisliste | Personalisierung
+
+Alexander Gauland 7.21006 9.06237 1.8523
+
+Alice Weidel 7.5889 9.06172 1.47282
+Angela Merkel 7.88147 9.02418 1.1427
+
+Cem Ozdemir 7.76558 9.08891 1.32333
+Christian Lindner 7.49458 9.08401 1.58943
+Dietmar Bartsch 8.1262 9.24993 1.12373
+Katrin G6ring-Eckardt | 8.11471 9.18402 1.0693
+
+Martin Schulz 7.49725 9.82739 1.53014
+Sahra Wagenknecht 7.96757 9.11063 1.14307
+
+Table 9: The mean result list length without top stories (3rd
+column) for the persons compared to the average number of
+URLs, which share a result list with all other result lists at
+the same search time (2nd column). From this, the average
+scope for personalization can be calculated by subtraction
+(4th column).
+
+For the parties, the result looks a bit different. Here, any two data
+donors searching for "Die Linke” at the same time have only 4.7
+common links on average, for the AfD” up to 7 links. Comparing
+this with the average lengths of the search result lists again, which
+fluctuate!® between 8 and 9, for the parties an average of 2 (AfD), 3
+(Biindnis90/Die Griinen, Die Linke, FDP) and almost 4 (CDU, CSU)
+of non-shared links remain.
+
+Figure 17 and Figure 18 show that the averages essentially origi-
+nate from distributions that are skewed to the left. This is because
+each pair can share a maximum of 8 or 9 links, depending on the
+average length of the lists. Therefore, to the right this limit is closer
+than to the left. Only the AfD shows a bimodal distribution, e. g.
+10% of pairs of data donors sharing only 2 links. This finding will
+be further considered below (Section 5).
+
+16The short organic search result lists are an effect of displayed top stories (the or-
+ganic search result list usually contains 9 entries then) and can be further reduced by
+displaying deletion hints or the like. Especially with "Die Linke”, such effects seem to
+have shortened the search result lists. Since the corresponding information was not
+saved on the search results page, we can not make a final assessment here.
+What did you see?
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+ 
+
+Partei meinsame Links |mittlere Lange Raum fii : . :
+arees genes ans ymeserere range ae We also conducted the same investigation on the Google News
+der Suchergebnisliste | Personalisierung . . . . .
+aD 6.09774 9.03863 764089 search result lists, the outcome of which we will discuss in the next
+Biindnis9@/Die Griinen | 6.03871 9.15723 3.11852 section.
+cou 5.39071 8.94959 3.55888
+csu 5.31047 8.99783 3.68736
+Die Linke 4.76699 8.00472 3.29773 4.3 Scope for personalization on Google News
+FDP. 5.1696 8.35014 3.18054
+SPD 6.28109 9.03634 2.75524 The search result lists on Google News almost always contain 20
+
+Table 10: The mean result list length without top stories (3rd
+column) for the parties compared to the average number of
+URLs that share a result list with all other result lists at the
+same search time (2nd column). From this, the average scope
+for personalization can be calculated by subtraction (4th col-
+
+entries, therefore the average rounded lengths are 20 for almost all
+of the search terms. Of these, for persons on average 17.3 to 18.3 are
+shared. The percentage of shared links is thus even higher than for
+the Google Search, leaving 2 to 3 links with possibly personalized
+
+ 
+
+ 
+
+messages.
+umn).
+Person durchschnittliche mittlere Lange — | durchschnittlicher Raum
+Anzahl gemeinsamer Links |der Ergebnislisten | fir Personalisierung
+we Bananesoie Sranen coe Alexander Gauland 18.0928 19.9667 1.87385
+Alice Weidel 17.2749 19.8514 2.57648
+Angela Merkel 18,3288 19,991 1.66218
+Cem Ozdemir 18.1502 19.9789 1.82867
+Christian Lindner 18.078 19.9387 1.86071
+. Dietmar Bartsch 18.0043 19.8279 1.82363
+, Katrin Giring Eckardt | 17.2947 19.7863 2.49161
+Martin Schulz 17.8846 19.9697 2.08504
+ve a : Sahra Wagenknecht 18.2229 19.944 1.7211
+
+ 
+
+cu Die Linke FOP
+
+Figure 19: The mean result list length on Google News (3rd
+column) for the persons compared to the average number
+
+ly of URLs that share a result list with all other result lists at
+LL the same search time (2nd column). From this, the average
+scope for personalization can be calculated by subtraction
+(4th column).
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+For the parties, the scope for personalized messages (on av-
+erage) is also rather small and ranges from 1.3 to 2.1 for all but
+*Bundnis90/Die Grinen”, where up to 3 links from 18 could be
+personalized. It is important to note that only pairs of people are
+considered here. That which A and B do not share, B could share
+
+ 
+
+Figure 17: Distribution of the number of identical URLs in
+pairwise comparison of the organic search results for the
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+parties. : : :
+with C. Thus, these non-shared links do not necessarily have to
+suevandesGnutan vance wae nga nt be displayed to only one person, but may again affect smaller sub-
+groups.
+Partei durchschnittliche mittlere Lange durchschnittlicher Raum
+Anzahl gemeinsamer Links |der Ergebnislisten | fiir Personalisierung
+AfD 18.3519 19.9802 1.62838
+Ohara : [| oo = Biindnis9@/Die Griinen | 14.6315 17.7313 3.69981
+Cem Gzdemir Christian Lindner Dietmar Bartsch , cDU 18.3747 19.7574 1.38266
+csU 18.6942 19.9999 1.30568
+| ” Die Linke 17.4219 19.5355 2.1136
+FDP 18.1947 19.7516 1.55692
+. SPD 18.4332 19.8903 1.45712
+: Figure 20: The mean result list length on Google News (3rd
+Se sre - a column) for the parties compared to the average number of
+URLs that share a result list with all other result lists at the
+same search time (2nd column). From this, the average space
+for personalization can be calculated by subtraction (4th col-
+: ‘ umn).
+elles | alle, ITE | EEL
+
+ 
+
+Figure 18: Distribution of the number of identical URLs in 5 REGIONALIZATION
+
+pairwise comparison of the organic search results for the
+persons. Due to the large amount of Owned Content, which can mainly be
+
+attributed to the many websites of regional branches or the web-
+sites of local politicians, regionalization of search results inevitably
+leads to many non-shared links. Therefore, we have once again
+Conference’ 17, July 2017, Washington, DC, USA
+
+categorized each party’s Owned Content as regional/non-regional.
+We were rather conservative in our approach and have only marked
+those domains as regional which clearly referenced a city in the
+URL. For each pair of party search result lists, we first removed
+those regional URLs and then calculated the average number of
+non-shared links. Therefore, this represents a closer approximation
+to the possible number of personalized links, because the regional
+links are explicitly excluded. Table 11 shows the result of this re-
+finement: While the data donors differ on average by 3 links for
+Die Griinen, only one of these is non-regional (and could be person-
+alized). This is similar for the SPD, FDP, CDU, and Die Linke, each
+falling from (about) 3 non-shared links to below 2 non-regional
+links.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Non-shared links Non-shared links
+(without regionalized links)
+
+BUndnis90/Die Griinen 3.11852 1.02717
+SPD 2.75524 1.572
+
+FDP 3.18054 1.70385
+CcDU 3.55888 1.84831
+Die Linken 3.29773 1.8818
+AfD 2.04089 2.0244
+CSU 3.68736 3.36667
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 11: Refining the average number of non-shared links
+while taking into account regionalization. The left-hand
+column shows the average number of non-shared links for
+the entire search result list, and the right-hand one for the
+search result list after deleting the clearly regionalized web-
+sites (the respective local branches or individual local politi-
+cians).
+
+There is essentially no effect for the AfD to be seen - yet that
+is not surprising, as only six top-level domains are displayed at all
+and no websites belonging to local branches were found. Of the six
+domains, four are of a regional nature (afd.berlin, afd.nrw, afd-bw.de,
+afd-fraktion-brandenburg.de). Interestingly, little change occurs for
+the CSU, too. However, a look at the map of Germany showing the
+approximate locations of our data donors shows that Bavaria has
+fewer data donors who were still in the summer holidays during
+the first four weeks of the investigation period. Since most of the
+local branches are located in Bavaria, hardly any regionalized search
+results were delivered. A manual inspection of the search result lists
+shows that relatively many messages are delivered that overlap less
+strongly. Here, a more in-depth, content-related inspection appears
+sensible. Nonetheless, on average the search result lists clearly
+overlap more than half, so that here, too, a common information
+base is laid out.
+
+6 DYNAMICS
+
+An important subquestion of the project concerns the dynamic in
+which search results in the ordinary Google search change. One pos-
+sible hypothesis here is that towards election day, Google’s search
+results change in their similarity or the share of different media.
+In the sequence of the previous analysis, we first considered the
+
+Krafft, Gamer and Zweig
+
+dynamics of the respective share of top stories as the most promi-
+nently placed results (see Section 6.1). The second is an analysis
+of the number of delivered top-level domains per search time (see
+Section 6.2), followed by a look at the respective shares of editable
+URLs in the search queries, i. e. Owned Content, Social Media and
+(with some limitations) Wikipedia (see Section 6.3).
+
+6.1 Dynamics of the occurrence of top stories
+
+A first interesting point in the question of whether the search re-
+sults have changed towards the election was whether and when
+top stories are displayed and whether the proportion of search re-
+sults with top stories has increased towards the end of the election
+campaign, for example. In this case, effects such as a higher news
+density could lead, as an example, to Google delivering more search
+result lists with top stories shortly before the election than five
+weeks before that.
+
+However, the analysis of the occurrence of top stories has shown
+that across all search terms and search times, the proportion hardly
+fluctuates. Percentages always range in a corridor around 90% with
+up and down swings of no more than 10% (see Figure 21). Only
+when looking at the individual search terms stronger deviations
+have been found.
+
+08
+
+0.6 4
+
+Anteil der Ergebnislisten mit Schlagzeile
+
+0 20 40 60 80
+
+Suchzeitpunkte
+
+Figure 21: Proportion of all result lists for a search time,
+where at least one top story was delivered.
+
+There are clear outliers for Katrin Giring-Eckardt and Dietmar
+Bartsch (see Figure 22). In contrast, the shares of search result lists
+with top stories for the search terms CSU, SPD, Angela Merkel,
+Martin Schulz and AfD are very stable, although at the beginning
+of the investigation period their proportion of top stories (search
+time 6 to 22) is still subject to fluctuations (see Figure 23). The
+isolated, complete absence of top stories (see Figure 22) may indi-
+cate that it is decided by Google whether or not to deliver a top
+story according to the latest news — but these deviations can not
+be fully explained from the outside. Without further information
+it is particularly inexplicable why, for the same search time and
+search request, Google delivers top stories for some participants
+and does not do so for others. Especially the very stable values of
+some search terms (CSU, SPD, Angela Merkel and Martin Schulz)
+contradict a browser setting of these users which would suppress
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+such a top story in any form, because then these users would not
+have received top stories for other search terms (such as CSU, SPD,
+Angela Merkel). However, these search terms show many search
+times where all users received top stories.
+
+Dietmar Bartsch Katrin Géring-Eckardt
+
+ 
+
+Time: 00:01
+
+Time: 04:01
+
+ 
+
+http://www.stimme.de/themen/wah-
+len/btw17/wahichecks/WahIcheck-mit-Katrin-
+Goering-Eckardt;art140707,3901145,
+
+ 
+
+http:/www.rp-online.de/politik/deutsch-
+land/katrin-goering-eckardt-sieht-tiefe-kluft-
+zwischen-gruenen-und-fdp-aid-1.7027881
+http://www.stimme.de/themen/wah-
+len/btw17/wahichecks/Ohne-Klimaschutz-
+ohne-die-Gruenen;art140707,3901145
+~hitp:/iwww.goering-eckardt.de/
+https://de.wikipedia.org/wiki/Kat-
+
+tin G%C3%BG6ring-Eckardt
+
+hitp:/Awww.goering-eckardt.del
+https://de.wikipedia.org/wiki/Kat-
+tin G%C3%B6ring-Eckardt
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+a o https://de-de.facebook.comiGoe-
+g g _https://de-de.facebook.com/GoeringEckardt’_| ringEckardt
+2 08 z 08 http://www.spiegel.de/thema/katrin_goe- http://www.spiegel.de/thema/katrin_goe-
+3 8 ting_eckardt/ ting_eckardt/
+Fos Eos https://www.bundestag.de/abgeord-
+3 B https://www.bundestag.de/abgeordnete18/bi- | nete18/biografien/G/goering_eckardt_kat-
+2 os ¢ os ografien/G/goering_eckardt_katrin/258372 rin/268372
+& a http://www. focus.de/politik/deutsch- http://www. focus.de/politik/deutsch-
+3 : land/gruene-spitzenkandidatin-goering- land/gruene-spitzenkandidatin-goering-
+B02 B02 eckardt-hat-sich-von-ihrem-mann-getrennt- eckardt-hat-sich-von-ihrem-mann-getrennt-
+2 2 und-spricht-ueber-ihre-neue- und-spricht-ueber-ihre-neue-
+
+oo 7 liebe id 6967147.html liebe id_6967147.html
+
+0 20 40 60 30 20 40 60 0
+
+ 
+
+Suchzeitpunkte Suchzaitpunkte
+
+Figure 22: Proportion of result lists with top stories for
+the search terms “Dietmar Bartsch” and ”Katrin Goéring-
+Eckardt” show clear deviations from all others.
+
+This inconsistency also becomes clear when looking at individual
+users. For example, with the same user and search term sometimes
+top stories appear and sometimes they do not (see Figure 24). Over-
+all, however, the proportion of search result lists with top stories is
+relatively stable and shows no particular temporal patterns with
+regard to the federal election.
+
+° Suchzoitpunkte
+Angela Merkel Martin Schulz
+9,
+
+Figure 23: Proportion of all result lists that contain top sto-
+ries, for the search terms CSU, SPD, Angela Merkel, Martin
+Schulz and AfD.
+
+ 
+
+Figure 24: Search results of a user from August 28th 2017 for
+the mentioned times and the search term ”Katrin Géring-
+Eckardt”. Top stories were once displayed to the same user
+at different, consecutive search times (highlighted in gray)
+and then they were not.
+
+6.2. Dynamics of the number of different
+top-level domains
+
+In processing of the number of different top-level domains that were
+delivered to at least one data donor at a search time, on the one
+hand already recorded trends (see Figure 25, 26) confirm that search
+result lists for parties generally have more top-level domains than
+results lists for persons. On the other hand, this number fluctuates
+quite strongly from party to party: While only about 22 top-level
+domains characterize the results on the AfD at most search times,
+the number is around 180 for Die Griinen (with large deviations).
+Essentially, the number of top-level domains of the parties is re-
+flected here again, and the fluctuating extent of regionalization is
+thus visible.
+
+For the persons the number is between 17 and 18, which also shows
+that the number of shared links (including top-level domains) is
+very high for the persons.
+
+Although the fluctuations over the search period are sometimes
+very pronounced, there are no striking temporal patterns in the
+number of different top-level domains.
+
+6.3 Dynamics of proportions of editable
+contents
+
+Over time, does the proportion of URLs that are on top-level do-
+mains and that are editable by the parties or persons (in principle)
+change over time? We also examined this question for all search
+times during the investigation period. There is a slight drop for all
+parties (except Die Griinen) for the search times right before the
+election. It should be noted that the last 6 search times are from the
+election weekend. Presumably this is caused by an increased share
+of news, although this only takes effect in the last days before the
+election.
+
+For most persons, too, this short-term decline in editable websites
+can be seen among the search results, which in some cases already
+Conference’ 17, July 2017, Washington, DC, USA
+
+Krafft, Gamer and Zweig
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+“hh Vi h wi i Mt \
+
+ 
+
+ 
+
+AFD ; Bindnis90/Die Grinen Alexander Gauland Alice Weidel
+N } \ I
+| | ii | iM
+he A Wat | \ MAN oA Wal nee MA
+Tg RCN Ha pay Hh \ \h “at ua iy Wana AWN
+\ Y \ y
+| a "|
+N )
+hank h I MA =| |
+Iya ‘y Ww vv NY [Nut 4 I, \ MN | | n Vea Al As Kh WAlh aT ipwoe\ linn!
+Whe i \ {| || 3 TAN) Wi oA aN yy
+| iY "h 1 | MI if TANT VW I
+pee VS
+|
+Die Linke - FDP Christian Lindner Dietmar Bartsch
+\ \ i An A il ; L, l|\
+Ne pa why PAY I a N AN AI “h | NV
+\ W \ | | nu WV | | | | iF ia l f iH M ft
+| \ H | | \f | |\ Nn wl U i i I
+‘ * H" | ! “OY
+
+|
+yt ty" yt Ny
+
+ 
+
+ 
+
+ 
+
+Figure 25: Number of different top-level domains over the
+81 search times for the Google search of parties.
+
+starts one week before the election (Gauland, Lindner, Ozdemir and
+Wagenknecht). The result was not pursued further, because this
+report deals with the key issues of personalization, regionalization
+and filter bubbles. However, for media scientists it could prove to
+be an interesting initial observation that can be followed up on by
+means of the publicly available data from the data donation.
+
+7 SEARCH RESULT LISTS WITH LOW
+SIMILARITY TO ALL OTHERS
+
+Even though most of the search result lists are very similar on av-
+erage, some pairs of search result lists beyond the average showed
+almost no overlap. As previously mentioned in the first interim
+report, a manual inspection of search result lists showed the occa-
+sional result list that differs greatly from all of the others!’. It was
+determined that these lists often contained links to websites in other
+languages (mostly English). It is difficult to conclusively cluster
+and identify these links automatically, partly because the link itself
+does not necessarily give any insight on the language of the website
+it links to, e. g. some websites end in ”.com” and still refer to a
+German website like *handelsblatt.com”. Most social media pages
+also end in *.com” (twitter.com, facebook.com) and the language
+displayed depends on the user being logged in. On Wikipedia pages
+the language is encoded into the first two letters of the URL, so
+*de.wikipedia.org” refers to the German, and ”en.wikipedia.org” to
+
+17Section 4 of the first interim report (Krafft et al., 2017)
+
+Tahra Wagenknecht
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 26: Number of different top-level domains over the
+81 search times for the Google search of persons.
+
+the English version of that page. Furthermore it is unclear if all
+deviant clusters have to contain at least one website in a foreign
+language.
+
+We also followed a second approach, that also requires manual
+preparation of the data: First links were removed that were seen
+by least 70% of all users for each search term and time, since their
+popularity suggests a lack of personalization. In the next step, we
+clustered the lists with the remaining links, so that the lists within
+these clusters are similar once more. The original lists of these
+groups were then compared to every user outside of the group, to
+find the number of common links. For example: We find 5 users,
+who retained only 4 entries in their lists, after the popular links
+for the search term “Die Linke” were removed, but still shared at
+least 3 links with each other - they form a cluster. For these 5
+users, we compared their original result lists with every other user
+outside of the cluster to find the average number of common links.
+If this average falls below 3.5 the cluster is considered to be a very
+distinct group. During a manual inspection of the identified dis-
+tinct clusters we found that, especially for the search terms "Die
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+ 
+
+AID B90/Die Grinen
+
+a
+acon ¥ acadoemmnanel
+
+AAA
+han
+
+ 
+
+bu csu
+
+Pat ering
+
+ 
+
+Die Linke FOP
+
+SE NLNIN ASI, Theos hw
+
+a
+
+ 
+
+ 
+
+SPD
+
+tnt
+
+ 
+
+ 
+
+ 
+
+Figure 27: Proportion of (in principle) editable websites for
+the respective party of all result links of the respective party.
+Here, the proportion for each of the 81 search times is ap-
+plied and the mean value is drawn in in gray.
+
+Linke” and *Biindnis90/Die Griinen”, most of these clusters were
+regional groupings, whose search result lists differed only in the
+large selection of local branches of the party.
+
+In summary we can say that automatically identifying groups of
+users that receive different content according to the filter bubble
+theory (not originating from regionalization), has proven to be
+quite a complex task.
+
+A third approach showed a clear pattern that does indicate a stable
+filter bubble, which would have to be subject to further studies:
+Based on the time of publication that accompanies every top story,
+it is possible to detect the main language Google assigns to a user.
+Our data set contains publication times in Norwegian, English,
+German and French. This made it possible to partition the search
+result lists. In all examined cases, we saw a separation of users
+by Google into *presumably German” with high similarity of re-
+sults per search term and time, and ”presumably foreigners” who
+shared unusual results which were then mixed with results of the
+suspected, preferred language.
+
+This was done via manual inspection, since there was no possibil-
+ity to automatically separate users into those that are considered
+German-speaking by Google and those that are not (primarily)
+German-speaking. Some users received German publication times
+once and only English publication times after that, and many of
+the users manually flagged as having partially non-German search
+
+ 
+
+ 
+
+ 
+
+ 
+
+   
+
+avander Gauland Tea Werder
+Aj po Np yer
+Na ~
+noe
+Angela Ware ta
+, Len ee aa
+at Nl —/
+Chvatan Linde Dietmar
+eI A
+7a 7
+aA a h
+ee NH ne
+
+ 
+
+ 
+
+ 
+
+Taha Wagenknecht
+
+ALY AWM
+La PICK
+
+ 
+
+ 
+
+ 
+
+Figure 28: Proportion of (in principle) editable websites for
+the respective persons of all result links for the respective
+person. Here, the proportion for each of the 81 search times
+is applied and the mean value is drawn in in gray.
+
+result lists did not receive any top stories and therefore did not
+receive publication times.
+
+This pattern will be demonstrated with some selected examples
+below.
+
+7.1 Example: Search result lists from a French
+IP
+
+Figure 29 shows the search results of a user in France. For the
+result lists containing top stories one can clearly see that Google
+suspects a French person, since the publication times that Google
+adds to every news entry are French (e.g. “Il y a 2 heurs”). The
+top stories themselves link to French websites, which discuss the
+German election. It is interesting to see that some lists contain
+German results. The results for the search term Angela Merkel”
+overall look like a sensible selection of websites — at least for a
+person living in France.
+
+For the search term ”AfD” the same person receives - along with re-
+sults concerning the German political party - websites from French
+initiatives with the same acronym, mainly L’Agence francaise de
+développement, a French organization fighting diabetes and sup-
+porting people with autism and their families. Following the same
+Conference’ 17, July 2017, Washington, DC, USA
+
+hitps:/ferwe.tolesta.t/people/angpla-
+meskel qui est le mari de la
+chonceliere-allemande- photos 156102
+
+nttps:/furrw.bundeskonzierin.def
+
+Figure 29: Search results for the search term ”Angela
+Merkel” of a user with an IP address in France, close to Paris.
+The results are divided into three top stories and the organic
+search results below.
+
+method of looking for international institutions or organizations
+with the same acronym as the political parties we found the French
+Cultures et Societés Urbaines and the American universities Charles
+Sturt University and Colorado State University while searching for
+“CSU”.
+
+The Google search for the German politicians is for the most part
+without error, meaning that the user almost always receives infor-
+mation about the persons searched for: The results contain mostly
+the social media profiles and - depending on the prominence of the
+politician - their French Wikipedia entry and French news outlets;
+this is especially the case with Angela Merkel and Martin Schulz.
+Apart from that, the user receives German news websites and social
+media pages. An exception to this is Cem Ozdemir: One Twitter
+profile received belongs to another person with the same name!®
+and results concerning a football player on the transfer market!?,
+both of which are not members of "Die Griinen”.
+
+The occurrence of links in the (suspected) native language of users
+outside of Germany is without question useful and the amount of
+German-speaking websites received by the examined user probably
+originates in the lack of French-speaking websites for these partic-
+ular search terms. It is not possible to further determine how the
+choice was made whether and when a user in a foreign country
+receives links to German websites.
+
+It is a lucky coincidence that we received data from multiple data
+donors, all with an IP address originating in Kaiserslautern, but
+in different languages, namely English, Russian and German. This
+allows us to eliminate the influence of regionalization based on the
+IP address.
+
+18h ttps://twitter.com/esekherif_
+1 https://www-transfermarkt.fr/cem-ozdemir/profil/spieler/170442
+
+ 
+
+Krafft, Gamer and Zweig
+
+In the next step we examine the search results of a user receiv-
+ing links to Russian websites from Google while searching from a
+German IP address from Kaiserslautern.
+
+7.2 Example 2: Google search from Germany
+with partially Russian results
+
+Our manual inspection showed a person located in Kaiserslautern
+according to their IP address, who often received Russian Wikipedia
+pages while searching for politicians and political parties. Our
+browser plug-in recorded the IP address as well as the keyboard
+language used, which was set to Russian for this person. Table 12
+shows a typical search result list for this user when searching for
+*Angela Merkel”.
+
+ 
+
+https://de.wikipedia.org/wiki/Angela_Merkel
+
+ 
+
+https://ru.wikipe-
+dia.org/wiki/%DO0%9C%DO%B5%D 1%80% DO%BA%DO%BS%DO%BB%D1%8C,_%D0%90%
+DO%BD%D0%B3%D0%B5%D0%BB%DO%BO
+
+ 
+
+https://en.wikipedia.org/wiki/Angela_Merkel
+
+ 
+
+https://ru-ru.facebook.com/angelamerkel
+
+ 
+
+https:/Avww.angela-merkel.de/
+
+ 
+
+http://www.spiegel.de/thema/angela_merkel/
+
+ 
+
+https:/Avww.bundeskanzlerin.de/
+
+ 
+
+https:/Avww.forbes.com/profile/angela-merkel/
+
+ 
+
+http://www.focus.de/personen/angela-merkel/
+
+ 
+
+ 
+
+http://www.stern.de/politik/deutschland/themen/angela-merkel-4540550.html
+
+ 
+
+ 
+
+Table 12: Typical search result list for the search term ”An-
+gela Merkel” for a user who donated around 40 result lists,
+sometimes containing Russian results.
+
+The second link of this result list refers to a Russian Wikipedia
+page of Angela Merkel, the third link to the English version. The
+fourth refers to the Facebook page of Angela Merkel, which is pre-
+dominantly German content-wise. If someone were to open that
+page while logged into Facebook and with his or her preferred
+language set to Russian, the text supplied by Facebook would be in
+Russian (e.g. the user display, etc.). Thus, this would not change the
+content of the politician. Lastly a second English-speaking website
+(forbes.com) appears near the end of the result list.
+
+Therefore the user did not receive any Russian websites, but Google
+seems to regard the Russian Wikipedia pages as appropriate. It is
+unclear why this is the case. We observed that for a lot of users
+English keyboard settings do not necessarily imply English results,
+which is why we do not think the Russian keyboard settings are
+the (only) reason for these results. It is noteworthy that this person
+was always logged into Google, which could be the source of the
+information.
+
+After that we compared the results received by the person from
+Kaiserslautern, who received some Russian results, to other users
+from Kaiserslautern and another user outside of Germany, namely
+the person mentioned before from France (Figure 30).
+
+It is noteworthy that users who received non-German results
+from Google did not receive any top stories. The user from Kaiser-
+slautern with a link to the Russian Wikipedia website of Sahra
+Wagenknecht also received a link to her Twitter profile. The last
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+KL Paris
+FR
+
+Zeit- Ss
+
+ 
+
+KL Paris
+
+ 
+
+DE1 DE2 RU FR
+
+Zeit- Zeit- Zeit- Zeit-
+
+Suchergebnisse Suchergebnisse Suchergebnisse Suchergebnisse
+angabe 8 angabe 8 angabe e angabe 8
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+angabe
+
+‘wagenknecht 47797052:ntml
+5.de
+
+ed
+ALD htips/ffrewkapedaorg/enke/sotra
+
+aps /fen wiignalia mph Sau Waye
+
+tes funwwt-
+
+layswahlfid 8151608/sat 2
+
+hup: vera
+
+bhitpy/fwwrw-bunie.defpanorama/politikysa_tagswshl/id_81516044/sahre-wegerknecht-
+ba tpestanndnis-sie-hartie
+suegerre kanler-gehab hind
+
+ 
+
+Figure 30: Search result lists for the search term ”Sahra Wa-
+genknecht” on August 22, 2017 from users with IP addresses
+in Paris (rightmost column) and Kaiserslautern. Identical
+results are represented by the same color. The first two
+columns show users whose result lists are constantly Ger-
+man. The third column shows the search results of a person
+who sometimes received Russian results. The fourth column
+shows the results of a user from Paris, France according to
+their IP address.
+
+part of this link *lang=ru’ only affects the content supplied by Twit-
+ter (e.g. translations of the navigational buttons like ”Messages”,
+*Follow/ Unfollow”) - the tweets themselves are in German. The
+user also receives links to an overview page from the Tagesspiegel
+and an article from Bunte, both concerning Sahra Wagenknecht.
+The user from France received an article about "Sahra la Rouge”
+and the English Wikipedia entry.
+
+Interestingly the user from Kaiserslautern does not receive a Rus-
+sian Wikipedia entry for every person that is present there: Except
+for Dietmar Bartsch and Katrin Giring-Eckardt, every politician
+included in our set of search terms is represented on the Russian
+Wikipedia website, but not always displayed to the user.
+
+Figure 31 shows the search results of 4 users for the search term
+”Cem Ozdemir” and for the same search time. The user from Kaiser-
+slautern receives the German and English Wikipedia entry, the
+French user gets the German and French entry. Apart from the
+links that they share with the users receiving constantly German
+
+ 
+
+Tap Stories
+
+ 
+
+ 
+
+  
+
+ 
+
+ 
+
+vor 9 Standen 155/2/1.Hem
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 31: Search result lists for the search term "Cem
+Ozdemir” on August 22, 2017 from users with IP addresses
+in Paris (rightmost column) and Kaiserslautern. Identical
+results are represented by the same color. The first two
+columns show users whose result lists are constantly Ger-
+man. The third column shows the search results of a person
+who sometimes received Russian results. The fourth column
+shows the results of a user from Paris, France according to
+their IP address.
+
+result lists, they also share the Twitter profile of another person
+with the name "Cem Ozdemir” who is not the German politician.
+The same is true for their respective last entry, a link to a sub-page
+of the top-level domain >www.gruene.de” that is rarely seen else-
+where. In summary both of the users who received non-German
+results from Google share 6 links. The French user also received
+two French websites along with the reference to the football player
+and the correct Twitter profile of Cem Ozdemir. The result list of
+the user from Kaiserslautern, who also received Russian results,
+contained a news article from ”Zeit” which was not received by the
+other three users. He or she shares 7 and 6 links respectively with
+the other users from Kaiserslautern.
+
+A lot more frequent than a person who receives Russian Wikipedia
+websites are users with IP addresses in Germany and other coun-
+tries, who receive mixed language results, consisting of English and
+German websites. Among these is a user with an IP address from
+Kaiserslautern. We therefore looked at four result lists of users with
+an IP address based in Kaiserslautern for all political parties at the
+same search time. Two of those users received only German results
+(DE1 and DE2), the user with partially Russian results (RU) and a
+
+ 
+Conference’ 17, July 2017, Washington, DC, USA
+
+user with partially English websites originating in the USA (USA).
+Figure 32 shows the number of common results for each party.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+USA | 12 usa |_10
+RU | 6 | 10 RU | 10 | 10
+pe1| 4 | 4 | 12 be1| 8 | 38 | 12
+pez| 4 | 4 [ 12 | 12 pe2| 7 | 7 [ 11 | 12
+usa | RU | DE1 | DEZ usa | RU | DE1 | DE2
+AfD Biindnis90/Die Grinen
+USA | 10 usA |_10
+ru | 6 | 10 RU | 4 | 10
+pe1| 5 | 5 | 12 ve1| 2 [ 4 | 12
+pez] 5 | 5 | 12 | 12 pez] 2 | 4 | 12] 12
+UsA | RU | DE1 | DEZ USA | RU | DEI | DE2
+cpu csu
+usA | 10 usa | 10
+ru | 7 | 10 RU | 6 | 10
+pe1| 4 | 4 | 41 pe1| 4 [4 | 41
+pez| 4 | 4 | 12 | 41 pez| 4 [| 4 [| 10 | 11
+usa | RU | DE1 | DEZ USA | RU | DE1 | DE2
+Die Linke FDP
+usA | 12
+ru | 3 | 10
+pe1| 6 | 4 | 12
+pez| 6 | 4 | 12 | 12 |
+Usa | RU | DE1 | DE2 |
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+SPD
+
+Figure 32: The result lists of four users with IP addresses
+based in Kaiserslautern for all parties on September 5, 2017
+were compared to find the number of common links. Two
+users only received German results (DE1 and DE2), one user
+also received Russian and English websites (RU) and one
+user websites with American origin (USA). Displayed are the
+number of identical links for each pair — the diagonal fields
+(gray) show the total number of links contained in the per-
+son’s search results.
+
+It is noticeable that the two users with purely German results
+
+almost always have identical search result lists. A manual inspec-
+tion shows that even the order of the results is mostly identical.
+Surprisingly, the remaining users have more links in common for
+five of the parties and the same amount of links in common for
+two parties as the purely German users, even though they searched
+from the same location based on IP addresses.
+To further enhance this pattern we did a last comparison to look at
+all search result lists from Kaiserslautern and all result lists outside
+of Germany based on IP locations for one search term and time
+(September 22, 2017, "Angela Merkel”). For every person except one
+top stories were included, so we could determine whether Google
+supplied them with English or German publication times (°1 hour
+ago” vs. ’Vor 1 Stunde”); other languages were not represented in
+this sample. The astonishing result is shown in Figure 33: The simi-
+larity between the search results is highly dependent on whether
+Google German-speaking or an English-speaking Person.
+
+Even though the patterns in the deviant clusters remain com-
+plex and also due to the relatively low number of users with con-
+stantly German websites, a distinction between "German” and ”non-
+German” users is clearly visible. It is unclear which aspects factor
+
+Krafft, Gamer and Zweig
+
+into Google’s decision whether a person is German-speaking and
+should only receive German results. Users who also received Eng-
+lish results showed very similar result lists, regardless of their
+location (in this case Austria, Belgium, Great Britain and Denmark).
+One exception to this is a person from Norway, who did not receive
+any top stories - therefore it is unclear which language Google has
+assigned to them. It is however noteworthy that this user received
+two Norwegian websites and has received top stories for another
+search term ("Alexander Gauland”) at the same search time, which
+had Norwegian publication times. Another exception is one of the
+Swiss users, who received a lot of results not present in the others’
+result lists.
+
+This results in a not completely isolated, but noticeably different
+media space for the users receiving English (or other foreign) re-
+sults while living in Germany (or at least using a router located
+there).
+
+7.3 Possible explanations
+
+In the end the simplest explanation is probably the correct one: The
+type of deviant search result lists for German IP locations can easily
+be recreated by logging into one’s Google account and changing
+the search language settings. To accomplish that, one must go to
+the search settings on the Google website and change the language
+settings to the desired language, e.g. French. Another visit to the
+Google website shows that the navigational buttons are now dis-
+played in the selected language. If the term searched for results in
+the display of top stories, these will be accompanied by the pub-
+lications times in the selected language. Additionally the organic
+results contain some deviant links identical to the one we found
+when searching for the search terms used in this project: Links to
+English Wikipedia pages, confusing CSU, CDU, AfD and SPD with
+identical acronyms, more common in the selected language (e.g.
+*Colorado State University”, "Charles Darwin University”, "Agence
+Francaise de Développement”, ’symphysis pubis dysfunction”), and
+also German websites that indeed belong to the German political
+party or their respective social media profiles. The similarities to
+the deviant results found within our data set are strong - but this
+does not necessarily proof that the search language settings are the
+only factor resulting in these deviant result lists. We follow the
+principle of "Occam’s razor”, which states that the simplest solution
+tends to be the right one. We therefore conclude that the deviant
+result lists originate in the personal settings of the respective data
+donor. The result is a combination of language filter, regionalization
+(most likely depending on the IP location) and the most relevant
+websites for the given search term.
+
+It is important to note that the cases shown here did not contain
+news about different political perspectives on the politicians or the
+political parties. According to Eli Pariser’s dreaded content-specific
+filter bubble, wherein some users receive a drastically different polit-
+ical perspective than others could not be found in our manually in-
+spected cases. English news came from The Guardian, French news
+from Le Figaro, the Russian websites were Wikipedia or Wikimedia
+pages. In a lot of cases the search results of a “foreign” user differed
+from specific aggregate topic pages, like http://www-.faz.net/aktuell/
+politik/thema/martin-schulz compared to the result lists of more
+regionalized "German-speaking” users.
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+IP im Ausland
+
+Zeitangabe auf| ?
+Englisch
+
+Zeitangabe auf Deutsch Eng
+
+IP in Deutschland
+Zeitangabe auf
+Deutsch
+
+ 
+
+ 
+
+Figure 33: Search result lists on September 22, 2017 at 4pm for the search term ”Angela Merkel”. They are sorted into result lists
+from users with an IP address outside of Germany (6x Switzerland, 3x Austria, 2x Belgium, 2x USA, 2x France, 2x Great Britain,
+Denmark, Norway) separated into columns. The last 6 columns contain users with an IP address based in Kaiserslautern. If
+
+top stories were present, the publication time ("vor 4 Stunden’
+
+0
+
+1 hour ago”) indicated which language was assigned to the
+
+user by Google. The deviant clusters were accompanied by English publication times, even with the user from Kaiserslautern.
+The result lists in the cluster themselves are very similar to each other.
+
+It still brings up the question what kind of information people
+belonging to one of the minorities of a country, like the first and
+second generation of migrants, should receive and from which
+source, so that these discussion forums overlap as far as possible.
+
+8 SUMMARY
+
+We come to the conclusion that, since almost all of the search result
+lists show sufficient overlap - regardless of content - the algorith-
+mically based creation and reinforcement of isolated filter bubbles
+is not present. It is noteworthy that even though users who received
+foreign websites from Google (probably due to different search lan-
+guage settings of these users) showed some overlap in their results,
+their deviant clusters can be a sign of a filter bubble. Though this
+is unavoidable due to the difference in languages, this means that,
+based on the four mechanisms that have to be working together
+to create these dangerous filter bubbles, one must still inspect the
+contents. Manual inspection and a number of received top-level
+domains mostly display mainstream media, but there are also stray
+top-level domains and URLs that are harder to classify. This would
+require interdisciplinary analysis of the data and preferably further
+research.
+
+But what about the question whether the algorithm provides all
+of us with one-sided content? Firstly the large amount of received
+top-level domains contradicts this, but that does not answer the
+question if there could have been other top-level domains that
+should have been displayed, or if some top-level domains appeared
+more or less frequently. What could be used to make such a com-
+parison? One possible dimension would be to use the popularity of
+
+the top-level domains according to all internet users, as is contin-
+uously measured by the Nielsen-Online-Panel. The Nielsen-Panel
+is based on a representative user group, whose internet behavior
+is measured in great detail. For every top-level domain there is a
+score called the “active reach” based on the measurements of the
+panel that shows the percentage of users that visited that top-level
+domain at least once in a given time period”®.
+
+This leads to another chicken-and-egg problem, since Google
+is definitely the most prominent search engine in Germany and a
+great number of visits to a website are done via referral by Google.
+This means that there is an unknown proportion of visits that only
+occurred because of Google and hence the numbers do not repre-
+sent a popularity measure independent of Google’s search engine
+algorithm. Therefore, the following findings are more indicative
+of further research questions than the results of the #Datenspende
+project.
+Figure 34 shows the application of the active reach” of a domain
+against the URLs of the top stories (not the organic searches) of
+this domain supplied by Google to the data donors in the same
+period. Since the differences per axis are very large (from 0.01 to
+100% or from 1 to 1,000,000 URLs displayed), a double logarithmic
+application was chosen. The pattern of the data allows to create
+a linear regression by this application. The formula y = 1,373 *
+active reach? essentially means that the number of URLs delivered
+correlates almost linearly with the range, with a small damper for
+longer ranges.
+
+This score is not very meaningful for extremely low scores, e.g. less than a hand full
+of people visited this website. This will be noted in the Nielsen Report.
+Conference’ 17, July 2017, Washington, DC, USA
+
+Celleheute.de:
+
+meedia.de welt.de 0% active reach
+epochtimes
+
+uebermedien
+
+deutsche-wirtschafts- ~ oe é swr gala.de
+nachrichten
+
+correctiv.org
+
+freenet.de ardmediathek.de
+
+ 
+
+. Moz.de
+medienmagazin.de Ln-online. ae und aktiencheck.de
+Figure 34: The diagram shows the ”active reach” (percentage
+of users that visited the top-level domain at least once) for
+the different top-level domains according to the August edi-
+tion of the Nielsen Report and the total number of search
+results from August 2017 of our data set. It is a double loga-
+rithmic application, where some sources with strong devia-
+tion from the trend line have been marked.
+
+In the Figure, some points are picked out which deviate from this
+pattern by a factor of approximately 5 upwards or downwards. This
+means that they are delivered at least 5 times more or 5 times less
+than expected according to the formula. On the one hand, this in-
+cludes media that report on media such as correctiv.org, meedia.de
+and uebermedien. Correctiv.org is a correction website that takes
+up and corrects incorrect messages. While this top-level domain
+in the Nielsen Panel has no reach in August, one of its URLs will
+be delivered to 245 people in the data donation project, almost five
+times more than expected. Nevertheless, this is less remarkable
+than first thought, as it concerns exactly one top story, which is
+delivered to all donors at this search time (August 24, 2017, 12pm,
+search term “Alexander Gauland”). Since we have already found
+that the search result pages are very uniform overall, such a de-
+cision always affects everyone at the time of the search. This is a
+one-time event that suddenly raises the number of URLs delivered
+above the expected value. Articles by meedia and uebermedien are
+delivered 10 and 16 times more than expected. It is important to
+emphasize once again that the comparison with the Nielsen reach is
+methodologically difficult: neither does the ’active reach” represent
+a popularity measure independent of Google’s search engine, nor
+can popularity be regarded without restriction as a direct measure
+of the content quality of the contributions of the top-level domains.
+It may still be an interesting observation that the following 10
+sources are the most overrepresented (regarding the expected value
+from the regression):
+
+(1) Epochtimes (with 240.004 links in all search result lists,
+expected were 840)
+
+(2) Chiemgau24.de (1.905 links, expected 22)
+
+(3) Jungewelt.de (1.595 links, expected 81)
+
+(4) Stimme.de (5.259 links, expected 274)
+
+(5) Ka-news.de (4.047 links, expected 218)
+
+(6) Tichyseinblick.de (4302 links, expected 235)
+
+(7) Welt.de (131.793 links, expected 8120)
+
+—
+
+Krafft, Gamer and Zweig
+
+(8) Ubermedien.de (2102 links, expected 131)
+(9) Cicero.de (2785 links, expected 174)
+(10) Butenunbinnen.de (2058 links, expected 131)
+
+As with all relative scores, the most outliers are sources that did
+not appear often in the search results. The media with the highest
+reach are however still represented within the top stories delivered
+by Google. The combination of the websites of persons and politi-
+cal parties, the Wikipedia entries and news websites, all found in
+the organic search results, shows a broad view of politicians and
+parties, which on the whole allows for comprehensive information
+and opinion-forming. It should also be mentioned that further com-
+bining the search terms used in this project would allow for a more
+detailed search, in the case of an unsatisfactory first search result
+list.
+
+8.1 Generalization of the results: possibilities
+and boundaries
+
+The results shown in this report can not be applied to all Google
+users in Germany, since the data donors are not a representative
+sample (caused by their own decision to participate). Interestingly,
+the donors who seem to have used a different search language could
+invalidate the argument that the set of users was so homogeneous
+that this alone explains the low degree of personalization observed.
+It appears improbable that all English-speaking users from different
+countries are homogeneous in personalization, yet Figure 33 shows
+remarkable similarities between their search result lists. Here too,
+we follow the principle of Occam’s razor and assume that the search
+result lists are mainly determined by search language settings, the
+location (e.g. based on the IP address) and the general relevance
+of the website, followed by previously visited websites to a lesser
+extent and possibly some personalized links. Therefore it would
+surprise us if further studies show highly deviant degrees of per-
+sonalization.
+
+In every case, our observations are only valid for the time period
+and search terms used in this project. We can not preclude the
+possibility of the degree of personalization changing over time, but
+this study shows how this can be monitored simply, cost-efficiently,
+flexibly (regarding the search terms) and automatically. This holds
+true for every search engine.
+
+8.2 Demand for suitable interfaces to examine
+the filter bubble theory in social networks
+and other intermediaries
+
+This does not apply to social networks like Facebook, other social
+media like Twitter, Instagram or YouTube. At the moment it would
+only be possible with great effort to filter out and centrally collect
+all of a user’s political content in the news feed of a Facebook
+account, for example. ProPublica has tried such a project during
+the federal election of 2017. An API that allows for selective access
+to these contents does not exist, so the only choice would be to
+require the users to allow complete access (privacy concerns) or to
+ask them to submit screenshots of political content. The latter is
+neither easy, nor can the data be analyzed automatically, since the
+content would have to be described manually to allow for searching
+and summarizing the data.
+
+Hence a demand for the necessary interfaces arises, to investigate all
+What did you see?
+
+Personalization, regionalization and the question of the filter bubble in Google’s search efiginference’17, July 2017, Washington, DC, USA
+
+social media and social networks, whose degree of personalization
+could lead to algorithmic creation or reinforcement of filter bubbles.
+A suitable control of the degree of personalization relieves the
+respective companies - as long as the degree remains low - of the
+demands of the society to gain further insight into their software
+code. If a high degree of personalization (of relevant content) and
+a certain degree of isolation of the filter bubbles becomes evident,
+further investigations are required to determine to what extent
+the content has extremely different perspectives and makes social
+discourse more difficult. Such a staggered model of the depth of
+insight through black box analysis depending on the measured
+degree of personalization would thus help both sides.
+
+9 ACKNOWLEDGMENT
+
+We would like to take this opportunity to thank Landesmedien-
+anstalten Bayern (BLM), Berlin-Brandenburg (mabb), Hessen (LPR
+Hessen), Rheinland-Pfalz (LMK), Saarland (LMS) and Sachsen (SLM)
+who supported the project, as well as Spiegel Online as our media
+partner. We would also like to express our gratitude towards Uwe
+Conradt, director of the LMS, who suggested this project to us. We
+also thank Dr. Anja Zimmer, director of the mabb, and Siegfried
+Schneider, president of the BLM, who - together with Uwe Conradt
+- were particularly committed to the project. Our special thanks
+go to Adrian Gerlitsch (BLM) who supervised the project and has
+always and tirelessly found constructive solutions to all problems.
+
+10 APPENDIX
+
+A) Category System
+
+The category system is used to assign domains that were displayed
+as part of the data donation. It was developed by the Bayerische
+Landeszentrale fiir neue Medien (BLM) who also carried it out.
+
+10.1 Main categories
+
+Every domain is assigned to one of the main categories. In cases of
+conflict the most concise assignment is chosen.
+
+a Owned Content: The category Owned Content contains
+all channels that allow the parties an unfiltered display of
+opinion, either through a personal website of a member of
+the party, a local branch, or the party itself. Social media
+channels also belong to this category, but will be assigned
+to their own category in this categorization scheme.
+
+b Social Media: Social Media describes all channels that
+focus on the social interactions between provider and users.
+The domains allow for networking, ie. to exchange ideas
+with each other and to create and relay media content
+for individuals, specific groups, or the public. Examples
+for networks that belong to this category are Facebook,
+Twitter or Instagram.
+
+c Wikipedia: All Wikipedia domains are assigned to this
+category.
+
+d Media: Domains that are operated by a media provider are
+assigned to this category. A website is considered a media
+provider if it provides journalistic content and acts as the
+online offshoot of classic print media, a private television
+or radio provider, or a public-service broadcaster. Foreign
+journalistic content as well as online-only providers also
+
+belong to this category (see sub-categories). Examples are:
+www.schwarzwaelder-bote.de, news.sky.com, www.news.de.
+Freemail portals: Freemail portals offer free email ad-
+dresses and a mailbox to send and receive emails. Most
+of these websites also contain news columns. The most
+common Freemail portals belonging to this category are
+web.de, yahoo.com and gmx.net. Freemail domains that
+appear in the results of Google News will not be assigned
+to any sub-categories, only the main category.
+Publicly funded: The category ’publicly funded” con-
+tains all domains financed by public funds, e.g. the Federal
+Agency for Civic Education (Bundeszentrale fir politis-
+che Bildung (bpb)) and the online presence of cities and
+municipalities.
+g Other: Every domain that does not explicitly belong to
+any of the before-mentioned categories will the assigned
+to the this category.
+
+oO
+
+—
+
+10.2 Sub-categories
+
+Sub-categories contain domains that were previously assigned to
+the *Media” category. The other main categories are not specialized
+any further. Every domain can only be assigned to one sub-category.
+
+a Print: The category contains all online offerings from clas-
+
+sic German print media (newspapers and magazines). Do-
+mains are included if they originate in Germany and pub-
+lish German content. Example include: spiegel.de, faz.net,
+welt.de.
+
+b TV: All online offerings of approved German private tele-
+vision providers are assigned to this category. Both origin
+and published language of the content is German. Example
+include: rtl.de, pro-sieben.de
+Public service providers (ORR): This category contains
+all online offerings of German public-service broadcasters,
+like their online branches for radio and television channels.
+This category can contain daserste.de, ndr.de, zdf.de.
+
+d Online Only: Media offerings who publish their content
+exclusively on the internet are assigned to this category.
+Examples include: 02elf:net, www.promiflash.de.
+
+°
+

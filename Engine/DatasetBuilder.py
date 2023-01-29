@@ -10,7 +10,6 @@ import math
 class DatasetBuilder(System):
 
     def __init__(self, collection_file_paths: list, dir_txt_files_path: str=None, category=None):
-        print(collection_file_paths)
         if dir_txt_files_path is not None:
             list_files_names = self.import_docs(dir_txt_files_path)
         self.idf_dict = self._idf_dict(dir_files_paths=collection_file_paths)
@@ -34,13 +33,10 @@ class DatasetBuilder(System):
         num_of_files = 0
         # linguistic Processor instance
         lg = LinguisticProcessor()
-        print(dir_files_paths)
         for path in dir_files_paths:
             files_names = self.import_docs(text_files_path=path)
             num_of_files += len(files_names)
             for file in files_names:
-                print("path is" + path)
-                print("file is " + file)
                 # doc = self.read_file(file_path=dir_files_path+ "/" + file, mode='r')
                 tokens_dict = tokenizer.tokenize(doc=path + "/" + file)
                 doc_terms_dict = lg.preform_processing(tokens_dict=tokens_dict)
@@ -49,7 +45,10 @@ class DatasetBuilder(System):
                         collection_idf_dict[term] +=1
                     else:
                         collection_idf_dict[term]=1
+
         # In this point we have (term, df) pairs for all terms in the collection
+        print(max(collection_idf_dict.values()))
+        print(min(collection_idf_dict.values()))
         for term, df in collection_idf_dict.items():
             collection_idf_dict[term]= math.log(num_of_files/df)
         # In this point we have (term, idf) pairs for all terms in the collection

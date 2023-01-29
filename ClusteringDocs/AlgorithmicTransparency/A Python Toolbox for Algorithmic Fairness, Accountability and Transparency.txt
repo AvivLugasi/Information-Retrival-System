@@ -1,0 +1,597 @@
+FAT Forensics:
+A Python Toolbox for Algorithmic Fairness, Accountability and Transparency
+KACPER SOKOL, Intelligent Systems Laboratory, University of Bristol, United Kingdom and ARC Centre of
+Excellence for Automated Decision-Making and Society, RMIT University, Australia
+
+arXiv:1909.05167v3 [cs.LG] 25 Aug 2022
+
+RAUL SANTOS-RODRIGUEZ, Intelligent Systems Laboratory, University of Bristol, United Kingdom
+PETER FLACH, Intelligent Systems Laboratory, University of Bristol, United Kingdom
+Today, artificial intelligence systems driven by machine learning algorithms can be in a position to take important, and sometimes
+legally binding, decisions about our everyday lives. In many cases, however, these systems and their actions are neither regulated nor
+certified. To help counter the potential harm that such algorithms can cause we developed an open source toolbox that can analyse
+selected fairness, accountability and transparency aspects of the machine learning process: data (and their features), models and
+predictions, allowing to automatically and objectively report them to relevant stakeholders. In this paper we describe the design, scope,
+usage and impact of this Python package, which is published under the 3-Clause BSD open source licence.
+Additional Key Words and Phrases: Fairness, Accountability, Transparency, Python, Software, Toolbox.
+
+Note This is a pre-print of a paper published in the Software Impacts journal (10.1016/j.simpa.2022.100406).
+Highlights
+A Python toolbox for algorithmic Fairness, Accountability and Transparency (FAT).
+Built atop SciPy and NumPy, and distributed under the 3-Clause BSD licence (new BSD).
+Based on a modular architecture that allows to compose bespoke FAT tools with ease.
+Supports research and deployment modes of operation that enable diverse use cases.
+Accompanied by comprehensive documentation, examples, tutorials and how-to guides.
+Code Metadata
+Software version
+
+0.1.1
+
+Code repository
+
+https://github.com/fat-forensics/fat-forensics/
+
+Reproducible capsule
+
+https://codeocean.com/capsule/8437308/tree/v1/
+
+Licence
+
+3-Clause BSD Licence (New BSD)
+
+Versioning control system
+
+git
+
+Programming language
+
+Python
+
+Requirements & dependencies
+
+https://fat-forensics.org/getting_started/install_deps_os.html#installationinstructions
+
+Developer documentation
+
+https://fat-forensics.org/
+
+Contact details
+
+https://fat-forensics.org/#communication
+
+Authors’ addresses: Kacper Sokol, K.Sokol@bristol.ac.uk, Kacper.Sokol@rmit.edu.au, Intelligent Systems Laboratory, University of Bristol, United Kingdom
+and ARC Centre of Excellence for Automated Decision-Making and Society, RMIT University, Australia; Raul Santos-Rodriguez, enrsr@bristol.ac.uk,
+Intelligent Systems Laboratory, University of Bristol, United Kingdom; Peter Flach, Peter.Flach@bristol.ac.uk, Intelligent Systems Laboratory, University
+of Bristol, United Kingdom.
+
+Sokol, Santos-Rodriguez, and Flach
+1
+
+ALGORITHMIC FAIRNESS, ACCOUNTABILITY AND TRANSPARENCY WITH FAT FORENSICS
+
+Open source software is the backbone of reproducible research, especially so in Artificial Intelligence (AI) and Machine
+Learning (ML) where changing the seed of a random number generator may cause a state-of-the-art solution to become
+a subpar predictive system. Despite numerous efforts to ensure that publications are accompanied by code, both the
+AI and ML fields struggle with a reproducibility crisis [8]. One way to address this problem is to promote publishing
+high-quality software used for scientific experiments under an open source licence or enforce it as part of the publishing
+process [28]. In spite of their importance, implementations are nonetheless commonly treated just as a research byproduct and often abandoned after publishing the findings based upon them. We call this phenomenon paperware, i.e.,
+code whose main purpose is to see a paper towards publication rather than implement any particular concept with
+thorough software engineering practice. Such attitude results in standalone packages that often prove difficult to use
+due to the lack of documentation, testing, usage examples and (post-publication) maintenance, therefore impacting their
+reach, usability and, more broadly, reproducibility of scientific findings. This state of affairs is especially problematic for
+AI and ML research with its fast-paced environment, lack of standards and far-ranging social implications.
+Widespread reliability issues with ML systems have inspired a range of frameworks to assess and document
+them as well as report their quality, robustness and other (technical) properties through standardised mechanisms.
+For example, researchers have suggested approaches to characterise data sets [4, 7]; automated decision-making
+systems [19]; predictive models offered as a service accessible via an Application Programming Interface (API) [2];
+ranking algorithms [29]; AI & ML explainability approaches [22]; and privacy aspects of applications that collect,
+process and share user data [9] to ensure their high quality, transparency, reliability and accountability. Such efforts are
+laudable, however they may require the authors to understand the investigated system in detail, suffer from limited
+scope or be subject to time- and labour-intensive creation process, all of which can hinder their uptake or slow down
+the ML research and development cycle. Moreover, self-reporting – and lack of external audits – means that some
+of their aspects may be subjective, hence misrepresent the true behaviour of the underlying system, whether done
+intentionally or not. Certification, on the other hand, creates a need for external bodies, which seems difficult to achieve
+for all ML systems that somehow affect humans.
+To help address such shortcomings in the fields of AI & ML Fairness, Accountability and Transparency (FAT), we
+designed and developed an open source Python package called FAT Forensics [25] – Table 1 lists the algorithms
+distributed in its latest release (version 0.1.1). It is intended as an interoperable framework to implement, test and
+deploy novel algorithms proposed by the FAT community as well as facilitate their evaluation and comparison against
+state-of-the-art methods, therefore democratising access to these techniques. The toolbox is capable of analysing all
+facets of the data-driven predictive process – data (raw and their features), models and predictions – in view of their FAT
+aspects. The common interface layer of the software (described in §2) makes it flexible enough to support workflows
+typical of academics and practitioners alike, and enables two modes of operation – research and deployment – that
+span diverse use cases such as prototyping, exploratory analytics, (numerical or visual) reporting and dashboarding as
+well as inspection, monitoring and evaluation of FAT properties. Additionally, the package is backed by thorough and
+beginner-friendly documentation, which spans tutorials, examples, how-to manuals and a user guide. In the following
+section (§2) we introduce our software and describe its architecture. Next, we present a number of possible use cases
+and benefits of having various FAT algorithms under a shared roof (§3). We conclude the paper with an overview of
+the impact of our package to date and a discussion of the envisaged long-term benefits of FAT Forensics in view of
+
+FAT Forensics
+Fairness
+
+Accountability
+
+Transparency
+
+Data &
+Features
+
+• Systemic Bias
+• Sub-population Representation
+
+• Sampling Bias
+• Data Density Checker
+
+• Data Description
+• Summary Statistics
+
+Models
+
+• Group-based Fairness
+
+• Group-based Performance Metrics
+• Systematic Performance Bias
+
+• Global Surrogates (bLIMEy)
+• Partial Dependence
+• Submodular Pick
+
+Predictions
+
+• Counterfactual Fairness
+
+• Prediction Confidence
+
+• Model-agnostic Counterfactuals
+• Local Surrogates (bLIMEy)
+• LIME (bLIMEy implementation)
+• Individual Conditional Expectation
+
+Table 1. FAT functionality implemented in the latest release – version 0.1.1 – of FAT Forensics.
+
+our contributions (§4). While this paper focuses on the wide-reaching advantages of our software, a complementary
+publication [25] offers its high-level overview, implementation details and comparison to related packages.
+2
+
+DESIGN AND ARCHITECTURE
+
+Systematic evaluation and comparison of AI & ML techniques is an active area of research across many different
+communities. In well-established research fields, such as supervised learning, we can observe convergence towards
+commonly accepted (predictive) performance metrics and evaluation software; their implementations often constitute
+a fundamental part of relevant packages, nonetheless the independence of many such metrics from the underlying
+predictive algorithms allows for standalone software dedicated to calculating them, e.g., PyCM [5]. In contrast, relatively
+young fields – such as algorithmic fairness, accountability (robustness, safety, security & privacy) and transparency
+(interpretability & explainability) – usually lack this type of evaluation strategies and software solutions, making them
+a welcome addition that has the potential to streamline research.
+To address these challenges, we developed an open source Python framework for evaluating, comparing and deploying
+FAT algorithms. We chose Python because of its prevalence across different AI & ML research communities and overall
+simplicity. We opted for a minimal (required) dependency on NumPy and SciPy to facilitate easy deployment in a
+variety of settings. An optional dependency on Matplotlib, scikit-learn, Pillow and scikit-image enables access to
+basic visualisations, ML algorithms and image manipulations (needed by explainability functions). The toolbox is
+hosted on GitHub to facilitate community contributions, and released under the 3-Clause BSD licence to open it up
+for commercial applications. To encourage long-term sustainability it has been developed in accordance with the
+best software engineering practices such as: unit and integration testing; high code coverage; continuous integration;
+function- and module-level technical API documentation; task-focused code examples; narrative-driven tutorials;
+problem-oriented how-to guides; and a comprehensive user guide. The toolbox implements a number of popular FAT
+algorithms – with many more to come – under a coherent API, reusing many functional components across FAT tools
+and making them readily accessible to the community. The initial development is focused on tabular data and wellestablished predictive models (scikit-learn [16]), which will be followed by techniques capable of handling sensory data
+(images & text) and neural networks (TensorFlow [1] & PyTorch [15]). Additionally, we envisage that relevant software
+packages that are already prominent in the FAT community and that adhere to best software engineering practice can
+be “wrapped” by our toolbox under a common API to make them easily accessible and avoid re-implementing them.
+Algorithms included in FAT Forensics are designed and engineered to support two main application areas. The
+research mode, characterised by “data in – visualisations out”, envisages the toolbox being loaded into an interactive
+Python session (e.g., a Jupyter Notebook) to support exploratory analysis, prototyping, development, evaluation and
+
+Sokol, Santos-Rodriguez, and Flach
+testing. This mode is intended for researchers who could use it to propose new fairness metrics, compare them
+with existing solutions or inspect a new predictive system or data set (without the burden of setting up a dedicated
+software engineering workflow). Contributing these implementations of cutting-edge techniques to FAT Forensics
+will in turn make the package attractive for monitoring and auditing of data-driven systems – the second intended
+application domain. More specifically, the deployment mode, characterised by “data in – data out”, offers to incorporate
+the package into a data processing pipeline to provide a (numerical) analytics, hence support any kind of automated
+reporting, dashboarding or certification (thus partially alleviating the issues with manual, error-prone and subjective
+characterisation of AI & ML components). This mode is intended for ML practitioners who (by accessing the lowlevel API) may use it to monitor or evaluate a data-driven system; where continuous integration is used in software
+engineering to ensure high quality of the code, our toolbox could be employed to evaluate FAT of any component of an
+ML pipeline during its development and deployment.
+A considerable portion of FAT software is developed to support research outputs, which often results in superfluous
+dependencies, data sets, predictive models and (interactive) visualisations being distributed with the code base that itself
+is accessible via a non-standard API. To mitigate these issues, FAT Forensics decouples the core FAT functionality from
+its possible presentation to the user and experiment-specific resources. This abstraction of the software infrastructure
+is achieved by making minimal assumptions about the operational setting of these algorithms, therefore facilitating a
+common interface layer for key FAT functionality, focusing only on the interactions between data, models, predictions
+and users [25]. In this purview a predictive model is assumed to be a plain Python object with fit, predict and,
+optionally, predict_proba methods, which offers compatibility with scikit-learn [16] – the most popular Python ML
+toolbox – without explicitly depending on it, in addition to supporting any other predictor that can be represented in
+this way, e.g., TensorFlow, PyTorch or even one hosted on the Internet and accessible via a web API. Similarly, a data set
+is assumed to be a two-dimensional NumPy array: either a classic or a structured array, with the latter bringing support
+for (string-based) categorical attributes. Since visualisations are a vital part of our first application mode (research),
+the software provides basic plotting functionality that is only enabled when the optional Matplotlib dependency is
+installed. In addition to relaxed input requirements, all of the techniques incorporated into the package are split into
+interoperable algorithmic building blocks that can be easily reused, even across FAT borders, to create new functionality
+– the versatility of this atomic-level decomposition is demonstrated in the following section. More details about the
+technical aspects of the software can be found in the FAT Forensics technical paper [25].
+3
+
+USE CASES
+
+We present three distinct use cases to demonstrate how the software can be applied to analyse FAT aspects of real
+data, illustrating the diverse range of functionality enabled by its universal infrastructure. To this end, we employ the
+UCI Census Income (Adult) data set [10], which is popular in algorithmic fairness and transparency research. The
+data analysis that follows is representative of the research mode and is inspired by the tutorials included in the FAT
+Forensics documentation1 ; it can be reproduced with a dedicated Jupyter Notebook2 . To demonstrate the deployment
+mode, we provide a dashboard based on Plotly Dash, which facilitates interactive analysis of the same data set using
+FAT Forensics as the back end3 .
+1 https://fat-forensics.org/tutorials/index.html
+
+2 https://github.com/fat-forensics/resources/blob/master/fat_forensics_overview/FAT_Forensics.ipynb
+
+3 https://fatf.herokuapp.com/. (Source code available at: https://github.com/fat-forensics/fatf-dashboard/.)
+
+FAT Forensics
+
+(b) Equal opportunity.
+
+(c) Demographic parity.
+
+Fig. 1. Pairwise group-based fairness for the race feature of the Adult data
+set. Red (1) indicates disparate impact for a given pair of sub-populations and
+green (0) conveys that they are treated comparably.
+
+0
+
+(a) Predictive accuracy.
+
+1
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+0
+
+1
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+0
+
+1
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+(a) Equal accuracy.
+
+0
+
+1
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+1
+
+Ame-Ind-Esk
+Asi-Pac-Isl
+Black
+Other
+White
+
+0
+
+(b) True negative rate.
+
+Fig. 2. Pairwise group-based performance disparity for the race feature of Adult. Red (1) shows disparate performance and green (0) comparable treatment.
+
+Feature Grouping. One of the core building blocks of FAT Forensics is a collection of functions to partition data
+based on (sets of) unique values for categorical features and threshold-based binning for numerical attributes. This
+algorithmic concept – in conjunction with any standard (predictive) performance metric derived from predicted and
+true labels – facilitates a number of FAT workflows. A variety of different group-based (pairwise) fairness criteria, not
+limited to the ones implemented in the package, can be computed in this way by conditioning on protected features
+(attributes that may be used for discriminatory treatment, e.g., gender), allowing us to investigate disparate impact of a
+predictive model based on group unaware, equal opportunity, equal accuracy or demographic parity metrics, among
+many others [6]. Since some of them are mutually incompatible [13], comparing them side-by-side can be beneficial. For
+example, the Asian-Pac-Islander (Asi-Pac-Isl) and Other groups are subject to fairness disparity when equal accuracy and
+demographic parity are considered; Other and White sub-populations are also treated unfairly according to demographic
+parity; whereas equal opportunity does not exhibit any signs of disparate impact as shown in Figure 1.
+The grouping functionality can also help to assess accountability of data and models in a similar fashion. For
+example, sample-size disparity across sub-populations in a given data set may cause a systematic bias in predictive
+performance of the resulting model over such (protected) groups since it is likely to under-perform for under-represented
+individuals. This effect can be observed when splitting Adult based on the race feature while measuring accuracy and
+true negative rate. As expected, the former (Figure 2a) provides the same result as group-based fairness analysis under
+equal accuracy (Figure 1a); the latter (Figure 2b), on the other hand, reveals that four sub-population pairs exhibit
+significant performance differences, with Other affected the most by diverging from all the other groups except AmerIndian-Eskimo (Ame-Ind-Esk). Partitioning is also useful for transparency analysis; for example, summary statistics
+such as the distribution of labels across sub-populations based on (protected) features can be generated for a data set
+prior to modelling to uncover any class imbalance. Studying the race attribute in this context – Figure 3 – reveals that
+while the classes are skewed across all the splits, the strongest disproportion affects the Other, Ame-Ind-Esk and Black
+sub-populations.
+Data Density. Density estimate for a region in which a data point of interest is located (based on the distribution of
+training data) can be treated as a proxy for the confidence of its prediction [17], thus helping to judge its accountability
+and robustness as dense regions should offer more accurate modelling. To this end, FAT Forensics implements a
+bespoke neighbour-based density estimator – its scores are between 0 and 1, where high values are assigned to instances
+from sparse regions since their nth neighbour (a user-defined parameter) is relatively distant. As an illustration we
+
+Sokol, Santos-Rodriguez, and Flach
+
+20000
+17500
+15000
+12500
+10000
+7500
+5000
+2500
+0
+
+250
+2500
+
+250
+200
+
+2000
+
+200
+
+150
+
+1500
+
+150
+
+1000
+
+100
+
+100
+
+500
+
+50
+
+50
+
+<=50K >50K
+(a) White.
+
+0
+
+<=50K >50K
+(b) Black.
+
+0
+
+<=50K >50K
+(c) Other.
+
+0
+
+<=50K >50K
+
+800
+700
+600
+500
+400
+300
+200
+100
+0
+
+(d) Ame-Ind-Esk.
+
+<=50K >50K
+
+(e) Asi-Pac-Isl.
+
+Fig. 3. Income distribution for each unique value of the race feature in the Adult data set.
+
+estimate the density of Adult based on its first 1,000 instances and select four data points – two from a dense and two
+from a sparse region – to assess robustness of their predictions. The former two receive density scores of 0 and are
+correctly predicted as ≤50K; the latter two are assigned density scores of 1 with one predicted correctly and the other
+misclassified as ≤50K. Upon closer inspection this data point has a relatively high value (99.99th percentile) of the fnlwgt
+feature (1,226,583), which is a clue to its high density score and incorrect prediction (see the aforementioned Jupyter
+Notebook for more details).
+In addition to engendering trust in predictions, a density estimate can help to assess the quality of exemplar
+explanations and compute realistic counterfactuals [18], which can be used as a transparency tool and individual
+fairness mechanism (by conditioning on protected attributes). Sourcing counterfactuals from sparse regions may yield
+explanations based on instances that are unlikely to occur in the real life, e.g., prescribing a person to become 200 years
+old. Explaining the aforementioned misclassified data point taken from a sparse region provides explanations such as:
+(i) raising capital-gain from 0 to 25,000 predicts >50K (sparse region with 1 density score); and (ii) increasing capital-loss
+from 0 to 4,000 and decreasing fnlwgt from 1,226,583 to 430,985 predicts >50K (dense region with 0.02 density score).
+While (i) prescribes a sensible action, preserving the unusually high value of fnlwgt makes it unlikely; (ii), on the other
+hand, decreases the value of this attribute – therefore placing the counterfactual in a dense region – and shows that
+even with 4,000 of capital-loss being classified as >50K is possible, casting even more suspicion on the unusually high
+original value of the former feature. Finally, no counterfactuals conditioned on protected attributes could be found for
+this instance, showing us that its prediction is fair (again, see the aforementioned Jupyter Notebook for more details).
+Surrogate Modularity. Surrogate explainers are a popular interpretability technique that fits a transparent model in
+a selected neighbourhood to approximate and explain the predictive behaviour of the underlying black box in said
+region [3, 20, 26]. Given their high modularity, FAT Forensics implements their core building blocks via the bLIMEy
+meta-algorithm4 – consisting of interpretable representation composition, data sampling and explanation generation
+steps – which allows the user to easily construct a bespoke surrogate that is suitable for the problem at hand, thus
+considerably improving the quality and faithfulness of the resulting explanations [21, 26]. For example, an interpretable
+representation of tabular data can be built with quartile-based discretisation or a feature space partition extracted from
+a decision tree (the latter is more faithful [24]); data can be augmented with Gaussian or mixup [30] sampling (the
+latter offers a diverse and local sample [26]); and an explanation can be generated with a linear model or a decision tree
+4 https://fat-forensics.org/how_to/transparency/tabular-surrogates.html
+
+FAT Forensics
+(the former is limited to feature influence, whereas the lat-
+
+Explained Instance
+
+Explained Instance
+
+ter provides a diverse range of insights such as rules and
+counterfactuals [21, 23, 24]). Such a surrogate explainer
+can either be local – by sampling data in the neighbourhood of a selected instance – or global – when the sample
+covers the entire data space. Specifically, consider the two
+local surrogates shown in Figure 4, where a tree-based explainer [23, 24] is better able to approximate the decision
+boundary close to the selected instance.
+4
+
+IMPACT OVERVIEW
+
+While software is one of the primary drivers of progress
+in AI & ML research, its quality is often found lacking.
+
+(a) Linear surrogate.
+
+(b) Tree-based surrogate.
+
+Fig. 4. Examples of (a) linear (LIME-like) and (b) tree-based local
+surrogates without an interpretable representation (enabling direct
+visualisation) built with the bLIMEy framework for the Two Moons
+data set.
+
+FAT Forensics offers a possible solution in the space of algorithmic fairness, accountability and transparency by
+facilitating the development, evaluation, comparison and deployment of FAT tools. Sharing a common functional base
+between implementations of FAT algorithms is one of many advantages of such a comprehensive package. Its versatility
+as well as support for the research and deployment operation modes make it appealing to members of academia and
+industry, especially as it supports investigating FAT aspects of an entire predictive pipeline: data, models and predictions.
+This in turn ought to encourage the community to adopt the software and contribute their novel algorithms and
+bug fixes here (instead of releasing them as standalone code), thus exposing them to the wider audience in a robust
+and sustainable environment, enhancing reproducibility of research in this space and orienting the package towards
+real-world use cases. By developing FAT tools on a modular level from the ground up FAT Forensics ensures their
+robustness and accountability in addition to being shielded from any errors that otherwise could have been introduced
+downstream. For example, LIME [20] – which is “wrapped” by Microsoft’s Interpret [14] and Oracle’s Skater [11]
+libraries – has known issues with the locality and coherence of its explanations [12, 26], which inadvertently affect
+both these packages. We therefore hope and expect that all the software engineering best practice followed during
+the initial development of FAT Forensics (and maintained carrying forwards) have helped us to create a sustainable
+package that is easy to extend and contribute to, serving the community for a long time to come.
+Additionally, the modular design of the package facilitates conducting cutting-edge research. To date, the implementation of surrogate explainers available in FAT Forensics allowed us to carefully study their capabilities and failure
+modes, leading to new findings, theories and transparency tools. bLIMEy – the surrogate meta-algorithm – is a case in
+point; its inception was inspired by identifying independent algorithmic modules, whose further investigation showed
+the importance of local sampling for tabular data and effectiveness of decision trees as surrogate models [21, 26]. One
+particular realisation of this explainer – LIMEtree – is based on multi-output regression trees and improves upon many
+shortcomings of surrogates by offering faithful, consistent, customisable and multi-class explanations of different types,
+including counterfactuals [23]. Diverse implementations of surrogate building blocks also helped us to analyse the role
+and parameterisation of interpretable representations and improve their robustness – they translate the low-level data
+representation used by predictive models into human-comprehensible concepts underlying explanations and are the
+backbone of surrogates [24]. FAT Forensics has also been the foundation of a hands-on conference tutorial on ML
+explainability [27] as well as numerous lectures, summer school sessions, educational events and learning resources5 .
+5 https://events.fat-forensics.org/
+
+Sokol, Santos-Rodriguez, and Flach
+ACKNOWLEDGEMENTS
+This work was financially supported by Thales, and is the result of a collaborative research agreement between Thales
+and the University of Bristol. KS and PF were partially supported by TAILOR (Trustworthy AI through Integrating
+Learning, Optimisation and Reasoning), a project funded by EU Horizon 2020 research and innovation programme under
+GA No 952215. Additionally, KS is supported by the ARC Centre of Excellence for Automated Decision-Making and
+Society, funded by the Australian Government through the Australian Research Council (project number CE200100005);
+and RSR is supported by the UKRI Turing AI Fellowship EP/V024817/1. The authors would also like to acknowledge
+contributions of student software engineers: Alexander Hepburn, Rafael Poyiadzi and Matthew Clifford.
+REFERENCES
+[1] Martín Abadi, Paul Barham, Jianmin Chen, Zhifeng Chen, Andy Davis, Jeffrey Dean, Matthieu Devin, Sanjay Ghemawat, Geoffrey Irving, Michael
+Isard, Manjunath Kudlur, Josh Levenberg, Rajat Monga, Sherry Moore, Derek G. Murray, Benoit Steiner, Paul Tucker, Vijay Vasudevan, Pete Warden,
+Martin Wicke, Yuan Yu, and Xiaoqiang Zheng. 2016. TensorFlow: A system for large-scale machine learning. In 12th USENIX symposium on operating
+systems design and implementation (OSDI 16). 265–283.
+[2] Matthew Arnold, Rachel KE Bellamy, Michael Hind, Stephanie Houde, Sameep Mehta, Aleksandra Mojsilovic, Ravi Nair, Karthikeyan Natesan
+Ramamurthy, Alexandra Olteanu, David Piorkowski, Darrell Reimer, John Richards, Jason Tsay, and Kush R Varshney. 2019. FactSheets: Increasing
+trust in AI services through supplier’s declarations of conformity. IBM Journal of Research and Development 63, 4/5 (July 2019), 6:1–6:13. https:
+//doi.org/10.1147/JRD.2019.2942288
+[3] Mark Craven and Jude W Shavlik. 1996. Extracting tree-structured representations of trained networks. In Advances in neural information processing
+systems. 24–30.
+[4] Timnit Gebru, Jamie Morgenstern, Briana Vecchione, Jennifer Wortman Vaughan, Hanna Wallach, Hal Daumé III, and Kate Crawford. 2018.
+Datasheets for Datasets. 5th Workshop on Fairness, Accountability, and Transparency in Machine Learning (FAT/ML 2018) at the 35th International
+Conference on Machine Learning (ICML 2018), Stockholm, Sweden (2018). arXiv:1803.09010
+[5] Sepand Haghighi, Masoomeh Jasemi, Shaahin Hessabi, and Alireza Zolanvari. 2018. PyCM: Multiclass confusion matrix library in Python. Journal
+of Open Source Software 3, 25 (2018), 729. https://doi.org/10.21105/joss.00729
+[6] Moritz Hardt, Eric Price, and Nathan Srebro. 2016. Equality of Opportunity in Supervised Learning. In Proceedings of the 30th International Conference
+on Neural Information Processing Systems (Barcelona, Spain) (NIPS’16). Curran Associates Inc., USA, 3323–3331.
+[7] Sarah Holland, Ahmed Hosny, Sarah Newman, Joshua Joseph, and Kasia Chmielinski. 2020. The Dataset Nutrition Label: A Framework To Drive
+Higher Data Quality Standards. Data Protection and Privacy, Volume 12: Data Protection and Democracy 12 (2020), 1.
+[8] Matthew Hutson. 2018. Artificial intelligence faces reproducibility crisis. Science 359, 6377 (2018), 725–726. https://doi.org/10.1126/science.359.6377.
+725
+[9] Patrick Gage Kelley, Joanna Bresee, Lorrie Faith Cranor, and Robert W Reeder. 2009. A nutrition label for privacy. In Proceedings of the 5th Symposium
+on Usable Privacy and Security. ACM, 4.
+[10] Ronny Kohavi and Barry Becker. 1996. Census Income Data Set. http://archive.ics.uci.edu/ml/datasets/Census+Income
+[11] Aaron Kramer, Pramit Choudhary, silversurfer84, Ben Van Dyke, Alvin Thai, Nitin Pasumarthy, Guillaume Lemaitre, Dave Thompson, and Ben
+Cook. 2018. datascienceinc/Skater: 1.1.2. https://doi.org/10.5281/zenodo.1423046
+[12] Thibault Laugel, Xavier Renard, Marie-Jeanne Lesot, Christophe Marsala, and Marcin Detyniecki. 2018. Defining locality for surrogates in post-hoc
+interpretablity. 3rd Workshop on Human Interpretability in Machine Learning (WHI 2018) at the 35th International Conference on Machine Learning
+(ICML 2018), Stockholm, Sweden (2018). arXiv:1806.07498
+[13] Thomas Miconi. 2017. The impossibility of “fairness”: A generalized impossibility result for decisions. (2017). arXiv:1707.01195
+[14] Harsha Nori, Samuel Jenkins, Paul Koch, and Rich Caruana. 2019. InterpretML: A Unified Framework for Machine Learning Interpretability. (2019).
+arXiv:1909.09223
+[15] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca
+Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu
+Fang, Junjie Bai, and Soumith Chintala. 2019. PyTorch: An Imperative Style, High-Performance Deep Learning Library. In Advances in Neural
+Information Processing Systems 32, H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-Buc, E. Fox, and R. Garnett (Eds.). Curran Associates, Inc.,
+8026–8037.
+[16] Fabian Pedregosa, Gaël Varoquaux, Alexandre Gramfort, Vincent Michel, Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron
+Weiss, Vincent Dubourg, Jake Vanderplas, Alexandre Passos, David Cournapeau, Matthieu Brucher, Matthieu Perrot, and Edouard Duchesnay. 2011.
+scikit-learn: Machine Learning in Python. Journal of Machine Learning Research 12 (2011), 2825–2830.
+[17] Miquel Perello-Nieto, E Silva Telmo De Menezes Filho, Meelis Kull, and Peter Flach. 2016. Background Check: A general technique to build more
+reliable and versatile classifiers. In 2016 IEEE 16th International Conference on Data Mining (ICDM). IEEE, 1143–1148.
+
+FAT Forensics
+[18] Rafael Poyiadzi, Kacper Sokol, Raul Santos-Rodriguez, Tijl De Bie, and Peter Flach. 2020. FACE: Feasible and Actionable Counterfactual Explanations.
+In Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society. 344–350.
+[19] Dillon Reisman, Jason Schultz, Kate Crawford, and Meredith Whittaker. 2018. Algorithmic impact assessments: A practical framework for public
+agency accountability. AI Now Institute (2018).
+[20] Marco Tulio Ribeiro, Sameer Singh, and Carlos Guestrin. 2016. “Why Should I Trust You?”: Explaining the Predictions of Any Classifier. In Proceedings
+of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, San Francisco, CA, USA, August 13-17, 2016. 1135–1144.
+[21] Kacper Sokol. 2021. Towards intelligible and robust surrogate explainers: A decision tree perspective. Ph. D. Dissertation. University of Bristol.
+[22] Kacper Sokol and Peter Flach. 2020. Explainability fact sheets: A framework for systematic assessment of explainable approaches. In Proceedings of
+the 2020 Conference on Fairness, Accountability, and Transparency. 56–67.
+[23] Kacper Sokol and Peter Flach. 2020. LIMEtree: Interactively customisable explanations based on local surrogate multi-output regression trees. (2020).
+arXiv:2005.01427
+[24] Kacper Sokol and Peter Flach. 2020. Towards Faithful and Meaningful Interpretable Representations. (2020). arXiv:2008.07007
+[25] Kacper Sokol, Alexander Hepburn, Rafael Poyiadzi, Matthew Clifford, Raul Santos-Rodriguez, and Peter Flach. 2020. FAT Forensics: A Python
+toolbox for implementing and deploying fairness, accountability and transparency algorithms in predictive systems. Journal of Open Source Software
+5, 49 (2020), 1904. https://doi.org/10.21105/joss.01904
+[26] Kacper Sokol, Alexander Hepburn, Raul Santos-Rodriguez, and Peter Flach. 2019. bLIMEy: Surrogate Prediction Explanations Beyond LIME. 2019
+Workshop on Human-Centric Machine Learning (HCML 2019) at the 33rd Conference on Neural Information Processing Systems (NeurIPS 2019), Vancouver,
+Canada (2019). arXiv:1910.13016
+[27] Kacper Sokol, Alexander Hepburn, Raul Santos-Rodriguez, and Peter Flach. 2020. What and How of Machine Learning Transparency: Building
+Bespoke Explainability Tools with Interoperable Algorithmic Components. Hands-on Tutorial at The European Conference on Machine Learning and
+Principles and Practice of Knowledge Discovery in Databases (ECML-PKDD), Ghent, Belgium (2020). https://events.fat-forensics.org/2020_ecml-pkdd
+[28] Sören Sonnenburg, Mikio L. Braun, Cheng Soon Ong, Samy Bengio, Leon Bottou, Geoffrey Holmes, Yann LeCun, Klaus-Robert Müller, Fernando
+Pereira, Carl Edward Rasmussen, Gunnar Rätsch, Bernhard Schölkopf, Alexander Smola, Pascal Vincent, Jason Weston, and Robert Williamson.
+2007. The need for open source software in machine learning. Journal of Machine Learning Research 8, Oct (2007), 2443–2466.
+[29] Ke Yang, Julia Stoyanovich, Abolfazl Asudeh, Bill Howe, HV Jagadish, and Gerome Miklau. 2018. A Nutritional Label for Rankings. In Proceedings of
+the 2018 International Conference on Management of Data. ACM, 1773–1776.
+[30] Hongyi Zhang, Moustapha Cisse, Yann N. Dauphin, and David Lopez-Paz. 2018. mixup: Beyond Empirical Risk Minimization. International
+Conference on Learning Representations (2018). https://openreview.net/forum?id=r1Ddp1-Rb
+
+

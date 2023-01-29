@@ -1,0 +1,1193 @@
+The Thirty-Fifth AAAI Conference on Artificial Intelligence (AAAI-21)
+
+Does Explainable Artificial Intelligence Improve Human Decision-Making?
+
+Yasmeen Alufaisan,! Laura R. Marusich, 7? Jonathan Z. Bakdash,> Yan Zhou,‘ Murat
+Kantarcioglu +
+
+' EXPEC Computer Center at Saudi Aramco
+Dhahran 31311, Saudi Arabia
+2 U.S. Army Combat Capabilities Development Command Army Research Laboratory South
+at the University of Texas at Arlington
+3 U.S. Army Combat Capabilities Development Command Army Research Laboratory South
+at the University of Texas at Dallas
+* University of Texas at Dallas
+Richardson, TX 75080
+yasmeen.alufaisan@ aramco.com, {laura.m.cooper20.civ, jonathan.z.bakdash.civ}@mail.mil,
+{yan.zhou2,muratk} @utdallas.edu
+
+Abstract
+
+Explainable AI provides insights to users into the why for
+model predictions, offering potential for users to better un-
+derstand and trust a model, and to recognize and correct AI
+predictions that are incorrect. Prior research on human and
+explainable Al interactions has
+
+typically focused on measures such as interpretability, trust,
+and usability of the explanation. There are mixed findings
+whether explainable AI can improve actual human decision-
+making and the ability to identify the problems with the un-
+derlying model. Using real datasets, we compare objective
+human decision accuracy without AI (control), with an AI
+prediction (no explanation), and AI prediction with explana-
+tion. We find providing any kind of AI prediction tends to
+improve user decision accuracy, but no conclusive evidence
+that explainable AI has a meaningful impact. Moreover, we
+observed the strongest predictor for human decision accuracy
+was AI accuracy and that users were somewhat able to detect
+when the AI was correct vs. incorrect, but this was not sig-
+nificantly affected by including an explanation. Our results
+indicate that, at least in some situations, the why information
+provided in explainable AI may not enhance user decision-
+making, and further research may be needed to understand
+how to integrate explainable Al into real systems.
+
+Introduction
+
+Explainable AI is touted as the key for users to “under-
+stand, appropriately trust, and effectively manage... [AI
+systems])” (Gunning 2017) with parallel goals of achiev-
+ing fairness, accountability, and transparency (Sokol 2019).
+There are a multitude of reasons for explainable AI, but there
+is little empirical research for its impact on human decision-
+making (Miller 2019; Adadi and Berrada 2018). Prior be-
+havioral research on explainable AI has primarily focused
+on human understanding/interpretability, trust, and usabil-
+ity for different types of explanations (Doshi-Velez and Kim
+
+Copyright © 2021, Association for the Advancement of Artificial
+Intelligence (www.aaai.org). All rights reserved.
+
+6618
+
+2017; Hoffman et al. 2018; Ribeiro, Singh, and Guestrin
+2016, 2018; Lage et al. 2019).
+
+To fully achieve fairness and accountability, explainable
+AI should lead to better human decisions. Earlier research
+demonstrated that explainable AI can be understood by peo-
+ple (Ribeiro, Singh, and Guestrin 2018). Ideally, the com-
+bination of humans and machines will perform better than
+either alone (Adadi and Berrada 2018), such as computer-
+assisted chess (Cummings 2014), but this combination may
+not necessarily improve the overall accuracy of AI systems.
+While (causal) explanation and prediction share common-
+alities, they are not interchangeable concepts (Adadi and
+Berrada 2018: Shmueli et al. 2010; Edwards and Veale
+2018). Consequently, a ”good” explanation, interpretable
+model predictions, may not be sufficient for improving
+actual human decisions (Adadi and Berrada 2018; Miller
+2019) because of heuristics and biases in human decision-
+making (Kahneman 2011). Therefore, it is important to
+demonstrate whether, and what types of, explainable AI can
+improve the decision-making performance of humans us-
+ing that AI, relative to performance using the predictions of
+black box” AI with no explanations and for human making
+decisions with no AI prediction.
+
+In this work, we empirically investigate whether explain-
+able AI improves human decision-making using a two-
+choice classification experiment with real-world data. Us-
+ing human subject experiments, we compared three differ-
+ent settings where a user needs to make decision 1) No AT
+prediction (Control), 2) AI predictions but no explanation,
+and 3) AI predictions with explanations. Our results indi-
+cate that, while providing the AI predictions tends to help
+users, the why information provided in explainable AI does
+not specifically enhance user decision-making.
+
+Background and Related Work
+
+Using Doshi-Velez and Kim’s (2017) framework for inter-
+pretable machine learning, our current work focuses on: real
+humans, simplified tasks. Because our objective is on eval-
+uating decision-making, we do not compare different types
+of explanations and instead used one of the best available
+explanations: anchor LIME (Ribeiro, Singh, and Guestrin
+2018). We use real tasks here, although our tasks involve
+relatively simple decisions with two possible choices. Addi-
+tionally, we use lay individuals rather than experts. Below,
+we discuss prior work that is related to our experimental ap-
+proach.
+
+Explainable AI/Machine Learning
+
+While machine learning models largely remain opaque and
+their decisions are difficult to explain, there is an urgent need
+for machine learning systems that can “explain” its reason-
+ing. For example, European Union regulation requires “right
+to explanation” for any algorithms that make decisions sig-
+nificantly impacting users with user-level predictors (Par-
+liament and Council of the European Union 2016). In re-
+sponse to the lack of consensus on the definition and eval-
+uation of interpretability in machine learning, Doshi- Velez
+and Kim (2017) propose a taxonomy for the evaluation
+of interpretability focusing on the synergy among human,
+application, and functionality. They contrast interpretability
+with reliability and fairness, and discuss scenarios in which
+interpretability is needed. To unmask the incomprehensible
+reasoning made by these machine learning/AI models, re-
+searchers developed explainable models that are built on top
+of the machine learning model to explain their decisions.
+The most common forms of explainable models that pro-
+vide explanations for the decisions made by machine learn-
+ing models are feature-based and rule-based models. The
+feature-based models resemble feature selection where the
+model outputs the top features that explain the machine
+learning prediction and their associated weights (Datta, Sen,
+and Zick 2016; Ribeiro, Singh, and Guestrin 2016). The
+tule-based models provide simple if-then-else rules to ex-
+plain predictions (Ribeiro, Singh, and Guestrin 2018; Alu-
+faisan et al. 2017). It has been shown that rule-based models
+provide higher human precision when compared to feature-
+based models (Ribeiro, Singh, and Guestrin 2018).
+
+Lou et al. (2012) investigate the generalized additive mod-
+els (GAMs) that combine single-feature models through a
+linear function. GAMs are more accurate than simple lin-
+ear models, and can be easily interpreted by users. Their
+empirical study suggests that a shallow bagged-tree with
+gradient boosting is the best method on low to medium di-
+mensional datasets. Anchor LIME is an example of the cur-
+rent state-of-the-art explainable rule-based model (Ribeiro,
+Singh, and Guestrin 2018). It is a model-agnostic system
+that can explain predictions generated by any machine learn-
+ing model with high precision. The model provides rules,
+referred to as anchors, to explain the prediction for each
+instance. A rule is an anchor if it sufficiently explains the
+prediction locally such that any changes to the rest of the
+features, features not included in the anchor, do not effect
+the prediction. Anchors can be found in two different ap-
+proaches: bottom-up approach and beam search. Wang et al.
+(2017) present a machine learning algorithm that produces
+Bayesian rule sets (BRS) comprised of short rules in the dis-
+junctive normal form. They develop two probabilistic mod-
+
+6619
+
+els with prior parameters that allow the user to specify a
+desired size and shape and balance between accuracy and
+interpretability. They apply two priors—beta-binomials and
+Poisson distribution—to constrain the rule generation pro-
+cess and provide theoretical bounds for reducing computa-
+tion by iteratively pruning the search space. In our experi-
+ments, we use anchor LIME to provide explanations for all
+our experimental evaluation due to the high human precision
+of anchor LIME as reported in Ribeiro, Singh, and Guestrin
+(2018).
+
+Human Decision-Making and Human Experiments
+with Explainable AI
+
+A common reason for providing explanation is to improve
+human predictions or decisions (Keil 2006). People are not
+necessarily rational (i.c., maximizing an expected utility
+function). Instead, decisions are often driven by heuristics
+and biases (Kahneman 2011). Also, providing more infor-
+mation, even if relevant, does not necessarily lead people
+to making better decisions (Gigerenzer and Brighton 2009).
+Bounded rationality in human decision-making using satis-
+fying with constraints (Gigerenzer and Brighton 2009) is an
+alternative theory to heuristics and biases (Kahneman 2011).
+Regardless of the theoretical account for human decision-
+making, people, which can include experts (Dawes, Faust,
+and Meehl 1989), generally do not make fully optimal deci-
+sions.
+
+At a minimum, explainable AI should not be detrimen-
+tal to human decision-making. The literature on decision
+aids (a computational recommendation or prediction, typ-
+ically without an explicit explanation) has mixed findings
+for human performance. Sometimes these aids are benefi-
+cial for human decision-making, whereas at other times they
+have negative effects on decisions (Kleinmuntz and Schkade
+1993; Skitka, Mosier, and Burdick 1999). These mixed find-
+ings may be attributable to absence of explanations; this
+can be investigated through human experiments testing AT
+predictions with explanations compared with AI predictions
+alone.
+
+Most prior human experiments with explainable AI have
+concentrated on interpretability, trust, and subjective mea-
+sures of usability, such as preferences and satisfaction, with
+work on decision-making performance remaining somewhat
+limited (Miller 2019; Adadi and Berrada 2018). Earlier
+results suggest explainable AI can increase interpretabil-
+ity (e.g. Ribeiro, Singh, and Guestrin 2018), trust (e.g.
+Lakkaraju and Bastani 2020; Ribeiro, Singh, and Guestrin
+2016; Selvaraju et al. 2017), and usability (e.g. Ribeiro,
+Singh, and Guestrin 2018) to varying degrees, but this does
+not necessarily translate to better performance on real-world
+decisions about the underlying data, such as whether to ac-
+tually use the AI’s prediction, whether the AI has made an
+error, and the role of explanations. In fact, recent work has
+shown that subjective measures commonly assessed (e.g.,
+preference and trust) do not predict actual human perfor-
+mance (Buginca et al. 2020; Zhang, Liao, and Bellamy
+2020); similarly, performance on common proxy tasks such
+as predicting the AI’s decision also may not be indicative of
+actual decision-making performance (Bucinca et al. 2020).
+These findings highlight the need for more study of the im-
+pact of AI explanation on objective human performance, not
+just proxy or subjective measures.
+
+In the limited studies that do examine the effect of ex-
+planation on human decision-making performance, there are
+mixed findings about whether the explanation provides an
+additional benefit over AI prediction alone. For example,
+some researchers found that human performance was better
+when an AI prediction was accompanied by explanation than
+performance with the prediction alone (Bucinca et al. 2020;
+Lai and Tan 2019) However, other studies did not show any
+additional benefit of explanation over AI prediction alone
+(Green and Chen 2019), with some even showing evidence
+of worse performance with explanation (Poursabzi-Sangdeh
+et al. 2018; Zhang, Liao, and Bellamy 2020).
+
+The two papers finding a benefit for explanations con-
+sisted of a task in which users made decisions about the
+fat content in pictures of food (Bucinca et al. 2020) and
+judgments about whether text from hotel reviews were gen-
+uine or deceptive (Lai and Tan 2019). They also both used
+a simple binary choice as the decision-making task. In con-
+trast, the work finding no improvement in decision accuracy
+with explainable AI used datasets that comprised variables
+and outcomes, including probabilistic assessments for risks
+with recidivism and loan outcomes (Green and Chen 2019),
+decisions about real estate valuations (Poursabzi-Sangdeh
+et al. 2018), and predictions about income (Zhang, Liao,
+and Bellamy 2020). In addition, instead of simple binary
+choices, these studies used prediction of values along a con-
+tinuum (Green and Chen 2019; Poursabzi-Sangdeh et al.
+2018), and binary choice with the option to switch after see-
+ing the model prediction (Zhang, Liao, and Bellamy 2020).
+
+Besides dataset and task differences, there are two other
+distinctions among these papers. Only a single paper as-
+sessed decision-making under time pressure (Zhang, Liao,
+and Bellamy 2020) and only two papers informed users if
+their decisions were correct or incorrect (Green and Chen
+2019; Zhang, Liao, and Bellamy 2020). Our study de-
+sign uses datasets of multiple variables and outcomes and
+provides correct/incorrect feedback, but also uses a very
+straightforward binary choice task. This combination could
+potentially resolve the disparity in results from the studies
+above.
+
+Methods
+
+In this section, we first describe the two datasets used in our
+experiments. We then provide the details of our experimental
+design and hypotheses, participant recruitment, and general
+demographics of our sample.
+
+Dataset
+
+To conduct our experiments, we choose two different
+datasets that have been heavily used in prior research that
+tries to understand algorithmic fairness and accountability
+issues. For example, the COMPAS dataset has been used to
+detect potential biases in criminal justice system (Angwin
+et al. 2016). The Census income dataset, which has been
+used to test many machine learning techniques, involves pre-
+
+6620
+
+dictions of individuals’ income status. This has been associ-
+ated with potential biases in making decisions such as access
+to credit and job opportunities.
+
+We choose these datasets primarily because they both in-
+volve real-world contexts that are understandable and en-
+gaging for human participants. Further, the two datasets dif-
+fer widely in number of features and in the overall accuracy
+classifiers can achieve in their predictions. This allows us
+to explore the effects of these differences on human perfor-
+mance; in addition, it ensures that our findings are not lim-
+ited only to a specific dataset. We briefly discuss each dataset
+in more detail below.
+
+COMPAS stands for Correctional Offender Management
+Profiling for Alternative Sanctions (Angwin et al. 2016). It is
+a scoring system used to assign risk scores to criminal defen-
+dants to determine their likelihood of becoming a recidivist.
+The data has 6,479 instances and 7 features. These features
+are: gender, age, race, priors count, and charge degree risk
+score, and whether the defendants re-offended in two years
+or not. We let the binary re-offending feature be our class.
+
+Census income (CI) data contains information used to
+predict individuals’ income (Dua and Graff 2017). It has
+32,561 instances and 14 features. These features are: age,
+workclass, education, marital status, occupation, relation-
+ship, race, sex, capital gain, capital loss, hours per week,
+and country. The class value is low income (less or equal to
+50K) or high income (greater than 50K). We preprocessed
+the dataset to allow equal class distribution !.
+
+Experimental Design
+
+Prior results demonstrating people interpret, trust, and pre-
+fer explainable AI, suggesting it will improve the accuracy
+of human decisions. Hence, our primary hypotheses are that
+explainable AI would aid human decision-making. The hy-
+potheses (H.) are as follows:
+
+H. 1 Explainable AI enhances decision-making process
+compared to only an AI prediction (without explanation)
+and a control condition with no AI.
+
+[H. 1.a] A participant performs above chance in pre-
+diction tasks.
+
+H. 2 A participant’s decision accuracy is positively associ-
+ated with AI accuracy.
+
+H. 3 Average participant’s decision accuracy does not out-
+perform AI accuracy.
+
+H.4 Participants outperform AI accuracy more often with
+explainable AI over AI prediction alone.
+
+H.5 Participants follow explainable AI recommendation
+more often than AI only recommendation.
+
+H. 6 Explainable AI increases participants’ decision confi-
+dence.
+
+H.7 A participant’s decision confidence is positively corre-
+lated with the accuracy of his/her decision.
+
+'The CI dataset is from 1994. We adjusted for inflation by using
+a present value of 88k. From 1994 to January 2020 (when the ex-
+periment was run) inflation in the U.S. was 76.45%: https://www.
+wolframalpha.com/input/?i=inflation+from+ 1994+to+jan+2020
+ 
+
+Age @
+
+Greater_than_45 | Felony
+
+ 
+
+ 
+
+Charge Degree (7) | Race @)
+
+Caucasian | Low
+
+Risk Score @) | Sex@ | Number of Priors @)
+
+Female | 1
+
+ 
+
+ 
+
+—= Control
+—Al
+— Al Explanation
+
+ 
+
+|
+
+Will Not Re-offend
+
+Al Predicts: Will NOT Re-offend
+
+Al Explanation:
+* race: Caucasian, ano
+
+e risk_score: Low, ano
+
+* priors_count: priors_count is between 0.00 and 1.00
+
+Choose whether or not you think this person will commit another crime within 2 years.
+
+Will Re-offend
+
+Figure 1: Example from the study demonstrating the information appearing in the three AI conditions for a trial from the
+
+COMPAS dataset condition.
+
+To investigate these hypotheses, we used a 2 (Dataset:
+Census and COMPAS) x 3 (AI condition: Control, AI, and
+AI with Explanation) between-participants experimental de-
+sign. The three AI conditions were:
+
+e Control: Participants were provided with no prediction or
+information from the AI.
+
+e AI: Participants were provided with only an AI prediction.
+
+e AI with Explanation: Participants received an AI predic-
+tion, as well as an explanation of the prediction using an-
+chor LIME (Ribeiro, Singh, and Guestrin 2018).
+
+To achieve more than 80% statistical power to detect a
+medium effect size for this design, we planned for a sample
+size of N = 300 (50 per condition).
+
+In all conditions, each trial consists of a description of an
+individual and a two-alternative forced choice for the classi-
+fication of that individual. Each choice was correct on 50%
+of the trials, thus chance performance for human decision-
+making accuracy was 50%. Additionally, an AI prediction
+and/or explanation may appear, depending on the AI con-
+dition (see Figure 1). After a decision is made, participants
+are asked to enter their confidence in that choice, on a Likert
+scale of 1 (No Confidence) to 5 (Full Confidence). Feed-
+back is then displayed, indicating whether or not the previ-
+ous choice was correct.
+
+We compared the prediction accuracy of Logistic Regres-
+sion, Multi-layer Perceptron Neural Network with two lay-
+ers of 50 units each, Random Forest, Support Vector Ma-
+chine (SVM) with rbf kernel and selected the best classifier
+for each dataset. We chose a Multi-layer Perceptron Neu-
+ral Network for Census income data where it resulted in
+an overall accuracy of 82% and SVM with rbf kernel for
+COMPAS data with an overall accuracy of 68%. Census
+income accuracy closely matches the accuracy reported in
+the literature (Dua and Graff 2017; Alufaisan, Kantarcioglu,
+and Zhou 2016) and COMPAS accuracy matches the re-
+sults published by ProPublica (Angwin et al. 2016). We split
+
+6621
+
+the data to 60% for training and 40% for testing to allow
+enough instances for the explanations generated using an-
+chor LIME (Ribeiro, Singh, and Guestrin 2018).
+
+In our behavioral experiment, 50 instances were randomly
+sampled without replacement for each participant. Thus, AI
+accuracy was experimentally manipulated for participants
+(Census: mean AI accuracy = 83.85%, sd = 3.67%; COM-
+PAS: mean AI accuracy = 69.18%, sd = 4.65%). Because
+of the sample size and large number of repeated trials per
+participant, there was no meaningful difference in mean AIT
+accuracy for participants in the AI condition vs. those in the
+AI explanation condition (p = 0.90).
+
+Participant Recruitment and Procedure
+
+We developed the experiment using jsPsych (De Leeuw
+2015), and hosted it on the Volunteer Science platform (Rad-
+ford et al. 2016) *. Participants were recruited using Ama-
+zon Mechanical Turk (AMT) and were compensated $4.00
+each. We collected data from 50 participants in each of the
+six experimental conditions, for a total of 300 participants
+(57.67% male). Most participants were 18 to 44 years old
+(80.67%). This research was approved as exempt (19-176)
+by the Army Research Laboratory’s Institutional Review
+Board.
+
+Participants read and agreed to a consent form, then re-
+ceived instructions on the task, specific to the experimental
+condition they were assigned to. They completed 10 practice
+trials, followed by 50 test trials and a brief questionnaire as-
+sessing general demographic information and comments on
+strategies used during the task. The median time to complete
+the practice and test trials was 18 minutes.
+
+Results and Discussion
+
+In this section we analyze and describe the effects of dataset,
+Al condition, and AI accuracy on the participants’ decision-
+
+*https://volunteerscience.com/
+Participant Accuracy
+80
+
+70
+
+Dataset
+
+® Census
+-® COMPAS
+
+60
+
+f-—-t—~
+
+Al
+Condition
+
+Mean Participant Accuracy (%)
+
+50
+
+ 
+
+Control Al Explanation
+
+Figure 2: Mean participant accuracy in each AI and dataset
+condition. Error bars represent 95% confidence intervals.
+
+making accuracy, ability to outperform the AI, adherence to
+AI recommendations, confidence ratings, and reaction time.
+
+Participant Decision-Making Accuracy
+
+We compared participants’ mean accuracy in the experiment
+across conditions using a 2 (Dataset) x 3 (AD factorial Anal-
+ysis of Variance (ANOVA) (see Figure 2). We found signif-
+icant main effects, with a small effect size for AI condition
+(F(2,294) = 8.19,p < 0.001, n? = 0.04) and a nearly
+large effect for dataset condition (F'(1, 294) = 46.51,p <
+0.001, 7? = 0.12). In addition, there was a significant in-
+teraction with a small effect size (F'(2,294) = 8.38,p <
+0.001, 7? = 0.05), indicating that the effect of AI condition
+depended on the dataset. Specifically, the large effect for in-
+creased accuracy with AI was driven by the Census dataset.
+
+Contrary to H. 1, explainable AI did not substantially im-
+prove decision-making accuracy over AI alone. We followed
+up on significant ANOVA effects by performing pairwise
+comparisons using Tukey’s Honestly Significant Difference.
+These post-hoc tests indicated that participants who viewed
+the Census dataset showed improved accuracy over control
+when given an AI prediction (p < 0.01) and higher accuracy
+with AI explanation versus control (p < 0.001), but there
+was no statistically significant difference in participant accu-
+racy for AI compared to AI explanation (p = 0.28). Whereas
+the COMPAS dataset had no significant differences in par-
+ticipant accuracy across pairwise comparisons for the three
+Al conditions (ps > 0.75). Also, the mean participant accu-
+racy for the COMPAS control condition (mean = 63.7%, sd
+= 9.24%) was comparable to participant accuracy for prior
+decision-making research using the same dataset (mean =
+62.8%, sd = 4.8%) (Dressel and Farid 2018).
+
+There was strong evidence supporting H. 1.a, the vast ma-
+jority of participants had mean accuracy exceeding guessing
+(50% accuracy). The overall participant accuracy across all
+conditions was 65.65% (sd = 10.92%), with 90% (or 270 out
+of 300) participants performing above chance on the classi-
+fication task. This indicates that the task was challenging but
+feasible for almost all participants.
+
+6622
+
+Mean Al and Participant Accuracy
+
+vr
+
+ 
+
+Al
+
+Al Explanation l
+r
+
+~
+a
+
+° Dataset
+2 *
+680 , ‘, “® Census
+< “© COMPAS
+
+a
+a
+
+  
+
+Mean Participant Accuracy (%)
+
+p
+So
+e
+
+ 
+
+ 
+
+60 70 80 90 60 70
+
+Mean Al Accuracy (%)
+
+80 90
+
+Figure 3: Mean AI accuracy (per participant) and mean par-
+ticipant accuracy by AI and AI Explanation and the two
+datasets. The shaded areas represent 95% confidence inter-
+vals.
+
+AI Accuracy and Participant Decision-Making
+Accuracy
+
+We also evaluated the effect of the randomly varied AI ac-
+curacy for each participant on their decision-making accu-
+racy. We used linear regression to analyze this relationship,
+specifying participant accuracy as the dependent variable
+and the following as independent variables: mean AI accu-
+racy (per participant), AI condition, and dataset condition,
+see Figure 3. Regressions are represented by the solid lines
+with the shaded areas representing 95% confidence inter-
+vals. The control condition is not included in the analysis
+or figure, because the accuracy of the AI is not relevant if
+no AI prediction is presented to the participant. The over-
+all regression model was significant with a large effect size,
+F (4,195) = 21.23,p < 0.001, Reajnsted = 0.29. Consis-
+tent with H. 2, there was a large main effect for AI accu-
+racy (3 = 0.70,p < 0.001, R? = 0.28). Also, there was a
+small AI accuracy and dataset interaction (8 = —0.07,p <
+0.01, R? = 0.03), reflecting the same interaction depicted
+in Figure 2. There were no significant regression differences
+for dataset or AI versus AI Explanation, ps > 0.60; there
+was no significant effect of dataset because it largely drove
+Al accuracy. Note it is not just that participants perform bet-
+ter with the higher mean AI accuracy of the Census dataset,
+both datasets had large positive relationships with partici-
+pant accuracy and corresponding mean AI accuracy shown
+in Figure 3.
+
+Outperforming the AI Accuracy An interesting ques-
+tion is whether the combination of AI and human decision-
+making can outperform either alone. The previous analy-
+ses showed that the addition of AI prediction information
+improved human performance over controls with humans
+alone. We also evaluated how often the human decision-
+making accuracy outperformed the accuracy of the cor-
+responding mean AI prediction accuracy, which was ex-
+perimentally manipulated. Although most participants per-
+ 
+
+ 
+
+ 
+
+ 
+
+| Dataset/Condition AI AT Explanation
+Census 0 1
+COMPAS 10 3
+
+ 
+
+ 
+
+ 
+
+Table 1: Number of participants with decision accuracy ex-
+ceeding their mean AI accuracy.
+
+Following Al Recommendations
+
+ 
+
+ 
+
+90
+xt
+2
+= 80
+6
+S Dataset
+C @® Census
+> -® Compas
+c
+5 70
+2
+Oo
+a
+
+60
+
+Al Correct Al Incorrect
+Condition
+
+Figure 4: Mean proportion of participant choices match-
+ing AI prediction as a function of whether the AI cor-
+rect/incorrect and the dataset condition. Error bars repre-
+sent 95% confidence intervals. To simplify this figure, re-
+sults were collapsed for the AI and AI Explanation condi-
+tions which did not have a significant main effect, p = 0.62.
+
+formed well above chance, only a relatively small number
+of participants had decision accuracy exceeding their mean
+AI prediction (7% or 14 out of 200). This result largely sup-
+ports H. 3 and also shown above in Figure 3 where each dot
+represents an individual; and dots above the black dashed
+line show the participants that outperformed their mean AI
+prediction. The black dashed line shows equivalent perfor-
+mance for mean AI accuracy and mean participant accuracy.
+
+Adherence to AI Model Predictions Participants fol-
+lowed the AI predictions more often when the AI was correct
+versus when the AI was incorrect, indicating some recogni-
+tion of when the AI makes bad predictions (see Figure 4,
+F(1,196) = 36.15,p < 0.001,72 = 0.16). This was con-
+sistent with participant sensitivity to AI recommendations,
+evidence for H. 2. Also, participants were better able to rec-
+ognize correct vs. incorrect AI predictions when they were
+in the Census condition, demonstrated in the significant in-
+teraction between AI correctness and dataset, F(1,196) =
+9.01,p < 0.01, 72 = 0.04. None of the remaining ANOVA
+results were significant, ps > 0.16. Thus, there was no ev-
+idence for higher adherence to recommendations with ex-
+plainable AI, which rejected H. 5.
+
+6623
+
+Confidence Ratings
+4.00
+
+o
+x
+a
+
+Dataset
+
+® Census
+-—® COMPAS
+
+Mean Confidence Rating
+o
+a
+a
+
+o
+N
+o
+
+3.00
+
+ 
+
+Control Al Explanation
+
+Al
+Al Condition
+
+Figure 5: Mean participant confidence ratings in each AI
+condition. Error bars represent 95% confidence intervals.
+
+Confidence Ratings
+
+We found that AI (without and with explanation) resulted
+in slightly increased mean confidence. There was a small
+effect of AI condition on mean confidence (see Figure 5,
+F (2,294) = 3.58,p = 0.03, 7? = 0.02). Post hoc tests
+indicated participants had significantly lower mean confi-
+dence in the control condition than AI, p < 0.03, but there
+were no statistical differences for other pairwise compar-
+isons, ps > (0.25. This contradicted H. 6, and there was
+no evidence of a confidence increase with explanations. In
+addition, there was no evidence for a main effect of dataset
+condition or interaction, ps > 0.84.
+
+Confirming H. 7, we found a positive relationship for
+accuracy and confidence rating within individuals indicat-
+ing that participants’ confidence ratings were fairly well-
+calibrated with their actual decision accuracy. We calculated
+each participant’s mean accuracy at each confidence rating
+they used, and then conducted a repeated measures corre-
+lation (Bakdash and Marusich 2017) (rpm = 0.48,p <
+0.001).
+
+Additional Results
+
+We also assessed reaction time and summarize self-reported
+decision-making strategies. These results are exploratory,
+there were no specific hypotheses. There was no significant
+main effect of AI condition on participants’ reaction time
+(F(2, 294) = 2.13, p = 0.12, 7° = 0.01). There was only
+a main effect of dataset condition (F'(1, 294) = 28.52,p <
+0.001, 72 = 0.09), where participants took an average of
+1600 ms longer in the Census condition than the COMPAS
+condition (see Figure 6). This effect was most likely due to
+the Census dataset having more variables for each instance
+than the COMPAS dataset, and thus requiring more reading
+time on each trial. The addition of an explanation did not
+meaningfully increase reaction time over an AI prediction
+only.
+
+Subjective measures, such as self-reported strategies and
+measures of usability, often diverge from objective measures
+of human performance (Andre and Wickens 1995; Nisbett
+and Wilson 1977) such as actual decisions (Bucinca et al.
+Reaction Time
+8000
+
+(ms)
+
+6000
+
+ime
+
+Dataset
+
+® Census
+= Compas
+
+4000
+
+Mean Reaction Ti
+
+2000
+
+Control Al Explanation
+
+Al
+Al Condition
+
+Figure 6: Mean reaction time in each AI and dataset condi-
+tion. Error bars represent 95% confidence intervals.
+
+2020). Participants self-reported varying strategies to make
+their decisions, yet there was a clear benefit for AI predic-
+tion (without and with explanation). In the AI and AI expla-
+nation conditions: n = 80 indicated using the data without
+mentioning AI, n = 39 reported using a combination of the
+data and the AI, and only n = 16 said they primarily used,
+trusted, or followed the AI. Despite limited self-reported
+use of the AI in the two relevant conditions, decision ac-
+curacy was higher with AI (Figure 2), strongly associated
+with AI accuracy (Figure 3), and there was some sensitivity
+to whether the AI was followed when it was correct versus
+incorrect (Figure 4). Nearly 80% of user comments could be
+coded, blank and nonsense responses could not be coded.
+
+Discussion
+
+Our results show providing an AI prediction enhances hu-
+man decision accuracy, but in opposition to the hypotheses
+adding an explanation positively impact decisions and in-
+crease the ability to outperform the AI. This finding is in
+line with some previous studies that also found no added
+benefit for explanation over AI prediction alone (Green and
+Chen 2019; Poursabzi-Sangdeh et al. 2018; Zhang, Liao, and
+Bellamy 2020). This suggests that it was not the simplicity
+of the decision-making task that accounts for the opposite
+findings in Bucinca et al. (2020) and Lai and Tan (2019),
+since the current study also uses a relatively straightforward
+binary decision. Rather, it may be the case that tasks with
+highly intuitive datasets are required for explanation to im-
+prove performance. Future work may address this question
+directly.
+
+One possible explanation for findings of no added bene-
+fit of explanation is that providing more information, even if
+task-relevant, does not necessarily improve human decision-
+making accuracy (Gigerenzer and Brighton 2009; Goldstein
+and Gigerenzer 2002; Nadav-Greenberg and Joslyn 2009).
+This phenomenon is attributed to cognitive limitations and
+people using near-optimal strategies, and corresponds with
+Poursabzi-Sangdeh et al.’s (2018) findings that explanation
+caused information overload, reducing people’s ability to de-
+tect AI mistakes. However, their study and most other papers
+did not use the speeded response paradigm we used here,
+
+6624
+
+suggesting this was not solely attributable to participants re-
+sponding as quickly as possible.
+
+The lack of a significant, practically-relevant effect for
+explainable AI was not due to lack of statistical power or
+ceiling performance - nearly all participants consistently
+performed above chance, but well below perfect accuracy.
+These findings also illustrate the need to compare decision-
+making with explainable AI to other conditions including no
+Al and AI prediction without explanation. If we did not have
+an AI only (decision aid) condition a reasonable but flawed
+inference would have been that explainable AI enhances de-
+cisions.
+
+Limitations The present findings have limited generaliz-
+ability to decision-making with other datasets and explain-
+able AI techniques. For example, the effectiveness of ex-
+planations, or lack thereof, for human decision-making may
+depend on a variety of factors: the specific explanation tech-
+nique, the properties of the dataset, and the task itself (such
+as probabilistic predictions vs two choice decisions). Nev-
+ertheless, this paper demonstrates that one cannot assume
+explainable AI will necessary improve human decisions and
+the need to evaluate objective measures, of human perfor-
+mance, in explainable AI.
+
+Conclusions and Future Work
+
+Much of the existing research on explainable AI focuses on
+the usability, trust, and interpretability of the explanation.
+In this paper, we fill in the research blank by investigat-
+ing whether explainable AI can improve human decision-
+making. We design a behavioral experiment in which each
+participant recruited using Amazon Mechanical Turk is
+asked to complete 50 test trials in one of six experimental
+conditions. Our experiment is conducted on two real datasets
+to compare human decision with an AI prediction and an AT
+with explanation. Our experimental results demonstrate that
+AI predictions alone can generally improve human decision
+accuracy, while the advantage of explainable AI is not con-
+clusive. We also show that users tend to follow AI predic-
+tions more often when the AI predictions are accurate. In
+addition, AI with or without explanation can increase the
+confidence of human users which, on average, was well-
+calibrated to user decision accuracy.
+
+In the future, we plan to investigate whether explainable
+AI can help improve fairness, safety, and ethics by increas-
+ing the transparency of AI models. Human decision-making
+is a key outcome measure, but is certainly not the only goal
+for explainable AI. We also plan to explore the difference
+of distributions in the error space between human decision
+and AI predictions, especially at decision boundaries. Also,
+whether human-machine collaboration is feasible through
+interactions in closed feedback loops. We will also expand
+our datasets to include other data format such as images.
+
+Acknowledgments
+
+The views and conclusions contained in this document are
+those of the authors and should not be interpreted as rep-
+resenting the official policies, either expressed or implied,
+of the U.S. Army Combat Capabilities Development Com-
+mand Army Research Laboratory or the U.S. Government.
+The U.S. Government is authorized to reproduce and dis-
+tribute reprints for Government purposes notwithstanding
+any copyright notation. M.K. and Y.Z. were supported by
+ARL under grant W911NF-17-1-0356. We thank Jason Rad-
+ford for help with implementing the experiment on the Vol-
+unteer Science platform and Katelyn Morris for indepen-
+dently coding the comments. We also thank Dan Cassenti for
+input on the paper, and Jessica Schultheis and Alan Breacher
+for editing the paper.
+
+Ethical Impact
+
+For many important critical decisions, depending on the AI
+model prediction may not be enough. Furthermore, many re-
+cent regulations such as GDPR (Parliament and Council of
+the European Union 2016) allow potential audit of AI pre-
+diction by a human. Therefore, it is critical to understand
+whether the explanations provided by explainable AI meth-
+ods improve the overall prediction accuracy, and help human
+decision makers to detect errors. Our results indicate that al-
+though the existence of an AI model may improve human
+decision-making, the explanations provided may not auto-
+matically improve the accuracy. We believe that our results
+could help ignite the needed research to explore how to bet-
+ter integrate explanations, AI models and human operators
+to have better outcomes compared AI models or humans
+alone.
+
+Another consideration is the data itself, models created
+using systematically biased data will simply mirror and rein-
+force patterns inherent to the data. For example, in the COM-
+PAS dataset a high risk score for re-offending has far lower
+accuracy for black defendants than white ones (Angwin
+et al. 2016). Furthermore, multiple AI systems for predicting
+criminal activity have relied on dirty” data with racial bias
+due to flawed polices and procedures (Richardson, Schultz,
+and Crawford 2019). One solution may be to combine ap-
+proaches for fair machine learning (Corbett-Davies and Goel
+2018) with explainable AI, while considering dataset prop-
+erties such as its provenance.
+
+References
+
+Adadi, A.; and Berrada, M. 2018. Peeking inside the black-
+box: A survey on Explainable Artificial Intelligence (XAI).
+IEEE Access 6: 52138-52160.
+
+Alufaisan, Y.; Kantarcioglu, M.; and Zhou, Y. 2016. De-
+tecting Discrimination in a Black-Box Classifier. In In Pro-
+ceedings of the 2016 IEEE 2nd International Conference on
+Collaboration and Internet Computing (CIC). TEEE.
+
+Alufaisan, Y.; Zhou, Y.; Kantarcioglu, M.; and Thuraising-
+ham, B. 2017. From Myths to Norms: Demystifying Data
+Mining Models with Instance-Based Transparency. In In
+Proceedings of the 2017 [EEE 3rd International Conference
+on Collaboration and Internet Computing (CIC). IEEE.
+
+Andre, A. D.; and Wickens, C. D. 1995. When users want
+what’s not best for them. Ergonomics in design 3(4): 10-14.
+
+6625
+
+Angwin, J.; Larson, J.; Mattu, S.; and Kirchner, L. 2016.
+Machine Bias. https://www.propublica.org/article/machine-
+bias-risk-assessments-in-criminal- sentencing.
+
+Bakdash, J. Z.; and Marusich, L. R. 2017. Repeated mea-
+sures correlation. Frontiers in psychology 8: 1-13. doi:
+10.3389/fpsyg.2017.00456.
+
+Buginca, Z.; Lin, P.; Gajos, K. Z.; and Glassman, E. L. 2020.
+Proxy Tasks and Subjective Measures Can Be Misleading
+in Evaluating Explainable AI Systems. In Proceedings of
+the 25th International Conference on Intelligent User Inter-
+faces, TUI’20, 454-464. doi:10.1145/3377325.3377498.
+
+Corbett-Davies, S.; and Goel, S. 2018. The measure and
+mismeasure of fairness: A critical review of fair machine
+learning. arXiv preprint arXiv: 1808.00023 .
+
+Cummings, M. M. 2014. Man versus machine or man+ ma-
+chine? [EEE Intelligent Systems 29(5): 62-69.
+
+Datta, A.; Sen, S.; and Zick, Y. 2016. Algorithmic Trans-
+parency via Quantitative Input Influence: Theory and Ex-
+periments with Learning Systems. In In Proceedings of the
+2016 IEEE Symposium on Security and Privacy (SP), 598-
+617.
+
+Dawes, R. M.; Faust, D.; and Meehl, P. E. 1989. Clinical
+versus actuarial judgment. Science 243(4899): 1668-1674.
+
+De Leeuw, J. R. 2015. jsPsych: A JavaScript library for cre-
+ating behavioral experiments in a Web browser. Behavior
+research methods 47(1): 1-12.
+
+Doshi-Velez, F; and Kim, B. 2017. Towards a rigorous
+science of interpretable machine learning. arXiv preprint
+arXiv: 1702.08608 .
+
+Dressel, J.; and Farid, H. 2018. The accuracy, fairness,
+and limits of predicting recidivism. Science advances 4(1):
+eaao5580.
+
+Dua, D.; and Graff, C. 2017. UCI Machine Learning
+Repository. URL http://archive.ics.uci.edu/ml. Accessed on
+05.2020.
+
+Edwards, L.; and Veale, M. 2018. Enslaving the algorithm:
+From a “Right to an Explanation” to a “Right to Better De-
+cisions”? IEEE Security & Privacy 16(3): 46-54.
+
+Gigerenzer, G.; and Brighton, H. 2009. Homo heuristicus:
+Why biased minds make better inferences. Topics in cogni-
+tive science 1(1): 107-143.
+
+Goldstein, D. G.; and Gigerenzer, G. 2002. Models of eco-
+logical rationality: the recognition heuristic. Psychological
+review 109(1): 75.
+
+Green, B.; and Chen, Y. 2019. The Principles and Limits
+of Algorithm-in-the-Loop Decision Making. Proc. ACM
+Hum.-Comput. Interact. 3(CSCW). doi:10.1145/3359152.
+URL https://doi.org/10.1145/3359152.
+
+Gunning, D. 2017. Explainable artificial intelli-
+gence (xai). URL https://www.darpa.mil/attachments/
+XAIProgramUpdate.pdf. Accessed on 05.2020.
+
+Hoffman, R. R.; Mueller, S. T.; Klein, G.; and Litman, J.
+2018. Metrics for explainable ai: Challenges and prospects.
+arXiv preprint arXiv: 1812.04608 .
+Kahneman, D. 2011. Thinking, fast and slow. Macmillan.
+
+Keil, F C. 2006. Explanation and understanding. Annu. Rev.
+Psychol. 57: 227-254.
+
+Kleinmuntz, D. N.; and Schkade, D. A. 1993. Informa-
+tion displays and decision processes. Psychological Science
+4(4): 221-227.
+
+Lage, I.; Chen, E.; He, J.; Narayanan, M.; Kim, B.; Ger-
+shman, S.; and Doshi-Velez, F 2019. An evaluation of
+the human-interpretability of explanation. arXiv preprint
+arXiv: 1902.00006 .
+
+Lai, V.; and Tan, C. 2019. On human predictions with expla-
+nations and predictions of machine learning models: A case
+study on deception detection. In Proceedings of the Confer-
+ence on Fairness, Accountability, and Transparency, 29-38.
+
+Lakkaraju, H.; and Bastani, O. 2020. “How do I fool you?”:
+Manipulating User Trust via Misleading Black Box Expla-
+nations. In Proceedings of the AAAI/ACM Conference on
+Al, Ethics, and Society, 79-85. ACM. doi:10.1145/3375627.
+3375833.
+
+Lou, Y.; Caruana, R.; and Gehrke, J. 2012. Intelligible Mod-
+els for Classification and Regression. In KDD’/2, Beijing,
+China. ACM.
+
+Miller, T. 2019. Explanation in artificial intelligence: In-
+sights from the social sciences. Artificial Intelligence 267:
+1-38.
+
+Nadav-Greenberg, L.; and Joslyn, S. L. 2009. Uncertainty
+forecasts improve decision making among nonexperts. Jour-
+nal of Cognitive Engineering and Decision Making 3(3):
+209-227.
+
+Nisbett, R. E.; and Wilson, T. D. 1977. Telling more than we
+can know: verbal reports on mental processes. Psychological
+review 84(3): 231.
+
+Parliament and Council of the European Union. 2016. Reg-
+ulation (EU) 2016/679 of the European Parliament and of
+the Council of 27 April 2016 on the Protection of Natu-
+tal Persons with Regard to the Processing of Personal Data
+and on the Free Movement of such Data, and Repealing
+Directive 95/46/ EC (General Data Protection Regulation).
+https://eur-lex.europa.eu/eli/reg/2016/679/oj.
+
+Poursabzi-Sangdeh, F.; Goldstein, D. G.; Hofman, J. M.;
+Vaughan, J. W.; and Wallach, H. 2018. Manipulat-
+ing and measuring model interpretability. arXiv preprint
+arXiv: 1802.07810 .
+
+Radford, J.; Pilny, A.; Reichelmann, A.; Keegan, B.; Welles,
+B. F; Hoye, J.; Ognyanova, K.; Meleis, W.; and Lazer, D.
+2016. Volunteer science: An online laboratory for experi-
+
+ments in social psychology. Social Psychology Quarterly
+79(4): 376-396.
+
+Ribeiro, M. T.; Singh, S.; and Guestrin, C. 2016. ” Why
+should i trust you?” Explaining the predictions of any clas-
+sifier. In Proceedings of the 22nd ACM SIGKDD interna-
+tional conference on knowledge discovery and data mining,
+1135-1144.
+
+6626
+
+Ribeiro, M. T.; Singh, S.; and Guestrin, C. 2018. Anchors:
+High-precision model-agnostic explanations. In Thirty-
+Second AAAI Conference on Artificial Intelligence.
+
+Richardson, R.; Schultz, J. M.; and Crawford, K. 2019. Dirty
+data, bad predictions: How civil rights violations impact po-
+lice data, predictive policing systems, and justice. NYUL
+Rev. Online 94: 15.
+
+Selvaraju, R. R.; Cogswell, M.; Das, A.; Vedantam, R.;
+Parikh, D.; and Batra, D. 2017. Grad-CAM: Visual Explana-
+tions from Deep Networks via Gradient-Based Localization.
+In 2017 IEEE International Conference on Computer Vision
+(ICCV), 618-626.
+
+Shmueli, G.; et al. 2010. To explain or to predict? Statistical
+science 25(3): 289-310.
+
+Skitka, L. J.; Mosier, K. L.; and Burdick, M. 1999. Does
+automation bias decision-making? International Journal of
+Human-Computer Studies 51(5): 991-1006.
+
+Sokol, K. 2019. Fairness, Accountability and Transparency
+in Artificial Intelligence: A Case Study of Logical Predictive
+Models. In Proceedings of the 2019 AAAIACM Conference
+on Al, Ethics, and Society, 541-542.
+
+Wang, T.; Rudin, C.; Doshi-Velez, F; Liu, Y.; Klampfi,
+E.; and MacNeille, P. 2017. A Bayesian Framework for
+Learning Rule Sets for Interpretable Classification. Jour-
+nal of Machine Learning Research 18(70): 1-37. URL
+http://jmlr.org/papers/v 18/16-003 html.
+
+Zhang, Y.; Liao, Q. V.; and Bellamy, R. K. E. 2020. Effect
+of Confidence and Explanation on Accuracy and Trust Cal-
+ibration in AI-Assisted Decision Making. In Proceedings
+of the 2020 Conference on Fairness, Accountability, and
+Transparency, FAT* ’20, 295-305. doi:10.1145/335 1095.
+3372852.
+

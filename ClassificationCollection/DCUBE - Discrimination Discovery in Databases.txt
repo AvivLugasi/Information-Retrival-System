@@ -1,0 +1,840 @@
+DCUBE: Discrimination Discovery in Databases
+
+Salvatore Ruggieri
+
+Dino Pedreschi
+
+Franco Turini
+
+Dipartimento di Informatica, Universita di Pisa
+L.go B. Pontecorvo 3, 56127 Pisa, Italy
+{ruggieri,pedre,turini}@di.unipi.it
+
+ABSTRACT
+
+Discrimination discovery in databases consists in finding un-
+fair practices against minorities which are hidden in a dataset
+of historical decisions. The DCUBE system implements the
+approach of [5], which is based on classification rule extrac-
+tion and analysis, by centering the analysis phase around an
+Oracle database. The proposed demonstration guides the
+audience through the legal issues about discrimination hid-
+den in data, and through several legally-grounded analyses
+to unveil discriminatory situations. The SIGMOD attendees
+will freely pose complex discrimination analysis queries over
+the database of extracted classification rules, once they are
+presented with the database relational schema, a few ad-
+hoc functions and procedures, and several snippets of SQL
+queries for discrimination discovery.
+
+Categories and Subject Descriptors
+H.2.8 [Database Applications]: Data Mining
+
+General Terms
+Algorithms, Legal Aspects
+
+Keywords
+
+Discrimination, Classification Rules
+
+1. INTRODUCTION
+
+Civil right laws worldwide prohibit discrimination on the
+basis of race, color, religion, nationality, sex, marital sta-
+tus, age and pregnancy in a number of settings, including:
+credit and insurance; sale, rental, and financing of housing;
+personnel selection and wages; access to public accommo-
+dations, education, nursing homes, adoptions, and health
+care [2, 6]. A general principle is to consider group under-
+representation as a quantitative measure of the qualitative
+requirement that people in a group are treated “less favor-
+ably” than others, or such that “a higher proportion of peo-
+ple without the attribute comply or are able to comply” to a
+
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies are
+not made or distributed for profit or commercial advantage and that copies
+bear this notice and the full citation on the first page. To copy otherwise, to
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.
+
+SIGMOD’10, June 6-11, 2010, Indianapolis, Indiana, USA.
+
+Copyright 2010 ACM 978-1-4503-0032-2/10/06 ...$10.00.
+
+1127
+
+qualifying criterium. With the advent of automatic decision
+support systems, such as credit scoring systems, the ease of
+data collection opens several challenges to data analysts for
+the fight against discrimination. Discrimination discovery in
+databases consists in the actual discovery of discriminatory
+situations and practices hidden in a large amount of his-
+torical decision records. The process of data analysis must
+then be supported by tools that implement legally-grounded
+measures and reasonings.
+
+The first approach to discrimination discovery from a com-
+puter science perspective is based on extracting and reason-
+ing about classification rules [4, 5]. The various concepts and
+analyses, originally implemented as a stand-alone program
+for achieving the best performances, have been re-designed
+around an Oracle database, storing extracted itemsets and
+rules, and a collection of functions, procedures and snippets
+of SQL queries that implement the various legal reasonings
+for discrimination analysis. The resulting implementation,
+called DCUBE, can be accessed and exploited by a wider
+audience if compared to a stand-alone monolithic applica-
+tion. Discrimination discovery is an interactive and itera-
+tive process, where analyses assume the form of deductive
+reasoning over extracted rules. An appropriately designed
+database, with optimized indexes, functions and query snip-
+pets, can be welcome by a large audience of users, including
+owners of socially-sensitive decision data, government anti-
+discrimination analysts, technical consultants in legal cases,
+researchers in social sciences, economics and law.
+
+We describe the architecture of DCUBE, and a demon-
+stration which: (i) introduces the audience to the issue of
+discrimination discovery, by making them aware of the legal
+issues (their own!) data can hide, and to an approach for
+discrimination analysis; (2) guides the audience through the
+processes for discovering direct discrimination, affirmative
+actions, indirect discrimination, favoritism and respondent
+argumentation; (3) allows the participants to directly inter-
+act by posing specific queries, through standard SQL, over
+the DCUBE database. Case studies for the demonstration
+include a few publicly available datasets on loans, such as
+the German credit dataset’ and the PKDD 1999 financial
+dataset”.
+
+2. A5MINUTES TUTORIAL
+
+The demonstration begins with a brief introduction to the
+concepts and methods for discrimination discovery following
+the approach of [4, 5].
+
+lhetp ://archive.ics.uci.edu/ml
+*http://lisp.vse. cz/challenge
+ 
+
+Attributes
+
+ 
+
+PNDITEMSETS
+
+ 
+
+on personal properties: checking account status, dura-
+tion, savings status, property magnitude, type of hous-
+ing
+
+on credits: credit history, credit request purpose,
+credit request amount, installment commitment, ex-
+isting credits, other parties, other payment
+
+on employment: job type, employment since, number
+of dependents, own telephone
+
+on personal status: personal status and gender, age,
+resident since, foreign worker
+
+P* iD
+
+ 
+
+Decision
+
+ 
+
+The decision attribute is “class”, with values good
+(grant credit) and bad (deny credit)
+
+ 
+
+Potentially Discriminatory Items
+
+ 
+
+personal_status=female div/sep/mar (female non-
+
+ 
+
+* LEN
+
+* CHECKING_STATUS:
+
+* DURATION
+
+* CREDIT_HISTORY
+
+* PURPOSE
+
+* GREDIT_AMOUNT
+
+* SAVINGS_STATUS
+
+* EMPLOYMENT
+
+* INSTALLMENT_COMMITMENT|
+
+ 
+
+PDRULE
+
+ 
+
+PDITEMSETS:
+
+ 
+
+IF ASET NUMBER (38)
+
+F 8SET NUMBER (8)
+c NUMBER (32)
+ct CONTABLE
+
+ 
+
+ 
+
+ 
+
+ 
+
+* PERSONAL_STATUS
+
+ 
+
+* OTHER_PARTIES
+* RESIDENCE_SINCE
+
+* PROPERTY_MAGNITUDE
+* AGE
+
+* OTHER_PAYMENT_PLANS
+* HOUSING
+
+* EXISTING_CREDITS
+
+* JOB
+
+* NUM_DEPENDENTS:
+* OWN_TELEPHONE
+
+ 
+
+ 
+
+@ PDRULE_IOXC
+
+@ PDRULE_SUPPORT_IDX
+ PDRULE_CONF_IDX
+ PDRULE_BASECONF_IDX
+ PDRULE_ELIFT_IDX
+
+@ PDRULE_SLIFT_IDX
+
+@ PDRULE_OLIFT_IDX
+
+ 
+
+ 
+
+ 
+
+ 
+
+ARULE
+
+ 
+
+ 
+
+ 
+
+F BSET NUMBER G8)
+F ASET NUMBER @8)
+cT CONTABLEBRIEF
+
+ 
+
+ 
+
+@ ARULE_SUPPORT_IDX
+@ ARULE_CONF_IDX
+
+ 
+
+ 
+
+ 
+
+iP * ID
+* LEN
+* CHECKING_STATUS
+* DURATION
+* CREDIT_HISTORY
+* PURPOSE
+* CREDIT_AMOUNT
+* SAVINGS_STATUS
+* EMPLOYMENT
+* INSTALLMENT_COMMITMENT
+* PERSONAL_STATUS
+* OTHER_PARTIES
+* RESIDENCE_SINCE
+* PROPERTY_MAGNITUDE
+* AGE
+* OTHER_PAYMENT_PLANS
+* HOUSING
+* EXISTING_CREDITS
+* Jo8
+
+* NUM_DEPENDENTS
+* OWN_TELEPHONE
+
+ 
+
+ 
+
+ 
+
+single)
+
+age=(52.6-inf) (senior people)
+job=unemp/unskilled non res (unskilled or unem-
+ployed)
+
+foreign_worker=yes (foreign workers)
+
+Favored Groups Items
+
+personal_status=male single (male and single}
+age=(41.4-52.6] (age around 40s)
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Table 1: The German credit case study
+
+Classification and association rules for discrimination dis-
+covery are extracted from a dataset of historical decision
+records, namely a database table with attributes used for
+a decision and the decision outcome itself. Protected by-
+law groups are denoted by a collection of itemsets called
+potentially discriminatory (PD), while contexts where dis-
+crimination may occur are described by potentially non-
+discriminatory (PND) itemsets. Consequently, the extracted
+classification rules are partitioned into PD rules, containing
+a PD itemset, and PND rules, with no PD itemset.
+
+PD rules of the form A,B-— C, where A is a protected
+by law group and B is a context, can be searched for cases of
+possible discrimination where some quantitative measure of
+discrimination exceeds a legally-grounded threshold. A few
+measures of discrimination based on existing laws, jurispru-
+dence and social studies are introduced in [4, 5] and defined
+over the 4-fold contingency table of a PD rule, including:
+extended lift, selection lift, odds lift. Tests of statistical
+significance of the various measures are introduced in [4].
+When C is the negative class, e.g., deny credit, this search
+unveils discrimination against protected-by-law groups.
+When C is the positive class, e.g., grant credit, this search
+unveils affirmative actions, namely policies favoring minori-
+ties, sometimes encouraged or enforced by laws. Finally, by
+defining PD itemsets to denote favored groups, the same
+process of analysis can support the discovery of favoritism.
+
+PND rules D, B — C, where both D and B are PND item-
+sets, are subject to analysis as well, since they may reveal
+apparently neutral practices, known as indirect discrimina-
+tion, whose effects on protected-by-law groups are the same
+of some PD rule A, B — C — which may not be extracted
+because data does not contain the attributes in A, e.g., the
+race of an applicant to a loan. To discover indirect discrimi-
+nation, some additional background knowledge must be ex-
+ploited, such as census data on the distribution of population
+over the territory. [5] assumes that background knowledge
+is provided as a set of association rules of the form B — A,
+where B is a PND and A is a PD itemset.
+
+ 
+
+1128
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+* FOREIGN.WORKER gy * FOREIGN_WORKER 7
+AN
+PNORULE DECOE
+F  BSET NUMBER G6) p AREER)
+G pee eatce * TEM VARCHAR? (256 BYTE)
+CT _CONTABLEBRIEF Cotes ae
+
+@ PNDRULE_IDXC IsPD
+ISPND
+
+ISCLASS.
+
+CHAR (1 BYTE)
+CHAR (1 BYTE)
+CHAR (1 BYTE)
+
+® PNDRULE_SUPPORT_IOX
+® PNDRULE_CONF_IDX
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Figure 1: Database schema generated by DCUBE
+for the German credit case study
+
+3. DEMONSTRATION SCENARIO
+
+The “5 minutes tutorial” on discrimination discovery pro-
+vides the audience with the basic definitions for understand-
+ing the DCUBE functionalities. The system architecture of
+DCUBE is presented next, as discussed in the Section 4.
+
+The demonstration then proceeds by running the rule ex-
+traction phase of DCUBE on the case study datasets (see
+Table 1). The populated database is navigated to make the
+participants acquainted with its schema (see Fig. 1) The
+user interface of DCUBE is integrated within Oracle SQL
+Developer’, hence the demonstration will run within a sin-
+gle GUI. The coding of itemsets and rules in the database
+is presented together with Oracle user defined functions for
+coding/decoding and for splitting itemsets into their PD and
+PND parts. Also, the Oracle user defined type modelling 4-
+fold contingency tables is presented together with sample
+usages of its methods for computing a few legally-grounded
+measures of discrimination. Finally, utility views, function
+indexes, and bitmap join indexes defined on the database to
+optimize query performances are briefly surveyed.
+
+The main part of the demonstration consists of presenting
+snippets of SQL queries, produced by DCUBE (see Fig. 2),
+that provide an answer to typical discrimination discovery
+issues. In increasing level of complexity, we will deal with:
+
+1. Direct discrimination discovery. It consists of
+studying the distribution of a discrimination measure
+over the set of PD classification rules, with the intent
+to select and interpret the rules with the highest mea-
+sure values. The users are allowed to ask queries such
+as “How much have women been under-represented in
+obtaining the loan?” or “List under which conditions
+blacks were suffering a selection lift higher than 1.25%
+in our recruitment data”. While DCUBE comes with
+
+Shttp ://www.oracle.com/technology/products/database/sql_
+developer
+
+“This threshold is known as the “four-fifths” rule [6](d).
+ 
+
+ 
+
+Glawe © |) snippets tc
+|PERB GR Zuea Gdcute ~|| 7
+GSELECT d3pddecode(aset) AS aset, -- PD itemset A —||DCUBE - Direct Discrimination a
+d3pnddecode (bset) AS bset, -- PND itemset B PAS AEST) AUT AL SUC
+*clagg=bad" AS c, -- negative decision c List a-directly discriminatory rules and decode
+= = % PD measure distribution - extended lift
+TRUNC (xr.ct.slift(},2}) AS measure -- selection lift measure
+
+FROM pdrule cr JOIN pnditemsets pnd
+WHERE r.c = d3encode(*class=bad")
+AND r.ct.slift() > 2.5
+
+AND pnd-len =2
+
+ORDER BY r.ct.slift() DESC;
+
+ON r.bset = pnd.id
+
+-- minimum measure value
+-- maximum size of B
+
+-- descending order
+
+PD rule distribution per decision
+
+| PD measure distribution - selection lift
+
+PD measure distribution - odds lift
+
+PD measure distribution statistical significance
+List a-directly discriminatory rules per item(s¢
+Define a new measure on contingency tables
+
+ 
+
+ 
+
+a=
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+D® Query Result -
+sf & @ & sa | all Rows Fetched: 6 in 0.037 seconds
+ASET [@_eser fac (a mJ
+
+1 personal_status=female... purpose=new_car employment=It_1 class=bad = 3,67 *
+2 personal_status=female... employment=from_1_It_4 property_magnitude=real_estate class=bad 2,9
+3° personal_status=female... purpose=furniture_or_equipment employment=from_1_It_4 class=bad 275
+4 personal_status=female... savings_status=no_known_savings installment_commitment=gt_2d8 class=bad 2,61
+5 personal_: fe I it Hh Lo Je_1d6 own_teleph class=bad 2,55
+6 personal_status=female... checking_status=It_0 property_magnitude=real_estate class=bad = 2,54
+
+Figure 2: SQL query snippet screenshot
+
+a few legally-grounded measures predefined, we show
+how the user can easily define new measures by adding
+methods to an Oracle user defined data type.
+
+. Affirmative actions and favoritism discovery. Af
+firmative action discovery is shown to be a variant of
+direct discrimination discovery. It can answer ques-
+tions such as “List cases where our university admis-
+sion policies actually favored blacks”. On the contrary,
+favoritism discovery requires to re-process the rule ex-
+traction phase, since the PD itemsets now include sus-
+piciously favored groups. It can answer questions such
+as “Under which conditions white males are given the
+best mortgage rate in comparison to the average?”
+
+. Indirect discrimination discovery. This is an in-
+ferential problem, where an explicit PD rule has to
+be derived starting from PND rules and background
+knowledge. We show how to add background knowl-
+edge into the DCUBE database in the form of associ-
+ation rules of the form B— A, such as “If resident in
+Indianapolis then black (25.4%)°”. Moreover, for test-
+ing and validation purposes, DCUBE allows the user
+to simulate the availability of a large set of background
+rules under the assumption that the dataset contains
+the PD items. In such a cases, all association rules of
+the form B — A with a specified minimum support are
+extracted from the dataset under analysis. The partic-
+jpants will be presented with two inference strategies
+introduced in [4, 5] as a means for posing indirect dis-
+crimination discovery questions in:
+
+e redlining analysis, such as “I don’t have the race
+attribute in my data, but have the ZIP of resi-
+dence. By adding background knowledge on the
+distribution of race over ZIP codes, infer cases
+where ZIP actually disguises race discrimination.”
+
+This sample rule is derived from the 2000 Census of Population
+and Housing (http://factfinder.census.gov}, which provides
+data at the detailed level of Zip Code Tabulation Areas.
+
+1129
+
+e discrimination through favoritism analysis, such
+as “My decision support system does not take into
+account the status of being a foreign worker when
+denying credit to an applicant. Are there any
+cases where actually such a statement has been
+deceived by disproportionately granting credit to
+local workers?”
+
+For the technically interested audience, the execution plans
+of the SQL query snippets can be presented and discussed.
+
+4. DCUBE ARCHITECTURE
+
+DCUBE supports the discrimination discovery process of
+Fig. 3. The user starts the DCUBE wizard through the
+Oracle SQL Developer GUI. The wizard allows for selecting
+the following inputs: (1) a relational table, view or SQL
+query from a JDBC data source, or from a CSV text file;
+(2) a minimum support threshold; (3) a list of PD items —
+with all other items treated as PND; (4) a list of class items;
+(5) a target Oracle schema. Additional inputs constraint
+the set of classification rules to be extracted by setting: the
+maximal size of a frequent itemset; the maximum support
+threshold; the maximal similarity threshold between items,
+after which two or more similar iterms are merged. Based on
+those inputs, DCUBE proceeds with the phases of mining,
+loading and querying.
+
+Mining. Data from the input table (1) is fetched and
+frequent itemsets [3] are extracted for the specific minimum
+support (2). Any system from the Frequent Itemset Mining
+Implementations repository® can be plugged in the DCUBE
+system. By default, the PATTERNIST algorithm [1] is
+adopted, which allows for specifying several types of con-
+straints over frequent itemsets. Starting from the extracted
+frequent itemsets, an implementation of the procedures de-
+signed in [4, 5] is adopted to compute classification rules
+whose consequent is in the list (4); to split the PD part of
+the antecedent of a rule accordingly to the list (3); to extract
+
+“http: //fimi.cs.helsinki.fi
+Dataset of historical
+decisions
+
+Groups of interest
+(discr./favoritisms)
+
+Rule
+~
+Frequent
+
+Itemset
+
+   
+
+ 
+
+DCUBE
+
+ 
+  
+
+   
+  
+
+ 
+
+ 
+
+     
+    
+ 
+ 
+ 
+       
+
+ 
+
+Mining
+SQL snippet
+Create & Load
+
+Confidence
+
+level for cached
+statistical tests
+
+   
+   
+  
+   
+    
+     
+   
+     
+
+Minimum
+support
+threshold
+
+Database
+Create & Load
+
+Discrimination
+Measure
+
+— Measure
+
+PD & PND rules threshold
+A,BoC
+
+0,B+C
+
+DBA
+
+ 
+
+SQL Query Snippets
+Utility Functions &
+Stored Procedures
+
+Discriminatory
+Patterns
+
+ABoC
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+Background
+Knowledge
+AR rules
+
+DBA
+
+   
+   
+
+Decision value
+(disor /aff, actions)
+
+Confidence level
+for statistical tests
+
+Figure 3: Analysis process supported by DCUBE
+
+the 4-fold contingency table of the PD classification rules.
+Also, association rules of the form B— A with minimum
+support (2) are extracted starting from frequent itemsets as
+a means to simulate the availability of background knowl-
+edge. Finally, a module written in the R” statistical soft-
+ware language is part of the DCUBE system for computing
+confidence intervals of the discrimination measures. Compu-
+tationally expensive calculations of confidence intervals (see
+[4] for a discussion) are cached.
+
+Loading All extracted rules are loaded in the target sche-
+ma (5), whose structure is generated by DCUBE starting
+from the input table columns (see Fig. 1). Basically, integer
+codes are assigned to items, to PD itemsets and to PND
+itemsets, with tables DECODE, PDITEMSETS and PN-
+DITEMSETS storing them respectively. Utility stored pro-
+cedures for coding, decoding and splitting an itemset into
+its PD and PND parts are created as well. PD rules are
+stored in the PDRULE table together with their 4-fold con-
+tingency tables, which is modelled by an Oracle user defined
+object data type called CONTABLE. Measures of discrimi-
+nation are implemented as methods over such a data type.
+Similarly, PND rules are loaded in the PNDRULE table,
+and association rules simulating background knowledge in
+the ARULE table. The user can add her own background
+knowledge in the form of association rules by inserting them
+into the ARULE table. Utility stored procedures are created
+to help the user in this task. Also, utility views are defined
+by DCUBE, such as the SUBITEMSETS view that relates
+an itemset code to the codes of its subitemsets.
+
+Querying The DCUBE wizard generates two dozens of
+optimized SQL query snippets, and store them in the SQL
+Developer snippets repository. Query snippets model typ-
+ical queries that an anti-discrimination analyst may be in-
+terested in. Intuitively, the user drags and drops a query
+snippet from the list of generated ones to the SQL query
+
+"hetp ://waw.R-project.org
+
+1130
+
+editor, modifies any parameter of the query (e.g., the mini-
+mum discrimination measure value to search rules for), and
+then runs the query against the database (see Fig. 2). This
+approach is effective both for the novice user, who is guided
+in her first steps, and for the experienced user, who can aug-
+ment the set of snippets generated by her own ones. The
+querying phase can be iterated by the analyst to explore the
+search space by varying: the contexts of possible discrimi-
+nation, the reference formal measures of discrimination, the
+minimum measure threshold for PD rules, the minimum con-
+fidence level in statistical significance of the measure values,
+the inference strategies for indirect discrimination, the sub-
+groups of minorities or favored people to look at.
+
+The whole mining-loading-querying process is iterated as
+far as the analysis require a re-extraction of classification
+rules, as when considering a different dataset, a lower min-
+imum support threshold, or a different group of people to
+reason about.
+
+5. CONCLUSIONS
+
+DCUBE is an analytical tool supporting the interactive
+and iterative process of discrimination discovery. The in-
+tended users of DCUBE include: owners of socially sensi-
+tive decision databases, anti-discrimination authorities and
+auditors, researchers in social sciences, economics and law.
+DCUBE re-implements the theoretical foundations presented
+in [4, 5] by centering the analysis phase around an Oracle
+database. This approach has the following benefits: mini-
+mization of the learning gap for data analysts already ac-
+quainted with relational databases; partial automation of
+the process of discrimination discovery through routinely
+scheduled executions of rule extraction and query snippets;
+efficiency of the query snippet executions; extensibility of
+the analysis, e.g., by defining additional measures and query
+snippets. An on-line demo is available from the DCUBE
+home page:
+
+http://kdd.di.unipi.it/dcube
+
+6. REFERENCES
+
+[1] F. Bonchi and C. Lucchese. Extending the
+state-ofthe-art of constraint-based pattern discovery.
+Data & Knowledge Engineering, 60(2):377-399, 2007.
+European Union Directives. (a) Racial Equality, (b)
+Employment Equality. http: //ec.europa. eu/-
+employment_social/fundamental_rights.
+
+J. Han, H. Cheng, D. Xin, and X. Yan. Frequent
+pattern mining: Current status and future directions.
+Data Mining and Know. Disc., 15(1):55-86, 2007.
+
+D. Pedreschi, S. Ruggieri, and F. Turini. Measuring
+discrimination in socially-sensitive decision records. In
+Proc. of SDM 2009, pages 581-592. SIAM, 2009.
+
+S. Ruggieri, D. Pedreschi, and F. Turini. Data mining
+for discrimination discovery. ACM Trans. on Know.
+Disc. from Data, 2010. To appear. Preliminary version
+appeared as Discrimination-aware data mining in Proc.
+of KDD 2008, pages 560-568.
+
+USS. Legislation. (a) Equal Credit Opportunity Act, (b)
+Fair Housing Act, (c) Intentional Employment
+Discrimination, (d) Equal Pay Act, (e) Pregnancy
+Discrimination Act. http: //www.usdoj.gov.
+
+&
+

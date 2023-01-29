@@ -1,0 +1,823 @@
+Good Explanation for Algorithmic Transparency
+Joy Lu, Dokyun “DK” Lee, Taewan Kim, David Danks
+Abstract
+Machine learning algorithms have gained widespread usage across a variety of domains, both
+in providing predictions to expert users and recommending decisions to everyday users. However,
+these AI systems are often black boxes, and end-users are rarely provided with an explanation of
+the algorithmic output, which could lead to a significant decrease in trust and willingness to use.
+The critical need for explanation and justification by AI systems has led to calls for algorithmic
+transparency, including the “right to explanation” in the EU General Data Protection Regulation
+(GDPR), which requires many companies to provide a meaningful explanation to involved parties.
+These initiatives all presuppose that we know what constitutes a meaningful or good explanation,
+but there has been limited research on this question in the context of AI systems. In this paper,
+we (1) develop a generalizable framework grounded in philosophy, psychology, and interpretable
+machine learning to investigate and define characteristics of good explanation, and (2) conduct a
+large-scale lab experiment to measure the impact of different factors on perceptions of understanding, fairness, and trust within a loan application context. The framework and study together form
+a concrete guide for managers to present algorithmic prediction rationales to end-users to foster
+trust and adoption. They also highlight elements of explanation to be considered by AI researchers
+and engineers in designing, developing, and deploying explainable machine learning algorithms.
+
+1
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+1
+
+Introduction
+Machine learning (ML) algorithms and artificial intelligence (AI) systems are rapidly gaining
+
+important roles in everyday decisions for both consumers and managers. For example, AI-powered
+systems give product recommendations on Amazon, while banks are increasingly using ML to make
+large-scale decisions, including credit scoring, fraud detection, and loan approvals.
+The most successful algorithms in use today are extremely complex. Different varieties of
+deep neural network models (e.g., CNN, LSTM, etc.) have been shown to excel across a variety of
+domains, including finance, medicine, and law (LeCun, Bengio, and Hinton 2015). Ensemble models
+such as boosted trees (Chen and Guestrin 2016) often dominate data science competitions. These
+models are fundamentally “black boxes” with many layers of nonlinear transformations. It can
+be quite difficult for anyone – including developers and end-users – to understand the algorithm’s
+output and/or underlying reasons for the output.
+There are many reported cases where black box algorithms have caused harm at scale, and
+where we have limited ability to determine why certain predictions were made and/or how to fix
+the underlying algorithm. Most famously, Angwin et al. (2016) reported that an algorithm used
+to guide parole and bail decisions was systematically biased against black defendants. Zech et al.
+(2018) warned that a black box neural network that uses x-rays to diagnose disease could be misled
+by spurious noise without end-users knowing why. The ability to discover, audit, and address these
+issues requires explanation, as well as human understanding, of the inner workings of the algorithm.
+Many industry experts have pointed out the critical need for human-oriented explanation. According to an IBM survey, about 60% of 5,000 executives were concerned about explainability of
+AI decisions (Brenna, Danesi, and Goyal 2018) while another study of 3,000 executives identified
+“developing intuitive understanding of AI” to be the most important challenge (Ransbotham et al.
+2017). Similar concerns are shared by researchers and policymakers. Hosanagar (2019) proposes
+the Algorithmic Bill of Rights to protect consumers from harmful and unintended consequences
+of AI, emphasizing the importance of algorithmic transparency. The EU General Data Protection
+Regulation (GDPR) requires many companies to provide an ex post meaningful explanation to
+involved parties (e.g., users, customers, or employees), while the Equal Credit Opportunity Act
+demands that finance companies provide reasons for decisions to their customers.
+
+2
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Clearly, efforts to develop more interpretable, explainable, or intelligible algorithms comprise a
+key area of current research.1 A growing number of researchers have been developing eXplainable
+AI or “XAI” (see Guidotti et al. 2018 for a survey). However, the definition of interpretability
+and desiderata for a good explanation remain elusive (Lipton 2016; Rudin 2019), and so different
+researchers use different, often problem- or domain-specific, definitions. More alarmingly, XAI
+research rarely involves systematic investigation of human responses with regard to a “good” or
+“satisfactory” explanation; researchers typically rely on their own intuitions even though they form
+a highly biased sample. To the best of our knowledge, there have not been rigorous empirical
+studies of how explanations for ML or AI systems do (or do not) advance consumers’ interests and
+objectives.
+The goal of this paper is to address the key question: “What is a good explanation for AI
+output?” We approach this question in three stages. First, we establish a definition of good explanation based on pragmatic theories of explanation in the philosophy of science, which argue that an
+explanation should enable recipients to advance their goals or objectives. These objectives may vary
+across contexts, but are generally centered around increasing understanding, trust, and adoption
+among users. Second, we develop a theoretical framework for the potentially relevant features of an
+explanation, as well as situational and human factors, that may impact the recipient’s perception
+of the explanation and ultimately the objectives. Third, to demonstrate how this framework can
+be applied, we conduct a large-scale lab experiment using real-world financial data and decisions
+to investigate the impact of varying different dimensions within our framework.
+For managers, our framework can be used to uncover the best way to present algorithmic
+prediction rationales to end-users to foster trust and adoption. For AI and XAI researchers, the
+framework highlights important factors when devising algorithms and their explanations. For
+business and social science researchers, our framework can motivate more in-depth investigation of
+different dimensions that impact the “goodness” of explanations.
+1
+There is no consensus on terminology, with different researchers using the terms ‘explainable’, ‘intelligible’, ‘interpretable’, and ‘understandable’ interchangeably and/or in different ways. Thankfully, we do not need to adjudicate
+this terminological issue in the present paper. We focus only on explanations provided by the system or by us (i.e.,
+the researchers), and thus use ‘explainable’ without consideration of its relationship to other terms.
+
+3
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+2
+
+Explanation in Philosophy of Science
+Theories of explanation in philosophy (of science) generally divide into two groups based on
+
+whether pragmatic factors are part of what makes something a good explanation. First, traditional
+(non-pragmatic) theories argue that something is a good explanation only when it provides the
+correct answer to a “why-question” (see Strevens 2008). For example, an explanation for why
+someone buys product A instead of B might provide the causal sequence that starts with search
+within the product category and culminates in the final purchase. Importantly, these theories all
+contend that the quality of an explanation is determined by its correspondence to the aspect of the
+world being explained. Thus, the intended audience of a particular explanation plays no role in
+assessing its quality; if the audience cannot understand the explanation (e.g., a five-year-old given
+a technically accurate explanation of quantum mechanics), then the failing is with the audience,
+not the explanation.
+In contrast, pragmatic theories of explanation (Achinstein 1983; Van Fraassen 1988) argue that
+a good explanation must provide an answer to a why-question that also enables the recipient to
+advance her goals or interests. If someone cannot understand a proposed explanation or if the
+explanation fails to provide the information that they need for their present goals, then the fault
+does not lie with the recipient; rather, the explanation itself is judged to be poor (for that audience).
+Of course, the same explanation might be considered good for one audience but not for another.
+That is, pragmatic theories of explanation imply explanatory pluralism (Lipton 2008; Mantzavinos
+2016; McCauley 1996), or the idea that there can be multiple good explanations for the very same
+event. Moreover, good explanations need not be consistent with one another.2
+As a concrete example, a good explanation of stock diversification for the layperson might refer
+to an adage of “not putting all eggs in one basket” and spreading out risks, since this enables
+them to understand and predict what might happen if that basket is damaged. However, a good
+explanation for a portfolio manager should contain statistical theories that enable them to deal with
+complex market situations. The layperson’s explanation is ultimately inconsistent with the portfolio
+manager’s explanation, though they give the same predictions or recommendations in many cases.
+2
+
+Note that the possibility of inconsistency is a stronger condition than simply having multiple explanations of
+an event or accurate characterizations of the world at different levels (i.e., macroeconomics vs. microeconomics vs.
+psychology vs. neurobiology), which even traditional theories acknowledge.
+
+4
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+According to traditional non-pragmatic theories of explanation, the layperson’s “explanation” is not
+actually an explanation at all since it does not truly correspond to features of the world (though
+it approximates them); however, according to pragmatic theories, it is a good explanation that
+enables them to reach their personal finance goals.
+As this example indicates, one surprising implication of pragmatic theories of explanation is that
+falsehoods can be explanatory if they lead to overall improved ability to reach the recipient’s goals
+(Elgin 2007).3 This performance constraint is critical, as it addresses the concern that pragmatic
+theories provide an “anything goes” approach (Van Bouwel and Weber 2008). Not all explanations
+are equally good, since not all explanations support people’s goals in the same way. Moreover,
+one key goal for many audiences will be to “know relevant facts about the world,” in which case
+explanations favored by non-pragmatic approaches will likely be evaluated as good explanations by
+pragmatic theories as well. However, the objectively “truthful” explanation is judged to be good in
+this case because it supports the recipient’s goals (to gain knowledge), not because of some intrinsic
+value of truthfulness.
+The present paper is focused on the ways in which XAI does (or does not) enable people to
+advance their interests and goals. Hence, pragmatic approaches are significantly more appealing
+than non-pragmatic ones. Use of a pragmatic account of explanation for XAI, however, requires
+that we explicate not only the values and objectives that are relevant to assessing the quality of
+an explanation, but also how to weigh those different values in specific cases. We contend that
+these values should not be legislated by philosophers, psychologists, or technologists, but should
+instead come from human users, including both laypeople and experts. That is, XAI should involve
+a participatory and deliberative process that includes the stakeholders who are impacted by the
+AI – developers, deployers, users, regulators, and more – to ensure that they can appropriately
+answer their why-questions in accordance with their values and goals. Of course, this process does
+not have to occur de novo for each new XAI deployment; lessons learned in one context can surely
+be transferred to new cases. Our framework and illustrative example can be understood as a first
+step towards identifying some of the relevant goals for a particular context and audience.
+3
+Of course, falsehoods could lead to incorrect conclusions, but if those only arise in cases that the recipient does
+not encounter, then they are not immediately disqualifying (De Regt and Gijsbers 2016).
+
+5
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+3
+
+A Generalizable Framework for the Dimensions of Explanation
+This section develops our framework for good explanation in AI/ML settings by motivating and
+
+defining objectives, followed by different modes of explanation and dimensions that may moderate
+the efficacy of explanations (see Figure 1). Our framework is motivated by psychological, ethical,
+and computer science perspectives and meant to be a roadmap to guide users of AI/ML in thinking
+about how to prepare explanations for algorithmic predictions for human users. In line with this
+approach, Miller (2018) argues that computer scientists should draw upon the existing literature
+in humanities and social sciences to properly understand multi-faceted aspects of good explanation
+and psychological views of how humans perceive and accept explanations.
+
+Figure 1: Framework for dimensions of explanation.
+
+3.1
+
+Objectives
+
+In psychology, a growing body of research has focused on how why-questions can or should
+be answered using different types of explanations. Lombrozo and Carey (2006) propose the idea
+of “Explanation for Export,” which suggests that the function of explanations is to enable us to
+succeed in future contexts (e.g., in terms of actions, predictions, etc.), just as argued by proponents
+of pragmatic theories of explanation. Notably, Vasilyeva, Wilkenfeld, and Lombrozo (2017) demonstrate that the perceived “goodness” of an explanation depends specifically on its relevance to the
+
+6
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+evaluator’s current task. We contend that at least three types of cognitive functions or “objectives”
+may be relevant to the evaluation of an explanation in business settings.
+Epistemic objectives are those related to the recipient’s knowledge: if she cannot understand the
+explanation or its implications, then the explanation cannot make a meaningful contribution to her
+knowledge. Even the most scientifically rigorous explanation is undesirable if users have difficulty
+understanding it or don’t find it intuitive (Immordino-Yang and Feath 2010). To measure epistemic
+objectives, in some cases the recipient may only have a few moments to process the explanation, so a
+subjective self-reported perception of understanding and/or intuitiveness is sufficient (Cramer et al.
+2008). In other cases, it may be worthwhile to measure “true” understanding using questions that
+test participants’ ability to replicate the algorithm’s predictions, consider counterfactual scenarios,
+or design new actions (Lage et al. 2019, Poursabzi-Sangdeh et al. 2018).
+In terms of ethical objectives, XAI is often necessary for a company to earn customers’ trust
+(Kim and Routledge 2018). Data subjects can reasonably place trust in data processing firms only
+when they are assured of a viable avenue for redress of grievances for harms or wrongs (Radin
+2012). This type of “right of redress” (or to a fair trial, fair compensation, exit, etc.) typically
+requires explanations, which then also serve to restore trust in the company (Selbst and Powles
+2017; Wachter et al. 2017). More fundamentally, when we consider the conditions for justifiable,
+appropriate trust (Hardin 2002), we immediately see the key role that explanations can play in
+providing the necessary information to the potential trustor (Roff and Danks 2018). In contrast,
+simple remediation (e.g., financial compensation for harm) does not necessarily require explanation,
+and is insufficient to repair trust unless accompanied by explanation of future harm prevention.
+Although there are many cases where algorithms actually reduce biases relative to human decisionmaking (Cowgill and Tucker 2019), it is also important to understand whether end-users perceive
+the outcomes to be fair, which may be improved via the use of appropriate explanations. Moreover,
+explanations can sometimes reveal other harms that have occurred or identify conditions in which
+harms might occur in the future, and thereby point towards ways to be more ethical.
+Finally, consumer objectives include users’ willingness-to-adopt or use the algorithm as a decision aid, or accept and/or be satisfied with the output of an algorithm. With recommender systems
+in particular, a firm may also want to maximize a behavioral outcome such as clickthrough rate
+or conversion (Tintarev and Masthoff 2015). There has been widespread resistance to algorithm
+7
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+adoption across a variety of domains such as forecasting and medical diagnoses (Dietvorst, Simmons, and Massey 2014; Grove and Meehl 1996), which may be related to consumers’ perceived
+control or agency (Shaffer et al. 2013). Thus, another important consumer objective may be to
+give individuals a sense of control in terms of impacting the outcome generated by the system.
+Explanations for AI systems can have diverse objectives beyond those we have discussed. These
+objectives may be correlated or there may be multiple objectives within a single use-case. In
+the following subsections, we review three classes of relevant and empirically testable/measurable
+dimensions that may exert a significant causal impact on an explanation’s ability to satisfy relevant
+objectives or serve as moderators, as summarized in Figure 1.
+
+3.2
+
+Explanation Mode
+
+The most obvious determinant of the goodness of an explanation is the mode of the explanation
+itself. Nudges and choice architecture have long been studied within decision making research
+(see Johnson et al. 2012 for a review), with the underlying theory being that the way a choice
+is presented influences what a decision-maker chooses. Similarly, the way that an explanation is
+presented likely influences how the recipient responds.
+The explanation mode may vary depending on the underlying algorithm itself, whether it be
+very simple such as a linear regression or decision tree, or very complex such as a convolutional
+neural network. Importantly, the algorithm described by the explanation need not be the same
+as the actual computational system. In fact, many XAI techniques depend on finding accurate
+linear approximations of an underlying non-linear model (Andrews et al. 1995; Montavon et al.
+2018). Research on advice-giving has found that people over (vs. under) weight advice in difficult
+(vs. easy) tasks (Gino and Moore 2007), so algorithm adoption may depend upon the recipient’s
+perceived complexity of the algorithm’s task, as a result of the given explanation.
+The quality of an explanation can depend on it having the right level of detail (Putnam 1960).
+For example, in a field experiment involving peer grading within an online course, Kizilcec (2016)
+demonstrated that some amount of explanation of the grade calculation algorithm increases trust,
+but too much transparency can actually backfire and erode trust. Explanations can also range from
+more global in nature by focusing on population-level aspects to more local by emphasizing the
+particular features of the target individual. Finally, the explanation could make reference to prior
+8
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+learning/adaptation by the model or only describe the system at the current moment in time. One
+reason why people exhibit algorithm aversion is that they believe that humans (but not machines)
+can learn through experience (Highhouse 2008), and so explanations that convey the adaptability
+of an algorithm may have an impact on the objectives. In some cases, human users themselves may
+be able to learn about how the algorithm works via multiple exposures or trials (Poursabzi-Sangdeh
+et al. 2018).
+To reiterate, the framework in Figure 1 is designed to provide a guide to determine the factors
+that impact the objectives. The lists of objectives, explanation modes, and other dimensions
+are not to meant to be exhaustive, but to provide a starting point that can be customized to a
+manager’s specific use-case. Additionally, the underlying relationship between the dimensions and
+the objectives may be complex. For instance, Wang and Benbasat (2007) propose that different
+types of explanation (e.g., how vs. why) may enhance different trusting beliefs (e.g., competence vs.
+integrity). This highlights that it will not be the case that a particular explanation will always be
+the best for every objective, and thus it is important to vary and test a sufficient set of dimensions
+and objectives for any use-case.
+
+3.3
+
+Scenario Dimensions
+
+The characteristics of the outcome itself, which we refer to as “scenario dimensions,” might
+moderate the impact of the explanation mode on the objectives. In other words, the very same
+sequence of words might constitute a useful explanation for one set of outcomes, but not another.
+A rich literature exists on how the valence, magnitude, and probability of outcomes impacts human
+decision-making (Van Dijk and van der Pligt 1997; Wu and Zhou 2009). For example, individuals
+exhibit greater sensitivity to losses versus gains (Tversky and Kahneman 1992), asymmetric updating towards positive vs. negative information (Eil and Rao 2011), information avoidance (Sweeny
+et al. 2010), and nonlinear probability weighting (Gonzalez and Wu 1999).
+Based on these findings, the ability of an AI explanation to advance people’s goals may depend
+on whether the outcome is beneficial vs. harmful, common vs. rare, low vs. high impact, or even
+affecting humans vs. non-humans. For example, a good explanation for a negative outcome might
+need to focus on local factors that show how the harmed individual could improve future outcomes,
+while a good explanation for a positive outcome might need to emphasize global factors about
+9
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+which groups are most likely to benefit from the AI system.
+
+3.4
+
+Human Dimensions
+
+The attributes of the actual recipients of an explanation may moderate its effectiveness. For
+example, researchers have proposed that algorithm aversion may depend on individual characteristics. Shaffer et al. (2013) study how patient perceptions of doctors who use decision aids depend
+on individual differences in locus of control and attitude towards statistics. Hoff and Bashir (2015)
+distinguish between factors that influence dispositional trust (e.g., culture, age) and situational
+trust (e.g., mood, attentional capacity) in automation.
+There will almost certainly be a significant interaction between human dimensions and explanation mode. An explainee with a PhD in computer science could make use of a technically-detailed
+explanation of an AI system, while a non-expert would benefit from a more metaphorical explanation. The literature on how consumer knowledge and expertise shapes behavior suggests that
+experts value depth over breadth knowledge compared to novices (Alba and Hutchinson 1987).
+Thus, one testable hypothesis might be that low (vs. high) knowledge recipients value broader
+(vs. more specific) explanations. Importantly, there may be significant opportunities to tailor
+explanations to individuals if their expertise levels (and/or other characteristics) are known.
+Finally, it is important to consider the role or motivation of the explainee, such as whether they
+are directly experiencing the AI-determined outcome vs. acting as an agent. There are documented
+discrepancies and similarities in how people make decisions for others vs. themselves, including less
+loss aversion when making gambling and social choices for others (Polman 2012), and projection
+when making surrogate predictions for others’ end-of-life decisions (Fagerlin et al. 2001). Thus,
+some explanations may serve the objectives of a customer but not a manager, and vice versa.
+
+4
+
+Lab Experiment
+The purpose of this study is to demonstrate how our framework can be applied to a common
+
+real-world setting. Specifically, we examine how consumers respond to explanations given for
+hypothetical credit loan approval outcomes, based on actual ML models estimated using real data.
+
+10
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+4.1
+
+Design and Method
+
+To construct the stimuli, we used the German Credit Data from the UC Irvine Machine Learning
+Repository (Dua and Graff 2019). This dataset consists of 1,000 individual profiles, each with 20
+features and categorized as either “good” or “bad” credit risks. We selected seven features (see
+Table 1) to train a decision tree model and a neural network (NN) model, each to predict the
+good/bad outcome.4
+We recruited 1,205 paid participants in the United States on Amazon’s Mechanical Turk
+(MTurk) platform. All participants were told to imagine that they were applying for credit loan
+approval to purchase a new car, and that the bank used an algorithm – developed with information from 1,000 previous applications and the seven features in Table 1 – to determine whether to
+approve or reject the loan application.
+
+Table 1: Summary of features used to estimate model.
+
+Participants were randomly assigned to a condition in a 2 (scenario dimension: loan application
+approved vs. rejected) × 6 (explanation mode: none, verbal, decision tree, NN global, NN local,
+NN global and local; see below) between-subjects design. From the real-world data, we selected
+two existing profiles, one good and one bad, for participants in the approve and reject conditions,
+respectively. The information was displayed in the “Your Data” column in Table 1, with participants
+told to imagine that they had entered these data into their loan application. To minimize effects
+4
+
+See Appendix A for estimation methods.
+
+11
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+driven by differences in the feature values, while maintaining the validity of using models trained
+on real data, we selected profiles that only differed by the credit duration feature (i.e., 6 vs. 36
+months).
+In the no explanation condition, participants were told the outcome with no additional information. In the verbal condition, participants were given a list of the three most important features
+(employment, credit duration, installment rate). In the decision tree condition, participants were
+shown a visual representation of the decision tree and told that the algorithm starts at the top of
+the tree and follows the yes/no questions downwards (see Figure 2).
+
+Figure 2: Illustration of decision tree model.
+
+In the NN global condition, participants were told that the decisions were determined using a
+sophisticated neural network algorithm and shown a plot of SHAP global average values representing
+the average importance of each feature across customers (see Figure 3). In the NN local condition,
+they were instead shown the SHAP local values representing how the features impact chances of
+approval in their specific case (and others with similar data features). Participants in the NN global
+and local condition were shown both plots.5
+In the language of our framework: the scenario dimension varies by the valence of the outcome,
+the explanation mode is explicitly varied in six different ways, and the human dimensions are
+specified so the explainee motivation is that of an end-user, with existing individual differences
+5
+
+See Appendix B for description of XAI methods.
+
+12
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+measured using demographic questions.6
+After viewing the explanation and answering several attention and comprehension check questions, participants were asked to rate, on 7-point Likert scales, their understanding of the algorithm
+explanation, as well as perceived intuitiveness, fairness, satisfaction, and ability to impact the outcome. These responses serve as our measure of the key objectives for a firm implementing this
+algorithm. We also asked participants how complex they perceived the algorithm to be, and their
+familiarity with loan approval systems.
+
+Figure 3: SHAP global average values.
+
+Figure 4: SHAP local values for approve vs. reject conditions, with green and red bars indicating
+positive and negative impact on approval, respectively.
+(a) Approve Condition
+
+6
+
+(b) Reject Condition
+
+See Appendix C for study instructions.
+
+13
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+4.2
+
+Results and Managerial Implications
+
+For each objective variable, we conducted two-way ANOVAs with the scenario dimension and
+explanation modes, and found significant main effects and interactions for nearly all variables.7
+To illustrate, in Figure 5, we compare the ratings for each objective variable between approved
+vs. reject conditions. In Table 2, we summarize the results from t-tests of the ratings for each of
+the explanation modes (compared to no explanation). We highlight three key findings, along with
+managerial implications and directions for future research.
+First, as shown in Figure 5, participants in the approve condition rate the explanation higher
+across all objectives. With positive outcomes, recipients simply not care about an explanation,
+so firms may want to focus on improving explanations for negative outcomes. Or perhaps negative outcomes decrease individuals’ ability to process information, which would explain the lower
+ratings for understanding and intuitiveness in the reject condition and would be consistent with
+prior findings that people tend to focus on positive information and avoid negative information (Eil
+and Rao 2011; Sweeny et al. 2010). In general, perceived understanding may reflect the recipient’s
+affective response to good vs. bad outcomes. More involved studies with process measures (e.g., eyetracking, clickstream) may shed light on how valence changes information processing and attention.
+
+Figure 5: Average explanation ratings for approve vs. reject conditions.
+
+7
+
+See Appendix D for detailed statistical test results.
+
+14
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Table 2: Summary of significant effects (p < 0.05) of different explanation modes (relative to no
+explanation).
+
+Second, as shown in Table 2(a), in the approve condition we observe a negative effect of the
+decision tree explanation for many of the objective variables. This result is surprising because
+intuition suggests that any explanation should improve (or at least not decrease) understanding
+compared to no explanation at all. In fact, shallow decision trees (like ours) are commonly used
+within XAI, and are typically considered useful and intuitive by researchers and practitioners alike.
+One explanation for the negative effect is that consumers may expect a very complex algorithm
+for an important decision such as a bank loan, and the visualization of the decision tree may give
+the impression of an overly simplistic system. This is further supported by the positive effects
+of the NN global explanation, in which the algorithm was explicitly described as complex. Thus,
+when designing explanations, it may be important to match the explanation of the algorithm’s
+complexity to people’s expectations. This finding also highlights that, although more information
+should increase “true” understanding, in some cases it might decrease perceived understanding,
+which may sometimes matter more to managers.
+
+15
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Third, we see in Table 2(b) that there is an interaction in the reject condition between the
+effects of the NN global and NN local explanation modes. In particular, presenting each on their
+own does not improve intuitiveness and fairness ratings, but presenting both results in significant
+improvements. Further exploration into how people process information about themselves (i.e.,
+local information) versus the average user (i.e., global information) in the context of XAI is an
+important area for future work, especially as AI continues to be used both in small- and large-scale
+applications.
+
+5
+
+Conclusion
+In summary, we present a framework for testing the impact of different dimensions of an expla-
+
+nation given to an end-user. Our lab experiment offers an initial test among real human participants
+of how perceptions of understanding, intuitiveness, and fairness may be impacted by the dimensions
+of an explanation, and also demonstrates how the framework can be applied in a specific setting.
+Our findings include both intuitive and counter-intuitive results, and open up several avenues for
+further testing. This approach is generalizable and empirical applications of our framework can
+inform researchers on the factors to consider in XAI development, and managers on tailoring explanations for customers that maximize objectives such as user trust and adoption.
+
+6
+
+References
+
+Achinstein P (1983). The Nature of Explanation. Oxford University Press on Demand.
+Alba JW, and Hutchinson JW (1987). Dimensions of consumer expertise. Journal of Consumer
+Research 13(4):411-454.
+Andrews R, Diederich J, Tickle AB (1995). Survey and critique of techniques for extracting rules
+from trained artificial neural networks. Knowledge-Based Systems 8(6):373-89.
+Angwin J (2016). Making algorithms accountable. The New York Times.
+Brenna F, Danesi G, Goyal M (2018). Shifting toward enterprise-grade AI: Resolving data and
+skills gaps to realize value. IBM Institute for Business Value.
+Chen T, Guestrin C (2016). Xgboost: A scalable tree boosting system. In Proceedings of the 22nd
+acm sigkdd international conference on knowledge discovery and data mining, pp. 785-794, ACM.
+16
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Cowgill B, Tucker CE (2019). Economics, fairness and algorithmic bias. Working Paper.
+Cramer H, Evers V, Ramlal S, Van Someren M, Rutledge L, Stash N, Aroyo L, Wielinga B (2008).
+The effects of transparency on trust in and acceptance of a content-based art recommender. User
+Modeling and User-Adapted Interaction 18(5):455-496.
+De Regt HW, Gijsbers V (2016). How false theories can yield genuine understanding. In Explaining
+Understanding, pp. 66-91, Routledge.
+Dietvorst BJ, Simmons JP, Massey C (2014). Algorithm aversion: People erroneously avoid algorithms after seeing them err. Journal of Experimental Psychology: General 144(1):114-126.
+Dua D, Graff C (2019). UCI Machine Learning Repository [http://archive.ics.uci.edu/ml]. Irvine,
+CA: University of California, School of Information and Computer Science.
+Eil D, Rao JM (2011). The good news-bad news effect: Asymmetric processing of objective information about yourself. American Economic Journal: Microeconomics 3(2):114-138.
+Elgin C (2007). Understanding and the facts. Philosophical Studies 132(1):33-42.
+Fagerlin A, Ditto PH, Danks JH, Houts RM (2001). Projection in surrogate decisions about lifesustaining medical treatments. Health Psychology 20(3):166-175.
+Gino F, Moore DA (2007). Effects of task difficulty on use of advice. Journal of Behavioral Decision Making 20:21-35.
+Gonzalez R, Wu G (1999). On the shape of the probability weighting function. Cognitive Psychology 38(1):129-66.
+Grove WM, Meehl PE (1996). Comparative efficiency of informal (subjective, impressionistic) and
+formal (mechanical, algorithmic) prediction procedures: The clinical–statistical controversy. Psychology, Public Policy, and Law (2):293-323.
+Guidotti R, Monreale A, Ruggieri S, Turini F, Giannotti F, Pedreschi D (2019). A survey of methods for explaining black box models. ACM computing surveys (CSUR) 51(5):93.
+Hardin R (2002). Trust and trustworthiness. Russell Sage Foundation.
+Hoff KA, Bashir M (2015). Trust in automation: Integrating empirical evidence on factors that
+influence trust. Human Factors 57(3):407-34.
+Hosanagar K (2019). A Human’s Guide to Machine Intelligence: How Algorithms are Shaping Our
+Lives and how We Can Stay in Control. Viking.
+Immordino-Yang MH, Faeth M (2010). The role of emotion and skilled intuition in learning. Mind,
+Brain, and Education: Neuroscience Implications for the Classroom, pp. 69-83.
+
+17
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Johnson EJ, Shu SB, Dellaert BG, Fox C, Goldstein DG, Häubl G, Larrick RP, Payne JW, Peters
+E, Schkade D, Wansink B (2012). Beyond nudges: Tools of a choice architecture. Marketing Letters. 23(2):487-504.
+Kizilcec RF (2016). How much information?: Effects of transparency on trust in an algorithmic
+interface. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems
+2016 May 7, pp. 2390-2395, ACM.
+Lage I, Chen E, He J, Narayanan M, Kim B, Gershman S, Doshi-Velez F. An evaluation of the
+human-interpretability of explanation (2019). arXiv preprint arXiv:1902.00006.
+LeCun Y, Bengio Y, Hinton G. Deep learning (2015). Nature 521(7553):436-44.
+Lipton P (2008). CP Laws, reduction and explanatory pluralism. Being Reduced: New Essays on
+Reduction, Explanation, and Causation, pp. 116-125.
+Lipton ZC (2016). The mythos of model interpretability. arXiv preprint arXiv:1606.03490.
+Lombrozo T, Carey S (2006). Functional explanation and the function of explanation. Cognition
+99(2):167-204.
+Mantzavinos C (2016). Explanatory Pluralism, Cambridge University Press.
+McCauley RN (1996). Explanatory pluralism and the coevolution of theories in science, The
+Churchlands and their critics, pp. 17-47. Wiley.
+Miller T (2018). Explanation in artificial intelligence: Insights from the social sciences. Artificial
+Intelligence.
+Montavon G, Samek W, Müller KR (2018). Methods for interpreting and understanding deep neural networks. Digital Signal Processing. 73:1-5.
+Polman E. Self–other decision making and loss aversion (2012). OBHDP 119(2):141-50.
+Poursabzi-Sangdeh F, Goldstein DG, Hofman JM, Vaughan JW, Wallach H (2018). Manipulating
+and measuring model interpretability. arXiv preprint arXiv:1802.07810.
+Putnam, H (1960). Minds and Machines. In Dimensions of Mind: A Symposium, Edited by: Hook
+S., pp. 138–164, New York: Collier.
+Ransbotham, S., Kiron, D., Gerbert, P., Reeves, M (2017). Reshaping business with artificial intelligence: Closing the gap between ambition and action. MIT Sloan Management Review, 59(1).
+Radin MJ (2012). Boilerplate: The Fine Print, Vanishing Rights, and the Rule of Law, Princeton
+University Press.
+Roff HM, Danks D (2018). “Trust but Verify”: The difficulty of trusting autonomous weapons
+systems. Journal of Military Ethics 17(1):2-20.
+18
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Rudin C (2019). Stop explaining black box machine learning models for high stakes decisions and
+use interpretable models instead. Nature Machine Intelligence 1(5):206-215.
+Selbst AD, Powles J (2017). Meaningful information and the right to explanation. International
+Data Privacy Law 7(4):233-242.
+Shaffer VA, Probst CA, Merkle EC, Arkes HR, Medow MA (2013). Why do patients derogate physicians who use a computer-based diagnostic support system? Medical Decision Making 33(1):108-18.
+Strevens M (2008). Depth: An Account of Scientific Explanation, Harvard University Press.
+Sweeny K, Melnyk D, Miller W, Shepperd JA (2010). Information avoidance: Who, what, when,
+and why. Review of General Psychology, 14(4):340-53.
+Tintarev N, Masthoff J (2015). Explaining recommendations: Design and evaluation. In Recommender Systems Handbook, pp. 353-382, Springer, Boston, MA.
+Tversky A, Kahneman D (1992). Advances in prospect theory: Cumulative representation of uncertainty. Journal of Risk and Uncertainty 5(4):297-323.
+Van Bouwel J, Weber E (2008). A Pragmatist Defense of Non-Relativistic Explanatory Pluralism
+in History and Social Science. History and Theory 47(2):168-82.
+Van Dijk WW, Van Der Pligt J (1997). The Impact of Probability and Magnitude of Outcome on
+Disappointment and Elation. OBHDP 69(3):277-284.
+Van Fraassen B (1988). The pragmatic theory of explanation. Theories of Explanation, pp. 135-55.
+Vasilyeva N, Wilkenfeld D, Lombrozo T (2017). Contextual utility affects the perceived quality of
+explanations. Psychon. Bull. Rev. 24:1436-1450.
+Wachter S, Mittelstadt B, Floridi L (2017). Why a right to explanation of automated decisionmaking does not exist in the general data protection regulation.
+International Data Privacy
+Law,7(2):76-99.
+Wang W, Benbasat I (2007). Recommendation agents for electronic commerce: Effects of explanation facilities on trusting beliefs. J. Management Information Systems 23(4):217-246.
+Wu Y, and Zhou X (2009). The P300 and reward valence, magnitude, and expectancy in outcome
+evaluation. Brain Research 1286:114-122.
+Zech JR, Badgeley MA, Liu M, Costa AB, Titano JJ, Oermann EK (2018). Confounding variables can degrade generalization performance of radiological deep learning models. arXiv preprint
+arXiv:1807.00431.
+
+19
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Supplementary Appendix For
+“Good Explanation for Algorithmic Transparency”
+Appendix A: Machine Learning Algorithms
+Neural Network
+Neural networks are the most advanced black box algorithms in use today. A neural network
+algorithm consists of atomic computation units called neurons. A neuron takes a vector of input,
+linearly combines it much like linear regression, followed by a nonlinear activation function such as
+sigmoid. Output is then sent to the next neuron. A network of neurons like these form a neural
+network to learn a nonparametric function given training data (i.e., a dataset with independent
+variables and outcome labels). “Learning” in neural network is casted as an optimization problem
+that is solved through stochastic gradient descent and network weights are adjusted according to
+Backpropagation algorithm, which is an applied chain rule. There are many different architectures
+of neural networks for different types of data ranging from simple tabular data, time series data,
+to unstructured image and text data. Neural networks have been shown to excel in all types
+of supervised learning problems and are one of the most widely used types of algorithms in the
+industry today (LeCun et al. 2015; Goodfellow et al. 2016).
+To implement a neural network with the German Credit Data, we utilize Tensorflow (Abadi
+et al. 2016), a deep learning framework released by Google. In particular, we use a simple fullyconnected neural net with 2 hidden layers of size 20 using ReLU activation functions and softmax
+output layer. For formal introductions and more details, please see Goodfellow et al. (2016).
+
+Decision Tree
+Decision trees are a type of nonparametric supervised learning algorithm that can be used for
+both classification and regression problems. In our case, we use it for classification (i.e., “Good”
+or “Bad” credit risk). Decision trees, along with simple rule-set approaches, are one of the most
+human-interpretable algorithms when the size (i.e., depth) of the tree is not too large. Briefly
+described, the tree algorithm splits data feature space into subregions to maximize the purity of
+training data labels (i.e., each region contains largely one class). The splitting nodes of the decision
+tree are generated based on the principle of largest entropy (a measure of impurity) reduction. For
+formal introductions and more details, please see Bishop (2006); Hastie et al. (2005).
+To implement a decision tree with the German Credit Data, we utilize the python package
+Scikit-Learn (Pedregosa et al. 2011). Figure A1 show an example of a decision tree trained on the
+data. Each node splits the data into subregions. A complete path from the top root node to the
+bottom leaf node corresponds to a rule that is easily understandable to humans.
+
+20
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Figure A1: Illustration of decision tree model
+
+21
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Appendix B: XAI Methods
+We describe the XAI algorithms used to provide explanations/rationales for black box neural
+network algorithms. Focusing on our case for explaining algorithmic predictions, one stream in XAI
+called “explainable machine learning” is most relevant (Rudin 2019). The definition of explainable
+machine learning is given as follows: Given a black box predictor B and a training dataset D =
+{X, Y }, the explainable machine learning algorithm takes as an input a black box B and a dataset
+D, and returns a transparent predictor T with requirements that (1) T replicates the predictions
+of the black box B with high fidelity, and (2) T offers human-understandable rationale for each
+prediction either at the instance-level or model-average level. T may be a shallow tree, small set of
+rules, or linear regression with not too many explanatory variables.
+To maximize relevance and impact, we selected two of the most widely-used methods in both
+industry and academia (e.g., Guidotti et al. 2018; Hall et al. 2017) to construct the stimuli in our
+study: LIME (Local Interpretable Model-Agnostic Explanations) and SHAP (SHapley Additive
+exPlanations).
+
+LIME (Local Interpretable Model-Agnostic Explanations)
+LIME (Ribeiro et al. 2016) leverages simple linear models, found to be generally more understandable, to explain any complex black box models. LIME approximates any complex black box
+model using a surrogate interpretable linear model (given input and output prediction) and uses
+this simpler model to provide explanation for a given data point at the local level. The data for
+training the simple explanation model is drawn from the neighborhood of the given instance to be
+explained by perturbation. Figure A2 shows an example of a complex nonlinear model discriminant
+line approximated by a simple linear model at the local level.
+Figure A2: Toy example to present the intuition for LIME. The black-box model’s complex decision
+function f (unknown to LIME) is represented by the blue/pink background, which cannot be
+approximated well by a linear model. The bold red cross is the instance being explained. LIME
+samples instances, gets predictions using f , and weighs them by the proximity to the instance being
+explained (represented here by size). The dashed line is the learned explanation that is locally (but
+not globally) faithful. Figure is from the original LIME paper.
+
+Intuitively, LIME solves an optimization problem that balances local fidelity and complexity
+(i.e., the inverse of interpretability) of the interpretable surrogate model. Mathematically, the
+explanation produced by LIME can be expressed as follows:
+explanation(x) = arg min L(f, g, πx ) + Ω(g)
+g∈G
+
+22
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+(1)
+
+In Equation (1), x is the instance to be explained, G is the family of all possible explanation
+models (e.g., all possible linear regression models), and g is the best one among this family that
+minimizes the prediction loss L of g compared to the prediction of the original model f , plus the
+model complexity Ω(g). The lower the model complexity Ω(g), the easier it is to understand the
+rationale for prediction made by the model g. For example in the context of linear models, Ω(g)
+may be the number of coefficients. In the context of decision trees, Ω(g) may be the depth of
+the tree. πx defines the proximity of the neighborhood around instance x and how much the loss
+function weighs a particular set of data points bootstrapped by perturbing instance x.
+
+SHAP (SHaply Additive exPlanations)
+SHAP (Lundberg and Lee 2017) is a general framework that unifies multiple local interpretability methods, including LIME. SHAP finds the feature importance of input variables for a given data
+point. This approach is based on Shapley Values in game theory, which is a method designed for
+fairly distributing the reward among the players in a cooperative game based on their contribution.
+In the SHAP context, each attribute in the data are the “players” and the outcome variable Y is the
+“reward”. One step of SHAP utilizes LIME for obtaining local feature importance. For obtaining
+global feature importance, for each variable, we can average the SHAP feature importance values
+over all data points.
+
+23
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Appendix C: Study Instructions
+Imagine that you are planning to purchase a new car. In order to do so, you are applying for a
+credit loan approval from a regional bank. Suppose that this bank determines whether to approve
+or reject a loan application using a computer algorithm. This algorithm uses 7 different “features”
+or pieces of information about the customer as the input to make an approve/reject decision. To
+develop the algorithm, the bank utilized information from 1000 previous loan applicants.
+The following table gives the name and a brief description of each of the 7 features. The last
+column of the table indicates where your data would be entered when applying for a loan. Please
+take a few moments to scan through the list of features and their descriptions.
+Now imagine that you have input your data (for this hypothetical loan application scenario),
+as it appears in the table below. Please take a moment to scan through your data inputs.
+
+Now imagine that based on your data, the computer algorithm that the bank uses decides to
+approve [reject] your loan application. The algorithm was developed using artificial intelligence
+and historical user data from 1000 previous loan applicants.
+
+24
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+No Explanation Condition
+No additional information
+
+Verbal Explanation Condition
+The three main features that impacted the decision to approve [reject] your loan application
+were the following:
+• Employment
+• Credit duration
+• Installment rate
+
+Decision Tree Condition
+To help explain how the algorithm worked when making the decision to approve your loan
+application, the bank has provided the following visual of the “decision tree” model that the
+algorithm uses. For each loan application, the algorithm first starts at the top of the tree and
+asks a series of yes/no questions, and follows the tree all the way down to the bottom to make an
+approve/reject decision based on the user’s data.
+For example, the first question is about the property feature and asks whether or not you (the
+user) owns real estate. If yes, then the algorithm moves to the next question on the left (credit
+duration). If no, then the algorithm moves to the next question on the right (employment).
+Based on your data, the algorithm followed the following steps:
+• Property: Do you own real estate? No (you own life insurance) Employment: Less than
+or equal to 4 years? Yes (2 years)
+• Credit duration: Less than or equal to 18.5 months? Yes (6 months) [No (36 months)]
+• Final Decision: Approve [Reject]
+
+25
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+NN Global Condition
+Specifically, the approve/reject decisions are determined using a sophisticated and complex
+neural network algorithm. To help explain how the algorithm worked when making the decision to
+approve your loan application, the bank has provided the following visual that shows the average
+importance of each of the features in the decision to approve/reject a user’s loan application (i.e.,
+the absolute value of the Shapley value). In the graph, the larger the blue bar, the more important
+the feature is on average across different customers.
+
+NN Local Condition
+Specifically, the approve/reject decisions are determined using a sophisticated and complex
+neural network algorithm. To help explain how the algorithm worked when making the decision
+to approve your loan application, the bank has provided the following visual that shows how the
+different features impact the chance of approval for you and other users like yourself with similar
+data features. A red bar indicates that the feature had a negative impact on approval, while a
+green indicates that the feature had a positive impact on approval. The length of the bars indicates
+the magnitude of impact.
+(a) Approve Condition
+
+(b) Reject Condition
+
+NN Global and Local Condition
+Specifically, the approve/reject decisions are determined using a sophisticated and complex
+neural network algorithm. To help explain how the algorithm worked when making the decision to
+26
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+approve your loan application, the bank has provided the following visual that shows the average
+importance of each of the features in the decision to approve/reject a user’s loan application (i.e.,
+the absolute value of the Shapley value). In the graph, the larger the blue bar, the more important
+the feature is on average across different customers.
+
+The bank has also has provided the following visual that shows how the different features
+impact the chance of approval for you and other users like yourself with similar data features. A
+red bar indicates that the feature had a negative impact on approval, while a green indicates that
+the feature had a positive impact on approval. The length of the bars indicates the magnitude of
+impact.
+(a) Approve Condition
+
+(b) Reject Condition
+
+Dependent variables
+We would now like you to answer the following questions about the decision. (Note that in
+Qualtrics, participants respond on a scale from 1-7).
+• How understandable do you find the above explanation?
+• How complex do you perceive the algorithm to be?
+• How intuitive do you perceive the algorithm to be?
+• How fair do you find the algorithm to be?
+• How satisfied are you with the explanation of the decision?
+27
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+• How would you rate your ability to improve your chances of obtaining this loan approval?
+• How familiar are you with loan approval systems?
+
+28
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Appendix D: Study Analysis and Results
+Table A1: Summary of two-way ANOVA analyses for all dependent variables.
+
+Table A2: Summary statistics for objective variables across participants in the approve condition, along with t-statistics and p-values from t-tests comparing each explanation mode to the no
+explanation baseline.
+
+29
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+Table A3: Summary statistics for objective variables across participants in the reject condition,
+along with t-statistics and p-values from t-tests comparing each explanation mode to the no explanation baseline.
+
+30
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+References
+Bishop CM (2006). Pattern Recognition and Machine Learning. Springer Science + Business Media.
+Abadi M, Barham P, Chen J, Chen Z, Davis A, Dean J, Devin M, Ghemawat S, Irving G, Isard
+M, Kudlur M (2016). Tensorflow: A system for large-scale machine learning. In 12th USENIX
+Symposium on Operating Systems Design and Implementation (OSDI 16), pp. 265-283.
+Goodfellow I, Bengio Y, Courville A (2016). Deep Learning. MIT press.
+Hall P, Gill N, Kurka M, Phan W (2017). Machine Learning Interpretability with H2O Driverless
+AI.
+Hastie T, Tibshirani R, Friedman J, Franklin J (2005). The elements of statistical learning: data
+mining, inference and prediction. The Mathematical Intelligencer 27(2):83-5.
+LeCun Y, Bengio Y, Hinton G (2015). Deep learning. Nature 521(7553):436-44.
+Lundberg SM, Lee SI (2017). A unified approach to interpreting model predictions. In Advances
+in Neural Information Processing Systems, pp. 4765-4774.
+Pedregosa F, Varoquaux G, Gramfort A, Michel V, Thirion B, Grisel O, Blondel M, Prettenhofer
+P, Weiss R, Dubourg V, Vanderplas J (2011). Scikit-learn: Machine learning in Python. Journal
+of Machine Learning Research 12:2825-30.
+Ribeiro MT, Singh S, Guestrin C (2016). Why should i trust you?: Explaining the predictions of
+any classifier. In Proceedings of the 22nd ACM SIGKDD international conference on knowledge
+discovery and data mining, pp. 1135-1144. ACM.
+Rudin C (2019). Stop explaining black box machine learning models for high stakes decisions and
+use interpretable models instead. Nature Machine Intelligence 1(5):206-215.
+
+31
+Electronic copy available at: https://ssrn.com/abstract=3503603
+
+

@@ -1,0 +1,366 @@
+                                                                Evaluating Gender Bias in Machine Translation
+
+                                                             Gabriel Stanovsky1,2 , Noah A. Smith1,2 , and Luke Zettlemoyer1
+                                        1
+                                            Paul G. Allen School of Computer Science & Engineering, University of Washington, Seattle, USA
+                                                                 2
+                                                                   Allen Institute for Artificial Intelligence, Seattle, USA
+                                                                 {gabis,nasmith,lsz}@cs.washington.edu
+
+
+
+                                                                  Abstract
+                                                                                                             The doctor asked the nurse to help her in the procedure
+                                                We present the first challenge set and eval-
+arXiv:1906.00591v1 [cs.CL] 3 Jun 2019
+
+
+
+
+                                                uation protocol for the analysis of gender
+                                                bias in machine translation (MT). Our ap-           El doctor le pidio a la enfermera que le ayudara con el procedimiento
+                                                proach uses two recent coreference resolution
+                                                datasets composed of English sentences which       Figure 1: An example of gender bias in machine trans-
+                                                cast participants into non-stereotypical gender    lation from English (top) to Spanish (bottom). In
+                                                roles (e.g., “The doctor asked the nurse to help   the English source sentence, the nurse’s gender is un-
+                                                her in the operation”). We devise an automatic     known, while the coreference link with “her” identi-
+                                                gender bias evaluation method for eight target     fies the “doctor” as a female. On the other hand, the
+                                                languages with grammatical gender, based on        Spanish target sentence uses morphological features
+                                                morphological analysis (e.g., the use of female    for gender: “el doctor” (male), versus “la enfermer-
+                                                inflection for the word “doctor”). Our analy-      a” (female). Aligning between source and target sen-
+                                                ses show that four popular industrial MT sys-      tences reveals that a stereotypical assignment of gender
+                                                tems and two recent state-of-the-art academic      roles changed the meaning of the translated sentence by
+                                                MT models are significantly prone to gender-       changing the doctor’s gender.
+                                                biased translation errors for all tested target
+                                                languages. Our data and code are publicly
+                                                available at shorturl.at/dimuD.                    late recently tried to mitigate these biases by al-
+                                                                                                   lowing users to sometimes choose between gen-
+                                             1 Introduction                                        dered translations (Kuczmarski, 2018).
+                                             Learned models exhibit social bias when their            As shown in Figure 1, we use data introduced
+                                             training data encode stereotypes not relevant for     by two recent coreference gender-bias studies:
+                                             the task, but the correlations are picked up any-     the Winogender (Rudinger et al., 2018), and the
+                                             way. Notable examples include gender biases in        WinoBias (Zhao et al., 2018) datasets. Follow-
+                                             visual SRL (cooking is stereotypically done by        ing the Winograd schema (Levesque, 2011), each
+                                             women, construction workers are stereotypically       instance in these datasets is an English sentence
+                                             men; Zhao et al., 2017), lexical semantics (“man      which describes a scenario with human entities,
+                                             is to computer programmer as woman is to home-        who are identified by their role (e.g., “the doc-
+                                             maker”; Bolukbasi et al., 2016), and natural lan-     tor” and “the nurse” in Figure 1), and a pronoun
+                                             guage inference (associating women with gossip-       (“her” in the example), which needs to be correctly
+                                             ing and men with guitars; Rudinger et al., 2017).     resolved to one of the entities (“the doctor” in
+                                                In this work, we conduct the first large-scale     this case). Rudinger et al. (2018) and Zhao et al.
+                                             multilingual evaluation of gender-bias in machine     (2018) found that while human agreement on the
+                                             translation (MT), following recent small-scale        task was high (roughly 95%), coreference reso-
+                                             qualitative studies which observed that online MT     lution models often ignore context and make so-
+                                             services, such as Google Translate or Microsoft       cially biased predictions, e.g., associating the fem-
+                                             Translator, also exhibit biases, e.g., translating    inine pronoun “her” with the stereotypically fe-
+                                             nurses as females and programmers as males, re-       male “nurse.”
+                                             gardless of context (Alvarez-Melis and Jaakkola,         We observe that for many target languages, a
+                                             2017; Font and Costa-Jussà, 2019). Google Trans-     faithful translation requires a similar form of (at
+least implicit) gender identification. In addition,                     Winogender   WinoBias   WinoMT
+in the many languages which associate between
+                                                              Male            240       1582       1826
+biological and grammatical gender (e.g., most Ro-
+                                                              Female          240       1586       1822
+mance, Germanic, Slavic, and Semitic languages;
+                                                              Neutral         240          0        240
+Craig, 1986; Mucchi-Faina, 2005; Corbett, 2007),
+                                                              Total           720       3168       3888
+the gender of an animate object can be identified
+via morphological markers. For instance, when
+                                                       Table 1: The coreference test sets and resulting
+translating our running example in Figure 1 to         WinoMT corpus statistics (in number of instances).
+Spanish, a valid translation may be: “La doc-
+tora le pidio a la enfermera que le ayudara con
+el procedimiento,” which indicates that the doctor     We then map the English entity annotated in the
+is a woman, by using a feminine suffix inflection      coreference datasets to its translation (e.g., align
+(“doctora”) and the feminine definite gendered ar-     between “the doctor” and “el doctor” in Figure 1).
+ticle (“la”). However, a biased translation system     (3) Finally, we extract the target-side entity’s
+may ignore the given context and stereotypically       gender using simple heuristics over language-
+translate the doctor as male, as shown at the bot-     specific morphological analysis, which we per-
+tom of the figure.                                     form using off-the-shelf tools for each target lan-
+   Following these observations, we design a chal-     guage, as discussed in the following section.
+lenge set approach for evaluating gender bias in          This process extracts the translated genders, ac-
+MT using a concatenation of Winogender and             cording to M , for all of the entities in WinoMT,
+WinoBias. We devise an automatic translation           which we can then evaluate against the gold anno-
+evaluation method for eight diverse target lan-        tations provided by the original English dataset.
+guages, without requiring additional gold trans-          This process can introduce noise into our eval-
+lations, relying instead on automatic measures         uation in steps (2) and (3), via wrong alignments
+for alignment and morphological analysis (Sec-         or erroneous morphological analysis. In Section 3,
+tion 2). We find that four widely used commercial      we will present a human evaluation showing these
+MT systems and two recent state-of-the-art aca-        errors are infrequent.
+demic models are significantly gender-biased on
+all tested languages (Section 3). Our method and       3 Evaluation
+benchmarks are publicly available, and are easily
+extensible with more languages and MT models.          In this section, we briefly describe the MT systems
+                                                       and the target languages we use, our main results,
+2 Challenge Set for Gender Bias in MT                  and their human validation.
+
+We compose a challenge set for gender bias in MT       3.1 Experimental Setup
+(which we dub “WinoMT”) by concatenating the           MT systems We test six widely used MT mod-
+Winogender and WinoBias coreference test sets.         els, representing the state of the art in both
+Overall, WinoMT contains 3,888 instances, and is       commercial and academic research: (1) Google
+equally balanced between male and female gen-          Translate,1 (2) Microsoft Translator,2 (3) Ama-
+ders, as well as between stereotypical and non-        zon Translate,3 (4) SYSTRAN,4 (5) the model
+stereotypical gender-role assignments (e.g., a fe-     of Ott et al. (2018), which recently achieved the
+male doctor versus a female nurse). Additional         best performance on English-to-French transla-
+dataset statistics are presented in Table 1.           tion on the WMT’14 test set, and (6) the model
+   We use WinoMT to estimate the gender-bias of        of Edunov et al. (2018), the WMT’18 winner on
+an MT model, M , in target-language L by per-          English-to-German translation. We query the on-
+forming following steps (exemplified in Figure 1):     line API for the first four commercial MT sys-
+(1) Translate all of the sentences in WinoMT into      tems, while for the latter two academic models we
+L using M , thus forming a bilingual corpus of En-     use the pretrained models provided by the Fairseq
+glish and the target language L.                          1
+                                                            https://translate.google.com
+(2) Align between the source and target transla-          2
+                                                            https://www.bing.com/translator
+tions, using fast align (Dyer et al., 2013), trained      3
+                                                            https://aws.amazon.com/translate
+                                                          4
+on the automatic translations from from step (1).           http://www.systransoft.com
+                     Google Translate        Microsoft Translator   Amazon Translate∗           SYSTRAN
+                   Acc         ∆G     ∆S     Acc     ∆G      ∆S     Acc    ∆G     ∆S      Acc     ∆G      ∆S
+           ES      53.1        23.4   21.3   47.3    36.8   23.2    59.4   15.4   22.3   45.6     46.3    15.0
+           FR      63.6         6.4   26.7   44.7    36.4   29.7    55.2   17.7   24.9   45.0     44.0     9.4
+           IT      39.6        32.9   21.5   39.8    39.8   17.0    42.4   27.8   18.5   38.9     47.5     9.4
+           RU      37.7        36.8   11.4   36.8    42.1    8.5    39.7   34.7    9.2   37.3     44.1     9.3
+           UK      38.4        43.6   10.8   41.3    46.9   11.8     –      –      –     28.9     22.4    12.9
+           HE      53.7         7.9   37.8   48.1    14.9   32.9    50.5   10.3   47.3   46.6     20.5    24.5
+           AR      48.5        43.7   16.1   47.3    48.3   13.4    49.8   38.5   19.0   47.0     49.4     5.3
+           DE      59.4        12.5   12.5   74.1     0.0   30.2    62.4   12.0   16.7   48.6     34.5    10.3
+
+Table 2: Performance of commercial MT systems on the WinoMT corpus on all tested languages, categorized by
+their family: Spanish, French, Italian, Russian, Ukrainian, Hebrew, Arabic, and German. Acc indicates overall
+gender accuracy (% of instances the translation had the correct gender), ∆G denotes the difference in performance
+(F1 score) between masculine and feminine scores, and ∆S is the difference in performance (F1 score) between
+pro-stereotypical and anti-stereotypical gender role assignments (higher numbers in the two latter metrics indicate
+stronger biases). Numbers in bold indicate best accuracy for the language across MT systems (row), and underlined
+numbers indicate best accuracy for the MT system across languages (column). ∗ Amazon Translate does not have
+a trained model for English to Ukrainian.
+
+
+                                      Acc    ∆G     ∆S          identified via the ta marbuta character, which
+                                                                uniquely indicates feminine inflection. (4) Ger-
+       FR (Ott et al., 2018)          49.4   2.6    16.1
+                                                                manic languages: German, for which we use
+       DE (Edunov et al., 2018)       52.5   7.3     8.4
+                                                                the morphological analyzer developed by Altinok
+                                                                (2018).
+Table 3: Performance of recent state-of-the-art aca-
+demic translation models from English to French and
+German. Metrics are the same as those in Table 2.               3.2 Results
+                                                                Our main findings are presented in Tables 2 and 3.
+                                                                For each tested MT system and target language we
+toolkit.5
+                                                                compute three metrics with respect to their abil-
+Target languages and morphological analysis                     ity to convey the correct gender in the target lan-
+We selected a set of eight languages with gram-                 guage. Ultimately, our analyses indicate that all
+matical gender which exhibit a wide range of other              tested MT systems are indeed gender biased.
+linguistic properties (e.g., in terms of alphabet,                 First, the overall system Accuracy is calculated
+word order, or grammar), while still allowing for               by the percentage of instances in which the trans-
+highly accurate automatic morphological analy-                  lation preserved the gender of the entity from
+sis. These languages belong to four different fam-              the original English sentence. We find that most
+ilies: (1) Romance languages: Spanish, French,                  tested systems across eight tested languages per-
+and Italian, all of which have gendered noun-                   form quite poorly on this metric. The best per-
+determiner agreement and spaCy morphological                    forming model on each language often does not
+analysis support (Honnibal and Montani, 2017).                  do much better than a random guess for the correct
+(2) Slavic languages (Cyrillic alphabet): Russian               inflection. An exception to this rule is the transla-
+and Ukrainian, for which we use the morpho-                     tion accuracies on German, where three out of four
+logical analyzer developed by Korobov (2015).                   systems acheive their best performance. This may
+(3) Semitic languages: Hebrew and Arabic, each                  be explained by German’s similarity to the English
+with a unique alphabet. For Hebrew, we use the                  source language (Hawkins, 2015).
+analyzer developed by Adler and Elhadad (2006),                    In Table 2, ∆G denotes the difference in per-
+while gender inflection in Arabic can be easily                 formance (F1 score) between male and female
+                                                                translations. Interestingly, all systems, except Mi-
+   5
+       https://github.com/pytorch/fairseq                       crosoft Translator on German, perform signifi-
+                100
+                                                   Stereotypical    Non-Stereotypical
+Accuracy (%)                            80                                                76
+                 80                                                                                              69
+                           67
+                                                                                                     60               57
+                 60                          54        52
+                                46                                 44         46                          44
+                 40                                                     33         35          38
+                                                            30
+                 20
+                            ES           FR             IT          RU          UK         HE          AR         DE
+
+Figure 2: Google Translate’s performance on gender translation on our tested languages. The performance on the
+stereotypical portion of WinoMT is consistently better than that on the non-stereotypical portion. The other MT
+systems we tested display similar trends.
+
+
+                            Original    +Adj       ∆                     nurse to help her in the operation”. We are inter-
+                                                                         ested in evaluating whether this “corrects” the pro-
+                      ES         53.1   63.5      +10.4
+                                                                         fession bias by mixing signals, e.g., while “doc-
+                      RU         37.7   48.9      +11.2
+                                                                         tor” biases towards a male translation, “pretty”
+                      UK         38.4   42.9       +4.5
+                                                                         tugs the translation towards a female inflection.
+                                                                         Our results show that this improved performance
+Table 4: Performance of Google Translate on Spanish,
+Russian, and Ukranian gender prediction accuracy (%                      in some languages, significantly reducing bias in
+correct) on the original WinoMT corpus, versus a mod-                    Spanish, Russian, and Ukrainian (see Table 4).
+ified version of the dataset where we add sterotypical                   Admittedly, this is impractical as a general debi-
+gender adjectives (see Section 3.3).                                     asing scheme, since it assumes oracle coreference
+                                                                         resolution, yet it attests to the relation between
+                                                                         coreference resolution and MT, and serves as a fur-
+cantly better on male roles, which may stem from                         ther indication of gender bias in MT.
+these being more frequent in the training set.
+   Perhaps most tellingly, ∆S measures the differ-                       3.4 Human Validation
+ence in performance (F1 score) between stereo-
+typical and non-stereotypical gender role assign-                        We estimate the accuracy of our gender bias evalu-
+ments, as defined by Zhao et al. (2018) who use                          ation method by randomly sampling 100 instances
+statistics provided by the US Department of La-                          of all translation systems and target languages, an-
+bor.6 This metric shows that all tested systems                          notating each sample by two target-language na-
+have a significant and consistently better per-                          tive speakers (resulting in 9,600 human annota-
+formance when presented with pro-stereotypical                           tions). Each instance conformed to a format sim-
+assignments (e.g., a female nurse), while their                          ilar to that used by our automatic gender detec-
+performance deteriorates when translating anti-                          tion algorithm: human annotators were asked to
+stereotypical roles (e.g., a male receptionist).                         mark the gender of an entity within a given target-
+For instance, Figure 2 depicts Google Trans-                             language sentence. (e.g., see “el doctor” as high-
+late absolute accuracies on stereotypical and non-                       lighted in the Spanish sentence in Figure 1). By
+stereotypical gender roles across all tested lan-                        annotating at the sentence-level, we can account
+guages. Other tested systems show similar trends.                        for both types of possible errors, i.e., alignment
+                                                                         and gender extraction.
+3.3             Fighting Bias with Bias                                     We compare the sentence-level human anno-
+                                                                         tations to the output of our automatic method,
+Finally, we tested whether we can affect the
+                                                                         and find that the levels of agreement for all lan-
+translations by automatically creating a version
+                                                                         guages and systems were above 85%, with an
+of WinoMT with the adjectives “handsome” and
+                                                                         average agreement on 87% of the annotations.
+“pretty” prepended to male and female entities, re-
+                                                                         In comparison, human inter-annotator agreement
+spectively. For example, the sentence in Figure 1
+                                                                         was 90%, due to noise introduced by several inco-
+will be converted to: “The pretty doctor asked the
+                                                                         herent translations.
+           6
+               https://www.bls.gov/cps/cpsaat11.htm                         Our errors occur when language-specific id-
+Source                                   [Target lang.] Predicted translation          Phenomenon
+The janitor does not like the baker      [ES] Al conserje no le gusta el panadero      Biased translation, giving “baker” a
+because she always messes up the         porque ella siempre desordena la cocina.      male inflection, with a mismatched pro-
+kitchen.                                                                               noun reference.
+The janitor does not like the pretty     [ES] Al conserje no le gusta la panadera      Adding a stereotypically female adjec-
+baker because she always messes up       bonita porque ella siempre desordena la       tive “fixes” the translation.
+the kitchen.                             cocina.
+The counselor asked the guard a few      [FR] Le conseiller a posé quelques ques-     French uses “garde” for both male and
+questions and praised her for the good   tions à la garde et l’a louée pour le bon   female guards, allowing for a more di-
+work.                                    travail.                                      rect translation from English.
+
+Table 5: Examples of Google Translate’s output for different sentences in the WinoMT corpus. Words in blue,
+red, and orange indicate male, female and neutral entities, respectively.
+
+
+iosyncrasies introduce ambiguity to the morpho-                  duce some artificial biases in our data and eval-
+logical analysis. For example, gender for certain                uation. Ideally, WinoMT could be augmented
+words in Hebrew cannot be distinguished without                  with natural “in the wild” instances, with many
+diacritics (e.g., the male and female versions of the            source languages, all annotated with ground truth
+word “baker” are spelled identically), and the con-              entity gender. Second, similar to any medium size
+tracted determiner in French and Italian (l’) is used            test set, it is clear that WinoMT serves only as
+for both masculine and feminine nouns. In ad-                    a proxy estimation for the phenomenon of gen-
+dition, some languages have only male or female                  der bias, and would probably be easy to overfit.
+inflections for professions which were stereotypi-               A larger annotated corpus can perhaps provide a
+cally associated with one of the genders, for exam-              better signal for training. Finally, even though
+ple “sastre” (tailor) in Spanish or “soldat” (soldier)           in Section 3.3 we show a very rudimentary debi-
+in French, which do not have female inflections.                 asing scheme which relies on oracle coreference
+See Table 5 for detailed examples.                               system, it is clear that this is not applicable in
+                                                                 a real-world scenario. While recent research has
+4 Discussion                                                     shown that getting rid of such biases may prove to
+Related work This work is most related to sev-                   be very challenging (Elazar and Goldberg, 2018;
+eral recent efforts which evaluate MT through                    Gonen and Goldberg, 2019), we hope that this
+the use of challenge sets. Similarly to our                      work will serve as a first step for developing more
+use WinoMT, these works evaluate MT sys-                         gender-balanced MT models.
+tems (either manually or automatically) on test
+                                                                 5 Conclusions
+sets which are specially created to exhibit cer-
+tain linguistic phenomena, thus going beyond                     We presented the first large-scale multilingual
+the traditional BLEU metric (Papineni et al.,                    quantitative evidence for gender bias in MT, show-
+2002). These include challenge sets for language-                ing that on eight diverse target languages, all
+specific idiosyncrasies (Isabelle et al., 2017), dis-            four tested popular commercial systems and two
+course phenomena (Bawden et al., 2018), pronoun                  recent state-of-the-art academic MT models are
+translation (Müller et al., 2018; Webster et al.,               significantly prone to translate based on gen-
+2018), or coreference and multiword expressions                  der stereotypes rather than more meaningful con-
+(Burchardt et al., 2017).                                        text. Our data and code are publicly available at
+                                                                 shorturl.at/dimuD.
+Limitations and future work While our work
+presents the first large-scale evaluation of gen-
+                                                                 Acknowledgments
+der bias in MT, it still suffers from certain lim-
+itations which could be addressed in follow up                   We would like to thank Mark Yatskar, Iz Beltagy,
+work. First, like some of the challenge sets dis-                Tim Dettmers, Ronan Le Bras, Kyle Richardson,
+cussed above, WinoMT is composed of synthetic                    Ariel and Claudia Stanovsky, and Paola Virga for
+English source-side examples. On the one hand,                   many insightful discussions about the role gender
+this allows for a controlled experiment environ-                 plays in the languages evaluated in this work, as
+ment, while, on the other hand, this might intro-                well as the reviewers for their helpful comments.
+References                                               Pierre Isabelle, Colin Cherry, and George F. Foster.
+                                                            2017. A challenge set approach to evaluating ma-
+Meni Adler and Michael Elhadad. 2006. An unsuper-           chine translation. In EMNLP.
+ vised morpheme-based HMM for Hebrew morpho-
+ logical disambiguation. In ACL.                         Mikhail Korobov. 2015. Morphological analyzer and
+                                                           generator for Russian and Ukrainian languages.
+Duygu Altinok. 2018. DEMorphy, German language
+                                                           In Mikhail Yu. Khachay, Natalia Konstantinova,
+  morphological analyzer. CoRR, abs/1803.00902.
+                                                           Alexander Panchenko, Dmitry I. Ignatov, and Va-
+David Alvarez-Melis and Tommi S. Jaakkola. 2017.           leri G. Labunets, editors, Analysis of Images, Social
+  A causal framework for explaining the predictions        Networks and Texts, volume 542 of Communications
+  of black-box sequence-to-sequence models. In             in Computer and Information Science, pages 320–
+  EMNLP.                                                   332. Springer International Publishing.
+
+Rachel Bawden, Rico Sennrich, Alexandra Birch, and       James              Kuczmarski.                   2018.
+  Barry Haddow. 2018. Evaluating discourse phe-            Reducing gender bias in google translate.
+  nomena in neural machine translation. In NAACL-
+  HLT.                                                   Hector J. Levesque. 2011. The Winograd schema chal-
+                                                           lenge. In AAAI Spring Symposium: Logical Formal-
+Tolga Bolukbasi, Kai-Wei Chang, James Y. Zou,              izations of Commonsense Reasoning.
+  Venkatesh Saligrama, and Adam Tauman Kalai.
+  2016. Man is to computer programmer as woman           Angelica Mucchi-Faina. 2005. Visible or influential?
+  is to homemaker? debiasing word embeddings. In           language reforms and gender (in) equality. Social
+  NIPS.                                                    Science Information, 44(1):189–215.
+
+Aljoscha Burchardt, Vivien Macketanz, Jon De-            Mathias Müller, Annette Rios, Elena Voita, and Rico
+  hdari, Georg Heigold, Jan-Thorsten Peter, and           Sennrich. 2018. A large-scale test set for the evalu-
+  Philip Williams. 2017. A linguistic evaluation of       ation of context-aware pronoun translation in neural
+  rule-based, phrase-based, and neural mt engines.        machine translation. CoRR.
+  The Prague Bulletin of Mathematical Linguistics,
+  108(1):159–170.                                        Myle Ott, Sergey Edunov, David Grangier, and
+                                                          Michael Auli. 2018. Scaling neural machine trans-
+Greville G Corbett. 2007. Gender and noun classes.        lation. arXiv preprint arXiv:1806.00187.
+
+Colette G Craig. 1986. Noun Classes and Categoriza-      Kishore Papineni, Salim Roukos, Todd Ward, and Wei-
+  tion: Proceedings of a Symposium on Categoriza-          Jing Zhu. 2002. Bleu: a method for automatic eval-
+  tion and Noun Classification, volume 7. John Ben-        uation of machine translation. In ACL.
+  jamins Publishing Company.
+                                                         Rachel Rudinger, Chandler May, and Benjamin Van
+Chris Dyer, Victor Chahuneau, and Noah A. Smith.           Durme. 2017. Social bias in elicited natural lan-
+  2013. A simple, fast, and effective reparameteriza-      guage inferences. In EthNLP@EACL.
+  tion of ibm model 2. In HLT-NAACL.
+                                                         Rachel Rudinger, Jason Naradowsky, Brian Leonard,
+Sergey Edunov, Myle Ott, Michael Auli, and David           and Benjamin Van Durme. 2018. Gender bias in
+  Grangier. 2018. Understanding back-translation at        coreference resolution. In NAACL-HLT.
+  scale. arXiv preprint arXiv:1808.09381.
+                                                         Kellie Webster, Marta Recasens, Vera Axelrod, and Ja-
+Yanai Elazar and Yoav Goldberg. 2018. Adversarial          son Baldridge. 2018. Mind the gap: A balanced
+  removal of demographic attributes from text data. In     corpus of gendered ambiguous pronouns. Transac-
+  EMNLP.                                                   tions of the Association for Computational Linguis-
+                                                           tics, 6:605–617.
+Joel Escudé Font and Marta R. Costa-Jussà. 2019.
+  Equalizing gender biases in neural machine transla-    Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+  tion with word embeddings techniques. CoRR.               donez, and Kai-Wei Chang. 2017. Men also like
+Hila Gonen and Yoav Goldberg. 2019. Lipstick on a           shopping: Reducing gender bias amplification using
+  pig: Debiasing methods cover up systematic gender         corpus-level constraints. In EMNLP.
+  biases in word embeddings but do not remove them.      Jieyu Zhao, Tianlu Wang, Mark Yatskar, Vicente Or-
+  HLT-NAACL.                                                donez, and Kai-Wei Chang. 2018. Gender bias in
+John A Hawkins. 2015. A Comparative Typology of             coreference resolution: Evaluation and debiasing
+  English and German: Unifying the Contrasts. Rout-         methods. In NAACL-HLT.
+  ledge.
+Matthew Honnibal and Ines Montani. 2017. spaCy 2:
+ Natural language understanding with Bloom embed-
+ dings, convolutional neural networks and incremen-
+ tal parsing. To appear.
+
